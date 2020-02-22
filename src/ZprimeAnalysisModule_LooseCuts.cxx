@@ -123,9 +123,11 @@ protected:
   Event::Handle<float> h_JetHadAK4_2j_eta; 
   Event::Handle<float> h_JetHadAK4_2j_phi; 
   Event::Handle<float> h_TopLep_pt; 
+  Event::Handle<float> h_TopLep_m; 
   Event::Handle<float> h_TopLep_eta; 
   Event::Handle<float> h_TopLep_phi; 
   Event::Handle<float> h_TopHad_pt; 
+  Event::Handle<float> h_TopHad_m; 
   Event::Handle<float> h_TopHad_eta; 
   Event::Handle<float> h_TopHad_phi; 
   Event::Handle<float> h_TopHadOverLep_pt; 
@@ -142,6 +144,8 @@ protected:
   Event::Handle<float> h_S33; 
 
   uhh2::Event::Handle<ZprimeCandidate*> h_BestZprimeCandidateChi2;
+
+  float inv_mass(const LorentzVector& p4){ return p4.isTimelike() ? p4.mass() : -sqrt(-p4.mass2()); }
 
   // Configuration
   bool isMC, ispuppi, islooserselection;
@@ -361,9 +365,11 @@ ZprimeAnalysisModule_LooseCuts::ZprimeAnalysisModule_LooseCuts(uhh2::Context& ct
   h_JetHadAK4_2j_eta = ctx.declare_event_output<float> ("JetHadAK4_2j_eta");
   h_JetHadAK4_2j_phi = ctx.declare_event_output<float> ("JetHadAK4_2j_phi");
   h_TopLep_pt = ctx.declare_event_output<float> ("TopLep_pt");
+  h_TopLep_m = ctx.declare_event_output<float> ("TopLep_m");
   h_TopLep_eta = ctx.declare_event_output<float> ("TopLep_eta");
   h_TopLep_phi = ctx.declare_event_output<float> ("TopLep_phi");
   h_TopHad_pt = ctx.declare_event_output<float> ("TopHad_pt");
+  h_TopHad_m = ctx.declare_event_output<float> ("TopHad_m");
   h_TopHad_eta = ctx.declare_event_output<float> ("TopHad_eta");
   h_TopHad_phi = ctx.declare_event_output<float> ("TopHad_phi");
   h_TopHadOverLep_pt = ctx.declare_event_output<float> ("TopHadOverLep_pt");
@@ -460,9 +466,11 @@ bool ZprimeAnalysisModule_LooseCuts::process(uhh2::Event& event){
   event.set(h_JetHadAK4_2j_eta,0);
   event.set(h_JetHadAK4_2j_phi,0);
   event.set(h_TopLep_pt,0);
+  event.set(h_TopLep_m,0);
   event.set(h_TopLep_eta,0);
   event.set(h_TopLep_phi,0);
   event.set(h_TopHad_pt,0);
+  event.set(h_TopHad_m,0);
   event.set(h_TopHad_eta,0);
   event.set(h_TopHad_phi,0);
   event.set(h_TopHadOverLep_pt,0);
@@ -645,9 +653,11 @@ bool ZprimeAnalysisModule_LooseCuts::process(uhh2::Event& event){
     event.set(h_DeltaR_j1_lep,deltaR(BestZprimeCandidate->jets_leptonic().at(0),BestZprimeCandidate->lepton()));
     event.set(h_DeltaR_j1_nu,deltaR(BestZprimeCandidate->jets_leptonic().at(0),BestZprimeCandidate->neutrino_v4()));
     event.set(h_TopLep_pt,BestZprimeCandidate->top_leptonic_v4().pt());
+    event.set(h_TopLep_m,inv_mass(BestZprimeCandidate->top_leptonic_v4()));
     event.set(h_TopLep_eta,BestZprimeCandidate->top_leptonic_v4().eta());
     event.set(h_TopLep_phi,BestZprimeCandidate->top_leptonic_v4().phi());
     event.set(h_TopHad_pt,BestZprimeCandidate->top_hadronic_v4().pt());
+    event.set(h_TopHad_m,inv_mass(BestZprimeCandidate->top_hadronic_v4()));
     event.set(h_TopHad_eta,BestZprimeCandidate->top_hadronic_v4().eta());
     event.set(h_TopHad_phi,BestZprimeCandidate->top_hadronic_v4().phi());
     event.set(h_TopHadOverLep_pt,(BestZprimeCandidate->top_hadronic_v4().pt())/(BestZprimeCandidate->top_leptonic_v4().pt()));
