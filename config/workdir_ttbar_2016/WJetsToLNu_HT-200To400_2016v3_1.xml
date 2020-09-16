@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE JobConfiguration PUBLIC "" "JobConfig.dtd" [
+
+
+<!ENTITY TargetLumi      "35921.908907">
+<!ENTITY PRESELdir       "/nfs/dust/cms/user/hugobg/Zprime_102X/presel_output/2016/">
+<!ENTITY b_Cacheable     "False">
+<!ENTITY NEVT            "100">
+<!ENTITY IS_PUPPI        "true">
+
+<!ENTITY DATA_SingleElectron_Run2016v3B   SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/DATA_SingleElectron2016_RunB.xml">
+<!ENTITY DATA_SingleMuon_Run2016v3B   SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/DATA_SingleMuon2016_RunB.xml">
+<!ENTITY DATA_SingleElectron_Run2016v3C   SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/DATA_SingleElectron2016_RunC.xml">
+<!ENTITY DATA_SingleMuon_Run2016v3C   SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/DATA_SingleMuon2016_RunC.xml">
+<!ENTITY DATA_SingleElectron_Run2016v3D   SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/DATA_SingleElectron2016_RunD.xml">
+<!ENTITY DATA_SingleMuon_Run2016v3D   SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/DATA_SingleMuon2016_RunD.xml">
+<!ENTITY DATA_SingleElectron_Run2016v3E   SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/DATA_SingleElectron2016_RunE.xml">
+<!ENTITY DATA_SingleMuon_Run2016v3E   SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/DATA_SingleMuon2016_RunE.xml">
+<!ENTITY DATA_SingleElectron_Run2016v3F   SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/DATA_SingleElectron2016_RunF.xml">
+<!ENTITY DATA_SingleMuon_Run2016v3F   SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/DATA_SingleMuon2016_RunF.xml">
+<!ENTITY DATA_SingleElectron_Run2016v3G   SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/DATA_SingleElectron2016_RunG.xml">
+<!ENTITY DATA_SingleMuon_Run2016v3G   SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/DATA_SingleMuon2016_RunG.xml">
+<!ENTITY DATA_SingleElectron_Run2016v3H   SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/DATA_SingleElectron2016_RunH.xml">
+<!ENTITY DATA_SingleMuon_Run2016v3H   SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/DATA_SingleMuon2016_RunH.xml">
+
+<!ENTITY TT_TuneCUETP8M2T4_2016v3  SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_TT_TuneCUETP8M2T4.xml">
+
+<!ENTITY WJetsToLNu_HT-70To100_2016v3  SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_WJetsToLNu_HT-70To100.xml">
+<!ENTITY WJetsToLNu_HT-100To200_2016v3  SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_WJetsToLNu_HT-100To200.xml">
+<!ENTITY WJetsToLNu_HT-200To400_2016v3  SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_WJetsToLNu_HT-200To400.xml">
+<!ENTITY WJetsToLNu_HT-400To600_2016v3  SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_WJetsToLNu_HT-400To600.xml">
+<!ENTITY WJetsToLNu_HT-600To800_2016v3  SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_WJetsToLNu_HT-600To800.xml">
+<!ENTITY WJetsToLNu_HT-800To1200_2016v3  SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_WJetsToLNu_HT-800To1200.xml">
+<!ENTITY WJetsToLNu_HT-1200To2500_2016v3  SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_WJetsToLNu_HT-1200To2500.xml">
+<!ENTITY WJetsToLNu_HT-2500ToInf_2016v3  SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_WJetsToLNu_HT-2500ToInf.xml">
+
+<!ENTITY ST_tW_antitop_5f_inclusiveDecays_2016v3  SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_ST_tW_antitop_inclusiveDecays_P8M1_PUMoriond17.xml">
+<!ENTITY ST_tW_top_5f_inclusiveDecays_2016v3  SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_ST_tW_top_inclusiveDecays_P8M1_PUMoriond17.xml">
+<!ENTITY ST_t-channel_antitop_2016v3  SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_ST_t-channel_antitop_inclusiveDecays.xml">
+<!ENTITY ST_t-channel_top_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_ST_t-channel_top_inclusiveDecays.xml">
+<!ENTITY ST_s-channel_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_ST_s-channel_inclusiveDecays.xml">
+
+<!ENTITY WW_2016v3  SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_WW.xml">
+<!ENTITY WZ_2016v3  SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_WZ.xml">
+<!ENTITY ZZ_2016v3  SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_ZZ.xml">
+
+<!ENTITY QCD_HT50to100_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_QCD_HT50to100.xml">
+<!ENTITY QCD_HT100to200_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_QCD_HT100to200.xml">
+<!ENTITY QCD_HT200to300_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_QCD_HT200to300.xml">
+<!ENTITY QCD_HT300to500_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_QCD_HT300to500.xml">
+<!ENTITY QCD_HT500to700_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_QCD_HT500to700.xml">
+<!ENTITY QCD_HT700to1000_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_QCD_HT700to1000.xml">
+<!ENTITY QCD_HT1000to1500_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_QCD_HT1000to1500.xml">
+<!ENTITY QCD_HT1500to2000_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_QCD_HT1500to2000.xml">
+<!ENTITY QCD_HT2000toInf_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_QCD_HT2000toInf.xml">
+
+<!-- NOt modified yet
+<!ENTITY ZprimeToTTJet_M500_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/ZprimeToTTbar/MC_ZprimeToTTJet_M500.xml">
+<!ENTITY ZprimeToTTJet_M750_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/ZprimeToTTbar/MC_ZprimeToTTJet_M750.xml">
+<!ENTITY ZprimeToTTJet_M1000_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/ZprimeToTTbar/MC_ZprimeToTTJet_M1000.xml">
+<!ENTITY ZprimeToTTJet_M1250_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/ZprimeToTTbar/MC_ZprimeToTTJet_M1250.xml">
+<!ENTITY ZprimeToTTJet_M1500_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/ZprimeToTTbar/MC_ZprimeToTTJet_M1500.xml">
+<!ENTITY ZprimeToTTJet_M2000_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/ZprimeToTTbar/MC_ZprimeToTTJet_M2000.xml">
+<!ENTITY ZprimeToTTJet_M2500_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/ZprimeToTTbar/MC_ZprimeToTTJet_M2500.xml">
+<!ENTITY ZprimeToTTJet_M3000_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/ZprimeToTTbar/MC_ZprimeToTTJet_M3000.xml">
+<!ENTITY ZprimeToTTJet_M3500_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/ZprimeToTTbar/MC_ZprimeToTTJet_M3500.xml">
+<!ENTITY ZprimeToTTJet_M4000_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/ZprimeToTTbar/MC_ZprimeToTTJet_M4000.xml">
+<!ENTITY ZprimeToTTJet_M5000_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/ZprimeToTTbar/MC_ZprimeToTTJet_M5000.xml">
+<!ENTITY ZprimeToTTJet_M6000_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/ZprimeToTTbar/MC_ZprimeToTTJet_M6000.xml">
+<!ENTITY ZprimeToTTJet_M7000_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/ZprimeToTTbar/MC_ZprimeToTTJet_M7000.xml">
+-->
+
+<!ENTITY ZprimeToTT_M1000_W100_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/ZprimeToTTbar/MC_ZprimeToTT_M-1000_W-100.xml">
+<!ENTITY ZprimeToTT_M1000_W10_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/ZprimeToTTbar/MC_ZprimeToTT_M-1000_W-10.xml">
+
+<!ENTITY ZprimeToTTJet_M1000_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/ZprimeToTTbar/MC_ZprimeToTTJet_M-1000.xml"> 
+
+
+]>
+
+<!--
+<ConfigParse NEventsBreak="0" LastBreak="0" FileSplit="100" AutoResubmit="100"/>
+<ConfigSGE RAM="2" DISK="2" Mail="condor.desy@gmail.com" Notification="as" Workdir="workdir_ttbar_2016"/>
+-->
+
+
+<JobConfiguration JobName="ZprimePreselectionJob" OutputLevel="INFO">
+	<Library Name="libSUHH2ZprimeSemiLeptonic"/>
+	<Package Name="libSUHH2ZprimeSemiLeptonic"/>
+	<Cycle Name="uhh2::AnalysisModuleRunner" OutputDirectory="/nfs/dust/cms/user/hugobg/Zprime_102X/presel_output/2016///workdir_ttbar_2016/" PostFix="_0" TargetLumi="35921.908907">
+		<InputData Cacheable="False" Lumi="43814.59297" Type="MC" Version="WJetsToLNu_HT-200To400_2016v3">
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_1.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_10.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_100.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_101.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_102.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_103.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_104.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_105.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_106.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_107.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_108.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_109.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_11.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_110.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_111.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_112.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_113.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_114.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_115.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_116.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_117.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_118.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_119.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_12.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_120.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_121.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_122.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_123.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_124.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_125.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_126.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_127.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_128.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_129.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_13.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_130.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_131.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_132.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_133.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_134.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_135.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_136.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_137.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_138.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_139.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_14.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_140.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_141.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_142.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_143.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_144.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_145.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_146.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_147.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_148.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_149.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_15.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_150.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_151.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_152.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_153.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_154.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_155.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_156.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_157.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_158.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_159.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_16.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_160.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_161.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_162.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_163.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_164.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_165.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_166.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_167.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_168.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_169.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_17.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_170.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_171.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_172.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_173.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_174.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_175.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_176.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_177.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_178.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_179.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_18.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_180.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_181.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_182.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_183.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_184.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_185.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_186.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_187.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_188.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_ProductionApr19_2016_leadingjetConstits/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_WJetsToLNu_HT-200To400/190417_122725/0000/Ntuple_189.root" Lumi="0.0"/>
+			<OutputTree Name="AnalysisTree"/>
+			<InputTree Name="AnalysisTree"/>
+		</InputData>
+		<UserConfig>
+			<Item Name="PrimaryVertexCollection" Value="offlineSlimmedPrimaryVertices"/>
+			<Item Name="GenParticleCollection" Value="GenParticles"/>
+			<Item Name="ElectronCollection" Value="slimmedElectronsUSER"/>
+			<Item Name="MuonCollection" Value="slimmedMuonsUSER"/>
+			<Item Name="JetCollection" Value="jetsAk4Puppi"/>
+			<Item Name="GenJetCollection" Value="slimmedGenJets"/>
+			<Item Name="TopJetCollection" Value="jetsAk8CHSSubstructure_SoftDropCHS"/>
+			<Item Name="GenTopJetCollection" Value="genjetsAk8SubstructureSoftDrop"/>
+			<Item Name="TopPuppiJetCollection" Value="jetsAk8PuppiSubstructure_SoftDropPuppi"/>
+			<Item Name="METName" Value="slimmedMETsPuppi"/>
+			<Item Name="genMETName" Value="slimmedMETs_GenMET"/>
+			<Item Name="lumi_file" Value="/nfs/dust/cms/user/hugobg/UHH2/CMSSW_10_2_10/src/UHH2/common/data/2016/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.root"/>
+			<Item Name="lumihists_lumi_per_bin" Value="500.0"/>
+			<Item Name="pileup_directory" Value="/nfs/dust/cms/user/karavdia/CMSSW_10_2_10/src/UHH2/common/data/2016/MyMCPileupHistogram.root"/>
+			<Item Name="pileup_directory_data" Value="/nfs/dust/cms/user/hugobg/UHH2/CMSSW_10_2_10/src/UHH2/common/data/2016/MyDataPileupHistogram.root"/>
+			<Item Name="pileup_directory_data_up" Value="/nfs/dust/cms/user/hugobg/UHH2/CMSSW_10_2_10/src/UHH2/common/data/2016/MyDataPileupHistogram_72383.root"/>
+			<Item Name="pileup_directory_data_down" Value="/nfs/dust/cms/user/hugobg/UHH2/CMSSW_10_2_10/src/UHH2/common/data/2016/MyDataPileupHistogram_66017.root"/>
+			<Item Name="is_puppi" Value="true"/>
+			<Item Name="use_sframe_weight" Value="false"/>
+			<Item Name="jersmear_direction" Value="nominal"/>
+			<Item Name="jecsmear_direction" Value="nominal"/>
+			<Item Name="AnalysisModule" Value="ZprimePreselectionModule_2016"/>
+		</UserConfig>
+	</Cycle>
+</JobConfiguration>

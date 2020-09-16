@@ -1,0 +1,246 @@
+ ( INFO  )  SCycleController   : Initializing
+ ( INFO  )  SCycleController   : Deleting all analysis cycle algorithms from memory
+ ( INFO  )  SCycleController   : Reading xml file: 'TT_TuneCUETP8M2T4_2016v3_447.xml'
+ ( INFO  )  SCycleController   : Created cycle 'uhh2::AnalysisModuleRunner'
+ ( INFO  )  SCycleBaseExec     : Initializing from configuration
+ ( INFO  )  SCycleBaseExec     : Reading SInputData: MC - TT_TuneCUETP8M2T4_2016v3
+ ( INFO  )  SCycleConfig       : ===========================================================
+ ( INFO  )  SCycleConfig       :                     Cycle configuration
+ ( INFO  )  SCycleConfig       :   - Running mode: LOCAL
+ ( INFO  )  SCycleConfig       :   - Target luminosity: 35920
+ ( INFO  )  SCycleConfig       :   - Output directory: /nfs/dust/cms/user/hugobg/ZPrimeSemi/Preselection_2016//workdir_Preselection/
+ ( INFO  )  SCycleConfig       :   - Post-fix: _446
+ ( INFO  )  SInputData         :  ---------------------------------------------------------
+ ( INFO  )  SInputData         :  Type               : MC
+ ( INFO  )  SInputData         :  Version            : TT_TuneCUETP8M2T4_2016v3
+ ( INFO  )  SInputData         :  Total luminosity   : 92260.2pb-1
+ ( INFO  )  SInputData         :  NEventsMax         : -1
+ ( INFO  )  SInputData         :  NEventsSkip        : 0
+ ( INFO  )  SInputData         :  Cacheable          : No
+ ( INFO  )  SInputData         :  Skip validation    : No
+ ( INFO  )  SInputData         :  Skip file lookup   : No
+ ( INFO  )  SInputData         :  Input File         : '/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/crab_TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/190410_093407/0001/Ntuple_1789.root' (file) | '0' (lumi)
+ ( INFO  )  SInputData         :  Input File         : '/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/crab_TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/190410_093407/0001/Ntuple_1790.root' (file) | '0' (lumi)
+ ( INFO  )  SInputData         :  Input File         : '/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/crab_TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/190410_093407/0001/Ntuple_1791.root' (file) | '0' (lumi)
+ ( INFO  )  SInputData         :  Input File         : '/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/crab_TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/190410_093407/0001/Ntuple_1792.root' (file) | '0' (lumi)
+ ( INFO  )  SInputData         :  Tree               : 'AnalysisTree' (name) | 'Flat input tree' (type)
+ ( INFO  )  SInputData         :  Tree               : 'AnalysisTree' (name) | 'Flat output tree' (type)
+ ( INFO  )  SInputData         :  ---------------------------------------------------------
+ ( INFO  )  SCycleConfig       : ===========================================================
+ ( INFO  )  SCycleController   : Job 'ZprimePreselectionJob' configured
+ ( INFO  )  SCycleController   : Time needed for initialisation:   0.52 s
+ ( INFO  )  SCycleController   : Entering ExecuteAllCycles()
+ ( INFO  )  SInputData         : Input type "MC" version "TT_TuneCUETP8M2T4_2016v3" : 118954 events
+ ( INFO  )  SCycleController   : Executing Cycle #0 ('uhh2::AnalysisModuleRunner') locally
+ ( INFO  )  SCycleController   : Processing input data type: MC version: TT_TuneCUETP8M2T4_2016v3
+ ( INFO  )  SCycleBaseExec     : Initialised InputData "MC" (Version:TT_TuneCUETP8M2T4_2016v3) on worker node
+ AnalysisModule = ZprimePreselectionModule
+ ElectronCollection = slimmedElectronsUSER
+ GenJetCollection = muonGenJets
+ GenParticleCollection = GenParticles
+ GenTopJetCollection = genjetsAk8SubstructureSoftDrop
+ JetCollection = jetsAk4Puppi
+ METName = slimmedMETsPuppi
+ MuonCollection = slimmedMuonsUSER
+ PrimaryVertexCollection = offlineSlimmedPrimaryVertices
+ TopJetCollection = jetsAk8CHSSubstructure_SoftDropCHS
+ TopPuppiJetCollection = jetsAk8PuppiSubstructure_SoftDropPuppi
+ dataset_lumi = 9.226016399000000092e+04
+ dataset_type = MC
+ dataset_version = TT_TuneCUETP8M2T4_2016v3
+ genMETName = slimmedMETs_GenMET
+ is_puppi = true
+ jecsmear_direction = nominal
+ jersmear_direction = nominal
+ lumi_file = /nfs/dust/cms/user/deleokse/analysis/CMSSW_10_2_10/src/UHH2/common/data/2016/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.root
+ lumihists_lumi_per_bin = 500.0
+ n_events_total = 1.189540000000000000e+05
+ target_lumi = 3.592000000000000000e+04
+ use_sframe_weight = false
+Is this running on puppi: 1
+ZprimePreselectionModule uses JEC for 2016 data/MC
+And now read JECs
+And now read top JECs
+done with init JEC and JLC
+ ( INFO  )  SCycleBaseExec     : Opening /pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/crab_TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/190410_093407/0001/Ntuple_1789.root
+-373.061 404.261 -435.799 713.523
+ ( INFO  )  SCycleBaseExec     : Processing entry: 999 (999 / 118954 events processed so far, ~ 14 minutes left)
+-397.515 -285.192 253.017 571.619
+ ( INFO  )  SCycleBaseExec     : Processing entry: 1999 (1999 / 118954 events processed so far, ~ 11 minutes left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 2999 (2999 / 118954 events processed so far, ~ 7.1 minutes left)
+-298.026 353.375 656.297 815.986
+ ( INFO  )  SCycleBaseExec     : Processing entry: 3999 (3999 / 118954 events processed so far, ~ 6.7 minutes left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 4999 (4999 / 118954 events processed so far, ~ 5.3 minutes left)
+260.598 -316.123 -0.675354 452.625
+ ( INFO  )  SCycleBaseExec     : Processing entry: 5999 (5999 / 118954 events processed so far, ~ 5.6 minutes left)
+-367.843 -434.483 206.157 615.289
+ ( INFO  )  SCycleBaseExec     : Processing entry: 6999 (6999 / 118954 events processed so far, ~ 5.1 minutes left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 7999 (7999 / 118954 events processed so far, ~ 5.3 minutes left)
+-321.528 426.218 526.903 766.6
+ ( INFO  )  SCycleBaseExec     : Processing entry: 8999 (8999 / 118954 events processed so far, ~ 5.5 minutes left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 9999 (9999 / 118954 events processed so far, ~ 4.9 minutes left)
+-424.417 216.12 49.3468 495.127
+ ( INFO  )  SCycleBaseExec     : Processing entry: 10999 (10999 / 118954 events processed so far, ~ 4.7 minutes left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 11999 (11999 / 118954 events processed so far, ~ 4.5 minutes left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 12999 (12999 / 118954 events processed so far, ~ 4.6 minutes left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 13999 (13999 / 118954 events processed so far, ~ 4.4 minutes left)
+-103.256 495.513 -759.182 912.98
+-65.4902 642.322 349.826 745.469
+ ( INFO  )  SCycleBaseExec     : Processing entry: 14999 (14999 / 118954 events processed so far, ~ 4.5 minutes left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 15999 (15999 / 118954 events processed so far, ~ 4.8 minutes left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 16999 (16999 / 118954 events processed so far, ~ 4.6 minutes left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 17999 (17999 / 118954 events processed so far, ~ 4.9 minutes left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 18999 (18999 / 118954 events processed so far, ~ 4.6 minutes left)
+-66.8303 453.254 -130.7 507.504
+-134.768 -393.506 -154.155 450.35
+-56.0946 471.701 -541.963 743.128
+ ( INFO  )  SCycleBaseExec     : Processing entry: 19999 (19999 / 118954 events processed so far, ~ 5.3 minutes left)
+-474.294 -942.905 786.852 1337.61
+ ( INFO  )  SCycleBaseExec     : Processing entry: 20999 (20999 / 118954 events processed so far, ~ 5.1 minutes left)
+-446.556 -690.547 -353.589 909.148
+ ( INFO  )  SCycleBaseExec     : Processing entry: 21999 (21999 / 118954 events processed so far, ~ 5.8 minutes left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 22999 (22999 / 118954 events processed so far, ~ 6.3 minutes left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 23999 (23999 / 118954 events processed so far, ~ 6 minutes left)
+92.9984 -422.675 1321.28 1396.24
+ ( INFO  )  SCycleBaseExec     : Processing entry: 24999 (24999 / 118954 events processed so far, ~ 6.3 minutes left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 25999 (25999 / 118954 events processed so far, ~ 6.1 minutes left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 26999 (26999 / 118954 events processed so far, ~ 6.4 minutes left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 27999 (27999 / 118954 events processed so far, ~ 6.1 minutes left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 28999 (28999 / 118954 events processed so far, ~ 6 minutes left)
+ ( INFO  )  SCycleBaseExec     : Opening /pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/crab_TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/190410_093407/0001/Ntuple_1790.root
+ ( INFO  )  SCycleBaseExec     : Processing entry: 758 (29999 / 118954 events processed so far, ~ 5.8 minutes left)
+186.346 -493.634 80.4352 558.662
+ ( INFO  )  SCycleBaseExec     : Processing entry: 1758 (30999 / 118954 events processed so far, ~ 5.6 minutes left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 2758 (31999 / 118954 events processed so far, ~ 5.4 minutes left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 3758 (32999 / 118954 events processed so far, ~ 5.2 minutes left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 4758 (33999 / 118954 events processed so far, ~ 5 minutes left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 5758 (34999 / 118954 events processed so far, ~ 4.8 minutes left)
+-210.653 -438.514 -508.193 728.374
+ ( INFO  )  SCycleBaseExec     : Processing entry: 6758 (35999 / 118954 events processed so far, ~ 4.6 minutes left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 7758 (36999 / 118954 events processed so far, ~ 4.5 minutes left)
+-329.79 279.96 854.341 959.449
+ ( INFO  )  SCycleBaseExec     : Processing entry: 8758 (37999 / 118954 events processed so far, ~ 4.3 minutes left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 9758 (38999 / 118954 events processed so far, ~ 4.2 minutes left)
+-134.78 -567.047 -39.3475 612.204
+ ( INFO  )  SCycleBaseExec     : Processing entry: 10758 (39999 / 118954 events processed so far, ~ 4 minutes left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 11758 (40999 / 118954 events processed so far, ~ 3.9 minutes left)
+518.18 -308.956 -461.114 771.054
+ ( INFO  )  SCycleBaseExec     : Processing entry: 12758 (41999 / 118954 events processed so far, ~ 3.7 minutes left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 13758 (42999 / 118954 events processed so far, ~ 3.6 minutes left)
+-255.278 322.073 -795.233 905.082
+ ( INFO  )  SCycleBaseExec     : Processing entry: 14758 (43999 / 118954 events processed so far, ~ 3.5 minutes left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 15758 (44999 / 118954 events processed so far, ~ 3.4 minutes left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 16758 (45999 / 118954 events processed so far, ~ 3.3 minutes left)
+34.6707 -570.598 -1215.39 1354.85
+ ( INFO  )  SCycleBaseExec     : Processing entry: 17758 (46999 / 118954 events processed so far, ~ 3.2 minutes left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 18758 (47999 / 118954 events processed so far, ~ 3.1 minutes left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 19758 (48999 / 118954 events processed so far, ~ 3 minutes left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 20758 (49999 / 118954 events processed so far, ~ 2.9 minutes left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 21758 (50999 / 118954 events processed so far, ~ 2.8 minutes left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 22758 (51999 / 118954 events processed so far, ~ 2.7 minutes left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 23758 (52999 / 118954 events processed so far, ~ 2.6 minutes left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 24758 (53999 / 118954 events processed so far, ~ 2.5 minutes left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 25758 (54999 / 118954 events processed so far, ~ 2.5 minutes left)
+281.982 423.81 592.384 802.272
+ ( INFO  )  SCycleBaseExec     : Processing entry: 26758 (55999 / 118954 events processed so far, ~ 2.4 minutes left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 27758 (56999 / 118954 events processed so far, ~ 2.3 minutes left)
+-135.177 426.632 795.86 926.528
+ ( INFO  )  SCycleBaseExec     : Processing entry: 28758 (57999 / 118954 events processed so far, ~ 2.2 minutes left)
+632.858 -854.746 -662.089 1266.9
+188.775 -357.713 55.8988 426.887
+ ( INFO  )  SCycleBaseExec     : Processing entry: 29758 (58999 / 118954 events processed so far, ~ 2.2 minutes left)
+ ( INFO  )  SCycleBaseExec     : Opening /pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/crab_TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/190410_093407/0001/Ntuple_1791.root
+ ( INFO  )  SCycleBaseExec     : Processing entry: 920 (59999 / 118954 events processed so far, ~ 2.1 minutes left)
+-474.719 -47.6311 13.8146 504.708
+295.052 311.941 205.726 486.153
+ ( INFO  )  SCycleBaseExec     : Processing entry: 1920 (60999 / 118954 events processed so far, ~ 2.1 minutes left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 2920 (61999 / 118954 events processed so far, ~ 2 minutes left)
+-195.854 437.645 512.842 722.634
+ ( INFO  )  SCycleBaseExec     : Processing entry: 3920 (62999 / 118954 events processed so far, ~ 1.9 minutes left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 4920 (63999 / 118954 events processed so far, ~ 1.9 minutes left)
+281.131 336.609 -458.678 658.692
+596.153 64.3352 -270.791 690.313
+-267.366 -484.549 -336.344 655.378
+ ( INFO  )  SCycleBaseExec     : Processing entry: 5920 (64999 / 118954 events processed so far, ~ 1.8 minutes left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 6920 (65999 / 118954 events processed so far, ~ 1.8 minutes left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 7920 (66999 / 118954 events processed so far, ~ 1.7 minutes left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 8920 (67999 / 118954 events processed so far, ~ 1.6 minutes left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 9920 (68999 / 118954 events processed so far, ~ 1.6 minutes left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 10920 (69999 / 118954 events processed so far, ~ 1.6 minutes left)
+-282.936 362.644 -134.498 497.684
+ ( INFO  )  SCycleBaseExec     : Processing entry: 11920 (70999 / 118954 events processed so far, ~ 1.5 minutes left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 12920 (71999 / 118954 events processed so far, ~ 1.5 minutes left)
+355.257 -276.191 178.296 519.987
+101.209 403.016 -458.257 626.863
+358.313 -255.605 1242.07 1325.68
+ ( INFO  )  SCycleBaseExec     : Processing entry: 13920 (72999 / 118954 events processed so far, ~ 1.4 minutes left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 14920 (73999 / 118954 events processed so far, ~ 1.4 minutes left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 15920 (74999 / 118954 events processed so far, ~ 1.3 minutes left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 16920 (75999 / 118954 events processed so far, ~ 1.3 minutes left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 17920 (76999 / 118954 events processed so far, ~ 1.2 minutes left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 18920 (77999 / 118954 events processed so far, ~ 1.2 minutes left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 19920 (78999 / 118954 events processed so far, ~ 1.1 minutes left)
+398.099 84.7584 -1898.7 1946.93
+-152.977 -522.603 -790.107 981.475
+ ( INFO  )  SCycleBaseExec     : Processing entry: 20920 (79999 / 118954 events processed so far, ~ 1.1 minutes left)
+448.331 93.8701 -308.659 568.804
+ ( INFO  )  SCycleBaseExec     : Processing entry: 21920 (80999 / 118954 events processed so far, ~ 1.1 minutes left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 22920 (81999 / 118954 events processed so far, ~ 1 minutes left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 23920 (82999 / 118954 events processed so far, ~ 59 seconds left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 24920 (83999 / 118954 events processed so far, ~ 57 seconds left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 25920 (84999 / 118954 events processed so far, ~ 55 seconds left)
+-505.931 32.3806 -81.7674 543.872
+ ( INFO  )  SCycleBaseExec     : Processing entry: 26920 (85999 / 118954 events processed so far, ~ 53 seconds left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 27920 (86999 / 118954 events processed so far, ~ 51 seconds left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 28920 (87999 / 118954 events processed so far, ~ 49 seconds left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 29920 (88999 / 118954 events processed so far, ~ 47 seconds left)
+ ( INFO  )  SCycleBaseExec     : Opening /pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/crab_TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/190410_093407/0001/Ntuple_1792.root
+ ( INFO  )  SCycleBaseExec     : Processing entry: 485 (89999 / 118954 events processed so far, ~ 45 seconds left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 1485 (90999 / 118954 events processed so far, ~ 43 seconds left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 2485 (91999 / 118954 events processed so far, ~ 41 seconds left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 3485 (92999 / 118954 events processed so far, ~ 39 seconds left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 4485 (93999 / 118954 events processed so far, ~ 38 seconds left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 5485 (94999 / 118954 events processed so far, ~ 36 seconds left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 6485 (95999 / 118954 events processed so far, ~ 34 seconds left)
+375.053 -365.294 8.67754 550.594
+ ( INFO  )  SCycleBaseExec     : Processing entry: 7485 (96999 / 118954 events processed so far, ~ 32 seconds left)
+431.272 241.992 -223.792 556.008
+ ( INFO  )  SCycleBaseExec     : Processing entry: 8485 (97999 / 118954 events processed so far, ~ 31 seconds left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 9485 (98999 / 118954 events processed so far, ~ 29 seconds left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 10485 (99999 / 118954 events processed so far, ~ 27 seconds left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 11485 (100999 / 118954 events processed so far, ~ 26 seconds left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 12485 (101999 / 118954 events processed so far, ~ 24 seconds left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 13485 (102999 / 118954 events processed so far, ~ 22 seconds left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 14485 (103999 / 118954 events processed so far, ~ 21 seconds left)
+232.767 556.089 324.664 696.557
+233.048 -354.538 1181.69 1263.9
+ ( INFO  )  SCycleBaseExec     : Processing entry: 15485 (104999 / 118954 events processed so far, ~ 19 seconds left)
+-184.772 -644.225 -284.495 758.796
+-29.8312 -654.925 418.876 796.473
+ ( INFO  )  SCycleBaseExec     : Processing entry: 16485 (105999 / 118954 events processed so far, ~ 18 seconds left)
+32.8825 -499.86 -789.583 944.729
+ ( INFO  )  SCycleBaseExec     : Processing entry: 17485 (106999 / 118954 events processed so far, ~ 16 seconds left)
+440.125 -207.197 -431.025 666.988
+ ( INFO  )  SCycleBaseExec     : Processing entry: 18485 (107999 / 118954 events processed so far, ~ 15 seconds left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 19485 (108999 / 118954 events processed so far, ~ 13 seconds left)
+-19.8526 -421.038 261.289 520.33
+-416.661 233.476 -1859.55 1926.68
+ ( INFO  )  SCycleBaseExec     : Processing entry: 20485 (109999 / 118954 events processed so far, ~ 12 seconds left)
+-158.243 -380.569 341.632 557.72
+ ( INFO  )  SCycleBaseExec     : Processing entry: 21485 (110999 / 118954 events processed so far, ~ 11 seconds left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 22485 (111999 / 118954 events processed so far, ~ 9.2 seconds left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 23485 (112999 / 118954 events processed so far, ~ 7.9 seconds left)
+697.923 439.801 1292.5 1544.19
+-497.745 46.9686 -1004.38 1126.95
+417.306 -204.838 -75.6751 502.055
+ ( INFO  )  SCycleBaseExec     : Processing entry: 24485 (113999 / 118954 events processed so far, ~ 6.5 seconds left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 25485 (114999 / 118954 events processed so far, ~ 5.2 seconds left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 26485 (115999 / 118954 events processed so far, ~ 3.8 seconds left)
+407.232 -221.124 695.904 855.842
+ ( INFO  )  SCycleBaseExec     : Processing entry: 27485 (116999 / 118954 events processed so far, ~ 2.5 seconds left)
+ ( INFO  )  SCycleBaseExec     : Processing entry: 28485 (117999 / 118954 events processed so far, ~ 1.2 seconds left)
+-364.902 -201.918 -165.178 461.32
+ ( INFO  )  SCycleBaseExec     : Terminated InputData "MC" (Version:TT_TuneCUETP8M2T4_2016v3) on worker node
+ ( INFO  )  SCycleController   : Writing output of "uhh2::AnalysisModuleRunner" to: /nfs/dust/cms/user/hugobg/ZPrimeSemi/Preselection_2016//workdir_Preselection/uhh2.AnalysisModuleRunner.MC.TT_TuneCUETP8M2T4_2016v3_446.root
+ ( INFO  )  SCycleController   : Overall cycle statistics:
+ ( INFO  )  SCycleController   :     118954 Events - Real time 156.36 s  -   761 Hz | CPU time  24.79 s  -  4798 Hz

@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE JobConfiguration PUBLIC "" "JobConfig.dtd" [
+
+
+<!ENTITY TargetLumi      "35921.908907">
+<!ENTITY PRESELdir       "/nfs/dust/cms/user/hugobg/Zprime_102X/presel_output/2016/">
+<!ENTITY b_Cacheable     "False">
+<!ENTITY NEVT            "100">
+<!ENTITY IS_PUPPI        "true">
+
+<!ENTITY DATA_SingleElectron_Run2016v3B   SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/DATA_SingleElectron2016_RunB.xml">
+<!ENTITY DATA_SingleMuon_Run2016v3B   SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/DATA_SingleMuon2016_RunB.xml">
+<!ENTITY DATA_SingleElectron_Run2016v3C   SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/DATA_SingleElectron2016_RunC.xml">
+<!ENTITY DATA_SingleMuon_Run2016v3C   SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/DATA_SingleMuon2016_RunC.xml">
+<!ENTITY DATA_SingleElectron_Run2016v3D   SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/DATA_SingleElectron2016_RunD.xml">
+<!ENTITY DATA_SingleMuon_Run2016v3D   SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/DATA_SingleMuon2016_RunD.xml">
+<!ENTITY DATA_SingleElectron_Run2016v3E   SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/DATA_SingleElectron2016_RunE.xml">
+<!ENTITY DATA_SingleMuon_Run2016v3E   SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/DATA_SingleMuon2016_RunE.xml">
+<!ENTITY DATA_SingleElectron_Run2016v3F   SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/DATA_SingleElectron2016_RunF.xml">
+<!ENTITY DATA_SingleMuon_Run2016v3F   SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/DATA_SingleMuon2016_RunF.xml">
+<!ENTITY DATA_SingleElectron_Run2016v3G   SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/DATA_SingleElectron2016_RunG.xml">
+<!ENTITY DATA_SingleMuon_Run2016v3G   SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/DATA_SingleMuon2016_RunG.xml">
+<!ENTITY DATA_SingleElectron_Run2016v3H   SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/DATA_SingleElectron2016_RunH.xml">
+<!ENTITY DATA_SingleMuon_Run2016v3H   SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/DATA_SingleMuon2016_RunH.xml">
+
+<!ENTITY TT_TuneCUETP8M2T4_2016v3  SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_TT_TuneCUETP8M2T4.xml">
+
+<!ENTITY WJetsToLNu_HT-70To100_2016v3  SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_WJetsToLNu_HT-70To100.xml">
+<!ENTITY WJetsToLNu_HT-100To200_2016v3  SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_WJetsToLNu_HT-100To200.xml">
+<!ENTITY WJetsToLNu_HT-200To400_2016v3  SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_WJetsToLNu_HT-200To400.xml">
+<!ENTITY WJetsToLNu_HT-400To600_2016v3  SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_WJetsToLNu_HT-400To600.xml">
+<!ENTITY WJetsToLNu_HT-600To800_2016v3  SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_WJetsToLNu_HT-600To800.xml">
+<!ENTITY WJetsToLNu_HT-800To1200_2016v3  SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_WJetsToLNu_HT-800To1200.xml">
+<!ENTITY WJetsToLNu_HT-1200To2500_2016v3  SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_WJetsToLNu_HT-1200To2500.xml">
+<!ENTITY WJetsToLNu_HT-2500ToInf_2016v3  SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_WJetsToLNu_HT-2500ToInf.xml">
+
+<!ENTITY ST_tW_antitop_5f_inclusiveDecays_2016v3  SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_ST_tW_antitop_inclusiveDecays_P8M1_PUMoriond17.xml">
+<!ENTITY ST_tW_top_5f_inclusiveDecays_2016v3  SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_ST_tW_top_inclusiveDecays_P8M1_PUMoriond17.xml">
+<!ENTITY ST_t-channel_antitop_2016v3  SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_ST_t-channel_antitop_inclusiveDecays.xml">
+<!ENTITY ST_t-channel_top_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_ST_t-channel_top_inclusiveDecays.xml">
+<!ENTITY ST_s-channel_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_ST_s-channel_inclusiveDecays.xml">
+
+<!ENTITY WW_2016v3  SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_WW.xml">
+<!ENTITY WZ_2016v3  SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_WZ.xml">
+<!ENTITY ZZ_2016v3  SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_ZZ.xml">
+
+<!ENTITY QCD_HT50to100_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_QCD_HT50to100.xml">
+<!ENTITY QCD_HT100to200_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_QCD_HT100to200.xml">
+<!ENTITY QCD_HT200to300_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_QCD_HT200to300.xml">
+<!ENTITY QCD_HT300to500_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_QCD_HT300to500.xml">
+<!ENTITY QCD_HT500to700_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_QCD_HT500to700.xml">
+<!ENTITY QCD_HT700to1000_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_QCD_HT700to1000.xml">
+<!ENTITY QCD_HT1000to1500_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_QCD_HT1000to1500.xml">
+<!ENTITY QCD_HT1500to2000_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_QCD_HT1500to2000.xml">
+<!ENTITY QCD_HT2000toInf_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_QCD_HT2000toInf.xml">
+
+<!-- NOt modified yet
+<!ENTITY ZprimeToTTJet_M500_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/ZprimeToTTbar/MC_ZprimeToTTJet_M500.xml">
+<!ENTITY ZprimeToTTJet_M750_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/ZprimeToTTbar/MC_ZprimeToTTJet_M750.xml">
+<!ENTITY ZprimeToTTJet_M1000_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/ZprimeToTTbar/MC_ZprimeToTTJet_M1000.xml">
+<!ENTITY ZprimeToTTJet_M1250_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/ZprimeToTTbar/MC_ZprimeToTTJet_M1250.xml">
+<!ENTITY ZprimeToTTJet_M1500_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/ZprimeToTTbar/MC_ZprimeToTTJet_M1500.xml">
+<!ENTITY ZprimeToTTJet_M2000_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/ZprimeToTTbar/MC_ZprimeToTTJet_M2000.xml">
+<!ENTITY ZprimeToTTJet_M2500_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/ZprimeToTTbar/MC_ZprimeToTTJet_M2500.xml">
+<!ENTITY ZprimeToTTJet_M3000_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/ZprimeToTTbar/MC_ZprimeToTTJet_M3000.xml">
+<!ENTITY ZprimeToTTJet_M3500_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/ZprimeToTTbar/MC_ZprimeToTTJet_M3500.xml">
+<!ENTITY ZprimeToTTJet_M4000_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/ZprimeToTTbar/MC_ZprimeToTTJet_M4000.xml">
+<!ENTITY ZprimeToTTJet_M5000_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/ZprimeToTTbar/MC_ZprimeToTTJet_M5000.xml">
+<!ENTITY ZprimeToTTJet_M6000_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/ZprimeToTTbar/MC_ZprimeToTTJet_M6000.xml">
+<!ENTITY ZprimeToTTJet_M7000_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/ZprimeToTTbar/MC_ZprimeToTTJet_M7000.xml">
+-->
+
+<!ENTITY ZprimeToTT_M1000_W100_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/ZprimeToTTbar/MC_ZprimeToTT_M-1000_W-100.xml">
+<!ENTITY ZprimeToTT_M1000_W10_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/ZprimeToTTbar/MC_ZprimeToTT_M-1000_W-10.xml">
+
+<!ENTITY ZprimeToTTJet_M1000_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/ZprimeToTTbar/MC_ZprimeToTTJet_M-1000.xml"> 
+
+
+]>
+
+<!--
+<ConfigParse NEventsBreak="0" LastBreak="0" FileSplit="100" AutoResubmit="100"/>
+<ConfigSGE RAM="2" DISK="2" Mail="condor.desy@gmail.com" Notification="as" Workdir="workdir_ttbar_2016"/>
+-->
+
+
+<JobConfiguration JobName="ZprimePreselectionJob" OutputLevel="INFO">
+	<Library Name="libSUHH2ZprimeSemiLeptonic"/>
+	<Package Name="libSUHH2ZprimeSemiLeptonic"/>
+	<Cycle Name="uhh2::AnalysisModuleRunner" OutputDirectory="/nfs/dust/cms/user/hugobg/Zprime_102X/presel_output/2016///workdir_ttbar_2016/" PostFix="_4" TargetLumi="35921.908907">
+		<InputData Cacheable="False" Lumi="14871.46169" Type="MC" Version="QCD_HT1000to1500_2016v3">
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_277.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_278.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_279.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_28.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_280.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_281.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_282.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_283.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_284.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_285.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_286.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_287.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_288.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_289.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_29.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_290.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_291.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_292.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_293.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_294.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_295.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_296.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_297.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_298.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_299.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_3.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_30.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_300.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_301.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_302.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_303.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_304.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_305.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_306.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_307.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_308.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_309.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_31.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_310.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_311.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_312.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_313.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_314.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_315.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_316.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_317.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_318.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_319.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_32.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_320.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_321.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_322.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_323.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_324.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_325.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_326.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_327.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_328.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_329.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_33.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_330.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_331.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_332.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_333.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_334.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_335.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_336.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_337.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_338.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_339.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_34.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_340.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_341.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_342.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_343.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_344.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_345.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_346.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_347.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_348.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_349.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_35.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_350.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_351.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_352.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_353.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_354.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_355.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_356.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_357.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_358.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_359.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_36.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_360.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_361.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_362.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_363.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_364.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_365.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/raggleto/RunII_102X_v1/2016v3/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_ext1_23_Apr_19/190423_092846/0000/Ntuple_366.root" Lumi="0.0"/>
+			<OutputTree Name="AnalysisTree"/>
+			<InputTree Name="AnalysisTree"/>
+		</InputData>
+		<UserConfig>
+			<Item Name="PrimaryVertexCollection" Value="offlineSlimmedPrimaryVertices"/>
+			<Item Name="GenParticleCollection" Value="GenParticles"/>
+			<Item Name="ElectronCollection" Value="slimmedElectronsUSER"/>
+			<Item Name="MuonCollection" Value="slimmedMuonsUSER"/>
+			<Item Name="JetCollection" Value="jetsAk4Puppi"/>
+			<Item Name="GenJetCollection" Value="slimmedGenJets"/>
+			<Item Name="TopJetCollection" Value="jetsAk8CHSSubstructure_SoftDropCHS"/>
+			<Item Name="GenTopJetCollection" Value="genjetsAk8SubstructureSoftDrop"/>
+			<Item Name="TopPuppiJetCollection" Value="jetsAk8PuppiSubstructure_SoftDropPuppi"/>
+			<Item Name="METName" Value="slimmedMETsPuppi"/>
+			<Item Name="genMETName" Value="slimmedMETs_GenMET"/>
+			<Item Name="lumi_file" Value="/nfs/dust/cms/user/hugobg/UHH2/CMSSW_10_2_10/src/UHH2/common/data/2016/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.root"/>
+			<Item Name="lumihists_lumi_per_bin" Value="500.0"/>
+			<Item Name="pileup_directory" Value="/nfs/dust/cms/user/karavdia/CMSSW_10_2_10/src/UHH2/common/data/2016/MyMCPileupHistogram.root"/>
+			<Item Name="pileup_directory_data" Value="/nfs/dust/cms/user/hugobg/UHH2/CMSSW_10_2_10/src/UHH2/common/data/2016/MyDataPileupHistogram.root"/>
+			<Item Name="pileup_directory_data_up" Value="/nfs/dust/cms/user/hugobg/UHH2/CMSSW_10_2_10/src/UHH2/common/data/2016/MyDataPileupHistogram_72383.root"/>
+			<Item Name="pileup_directory_data_down" Value="/nfs/dust/cms/user/hugobg/UHH2/CMSSW_10_2_10/src/UHH2/common/data/2016/MyDataPileupHistogram_66017.root"/>
+			<Item Name="is_puppi" Value="true"/>
+			<Item Name="use_sframe_weight" Value="false"/>
+			<Item Name="jersmear_direction" Value="nominal"/>
+			<Item Name="jecsmear_direction" Value="nominal"/>
+			<Item Name="AnalysisModule" Value="ZprimePreselectionModule_2016"/>
+		</UserConfig>
+	</Cycle>
+</JobConfiguration>

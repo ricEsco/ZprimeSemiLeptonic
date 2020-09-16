@@ -27,6 +27,8 @@ Hists(ctx, dirname) {
 
 void ZprimeSemiLeptonicGeneratorHists::init(){
 
+  Float_t bins_rec[] = {350,820,1160,1660,2350,3955};
+  Int_t  binnum_rec = sizeof(bins_rec)/sizeof(Float_t) - 1;
 
   M_Zprime                 = book<TH1F>("M_Zprime", "M_{Z'}}^{gen} [GeV]", 280, 0, 7000);
   M_Zprime_rebin           = book<TH1F>("M_Zprime_rebin", "M_{Z'}^{gen} [GeV]", 140, 0, 7000);
@@ -35,13 +37,14 @@ void ZprimeSemiLeptonicGeneratorHists::init(){
   M_ttbar                  = book<TH1F>("M_ttbar", "M_{t#bar{t}}^{gen} [GeV]", 280, 0, 7000);
   M_ttbar_rebin            = book<TH1F>("M_ttbar_rebin", "M_{t#bar{t}}^{gen} [GeV]", 140, 0, 7000);
   M_ttbar_rebin2           = book<TH1F>("M_ttbar_rebin2", "M_{t#bar{t}}^{gen} [GeV]", 70, 0, 7000);
-  M_ttbar_rebin3           = book<TH1F>("M_ttbar_rebin3", "M_{t#bar{t}}^{gen} [GeV]", 35, 0, 7000);
+  M_ttbar_rebin3           = book<TH1F>("M_ttbar_rebin3", "M_{t#bar{t}}^{gen} [GeV]",binnum_rec,bins_rec);
   M_top                    = book<TH1F>("M_top", "M_{t}^{gen} [GeV]", 30, 0, 300);
   M_antitop                = book<TH1F>("M_antitop", "M_{#bar{t}}^{gen} [GeV]", 30, 0, 300);
   Pt_ttbar                 = book<TH1F>("Pt_ttbar", "p_{T}^{t#bar{t}, gen} [GeV]", 100, 0, 1000);
   Pt_Zprime                = book<TH1F>("Pt_Zprime", "p_{T}^{Z', gen} [GeV]", 100, 0, 1000);
   Pt_top                   = book<TH1F>("Pt_top", "p_{T}^{t, gen} [GeV]", 300, 0, 3000);
   Pt_antitop               = book<TH1F>("Pt_antitop", "p_{T}^{#bar{t}, gen} [GeV]", 300, 0, 3000);
+  DeltaY		   = book<TH1F>("DeltaY", "#Delta y",8,-2.5,2.5);
 
 }
 
@@ -92,7 +95,7 @@ void ZprimeSemiLeptonicGeneratorHists::fill(const Event & event){
   Pt_ttbar->Fill((top.v4() + antitop.v4()).Pt());
   Pt_top->Fill(top.pt(), weight);
   Pt_antitop->Fill(antitop.pt(), weight);
-
+  DeltaY->Fill(TMath::Abs(top.v4().Rapidity()) - TMath::Abs(antitop.v4().Rapidity()),weight);
 
 }
 

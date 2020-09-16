@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE JobConfiguration PUBLIC "" "JobConfig.dtd" [
+
+
+<!ENTITY TargetLumi      "35921.908907">
+<!ENTITY PRESELdir       "/nfs/dust/cms/user/hugobg/Zprime_102X/presel_output/2016/">
+<!ENTITY b_Cacheable     "False">
+<!ENTITY NEVT            "100">
+<!ENTITY IS_PUPPI        "true">
+
+<!ENTITY DATA_SingleElectron_Run2016v3B   SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/DATA_SingleElectron2016_RunB.xml">
+<!ENTITY DATA_SingleMuon_Run2016v3B   SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/DATA_SingleMuon2016_RunB.xml">
+<!ENTITY DATA_SingleElectron_Run2016v3C   SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/DATA_SingleElectron2016_RunC.xml">
+<!ENTITY DATA_SingleMuon_Run2016v3C   SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/DATA_SingleMuon2016_RunC.xml">
+<!ENTITY DATA_SingleElectron_Run2016v3D   SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/DATA_SingleElectron2016_RunD.xml">
+<!ENTITY DATA_SingleMuon_Run2016v3D   SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/DATA_SingleMuon2016_RunD.xml">
+<!ENTITY DATA_SingleElectron_Run2016v3E   SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/DATA_SingleElectron2016_RunE.xml">
+<!ENTITY DATA_SingleMuon_Run2016v3E   SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/DATA_SingleMuon2016_RunE.xml">
+<!ENTITY DATA_SingleElectron_Run2016v3F   SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/DATA_SingleElectron2016_RunF.xml">
+<!ENTITY DATA_SingleMuon_Run2016v3F   SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/DATA_SingleMuon2016_RunF.xml">
+<!ENTITY DATA_SingleElectron_Run2016v3G   SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/DATA_SingleElectron2016_RunG.xml">
+<!ENTITY DATA_SingleMuon_Run2016v3G   SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/DATA_SingleMuon2016_RunG.xml">
+<!ENTITY DATA_SingleElectron_Run2016v3H   SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/DATA_SingleElectron2016_RunH.xml">
+<!ENTITY DATA_SingleMuon_Run2016v3H   SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/DATA_SingleMuon2016_RunH.xml">
+
+<!ENTITY TT_TuneCUETP8M2T4_2016v3  SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_TT_TuneCUETP8M2T4.xml">
+
+<!ENTITY WJetsToLNu_HT-70To100_2016v3  SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_WJetsToLNu_HT-70To100.xml">
+<!ENTITY WJetsToLNu_HT-100To200_2016v3  SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_WJetsToLNu_HT-100To200.xml">
+<!ENTITY WJetsToLNu_HT-200To400_2016v3  SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_WJetsToLNu_HT-200To400.xml">
+<!ENTITY WJetsToLNu_HT-400To600_2016v3  SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_WJetsToLNu_HT-400To600.xml">
+<!ENTITY WJetsToLNu_HT-600To800_2016v3  SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_WJetsToLNu_HT-600To800.xml">
+<!ENTITY WJetsToLNu_HT-800To1200_2016v3  SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_WJetsToLNu_HT-800To1200.xml">
+<!ENTITY WJetsToLNu_HT-1200To2500_2016v3  SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_WJetsToLNu_HT-1200To2500.xml">
+<!ENTITY WJetsToLNu_HT-2500ToInf_2016v3  SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_WJetsToLNu_HT-2500ToInf.xml">
+
+<!ENTITY ST_tW_antitop_5f_inclusiveDecays_2016v3  SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_ST_tW_antitop_inclusiveDecays_P8M1_PUMoriond17.xml">
+<!ENTITY ST_tW_top_5f_inclusiveDecays_2016v3  SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_ST_tW_top_inclusiveDecays_P8M1_PUMoriond17.xml">
+<!ENTITY ST_t-channel_antitop_2016v3  SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_ST_t-channel_antitop_inclusiveDecays.xml">
+<!ENTITY ST_t-channel_top_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_ST_t-channel_top_inclusiveDecays.xml">
+<!ENTITY ST_s-channel_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_ST_s-channel_inclusiveDecays.xml">
+
+<!ENTITY WW_2016v3  SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_WW.xml">
+<!ENTITY WZ_2016v3  SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_WZ.xml">
+<!ENTITY ZZ_2016v3  SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_ZZ.xml">
+
+<!ENTITY QCD_HT50to100_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_QCD_HT50to100.xml">
+<!ENTITY QCD_HT100to200_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_QCD_HT100to200.xml">
+<!ENTITY QCD_HT200to300_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_QCD_HT200to300.xml">
+<!ENTITY QCD_HT300to500_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_QCD_HT300to500.xml">
+<!ENTITY QCD_HT500to700_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_QCD_HT500to700.xml">
+<!ENTITY QCD_HT700to1000_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_QCD_HT700to1000.xml">
+<!ENTITY QCD_HT1000to1500_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_QCD_HT1000to1500.xml">
+<!ENTITY QCD_HT1500to2000_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_QCD_HT1500to2000.xml">
+<!ENTITY QCD_HT2000toInf_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/MC_QCD_HT2000toInf.xml">
+
+<!-- NOt modified yet
+<!ENTITY ZprimeToTTJet_M500_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/ZprimeToTTbar/MC_ZprimeToTTJet_M500.xml">
+<!ENTITY ZprimeToTTJet_M750_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/ZprimeToTTbar/MC_ZprimeToTTJet_M750.xml">
+<!ENTITY ZprimeToTTJet_M1000_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/ZprimeToTTbar/MC_ZprimeToTTJet_M1000.xml">
+<!ENTITY ZprimeToTTJet_M1250_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/ZprimeToTTbar/MC_ZprimeToTTJet_M1250.xml">
+<!ENTITY ZprimeToTTJet_M1500_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/ZprimeToTTbar/MC_ZprimeToTTJet_M1500.xml">
+<!ENTITY ZprimeToTTJet_M2000_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/ZprimeToTTbar/MC_ZprimeToTTJet_M2000.xml">
+<!ENTITY ZprimeToTTJet_M2500_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/ZprimeToTTbar/MC_ZprimeToTTJet_M2500.xml">
+<!ENTITY ZprimeToTTJet_M3000_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/ZprimeToTTbar/MC_ZprimeToTTJet_M3000.xml">
+<!ENTITY ZprimeToTTJet_M3500_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/ZprimeToTTbar/MC_ZprimeToTTJet_M3500.xml">
+<!ENTITY ZprimeToTTJet_M4000_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/ZprimeToTTbar/MC_ZprimeToTTJet_M4000.xml">
+<!ENTITY ZprimeToTTJet_M5000_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/ZprimeToTTbar/MC_ZprimeToTTJet_M5000.xml">
+<!ENTITY ZprimeToTTJet_M6000_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/ZprimeToTTbar/MC_ZprimeToTTJet_M6000.xml">
+<!ENTITY ZprimeToTTJet_M7000_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/ZprimeToTTbar/MC_ZprimeToTTJet_M7000.xml">
+-->
+
+<!ENTITY ZprimeToTT_M1000_W100_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/ZprimeToTTbar/MC_ZprimeToTT_M-1000_W-100.xml">
+<!ENTITY ZprimeToTT_M1000_W10_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/ZprimeToTTbar/MC_ZprimeToTT_M-1000_W-10.xml">
+
+<!ENTITY ZprimeToTTJet_M1000_2016v3 SYSTEM  "../../common/datasets/RunII_102X_v1/2016v3/ZprimeToTTbar/MC_ZprimeToTTJet_M-1000.xml"> 
+
+
+]>
+
+<!--
+<ConfigParse NEventsBreak="0" LastBreak="0" FileSplit="100" AutoResubmit="100"/>
+<ConfigSGE RAM="2" DISK="2" Mail="condor.desy@gmail.com" Notification="as" Workdir="workdir_ttbar_2016"/>
+-->
+
+
+<JobConfiguration JobName="ZprimePreselectionJob" OutputLevel="INFO">
+	<Library Name="libSUHH2ZprimeSemiLeptonic"/>
+	<Package Name="libSUHH2ZprimeSemiLeptonic"/>
+	<Cycle Name="uhh2::AnalysisModuleRunner" OutputDirectory="/nfs/dust/cms/user/hugobg/Zprime_102X/presel_output/2016///workdir_ttbar_2016/" PostFix="_25" TargetLumi="35921.908907">
+		<InputData Cacheable="False" Lumi="1.0" Type="DATA" Version="DATA_SingleElectron_Run2016v3C">
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2512.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2513.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2514.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2515.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2516.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2517.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2518.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2519.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2520.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2521.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2522.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2523.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2524.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2525.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2526.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2527.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2528.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2529.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2530.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2531.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2532.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2533.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2534.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2535.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2536.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2537.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2538.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2539.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2540.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2541.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2542.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2543.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2544.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2545.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2546.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2547.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2548.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2549.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2550.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2551.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2552.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2553.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2554.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2555.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2556.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2557.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2558.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2559.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2560.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2561.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2562.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2563.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2564.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2565.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2566.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2567.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2568.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2569.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2570.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2571.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2572.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2573.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2574.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2575.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2576.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2577.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2578.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2579.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2580.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2581.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2582.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2583.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2584.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2585.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2586.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2587.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2588.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2589.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2590.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2591.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2592.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2593.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2594.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2595.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2596.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2597.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2598.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2599.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2600.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2601.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2602.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2603.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2604.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2605.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2606.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2607.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2608.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2609.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2610.root" Lumi="0.0"/>
+			<In FileName="/pnfs/desy.de/cms/tier2/store/user/rkogler/RunII_102X_v1/2016v3/SingleElectron/crab_SingleElectron_2016C_v1/190510_200923/0002/Ntuple_2611.root" Lumi="0.0"/>
+			<OutputTree Name="AnalysisTree"/>
+			<InputTree Name="AnalysisTree"/>
+		</InputData>
+		<UserConfig>
+			<Item Name="PrimaryVertexCollection" Value="offlineSlimmedPrimaryVertices"/>
+			<Item Name="GenParticleCollection" Value="GenParticles"/>
+			<Item Name="ElectronCollection" Value="slimmedElectronsUSER"/>
+			<Item Name="MuonCollection" Value="slimmedMuonsUSER"/>
+			<Item Name="JetCollection" Value="jetsAk4Puppi"/>
+			<Item Name="GenJetCollection" Value="slimmedGenJets"/>
+			<Item Name="TopJetCollection" Value="jetsAk8CHSSubstructure_SoftDropCHS"/>
+			<Item Name="GenTopJetCollection" Value="genjetsAk8SubstructureSoftDrop"/>
+			<Item Name="TopPuppiJetCollection" Value="jetsAk8PuppiSubstructure_SoftDropPuppi"/>
+			<Item Name="METName" Value="slimmedMETsPuppi"/>
+			<Item Name="genMETName" Value="slimmedMETs_GenMET"/>
+			<Item Name="lumi_file" Value="/nfs/dust/cms/user/hugobg/UHH2/CMSSW_10_2_10/src/UHH2/common/data/2016/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.root"/>
+			<Item Name="lumihists_lumi_per_bin" Value="500.0"/>
+			<Item Name="pileup_directory" Value="/nfs/dust/cms/user/karavdia/CMSSW_10_2_10/src/UHH2/common/data/2016/MyMCPileupHistogram.root"/>
+			<Item Name="pileup_directory_data" Value="/nfs/dust/cms/user/hugobg/UHH2/CMSSW_10_2_10/src/UHH2/common/data/2016/MyDataPileupHistogram.root"/>
+			<Item Name="pileup_directory_data_up" Value="/nfs/dust/cms/user/hugobg/UHH2/CMSSW_10_2_10/src/UHH2/common/data/2016/MyDataPileupHistogram_72383.root"/>
+			<Item Name="pileup_directory_data_down" Value="/nfs/dust/cms/user/hugobg/UHH2/CMSSW_10_2_10/src/UHH2/common/data/2016/MyDataPileupHistogram_66017.root"/>
+			<Item Name="is_puppi" Value="true"/>
+			<Item Name="use_sframe_weight" Value="false"/>
+			<Item Name="jersmear_direction" Value="nominal"/>
+			<Item Name="jecsmear_direction" Value="nominal"/>
+			<Item Name="AnalysisModule" Value="ZprimePreselectionModule_2016"/>
+		</UserConfig>
+	</Cycle>
+</JobConfiguration>

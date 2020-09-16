@@ -18,7 +18,7 @@ protected:
   void init();
   bool is_mc;
 
-  TH1F   *M_Zprime, *M_Zprime_rebin, *M_Zprime_rebin2, *M_Zprime_rebin3, *M_ttbar, *M_ttbar_rebin, *M_ttbar_rebin2, *M_ttbar_rebin3, *M_top, *M_antitop, *Pt_Zprime, *Pt_ttbar, *Pt_top, *Pt_antitop;
+  TH1F   *M_Zprime, *M_Zprime_rebin, *M_Zprime_rebin2, *M_Zprime_rebin3, *M_ttbar, *M_ttbar_rebin, *M_ttbar_rebin2, *M_ttbar_rebin3, *M_top, *M_antitop, *Pt_Zprime, *Pt_ttbar, *Pt_top, *Pt_antitop, *DeltaY;
 
   virtual ~ZprimeSemiLeptonicGeneratorHists();
 };

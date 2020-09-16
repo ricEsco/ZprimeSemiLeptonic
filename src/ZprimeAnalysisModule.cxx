@@ -94,7 +94,7 @@ protected:
   Event::Handle<float> h_ak4jet1_pt; Event::Handle<float> h_ak4jet1_eta; 
   Event::Handle<float> h_ak8jet1_pt; Event::Handle<float> h_ak8jet1_eta; 
   Event::Handle<float> h_Mttbar; 
-
+  Event::Handle<float> h_DeltaY;
   uhh2::Event::Handle<ZprimeCandidate*> h_BestZprimeCandidateChi2;
 
   // Configuration
@@ -171,7 +171,7 @@ ZprimeAnalysisModule::ZprimeAnalysisModule(uhh2::Context& ctx){
 
   // Important selection values
   islooserselection = (ctx.get("is_looser_selection") == "true");
-  double muon_pt(55.);
+  double muon_pt(50.);
   double elec_pt(80.);
   double jet1_pt(150.);
   double jet2_pt(50.);
@@ -283,6 +283,7 @@ ZprimeAnalysisModule::ZprimeAnalysisModule(uhh2::Context& ctx){
   h_chi2 = ctx.declare_event_output<float> ("rec_chi2");
   h_MET = ctx.declare_event_output<float> ("met_pt");
   h_Mttbar = ctx.declare_event_output<float> ("Mttbar");
+  h_DeltaY = ctx.declare_event_output<float> ("DeltaY");
   h_lep1_pt = ctx.declare_event_output<float> ("lep1_pt");
   h_lep1_eta = ctx.declare_event_output<float> ("lep1_eta");
   h_ak4jet1_pt = ctx.declare_event_output<float> ("ak4jet1_pt");
@@ -332,6 +333,7 @@ bool ZprimeAnalysisModule::process(uhh2::Event& event){
   event.set(h_chi2,-100);
   event.set(h_MET,-100);
   event.set(h_Mttbar,-100);
+  event.set(h_DeltaY,-100);
   event.set(h_lep1_pt,-100);
   event.set(h_lep1_eta,-100);
   event.set(h_ak4jet1_pt,-100);
@@ -469,6 +471,16 @@ bool ZprimeAnalysisModule::process(uhh2::Event& event){
     //    float chi2 = BestZprimeCandidate->discriminator("chi2_total");
     event.set(h_chi2,BestZprimeCandidate->discriminator("chi2_total"));
     event.set(h_Mttbar,BestZprimeCandidate->Zprime_v4().M());
+    if (isMuon){
+        if(event.muons->at(0).charge() == 1){
+                event.set(h_DeltaY,TMath::Abs(BestZprimeCandidate->top_leptonic_v4().Rapidity()) - TMath::Abs(BestZprimeCandidate->top_hadronic_v4().Rapidity()));
+//                event.set(h_DeltaY,TMath::Abs(0.5*TMath::Log((BestZprimeCandidate->top_leptonic_v4().E() + BestZprimeCandidate->top_leptonic_v4().pt()*TMath::SinH(BestZprimeCandidate->top_leptonic_v4().eta()))/(BestZprimeCandidate->top_leptonic_v4().E() - BestZprimeCandidate->top_leptonic_v4().pt()*TMath::SinH(BestZprimeCandidate->top_leptonic_v4().eta())))) - TMath::Abs(0.5*TMath::Log((BestZprimeCandidate->top_hadronic_v4().E() + BestZprimeCandidate->top_hadronic_v4().pt()*TMath::SinH(BestZprimeCandidate->top_hadronic_v4().eta()))/BestZprimeCandidate->top_hadronic_v4().E() - BestZprimeCandidate->top_hadronic_v4().pt()*TMath::SinH(BestZprimeCandidate->top_hadronic_v4().eta()))));
+        }
+        if(event.muons->at(0).charge() == -1){
+       	       	event.set(h_DeltaY,TMath::Abs(BestZprimeCandidate->top_hadronic_v4().Rapidity()) - TMath::Abs(BestZprimeCandidate->top_leptonic_v4().Rapidity()));
+//                        event.set(h_DeltaY,-TMath::Abs(0.5*TMath::Log((BestZprimeCandidate->top_leptonic_v4().E() + BestZprimeCandidate->top_leptonic_v4().pt()*TMath::SinH(BestZprimeCandidate->top_leptonic_v4().eta()))/(BestZprimeCandidate->top_leptonic_v4().E() - BestZprimeCandidate->top_leptonic_v4().pt()*TMath::SinH(BestZprimeCandidate->top_leptonic_v4().eta())))) + TMath::Abs(0.5*TMath::Log((BestZprimeCandidate->top_hadronic_v4().E() + BestZprimeCandidate->top_hadronic_v4().pt()*TMath::SinH(BestZprimeCandidate->top_hadronic_v4().eta()))/BestZprimeCandidate->top_hadronic_v4().E() - BestZprimeCandidate->top_hadronic_v4().pt()*TMath::SinH(BestZprimeCandidate->top_hadronic_v4().eta()))));
+        }
+     }
   }
   if(debug) cout<<"Set ttbar reconstruction vars for monitoring"<<endl;
 

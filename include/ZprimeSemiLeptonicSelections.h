@@ -63,7 +63,21 @@ namespace uhh2 {
     GenParticle Wlep, Whad, blep, bhad, thad, tlep, lepton, neutrino, Whadd1,Whadd2;
   };
 
+  class TTbarSemiLepVisibleSelection: public uhh2::Selection{
+  public:
+    TTbarSemiLepVisibleSelection();
+    ~TTbarSemiLepVisibleSelection(){};
+    virtual bool passes(const uhh2::Event & event);
+  private:
+  };
 
+  class TTbarSemiLepFullPS: public uhh2::Selection{
+  public:
+    TTbarSemiLepFullPS();
+    ~TTbarSemiLepFullPS(){};
+    virtual bool passes(const uhh2::Event & event);
+  private:
+  };
 
   class Chi2Cut : public Selection{
   public:
@@ -288,6 +302,36 @@ namespace uhh2 {
   };
   ////
 
+  class HEM_topjetSelection: public Selection{
+  public:
+	explicit HEM_topjetSelection(uhh2::Context&);
+        virtual bool passes(const Event&) override;
+  private:
+  double eta_up = -1.3; 
+  double phi_up = -0.87;
+  double phi_down = -1.57;
+  };
+
+
+  class HEM_jetSelection: public Selection{
+  public:
+        explicit HEM_jetSelection(uhh2::Context&);
+        virtual bool passes(const Event&) override;
+  private:
+  double eta_up = -1.3;
+  double phi_up = -0.87;
+  double phi_down = -1.57;
+  };
+ 
+  class HEM_electronSelection: public Selection{
+  public:
+        explicit HEM_electronSelection(uhh2::Context&);
+        virtual bool passes(const Event&) override;
+  private:
+  double eta_up = -1.3;
+  double phi_up = -0.87;
+  double phi_down = -1.57;
+  };
 
 
   class HEMSelection : public Selection{
