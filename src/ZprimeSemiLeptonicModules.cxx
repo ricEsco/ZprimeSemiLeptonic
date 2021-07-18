@@ -622,15 +622,15 @@ ZprimeChi2Discriminator::ZprimeChi2Discriminator(uhh2::Context& ctx){
   //mtophad_ttag_ = 166.;
   //sigmatophad_ttag_ = 16.;
 
-  mtoplep_ = 173.;
-  sigmatoplep_ = 15.;
-  mtophad_ = 173.;
-  sigmatophad_ = 15.;
+  mtoplep_ = 169.;
+  sigmatoplep_ = 21.;
+  mtophad_ = 175.;
+  sigmatophad_ = 19.;
 
-  mtoplep_ttag_ = 173.;
-  sigmatoplep_ttag_ = 15.;
-  mtophad_ttag_ = 173.;
-  sigmatophad_ttag_ = 15.;
+  mtoplep_ttag_ = 169.;
+  sigmatoplep_ttag_ = 21.;
+  mtophad_ttag_ = 175.;
+  sigmatophad_ttag_ = 19.;
 
 }
 
