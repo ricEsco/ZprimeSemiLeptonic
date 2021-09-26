@@ -2,7 +2,7 @@
 <!DOCTYPE JobConfiguration PUBLIC "" "JobConfig.dtd" [
 
 <!ENTITY TargetLumi      "36773">
-<!ENTITY PRESELdir       "/nfs/dust/cms/group/zprime-uhh/Presel_2016/">
+<!ENTITY PRESELdir       "/nfs/dust/cms/group/zprime-uhh/Presel_2016_CHS_sys/">
 <!ENTITY b_Cacheable     "False">
 <!ENTITY NEVT            "-1">
 <!ENTITY IS_PUPPI        "true">
@@ -78,13 +78,13 @@
 
 	<Cycle Name="uhh2::AnalysisModuleRunner" OutputDirectory="&PRESELdir;/" PostFix="" TargetLumi="&TargetLumi;">
 
-
+<!--
           <InputData Lumi="289793.1569" NEventsMax="&NEVT;" Type="MC" Version="TTToSemiLeptonic_2016v3" Cacheable="&b_Cacheable;">
             &TTToSemiLeptonic_2016v3;
             <InputTree Name="AnalysisTree" />
             <OutputTree Name="AnalysisTree" />
           </InputData>
-<!--
+
           <InputData Lumi="177969.6171" NEventsMax="&NEVT;" Type="MC" Version="TTToHadronic_2016v3" Cacheable="&b_Cacheable;">
             &TTToHadronic_2016v3;
             <InputTree Name="AnalysisTree" />
@@ -222,8 +222,7 @@
             <InputTree Name="AnalysisTree" />
             <OutputTree Name="AnalysisTree" />
           </InputData>
-
-
+-->
           <InputData Lumi="69352.89646" NEventsMax="&NEVT;" Type="MC" Version="WW_2016v3" Cacheable="&b_Cacheable;">
             &WW_2016v3;
             <InputTree Name="AnalysisTree" />
@@ -241,7 +240,7 @@
             <InputTree Name="AnalysisTree" />
             <OutputTree Name="AnalysisTree" />
           </InputData>
-
+<!--
           <InputData Lumi="189386.1646" NEventsMax="&NEVT;" Type="MC" Version="ST_tW_antitop_5f_inclusiveDecays_2016v3" Cacheable="&b_Cacheable;">
             &ST_tW_antitop_5f_inclusiveDecays_2016v3;
             <InputTree Name="AnalysisTree" />
