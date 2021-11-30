@@ -2,10 +2,10 @@
 #where UHH2 code installed
 pathGL_code=/nfs/dust/cms/user/ricardo/CMSSW_10_2_17/src/UHH2/
 #where (NOT MERGED) trees after preselection stored
-path_data=/nfs/dust/cms/group/zprime-uhh/Presel_2018/workdir_Zprime_PreSelec_2018/ 
+path_data=/nfs/dust/cms/group/zprime-uhh/Presel_2018_CHS_sys/workdir_Zprime_PreSelec_2018_RelativeStatHF_down/ 
 
-mkdir $pathGL_code/ZprimeSemiLeptonic/data/Skimming_datasets_2018_common
-cd $pathGL_code/ZprimeSemiLeptonic/data/Skimming_datasets_2018_common
+mkdir $pathGL_code/ZprimeSemiLeptonic/data/Skimming_datasets_2018_common_RelativeStatHF_down
+cd $pathGL_code/ZprimeSemiLeptonic/data/Skimming_datasets_2018_common_RelativeStatHF_down
 
 
 # #MC

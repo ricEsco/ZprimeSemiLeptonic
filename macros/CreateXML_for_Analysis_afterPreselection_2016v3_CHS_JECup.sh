@@ -1,6 +1,6 @@
 #!/bin/bash
 #where UHH2 code installed
-pathGL_code=/nfs/dust/cms/user/hugobg/UHH2_v2/CMSSW_10_2_17/src/UHH2/
+pathGL_code=/nfs/dust/cms/user/ricardo/UHH2_v2/CMSSW_10_2_17/src/UHH2/
 #where (NOT MERGED) trees after preselection stored
 path_data=/nfs/dust/cms/group/zprime-uhh/Presel_2016/workdir_Zprime_PreSelec_2016v3_CHS_JECup/ 
 
