@@ -13,6 +13,7 @@ public:
   LorentzVector top_leptonic_v4() const{return m_top_leptonic_v4;}
   LorentzVector top_hadronic_v4() const{return m_top_hadronic_v4;}
   std::vector<Particle> jets_hadronic() const{return m_jets_hadronic;}
+  // std::vector<float> jets_hadronic_bscores() const{return m_jets_hadronic_bscores;}   /// Save hadronic jets bscores -Ricardo
   std::vector<Particle> jets_leptonic() const{return m_jets_leptonic;}
   const TopJet* tophad_topjet_ptr() const{return m_tophad_topjet_ptr;}
   Particle lepton() const{return m_lepton;}
@@ -32,6 +33,7 @@ public:
   void set_top_leptonic_v4(LorentzVector x) {m_top_leptonic_v4=x;}
   void set_top_hadronic_v4(LorentzVector x) {m_top_hadronic_v4=x;}
   void set_jets_hadronic(std::vector<Particle> x) {m_jets_hadronic=x;}
+  // void set_jets_hadronic_bscores(std::vector<float> x) {m_jets_hadronic_bscores=x;}   /// Save hadronic jets bscores -Ricardo
   void set_jets_leptonic(std::vector<Particle> x) {m_jets_leptonic=x;}
   void set_tophad_topjet_ptr(const TopJet* const tjp){m_tophad_topjet_ptr = tjp;}
   void set_lepton(Particle x) {m_lepton=x;}
@@ -49,6 +51,7 @@ private:
   LorentzVector m_top_leptonic_v4;
   LorentzVector m_top_hadronic_v4;
   std::vector<Particle> m_jets_hadronic;
+  // std::vector<float> m_jets_hadronic_bscores;   /// Save hadronic jets bscores -Ricardo
   std::vector<Particle> m_jets_leptonic;
   const TopJet* m_tophad_topjet_ptr;
   Particle m_lepton;

@@ -209,7 +209,7 @@ bool ZprimeCandidateBuilder::process(uhh2::Event& event){
         const TopJet* toptag_ptr = TopTagsPtr.at(j);
 
         if(mode_ == "hotvr"){
-          // Only HOTVR jet farest from lepton
+          // Only HOTVR jet farthest from lepton
           if(deltaR(lepton,toptag)<maxDeltaR) continue;
         }
 
