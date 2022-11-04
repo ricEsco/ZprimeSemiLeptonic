@@ -600,18 +600,18 @@ ZprimeAnalysisModule_AzimthCorr::ZprimeAnalysisModule_AzimthCorr(uhh2::Context& 
 bool ZprimeAnalysisModule_AzimthCorr::process(uhh2::Event& event){
 
   if(debug)   cout << "++++++++++++ NEW EVENT ++++++++++++++" << endl;
-  if(debug)   cout<<" run.event: "<<event.run<<". "<<event.event<<endl;
+  if(debug)   cout<<"event.run: "<<event.run<<", event.event: "<<event.event<<endl;
   // Initialize reco flags with false
   event.set(h_is_zprime_reconstructed_chi2, false);
   event.set(h_is_zprime_reconstructed_correctmatch, false);
-  if(debug)   cout<<" done with zprime" <<endl;
+  if(debug)   cout<<"done with zprime" <<endl;
   
   event.set(h_MET,0);
   event.set(h_weight,0);
   event.set(h_NPV,0);
   
   if(debug)    cout<<"Initializing Azimuthal Correlation set"<<endl;
-  event.set(h_pt_hadTop, 0);  // pt of hadronic top-jet
+  event.set(h_pt_hadTop, -10);  // pt of hadronic top-jet
   event.set(h_deltaR_min, -10);  // Smallest deltaR(hadronicjet, AK4CHSmatchedjet)
   event.set(h_jets_hadronic_bscore, -2);  // bScores of hadronic sub-jets before ANY of MY btagging requirements
   event.set(h_bscore_max, -10);  // Largest bScores of hadronic sub-jets
@@ -654,7 +654,7 @@ bool ZprimeAnalysisModule_AzimthCorr::process(uhh2::Event& event){
   //// Variables after requiring >=2 btagged jet in the event (.i.e. 2btag)
   event.set(h_jets_hadronic_bscore_after2btag, -2);  // bScores of hadronic sub-jets after 2btag
   event.set(h_bscore_max_2btag, -10);  // Largest bScores of hadronic sub-jets
-  event.set(h_pt_hadTop_2btag, 0); // pt of hadronic top-jet
+  event.set(h_pt_hadTop_2btag, -10); // pt of hadronic top-jet
   // Phi of lepton from leptonic leg
   event.set(h_phi_lep_2btag, -10);     
   event.set(h_phi_lep_high_2btag, -10);
@@ -1115,52 +1115,48 @@ bool ZprimeAnalysisModule_AzimthCorr::process(uhh2::Event& event){
   bool is_zprime_reconstructed_chi2 = event.get(h_is_zprime_reconstructed_chi2);
   if(is_zprime_reconstructed_chi2){
     ZprimeCandidate* BestZprimeCandidate = event.get(h_BestZprimeCandidateChi2); // Zprime candidate
+    if(debug) cout <<" jets_hadronic size: "<< BestZprimeCandidate->jets_hadronic().size() <<endl;
     vector <Jet> AK4CHSjets_matched = event.get(h_CHSjets_matched); // CHSjets that have been matched to an AK4Puppi jet
+    if(debug) cout <<" AK4CHSjets_matched size: "<< AK4CHSjets_matched.size() <<endl;
+
     vector <float> jets_hadronic_bscores; // bScores for hadronic jets
-    float pt_hadTop_thresh = 150; // Define cut-variable as pt of hadTop for low/high regions 
+    float pt_hadTop_thresh = 150; // Define cut-variable as pt of hadTop for low/high regions
+
     vector <float> hadronic_jets_bscores; // bScores for hadronic jets
     float btag_medWP = 0.2783; // threshold for medium Working Point of btagging
-    float pt_hadTop = BestZprimeCandidate->top_hadronic_v4().pt();  // Plot pt of hadronic-Top jet
-    event.set(h_pt_hadTop, pt_hadTop);
+
+    float pt_hadTop = BestZprimeCandidate->top_hadronic_v4().pt();  // Plot pt of hadronic Top jet
+    if(pt_hadTop != -10) event.set(h_pt_hadTop, pt_hadTop);
 
     // Loop over hadronic jets to generate elements of bscores vector from the matching CHS jets
     for(unsigned int i=0; i<BestZprimeCandidate->jets_hadronic().size(); i++){
       double deltaR_min = 99;
-      for(unsigned int j=0; j<AK4CHSjets_matched.size(); j++){ // CHS matched jets
+      for(unsigned int j=0; j<AK4CHSjets_matched.size(); j++){
         double deltaR_CHS = deltaR(BestZprimeCandidate->jets_hadronic().at(i), AK4CHSjets_matched.at(j));
         if(deltaR_CHS < deltaR_min) deltaR_min = deltaR_CHS;
-        event.set(h_deltaR_min, deltaR_min);}
+      }
+      event.set(h_deltaR_min, deltaR_min);
       // Loop over CHSjets again to add bScore of matching CHSjet to vector of bScores for hadronic jets
       for(unsigned int k=0; k<AK4CHSjets_matched.size(); k++){
         if(deltaR(BestZprimeCandidate->jets_hadronic().at(i), AK4CHSjets_matched.at(k)) == deltaR_min) 
         jets_hadronic_bscores.emplace_back(AK4CHSjets_matched.at(k).btag_DeepJet());}
     }// Hadronic jets have corresponding bscore in jets_hadronic_bscores (corresponding by index)
-    
+    if(debug) cout <<" jets_hadronic_bscores size: "<< jets_hadronic_bscores.size() <<endl;
+
     // Plot all the bscores of hadronic jets
     float jets_hadronic_bscore = -2;
     for(unsigned int m=0; m<jets_hadronic_bscores.size(); m++){
       jets_hadronic_bscore = jets_hadronic_bscores.at(m);
       event.set(h_jets_hadronic_bscore, jets_hadronic_bscore);
     }
-    
-    // Loop over hadronic jets to generate elements of bscores vector from the matching CHS jets
-    for(unsigned int i=0; i<BestZprimeCandidate->jets_hadronic().size(); i++){
-      double deltaR_min = 99;
-      for(unsigned int j=0; j<AK4CHSjets_matched.size(); j++){ // CHS matched jets
-        double deltaR_CHS = deltaR(BestZprimeCandidate->jets_hadronic().at(i), AK4CHSjets_matched.at(j));
-        if(deltaR_CHS < deltaR_min) deltaR_min = deltaR_CHS;}
-      // Loop over CHSjets again to add bScore of matching CHSjet to vector of bScores for hadronic jets
-      for(unsigned int k=0; k<AK4CHSjets_matched.size(); k++){
-        if(deltaR(BestZprimeCandidate->jets_hadronic().at(i), AK4CHSjets_matched.at(k)) == deltaR_min) 
-        hadronic_jets_bscores.emplace_back(AK4CHSjets_matched.at(k).btag_DeepJet());}
-    }// Hadronic jets have corresponding bscore in hadronic_jets_bscores (corresponding by index)
 
     float bscore_max = -2;
     // Loop over bscores to find largest bscore and plot
-    for(unsigned int i=0; i<hadronic_jets_bscores.size(); i++){
-      float bscore = hadronic_jets_bscores.at(i);
+    for(unsigned int i=0; i<jets_hadronic_bscores.size(); i++){
+      float bscore = jets_hadronic_bscores.at(i);
       if(bscore > bscore_max) bscore_max = bscore;
     }
+    if(debug) cout<<" bscore_max is: "<< bscore_max <<endl;
 
     // Cut on bscore_max <= 0.2783 to impose Medium WP on hadronic jets
     if(bscore_max >= btag_medWP){
@@ -1169,22 +1165,32 @@ bool ZprimeAnalysisModule_AzimthCorr::process(uhh2::Event& event){
       float phi_b = -10;
       // Loop over hadronic jets to find the one with the largest bscore
       for(unsigned int j=0; j<BestZprimeCandidate->jets_hadronic().size(); j++){
-        float bscore = hadronic_jets_bscores.at(j);
-        if(bscore == bscore_max){ 
+        float bscore = jets_hadronic_bscores.at(j);
+        if(bscore == bscore_max){
           phi_b = BestZprimeCandidate->jets_hadronic().at(j).phi();
           event.set(h_phi_b, phi_b);}
       }
+      if(debug) cout<<" phi_b is: "<< phi_b <<endl;
 
       // Define phi_lepTop as phi of lepton and plot (mixed charges)
       float phi_lep = BestZprimeCandidate->lepton().v4().phi();
       event.set(h_phi_lep, phi_lep);
+      if(debug) cout<<" phi_lep is: "<< phi_lep <<endl;
 
       // Define sphi as sum and difference of phi's and plot (mixed charges)
+      // Also apply mapping to both to keep original domain of [-pi, pi]
       float sphi = phi_lep + phi_b;
+      // Map back into original domain if necessary
+      if(sphi > 3.1415926) sphi = sphi - 2*3.1415926;
+      if(sphi < -3.1415926) sphi = sphi + 2*3.1415926;
       event.set(h_sphi, sphi);
-      //double dphi = phi_lep - phi_b;
-      double dphi = deltaPhi(phi_lep, phi_b);
+      if(debug) cout<<" sphi is: "<< sphi <<endl;
+      float dphi = phi_lep - phi_b;
+      // Map back into original domain if necessary
+      if(dphi > 3.1415926) dphi = dphi - 2*3.1415926;
+      if(dphi < -3.1415926) dphi = dphi + 2*3.1415926;
       event.set(h_dphi, dphi);
+      if(debug) cout<<" dphi is: "<< dphi <<endl;
 
       // Plot dphi and sphi for high-pt ranges
       if(pt_hadTop > pt_hadTop_thresh){
@@ -1207,12 +1213,17 @@ bool ZprimeAnalysisModule_AzimthCorr::process(uhh2::Event& event){
         event.set(h_phi_lepPlus, phi_lep);
         // sphi_plus  is defined as (lep + had) for positive leptons
         float sphi_plus = phi_lep + phi_b;
+        // Map back into original domain if necessary
+        if(sphi_plus > 3.1415926) sphi_plus = sphi_plus - 2*3.1415926;
+        if(sphi_plus < -3.1415926) sphi_plus = sphi_plus + 2*3.1415926;
         event.set(h_sphi_plus, sphi_plus);
         if(pt_hadTop > pt_hadTop_thresh){event.set(h_sphi_plus_high, sphi_plus);}
         if(pt_hadTop < pt_hadTop_thresh){event.set(h_sphi_plus_low, sphi_plus);}
         // dphi_plus is defined as (lep - had) for positive leptons
-        //double dphi_plus = phi_lep - phi_b;
-        double dphi_plus = deltaPhi(phi_lep, phi_b);
+        float dphi_plus = phi_lep - phi_b;
+        // Map back into original domain if necessary
+        if(dphi_plus > 3.1415926) dphi_plus = dphi_plus - 2*3.1415926;
+        if(dphi_plus < -3.1415926) dphi_plus = dphi_plus + 2*3.1415926;
         event.set(h_dphi_plus, dphi_plus);         
         if(pt_hadTop > pt_hadTop_thresh){event.set(h_dphi_plus_high, dphi_plus);}     
         if(pt_hadTop < pt_hadTop_thresh){event.set(h_dphi_plus_low, dphi_plus);}
@@ -1224,12 +1235,17 @@ bool ZprimeAnalysisModule_AzimthCorr::process(uhh2::Event& event){
         event.set(h_phi_lepMinus, phi_lep);
         // sphi_minus is defined as (had + lep) for negative leptons
         float sphi_minus = phi_b + phi_lep;
+        // Map back into original domain if necessary
+        if(sphi_minus > 3.1415926) sphi_minus = sphi_minus - 2*3.1415926;
+        if(sphi_minus < -3.1415926) sphi_minus = sphi_minus + 2*3.1415926;
         event.set(h_sphi_minus, sphi_minus);         
         if(pt_hadTop > pt_hadTop_thresh){event.set(h_sphi_minus_high, sphi_minus);}     
         if(pt_hadTop < pt_hadTop_thresh){event.set(h_sphi_minus_low, sphi_minus);}
         // dphi_minus is defined as (had - lep) for negative leptons
-        //double dphi_minus = phi_b - phi_lep;
-        double dphi_minus = deltaPhi(phi_b, phi_lep);
+        float dphi_minus = phi_b - phi_lep;
+        // Map back into original domain if necessary
+        if(dphi_minus > 3.1415926) dphi_minus = dphi_minus - 2*3.1415926;
+        if(dphi_minus < -3.1415926) dphi_minus = dphi_minus + 2*3.1415926;
         event.set(h_dphi_minus, dphi_minus);         
         if(pt_hadTop > pt_hadTop_thresh){event.set(h_dphi_minus_high, dphi_minus);}
         if(pt_hadTop < pt_hadTop_thresh){event.set(h_dphi_minus_low, dphi_minus);}
@@ -1238,15 +1254,18 @@ bool ZprimeAnalysisModule_AzimthCorr::process(uhh2::Event& event){
 
     // Ask for (btagged_jets >= 2) in event
     if(sel_2btag->passes(event)){
+      if(debug) cout<<" Inside the sel_2btag scope"<<endl;
       //float pt_hadTop_2btag = BestZprimeCandidate->top_hadronic_v4().pt();  // Plot pt of hadronic-Top jet
-      event.set(h_pt_hadTop_2btag, pt_hadTop);
-      //float pt_hadTop_thresh = 150;  // Define cut-variable as pt of hadTop
+      if(debug) cout <<" jets_hadronic size: "<< BestZprimeCandidate->jets_hadronic().size() <<endl;
+      if(debug) cout <<" AK4CHSjets_matched size: "<< AK4CHSjets_matched.size() <<endl;
+      if(pt_hadTop != -10) event.set(h_pt_hadTop_2btag, pt_hadTop);
+      float pt_hadTop_thresh = 150;  // Define cut-variable as pt of hadTop
       vector <float> hadronic_jets_bscores_2btag; // bScores for hadronic jets
       
       // Loop over hadronic jets to generate elements of bscores vector from the matching CHS jets
       for(unsigned int i=0; i<BestZprimeCandidate->jets_hadronic().size(); i++){
         double deltaR_min_2btag = 99;
-        for(unsigned int j=0; j<AK4CHSjets_matched.size(); j++){ // CHS matched jets
+        for(unsigned int j=0; j<AK4CHSjets_matched.size(); j++){
           double deltaR_CHS_2btag = deltaR(BestZprimeCandidate->jets_hadronic().at(i), AK4CHSjets_matched.at(j));
           if(deltaR_CHS_2btag < deltaR_min_2btag) deltaR_min_2btag = deltaR_CHS_2btag;}
         // Loop over CHSjets again to add bScore of matching CHSjet to vector of bScores for hadronic jets
@@ -1254,6 +1273,7 @@ bool ZprimeAnalysisModule_AzimthCorr::process(uhh2::Event& event){
           if(deltaR(BestZprimeCandidate->jets_hadronic().at(i), AK4CHSjets_matched.at(k)) == deltaR_min_2btag) 
           hadronic_jets_bscores_2btag.emplace_back(AK4CHSjets_matched.at(k).btag_DeepJet());}
       }// Hadronic jets have corresponding bscore in hadronic_jets_bscores_2btag (corresponding by index)
+      if(debug) cout <<" hadronic_jets_bscores_2btag size: "<< hadronic_jets_bscores_2btag.size() <<endl;
       
       // Plot all the bscores of hadronic jets
       float jets_hadronic_bscore_after2btag;
@@ -1268,9 +1288,10 @@ bool ZprimeAnalysisModule_AzimthCorr::process(uhh2::Event& event){
         float bscore_2btag = hadronic_jets_bscores_2btag.at(i);
         if(bscore_2btag > bscore_max_2btag) bscore_max_2btag = bscore_2btag;
       }
+      if(debug) cout<<" bscore_max_2btag is: "<< bscore_max_2btag <<endl;
 
       // Cut on bscore_max <= 0.2783 to impose Medium WP on hadronic jets
-      float btag_medWP = 0.2783;
+      float btag_medWP = 0.2783; // threshold for medium Working Point of btagging
       if(bscore_max_2btag >= btag_medWP){
         event.set(h_bscore_max_2btag, bscore_max_2btag); // Plot max bscores
 
@@ -1282,27 +1303,37 @@ bool ZprimeAnalysisModule_AzimthCorr::process(uhh2::Event& event){
             phi_b_2btag = BestZprimeCandidate->jets_hadronic().at(j).phi();
             event.set(h_phi_b_2btag, phi_b_2btag);}
         }
+        if(debug) cout<<" phi_b_2btag is: "<< phi_b_2btag <<endl;
 
         // Define phi_lepTop as phi of lepton and plot (mixed charges)
         float phi_lep_2btag = BestZprimeCandidate->lepton().v4().phi();
         event.set(h_phi_lep_2btag, phi_lep_2btag);
+        if(debug) cout<<" phi_lep_2btag is: "<< phi_lep_2btag <<endl;
 
         // Define sphi as sum and difference of phi's and plot (mixed charges)
+        // Also apply mapping to both to keep original domain of [-pi, pi]
         float sphi_2btag = phi_lep_2btag + phi_b_2btag;
+        // Map back into original domain if necessary
+        if(sphi_2btag > 3.1415926) sphi_2btag = sphi_2btag - 2*3.1415926;
+        if(sphi_2btag < -3.1415926) sphi_2btag = sphi_2btag + 2*3.1415926;
         event.set(h_sphi_2btag, sphi_2btag);
-        //double dphi_2btag = phi_lep_2btag - phi_b_2btag;
-        double dphi_2btag = deltaPhi(phi_lep_2btag, phi_b_2btag);
+        if(debug) cout<<" sphi_2btag is: "<< sphi_2btag <<endl;
+        float dphi_2btag = phi_lep_2btag - phi_b_2btag;
+        // Map back into original domain if necessary
+        if(dphi_2btag > 3.1415926) dphi_2btag = dphi_2btag - 2*3.1415926;
+        if(dphi_2btag < -3.1415926) dphi_2btag = dphi_2btag + 2*3.1415926;
         event.set(h_dphi_2btag, dphi_2btag);
+        if(debug) cout<<" dphi_2btag is: "<< dphi_2btag <<endl;
 
         // Plot dphi and sphi for high-pt ranges
-        if(pt_hadTop_2btag > pt_hadTop_thresh){
+        if(pt_hadTop > pt_hadTop_thresh){
           event.set(h_phi_lep_high_2btag, phi_lep_2btag);
           event.set(h_phi_b_high_2btag, phi_b_2btag);
           event.set(h_sphi_high_2btag, sphi_2btag);
           event.set(h_dphi_high_2btag, dphi_2btag);
         }
         // Plot dphi and sphi for low-pt ranges
-        if(pt_hadTop_2btag < pt_hadTop_thresh){
+        if(pt_hadTop < pt_hadTop_thresh){
           event.set(h_phi_lep_low_2btag, phi_lep_2btag);
           event.set(h_phi_b_low_2btag, phi_b_2btag);
           event.set(h_sphi_low_2btag, sphi_2btag);
@@ -1315,15 +1346,20 @@ bool ZprimeAnalysisModule_AzimthCorr::process(uhh2::Event& event){
           event.set(h_phi_lepPlus_2btag, phi_lep_2btag);
           // sphi_plus  is defined as (lep + had) for positive leptons
           float sphi_plus_2btag = phi_lep_2btag + phi_b_2btag;
+          // Map back into original domain if necessary
+          if(sphi_plus_2btag > 3.1415926) sphi_plus_2btag = sphi_plus_2btag - 2*3.1415926;
+          if(sphi_plus_2btag < -3.1415926) sphi_plus_2btag = sphi_plus_2btag + 2*3.1415926;
           event.set(h_sphi_plus_2btag, sphi_plus_2btag);
-          if(pt_hadTop_2btag > pt_hadTop_thresh){event.set(h_sphi_plus_high_2btag, sphi_plus_2btag);}
-          if(pt_hadTop_2btag < pt_hadTop_thresh){event.set(h_sphi_plus_low_2btag, sphi_plus_2btag);}
+          if(pt_hadTop > pt_hadTop_thresh){event.set(h_sphi_plus_high_2btag, sphi_plus_2btag);}
+          if(pt_hadTop < pt_hadTop_thresh){event.set(h_sphi_plus_low_2btag, sphi_plus_2btag);}
           // dphi_plus is defined as (lep - had) for positive leptons
-          //double dphi_plus_2btag = phi_lep_2btag - phi_b_2btag;
-          double dphi_plus_2btag = deltaPhi(phi_lep_2btag, phi_b_2btag);
+          float dphi_plus_2btag = phi_lep_2btag - phi_b_2btag;
+          // Map back into original domain if necessary
+          if(dphi_plus_2btag > 3.1415926) dphi_plus_2btag = dphi_plus_2btag - 2*3.1415926;
+          if(dphi_plus_2btag < -3.1415926) dphi_plus_2btag = dphi_plus_2btag + 2*3.1415926;
           event.set(h_dphi_plus_2btag, dphi_plus_2btag);         
-          if(pt_hadTop_2btag > pt_hadTop_thresh){event.set(h_dphi_plus_high_2btag, dphi_plus_2btag);}     
-          if(pt_hadTop_2btag < pt_hadTop_thresh){event.set(h_dphi_plus_low_2btag, dphi_plus_2btag);}
+          if(pt_hadTop > pt_hadTop_thresh){event.set(h_dphi_plus_high_2btag, dphi_plus_2btag);}     
+          if(pt_hadTop < pt_hadTop_thresh){event.set(h_dphi_plus_low_2btag, dphi_plus_2btag);}
         }
 
         //Negatively charged leptons
@@ -1332,15 +1368,20 @@ bool ZprimeAnalysisModule_AzimthCorr::process(uhh2::Event& event){
           event.set(h_phi_lepMinus_2btag, phi_lep_2btag);
           // sphi_minus is defined as (had + lep) for negative leptons
           float sphi_minus_2btag = phi_b_2btag + phi_lep_2btag;
+          // Map back into original domain if necessary
+          if(sphi_minus_2btag > 3.1415926) sphi_minus_2btag = sphi_minus_2btag - 2*3.1415926;
+          if(sphi_minus_2btag < -3.1415926) sphi_minus_2btag = sphi_minus_2btag + 2*3.1415926;
           event.set(h_sphi_minus_2btag, sphi_minus_2btag);         
-          if(pt_hadTop_2btag > pt_hadTop_thresh){event.set(h_sphi_minus_high_2btag, sphi_minus_2btag);}     
-          if(pt_hadTop_2btag < pt_hadTop_thresh){event.set(h_sphi_minus_low_2btag, sphi_minus_2btag);}
+          if(pt_hadTop > pt_hadTop_thresh){event.set(h_sphi_minus_high_2btag, sphi_minus_2btag);}     
+          if(pt_hadTop < pt_hadTop_thresh){event.set(h_sphi_minus_low_2btag, sphi_minus_2btag);}
           // dphi_minus is defined as (had - lep) for negative leptons
-          //double dphi_minus_2btag = phi_b_2btag - phi_lep_2btag;
-          double dphi_minus_2btag = deltaPhi(phi_b_2btag, phi_lep_2btag);
+          float dphi_minus_2btag = phi_b_2btag - phi_lep_2btag;
+          // Map back into original domain if necessary
+          if(dphi_minus_2btag > 3.1415926) dphi_minus_2btag = dphi_minus_2btag - 2*3.1415926;
+          if(dphi_minus_2btag < -3.1415926) dphi_minus_2btag = dphi_minus_2btag + 2*3.1415926;
           event.set(h_dphi_minus_2btag, dphi_minus_2btag);         
-          if(pt_hadTop_2btag > pt_hadTop_thresh){event.set(h_dphi_minus_high_2btag, dphi_minus_2btag);}
-          if(pt_hadTop_2btag < pt_hadTop_thresh){event.set(h_dphi_minus_low_2btag, dphi_minus_2btag);}
+          if(pt_hadTop > pt_hadTop_thresh){event.set(h_dphi_minus_high_2btag, dphi_minus_2btag);}
+          if(pt_hadTop < pt_hadTop_thresh){event.set(h_dphi_minus_low_2btag, dphi_minus_2btag);}
         }
       }
     }

@@ -36,7 +36,7 @@ if channel=="ele":
     _fileDir = "/nfs/dust/cms/group/zprime-uhh/Analysis_AzimthCorr_UL18/"
 else:
     _channelText = "#mu+jets"
-    plotDirectory = "analysisPlots_Corr/muon/2btags"
+    plotDirectory = "analysisPlots_Corr/muon/debugplots"
     _fileDir = "/nfs/dust/cms/group/zprime-uhh/Analysis_AzimthCorr_UL18/muon/workdir_AzimthCorr_UL18_muon"
 print "channel is ", channel
 print "The input root files will come from", _fileDir
@@ -45,16 +45,15 @@ print "The output will go into", plotDirectory, "\n"
 
 ### define the histograms dictionary with entry syntax: {"variable_handle" : ["Plot name", "vertical-axis name", number of bins, [x-min, x-max]]}
 if channel=="mu":
-    # histograms =  {"pt_hadTop"                       : ["Hadronic Top-Jet p_{T}",                "Events", 25, [   0, 500]],
-    #                "jets_hadronic_bscore"            : ["b-scores of hadronic jets",             "Events", 20, [   0,   1]],
-    #                "bscore_max"                      : ["max b-scores of hadronic jets",         "Events", 20, [   0,   1]],
-    #                "pt_hadTop_2btag"                 : ["Hadronic Top-Jet p_{T} (2btag)",        "Events", 25, [   0, 500]],
-    #                "jets_hadronic_bscore_after2btag" : ["b-scores of hadronic jets (2btag)",     "Events", 20, [   0,   1]],
-    #                "bscore_max_2btag"                : ["max b-scores of hadronic jets (2btag)", "Events", 20, [   0,   1]]
-    #                } # debug
+    histograms =  {"pt_hadTop"                       : ["Hadronic Top-Jet p_{T}",                "Events", 25, [   0, 500]],
+                   "dphi"                            : ["#Delta#phi",                            "Events", 12, [-6.5, 6.5]],
+                   "phi_lep"                         : ["#phi_{#mu}",                           "Events", 12, [-3.5, 3.5]],
+                   "phi_b"                           : ["#phi_{b}",                             "Events", 12, [-3.5, 3.5]],
+                   "sphi"                            : ["#Sigma#phi",                           "Events", 12, [-6.5, 6.5]],
+                   } # debug
 
     # histograms = {"pt_hadTop"                       : ["Hadronic Top-Jet p_{T}",               "Events", 25, [   0, 500]],
-    #               "deltaR_min"                      : ["#Delta R_{min}",                       "Events",  5, [   0,0.25]],
+    #               "deltaR_min"                      : ["#Delta R_{min}",                       "Events", 10, [   0,0.25]],
     #               "jets_hadronic_bscore"            : ["b-scores of hadronic jets",            "Events", 20, [   0,   1]],
     #               "bscore_max"                      : ["max b-scores of hadronic jets",        "Events", 20, [   0,   1]],
     #               "phi_lep"                         : ["#phi_{#mu}",                           "Events", 12, [-3.5, 3.5]],
@@ -86,37 +85,37 @@ if channel=="mu":
     #               "dphi_minus_low"                  : ["#Delta#phi_{low pt} (#mu^{-})",        "Events", 12, [-6.5, 6.5]]
     #             } # plots
 
-    histograms = {"jets_hadronic_bscore_after2btag" : ["b-scores of hadronic jets 2btag",      "Events", 20, [   0,   1]],
-                  "bscore_max_2btag"                : ["max b-scores of hadronic jets 2btag",  "Events", 20, [   0,   1]],
-                  "phi_lep_2btag"                   : ["#phi_{#mu} 2btag",                     "Events", 12, [-3.5, 3.5]],
-                  "phi_lep_high_2btag"              : ["#phi_{#mu}^{high pt} 2btag",           "Events", 12, [-3.5, 3.5]],
-                  "pt_hadTop_2btag"                 : ["Hadronic Top-Jet p_{T} (2btag)",       "Events", 25, [   0, 500]],
-                  "phi_lep_low_2btag"               : ["#phi_{#mu}_{low pt} 2btag",            "Events", 12, [-3.5, 3.5]],
-                  "phi_b_2btag"                     : ["#phi_{b} 2btag",                       "Events", 12, [-3.5, 3.5]],
-                  "phi_b_high_2btag"                : ["#phi_{b}^{high pt} 2btag",             "Events", 12, [-3.5, 3.5]],
-                  "phi_b_low_2btag"                 : ["#phi_{b}_{low pt} 2btag",              "Events", 12, [-3.5, 3.5]],
-                  "sphi_2btag"                      : ["#Sigma#phi 2btag",                     "Events", 12, [-6.5, 6.5]],
-                  "sphi_low_2btag"                  : ["#Sigma#phi_{low pt} 2btag",            "Events", 12, [-6.5, 6.5]],
-                  "sphi_high_2btag"                 : ["#Sigma#phi^{high pt} 2btag",           "Events", 12, [-6.5, 6.5]],
-                  "sphi_plus_2btag"                 : ["#Sigma#phi (#mu^{+}) 2btag",           "Events", 12, [-6.5, 6.5]],
-                  "dphi_2btag"                      : ["#Delta#phi 2btag",                     "Events", 12, [-6.5, 6.5]],
-                  "dphi_low_2btag"                  : ["#Delta#phi_{low pt} 2btag",            "Events", 12, [-6.5, 6.5]],
-                  "dphi_high_2btag"                 : ["#Delta#phi^{high pt} 2btag",           "Events", 12, [-6.5, 6.5]],
-                  "phi_lepPlus_2btag"               : ["#phi_{#mu^{+}} 2btag",                 "Events", 12, [-3.5, 3.5]],
-                  "phi_lepMinus_2btag"              : ["#phi_{#mu^{-}} 2btag",                 "Events", 12, [-3.5, 3.5]],
-                  "sphi_plus_2btag"                 : ["#Sigma#phi (#mu^{+}) 2btag",           "Events", 12, [-6.5, 6.5]],
-                  "sphi_plus_high_2btag"            : ["#Sigma#phi^{high pt} (#mu^{+}) 2btag", "Events", 12, [-6.5, 6.5]],
-                  "sphi_plus_low_2btag"             : ["#Sigma#phi_{low pt} (#mu^{+}) 2btag",  "Events", 12, [-6.5, 6.5]],
-                  "dphi_plus_2btag"                 : ["#Delta#phi (#mu^{+}) 2btag",           "Events", 12, [-6.5, 6.5]],
-                  "dphi_plus_high_2btag"            : ["#Delta#phi^{high pt} (#mu^{+}) 2btag", "Events", 12, [-6.5, 6.5]],
-                  "dphi_plus_low_2btag"             : ["#Delta#phi_{low pt} (#mu^{+}) 2btag",  "Events", 12, [-6.5, 6.5]],
-                  "sphi_minus_2btag"                : ["#Sigma#phi (#mu^{-}) 2btag",           "Events", 12, [-6.5, 6.5]],
-                  "sphi_minus_high_2btag"           : ["#Sigma#phi^{high pt} (#mu^{-}) 2btag", "Events", 12, [-6.5, 6.5]],
-                  "sphi_minus_low_2btag"            : ["#Sigma#phi_{low pt} (#mu^{-}) 2btag",  "Events", 12, [-6.5, 6.5]],
-                  "dphi_minus_2btag"                : ["#Delta#phi (#mu^{-}) 2btag",           "Events", 12, [-6.5, 6.5]],
-                  "dphi_minus_high_2btag"           : ["#Delta#phi^{high pt} (#mu^{-}) 2btag", "Events", 12, [-6.5, 6.5]],
-                  "dphi_minus_low_2btag"            : ["#Delta#phi_{low pt} (#mu^{-}) 2btag",  "Events", 12, [-6.5, 6.5]]
-                } # 2btag plots
+    # histograms = {"jets_hadronic_bscore_after2btag" : ["b-scores of hadronic jets 2btag",      "Events", 20, [   0,   1]],
+    #               "bscore_max_2btag"                : ["max b-scores of hadronic jets 2btag",  "Events", 20, [   0,   1]],
+    #               "phi_lep_2btag"                   : ["#phi_{#mu} 2btag",                     "Events", 12, [-3.5, 3.5]],
+    #               "phi_lep_high_2btag"              : ["#phi_{#mu}^{high pt} 2btag",           "Events", 12, [-3.5, 3.5]],
+    #               "pt_hadTop_2btag"                 : ["Hadronic Top-Jet p_{T} (2btag)",       "Events", 25, [   0, 500]],
+    #               "phi_lep_low_2btag"               : ["#phi_{#mu}_{low pt} 2btag",            "Events", 12, [-3.5, 3.5]],
+    #               "phi_b_2btag"                     : ["#phi_{b} 2btag",                       "Events", 12, [-3.5, 3.5]],
+    #               "phi_b_high_2btag"                : ["#phi_{b}^{high pt} 2btag",             "Events", 12, [-3.5, 3.5]],
+    #               "phi_b_low_2btag"                 : ["#phi_{b}_{low pt} 2btag",              "Events", 12, [-3.5, 3.5]],
+    #               "sphi_2btag"                      : ["#Sigma#phi 2btag",                     "Events", 12, [-6.5, 6.5]],
+    #               "sphi_low_2btag"                  : ["#Sigma#phi_{low pt} 2btag",            "Events", 12, [-6.5, 6.5]],
+    #               "sphi_high_2btag"                 : ["#Sigma#phi^{high pt} 2btag",           "Events", 12, [-6.5, 6.5]],
+    #               "sphi_plus_2btag"                 : ["#Sigma#phi (#mu^{+}) 2btag",           "Events", 12, [-6.5, 6.5]],
+    #               "dphi_2btag"                      : ["#Delta#phi 2btag",                     "Events", 12, [-6.5, 6.5]],
+    #               "dphi_low_2btag"                  : ["#Delta#phi_{low pt} 2btag",            "Events", 12, [-6.5, 6.5]],
+    #               "dphi_high_2btag"                 : ["#Delta#phi^{high pt} 2btag",           "Events", 12, [-6.5, 6.5]],
+    #               "phi_lepPlus_2btag"               : ["#phi_{#mu^{+}} 2btag",                 "Events", 12, [-3.5, 3.5]],
+    #               "phi_lepMinus_2btag"              : ["#phi_{#mu^{-}} 2btag",                 "Events", 12, [-3.5, 3.5]],
+    #               "sphi_plus_2btag"                 : ["#Sigma#phi (#mu^{+}) 2btag",           "Events", 12, [-6.5, 6.5]],
+    #               "sphi_plus_high_2btag"            : ["#Sigma#phi^{high pt} (#mu^{+}) 2btag", "Events", 12, [-6.5, 6.5]],
+    #               "sphi_plus_low_2btag"             : ["#Sigma#phi_{low pt} (#mu^{+}) 2btag",  "Events", 12, [-6.5, 6.5]],
+    #               "dphi_plus_2btag"                 : ["#Delta#phi (#mu^{+}) 2btag",           "Events", 12, [-6.5, 6.5]],
+    #               "dphi_plus_high_2btag"            : ["#Delta#phi^{high pt} (#mu^{+}) 2btag", "Events", 12, [-6.5, 6.5]],
+    #               "dphi_plus_low_2btag"             : ["#Delta#phi_{low pt} (#mu^{+}) 2btag",  "Events", 12, [-6.5, 6.5]],
+    #               "sphi_minus_2btag"                : ["#Sigma#phi (#mu^{-}) 2btag",           "Events", 12, [-6.5, 6.5]],
+    #               "sphi_minus_high_2btag"           : ["#Sigma#phi^{high pt} (#mu^{-}) 2btag", "Events", 12, [-6.5, 6.5]],
+    #               "sphi_minus_low_2btag"            : ["#Sigma#phi_{low pt} (#mu^{-}) 2btag",  "Events", 12, [-6.5, 6.5]],
+    #               "dphi_minus_2btag"                : ["#Delta#phi (#mu^{-}) 2btag",           "Events", 12, [-6.5, 6.5]],
+    #               "dphi_minus_high_2btag"           : ["#Delta#phi^{high pt} (#mu^{-}) 2btag", "Events", 12, [-6.5, 6.5]],
+    #               "dphi_minus_low_2btag"            : ["#Delta#phi_{low pt} (#mu^{-}) 2btag",  "Events", 12, [-6.5, 6.5]]
+    #             } # 2btag plots
 else:
 	histograms = {"phi_lepTop" : ["ele^{#phi} of Best #Chi^{2} Reconstructed Top", "Events", 12, [-3.5, 3.5]],
                   "phi_hadTop" : ["had^{#phi} of Best #Chi^{2} Reconstructed Top", "Events", 12, [-3.5, 3.5]]
@@ -124,16 +123,14 @@ else:
 
 # The stackList dictionary defines maps the list of samples to plot with their color
 # All three TTbar decay channels
-stackList = {"TTToSemiLeptonic":[kRed], "TTToSemiLeptonic_2":[kRed], "TTToSemiLeptonic_3":[kRed], "TTTo2L2Nu":[kRed+1], "TTTo2L2Nu_2":[kRed+1], "TTToHadronic":[kRed-4], "QCD":[kTeal],"WJets":[kGreen], "ST":[kYellow], "DY":[kBlue], "Diboson":[kOrange]}
+stackList = {"TTToSemiLeptonic":[kRed], "TTToSemiLeptonic_2":[kRed], "TTToSemiLeptonic_3":[kRed], "TTToSemiLeptonic_4":[kRed], "TTTo2L2Nu":[kRed+1], "TTTo2L2Nu_2":[kRed+1], "TTToHadronic":[kRed-4], "QCD":[kTeal],"WJets":[kGreen], "ST":[kYellow], "DY":[kBlue], "Diboson":[kOrange]}
 # Only SemiLeptonic decay channel
 # stackList = {"TTToSemiLeptonic_1":[kRed], "TTToSemiLeptonic_2":[kRed], "TTToSemiLeptonic_3":[kRed]}
 #print "stackList is ", stackList
 
 # define the sample_names array that has filenames of samples that will contribute to each plot
 # All three TTbar decay channels
-sample_names = ["TTToSemiLeptonic", "TTToSemiLeptonic_2", "TTToSemiLeptonic_3", "TTTo2L2Nu", "TTTo2L2Nu_2", "TTToHadronic", "DY", "QCD", "WJets", "ST", "Diboson"]
-# Only SemiLeptonic decay channel
-# sample_names = ["TTToSemiLeptonic_1", "TTToSemiLeptonic_2", "TTToSemiLeptonic_3"]
+sample_names = ["TTToSemiLeptonic", "TTToSemiLeptonic_2", "TTToSemiLeptonic_3", "TTToSemiLeptonic_4", "TTTo2L2Nu", "TTTo2L2Nu_2", "TTToHadronic", "DY", "QCD", "WJets", "ST", "Diboson"]
 
 ### end User input section i.e. modify each time new set of plots are being generated ------------------------------------------------------------------------------------
 
@@ -298,7 +295,7 @@ for histName in histograms:
             print "Filling with", sample
             stack[histName].Add(hist[histName][sample])
             continue
-        if (sample=="TTToSemiLeptonic_2" or sample=="TTToSemiLeptonic_3" or sample=="TTTo2L2Nu_2" or sample=="TTTo2L2Nu" or sample=="TTToHadronic"):
+        if (sample=="TTToSemiLeptonic_2" or sample=="TTToSemiLeptonic_3" or sample=="TTToSemiLeptonic_4" or sample=="TTTo2L2Nu_2" or sample=="TTTo2L2Nu" or sample=="TTToHadronic"):
             hist[histName][sample].SetYTitle(histograms[histName][1])      
             print "Filling with", sample
             stack[histName].Add(hist[histName][sample])
