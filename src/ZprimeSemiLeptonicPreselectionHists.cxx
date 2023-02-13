@@ -21,6 +21,14 @@ ZprimeSemiLeptonicPreselectionHists::ZprimeSemiLeptonicPreselectionHists(uhh2::C
 Hists(ctx, dirname) {
 
   is_mc = ctx.get("dataset_type") == "MC";
+  is_dy = ctx.get("dataset_version").find("DYJets") == 0;
+  is_wjets = ctx.get("dataset_version").find("WJets") == 0;
+  is_qcd_HTbinned = ctx.get("dataset_version").find("QCD_HT") == 0;
+  is_alps = ctx.get("dataset_version").find("ALP") == 0;
+  is_azh = ctx.get("dataset_version").find("AZH") == 0;
+  is_htott_scalar = ctx.get("dataset_version").find("HscalarToTTTo") == 0;
+  is_htott_pseudo = ctx.get("dataset_version").find("HpseudoToTTTo") == 0;
+  is_zprimetott = ctx.get("dataset_version").find("ZPrimeToTT_") == 0;
   init();
 }
 
@@ -237,26 +245,30 @@ void ZprimeSemiLeptonicPreselectionHists::init(){
   S33 = book<TH1F>("S33", "S_{33}", 50, 0, 1);
 
   sum_event_weights = book<TH1F>("sum_event_weights", "counting experiment", 1, 0.5, 1.5);
+  sum_event_weights_mcscale_upup = book<TH1F>("sum_event_weights_mcscale_upup", "counting experiment", 1, 0.5, 1.5);
+  sum_event_weights_mcscale_upnone = book<TH1F>("sum_event_weights_mcscale_upnone", "counting experiment", 1, 0.5, 1.5);
+  sum_event_weights_mcscale_noneup = book<TH1F>("sum_event_weights_mcscale_noneup", "counting experiment", 1, 0.5, 1.5);
+  sum_event_weights_mcscale_nonedown = book<TH1F>("sum_event_weights_mcscale_nonedown", "counting experiment", 1, 0.5, 1.5);
+  sum_event_weights_mcscale_downnone = book<TH1F>("sum_event_weights_mcscale_downnone", "counting experiment", 1, 0.5, 1.5);
+  sum_event_weights_mcscale_downdown = book<TH1F>("sum_event_weights_mcscale_downdown", "counting experiment", 1, 0.5, 1.5);
+  sum_event_weights_isr_up = book<TH1F>("sum_event_weights_isr_up", "counting experiment", 1, 0.5, 1.5);
+  sum_event_weights_isr_down = book<TH1F>("sum_event_weights_isr_down", "counting experiment", 1, 0.5, 1.5);
+  sum_event_weights_fsr_up = book<TH1F>("sum_event_weights_fsr_up", "counting experiment", 1, 0.5, 1.5);
+  sum_event_weights_fsr_down = book<TH1F>("sum_event_weights_fsr_down", "counting experiment", 1, 0.5, 1.5);
 
   // calculate sum of event weights with PDF replicas
   for(int i=0; i<100; i++){
     std::stringstream ss_name;
     ss_name << "sum_event_weights_PDF_" << i+1;
-
     stringstream ss_title;
     ss_title << "counting experiment for PDF No. "  << i+1 << " out of 100" ;
-
     std::string s_name = ss_name.str();
     std::string s_title = ss_title.str();
     const char* char_name = s_name.c_str();
     const char* char_title = s_title.c_str();
-
     hist_names[i] = s_name;
-
     book<TH1F>(char_name, char_title,  1, 0.5, 1.5);
-
   }
-
 }
 
 
@@ -663,20 +675,43 @@ void ZprimeSemiLeptonicPreselectionHists::fill(const Event & event){
   S23->Fill(s23, weight);
   S33->Fill(s33, weight);
 
-
   sum_event_weights->Fill(1., weight);
-
-  if(event.genInfo->systweights().size()){
-    float orig_weight = event.genInfo->originalXWGTUP();
+  if(event.genInfo->systweights().size() > 0){ // for some samples (e.g. Diboson, RSGluon) these weights don't exist
+    if(is_mc){ // mcscale
+      if(is_dy || is_wjets || is_qcd_HTbinned || is_alps || is_azh || is_htott_scalar || is_htott_pseudo || is_zprimetott){
+        sum_event_weights_mcscale_upup->Fill(1., weight * event.genInfo->systweights().at(20) / event.genInfo->originalXWGTUP());
+        sum_event_weights_mcscale_upnone->Fill(1., weight * event.genInfo->systweights().at(5) / event.genInfo->originalXWGTUP());
+        sum_event_weights_mcscale_noneup->Fill(1., weight * event.genInfo->systweights().at(15) / event.genInfo->originalXWGTUP());
+        sum_event_weights_mcscale_nonedown->Fill(1., weight * event.genInfo->systweights().at(30) / event.genInfo->originalXWGTUP());
+        sum_event_weights_mcscale_downnone->Fill(1., weight * event.genInfo->systweights().at(10) / event.genInfo->originalXWGTUP());
+        sum_event_weights_mcscale_downdown->Fill(1., weight * event.genInfo->systweights().at(40) / event.genInfo->originalXWGTUP());
+      }
+      else{
+        sum_event_weights_mcscale_upup->Fill(1., weight * event.genInfo->systweights().at(4) / event.genInfo->originalXWGTUP());
+        sum_event_weights_mcscale_upnone->Fill(1., weight * event.genInfo->systweights().at(1) / event.genInfo->originalXWGTUP());
+        sum_event_weights_mcscale_noneup->Fill(1., weight * event.genInfo->systweights().at(3) / event.genInfo->originalXWGTUP());
+        sum_event_weights_mcscale_nonedown->Fill(1., weight * event.genInfo->systweights().at(6) / event.genInfo->originalXWGTUP());
+        sum_event_weights_mcscale_downnone->Fill(1., weight * event.genInfo->systweights().at(2) / event.genInfo->originalXWGTUP());
+        sum_event_weights_mcscale_downdown->Fill(1., weight * event.genInfo->systweights().at(8) / event.genInfo->originalXWGTUP());
+      }
+    }
+    // isr, fsr
+    sum_event_weights_isr_up->Fill(1., weight * event.genInfo->weights().at(27) / event.genInfo->weights().at(0));
+    sum_event_weights_isr_down->Fill(1., weight * event.genInfo->weights().at(26) / event.genInfo->weights().at(0));
+    sum_event_weights_fsr_up->Fill(1., weight * event.genInfo->weights().at(5) / event.genInfo->weights().at(0));
+    sum_event_weights_fsr_down->Fill(1., weight * event.genInfo->weights().at(4) / event.genInfo->weights().at(0));
+    // pdf
     int MY_FIRST_INDEX = 9;
+    if(is_dy || is_wjets || is_qcd_HTbinned || is_alps || is_azh || is_htott_scalar || is_htott_pseudo || is_zprimetott) MY_FIRST_INDEX = 47;
+    if(event.genInfo->systweights().size() > (unsigned int) 100 + MY_FIRST_INDEX){
+      float orig_weight = event.genInfo->originalXWGTUP();
       for(int i=0; i<100; i++){
         double pdf_weight = event.genInfo->systweights().at(i+MY_FIRST_INDEX);
         const char* name = hist_names[i].c_str();
         hist(name)->Fill(1.,weight * pdf_weight / orig_weight);
-     }
+      }
+    }
   }
-
-
 } //Method
 
 
