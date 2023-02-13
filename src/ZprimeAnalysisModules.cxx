@@ -429,15 +429,7 @@ ZprimeAnalysisModule::ZprimeAnalysisModule(uhh2::Context& ctx){
   h_CHSMatchHists_afterBTag.reset(new ZprimeSemiLeptonicCHSMatchHists(ctx, "CHSMatch_afterBTag"));
 
   // Book histograms
-<<<<<<< HEAD:src/ZprimeAnalysisModules.cxx
-//<<<<<<< HEAD:src/ZprimeAnalysisModules.cxx
-//  vector<string> histogram_tags = {"Weights_Init", "Weights_PU", "Weights_Lumi", "Weights_TopPt", "Weights_MCScale", "Weights_Prefiring", "Weights_TopTag_SF", "Corrections", "Muon1_LowPt", "Muon1_HighPt", "Muon1_Tot", "Ele1_LowPt", "Ele1_HighPt", "Ele1_Tot", "IdMuon_SF", "IdEle_SF", "IsoMuon_SF", "RecoEle_SF", "MuonReco_SF", "TriggerMuon", "TriggerEle", "TriggerMuon_SF", "TwoDCut_Muon", "TwoDCut_Ele", "Jet1", "Jet2", "MET", "HTlep", "Btags1", "Btags1_SF", "NNInputsBeforeReweight", "MatchableBeforeChi2Cut", "NotMatchableBeforeChi2Cut", "CorrectMatchBeforeChi2Cut", "NotCorrectMatchBeforeChi2Cut", "Chi2", "Matchable", "NotMatchable", "CorrectMatch", "NotCorrectMatch", "TopTagReconstruction", "NotTopTagReconstruction"};
-//=======
-  vector<string> histogram_tags = {"Weights_Init", "Weights_HEM", "Weights_PU", "Weights_Lumi", "Weights_TopPt", "Weights_MCScale", "Weights_Prefiring", "Weights_TopTag_SF", "Corrections", "Muon1_LowPt", "Muon1_HighPt", "Muon1_Tot", "Ele1_LowPt", "Ele1_HighPt", "Ele1_Tot", "MuEle1_LowPt", "MuEle1_HighPt", "MuEle1_Tot", "IdMuon_SF", "IdEle_SF", "IsoMuon_SF", "RecoEle_SF", "MuonReco_SF", "TriggerMuon", "TriggerEle", "TriggerMuon_SF", "TwoDCut_Muon", "TwoDCut_Ele", "Jet1", "Jet2", "MET", "HTlep", "BeforeBtagSF", "AfterBtagSF", "AfterCustomBtagSF", "Btags1", "NNInputsBeforeReweight", "MatchableBeforeChi2Cut", "NotMatchableBeforeChi2Cut", "CorrectMatchBeforeChi2Cut", "NotCorrectMatchBeforeChi2Cut", "Matchable", "NotMatchable", "CorrectMatch", "NotCorrectMatch"};
-//>>>>>>> 749929fc6cd2235391f337616de16af792973105:src/ZprimeAnalysisModule.cxx
-=======
   vector<string> histogram_tags = {"Weights_Init", "Weights_HEM", "Weights_PU", "Weights_Lumi", "Weights_TopPt", "Weights_MCScale", "Weights_Prefiring", "Weights_TopTag_SF", "Weights_PS", "Muon1_LowPt", "Muon1_HighPt", "Muon1_Tot", "Ele1_LowPt", "Ele1_HighPt", "Ele1_Tot", "1Mu1Ele_LowPt", "1Mu1Ele_HighPt", "1Mu1Ele_Tot", "IdMuon_SF", "IdEle_SF", "IsoMuon_SF", "RecoEle_SF", "MuonReco_SF", "TriggerMuon", "TriggerEle", "TriggerMuon_SF", "TwoDCut_Muon", "TwoDCut_Ele", "Jet1", "Jet2", "MET", "HTlep", "BeforeBtagSF", "AfterBtagSF", "AfterCustomBtagSF", "Btags1", "NLOCorrections", "TriggerEle_SF", "TTbarCandidate", "CorrectMatchDiscriminator", "Chi2Discriminator", "NNInputsBeforeReweight"};
->>>>>>> ce05ffade1ba2d1e063dcfe367aa5bd59e657434:src/ZprimeAnalysisModule.cxx
   book_histograms(ctx, histogram_tags);
 
   lumihists_Weights_Init.reset(new LuminosityHists(ctx, "Lumi_Weights_Init"));
@@ -990,72 +982,9 @@ bool ZprimeAnalysisModule::process(uhh2::Event& event){
   Variables_module->process(event);
   fill_histograms(event, "NNInputsBeforeReweight");
 
-<<<<<<< HEAD:src/ZprimeAnalysisModules.cxx
-  //  if(TTbarMatchable_selection->passes(event)) fill_histograms(event, "MatchableBeforeChi2Cut");
-  //  else fill_histograms(event, "NotMatchableBeforeChi2Cut");
-  //  if(debug) cout<<"TTbarMatchable_selection is ok"<<endl;
-  //
-  //  if(Chi2CandidateMatched_selection->passes(event)) fill_histograms(event, "CorrectMatchBeforeChi2Cut");
-  //  else fill_histograms(event, "NotCorrectMatchBeforeChi2Cut");
-  //  if(debug) cout<<"Chi2CandidateMatched_selection is ok"<<endl;
-  //
-  //  if(!Chi2_selection->passes(event)) return false;
-  //  fill_histograms(event, "Chi2");
-  //  lumihists_Chi2->fill(event);
-  //
-  //  if(debug) cout<<"Chi2_selection is ok"<<endl;
-  //
-  //
-  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  //////// Extra checks
-  //
-  //
-  //  if(TTbarMatchable_selection->passes(event)) fill_histograms(event, "Matchable");
-  //  else fill_histograms(event, "NotMatchable");
-  //  if(debug) cout<<"TTbarMatchable_selection is ok"<<endl;
-  //
-  //  if(Chi2CandidateMatched_selection->passes(event)) fill_histograms(event, "CorrectMatch");
-  //  else fill_histograms(event, "NotCorrectMatch");
-  //  if(debug) cout<<"Chi2CandidateMatched_selection is ok"<<endl;
-  //
-  //  if(ZprimeTopTag_selection->passes(event)) fill_histograms(event, "TopTagReconstruction");
-  //  else fill_histograms(event, "NotTopTagReconstruction");
-  //  if(debug) cout<<"ZprimeTopTag_selection is ok"<<endl;
-  //
-  //  //Fill some vars for monitoring and comparison
-  //  bool is_zprime_reconstructed_chi2 = event.get(h_is_zprime_reconstructed_chi2);
-  //  if(is_zprime_reconstructed_chi2){
-  //    ZprimeCandidate* BestZprimeCandidate = event.get(h_BestZprimeCandidateChi2);
-  //    event.set(h_chi2,BestZprimeCandidate->discriminator("chi2_total"));
-  //    event.set(h_Mttbar,BestZprimeCandidate->Zprime_v4().M());
-  //  }
-  //  if(debug) cout<<"Set ttbar reconstruction vars for monitoring"<<endl;
-  //
-  //  event.set(h_weight,event.weight);
-  //  event.set(h_MET,event.met->pt());
-  //  if(isMuon){
-  //    event.set(h_lep1_pt,event.muons->at(0).pt());
-  //    event.set(h_lep1_eta,event.muons->at(0).eta());
-  //  }
-  //  if(isElectron){
-  //    event.set(h_lep1_pt,event.electrons->at(0).pt());
-  //    event.set(h_lep1_eta,event.electrons->at(0).eta());
-  //  }
-  //  if(event.jets->size()>0){
-  //    event.set(h_ak4jet1_pt,event.jets->at(0).pt());
-  //    event.set(h_ak4jet1_eta,event.jets->at(0).eta());
-  //  }
-  //  if(event.topjets->size()>0){
-  //    event.set(h_ak8jet1_pt,event.topjets->at(0).pt());
-  //    event.set(h_ak8jet1_eta,event.topjets->at(0).eta());
-  //  }
-  //  event.set(h_NPV,event.pvs->size());
-  //  if(debug) cout<<"Set some vars for monitoring"<<endl;
-=======
   // histograms for systematics
   SystematicsModule->process(event);
 
->>>>>>> ce05ffade1ba2d1e063dcfe367aa5bd59e657434:src/ZprimeAnalysisModule.cxx
   return true;
 }
 
