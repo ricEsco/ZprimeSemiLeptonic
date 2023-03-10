@@ -111,10 +111,8 @@ bool ZprimeCandidateBuilder::process(uhh2::Event& event){
   unsigned int neutrinoidx = 0;
 
   // Build all necessary loops
-  // vector<TopJet> TopTags = event.get(h_AK8TopTags);
-  // vector<const TopJet*> TopTagsPtr = event.get(h_AK8TopTagsPtr);
-  vector<TopJet> TopTags = event.get(h_DeepAK8TopTags);  //-Ricardo
-  vector<const TopJet*> TopTagsPtr = event.get(h_DeepAK8TopTagsPtr);  //-Ricardo
+  vector<TopJet> TopTags = event.get(h_AK8TopTags);
+  vector<const TopJet*> TopTagsPtr = event.get(h_AK8TopTagsPtr);
 
   if((event.muons->size() < 1 && event.electrons->size() < 1)) throw runtime_error("Event content did not allow reconstructing the Zprime: Leptons");
   if((event.jets->size() < 2 && TopTags.size() == 0)) throw runtime_error("Event content did not allow reconstructing the Zprime: AK4");

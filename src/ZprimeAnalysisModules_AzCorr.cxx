@@ -129,8 +129,8 @@ protected:
   Event::Handle<float> h_chi2;   Event::Handle<float> h_weight;//notinGithub
   Event::Handle<float> h_MET;   Event::Handle<int> h_NPV;//notinGithub
   Event::Handle<float> h_lep1_pt; Event::Handle<float> h_lep1_eta;//notinGithub
-  Event::Handle<float> h_ak4jet1_pt; Event::Handle<float> h_ak4jet1_eta;//notinGithub
-  Event::Handle<float> h_ak8jet1_pt; Event::Handle<float> h_ak8jet1_eta;//notinGithub
+  // Event::Handle<float> h_ak4jet1_pt; Event::Handle<float> h_ak4jet1_eta;//notinGithub
+  // Event::Handle<float> h_ak8jet1_pt; Event::Handle<float> h_ak8jet1_eta;//notinGithub
   Event::Handle<float> h_Mttbar;
 
   uhh2::Event::Handle<ZprimeCandidate*> h_BestZprimeCandidateChi2;
@@ -138,9 +138,14 @@ protected:
   // AzCorr variables
   uhh2::Event::Handle< std::vector<Jet> > h_CHSjets_matched;  // Collection of CHS matched jets
   uhh2::Event::Handle< std::vector<TopJet> > h_DeepAK8TopTags;  // Collection of DeepAK8TopTagged jets
-  Event::Handle<float> h_pt_hadTop;  // pt of hadronic top-jet
-  Event::Handle<float> h_deltaR_min;  // Smallest deltaR(hadronicjet, AK4CHSmatchedjet)
-  Event::Handle<float> h_jets_hadronic_bscore;  // bScores of ALL hadronic sub-jets before ANY of MY btagging requirements
+  
+  Event::Handle<float> h_pt_hadTop;     // pt of hadronic top-jet(s)
+  Event::Handle<float> h_pt_hadTop_res; // pt of hadronic top-jet from resolved topology
+  Event::Handle<float> h_pt_hadTop_mer; // pt of hadronic top-jets from merged topology
+
+  //Event::Handle<float> h_deltaR_min;  // Smallest deltaR(hadronicjet, AK4CHSmatchedjet)
+  Event::Handle<float> h_res_jet_bscore;    // bScores of resolved jets before ANY of MY btagging requirements
+  Event::Handle<float> h_mer_subjet_bscore; // bScores of merged subjets before ANY of MY btagging requirements
   Event::Handle<float> h_bscore_max;  // Largest bScores of hadronic sub-jets
   Event::Handle<int> h_recocount;  // number of toptag and ak4 reco events
   // Phi of lepton from leptonic leg
@@ -234,7 +239,7 @@ void ZprimeAnalysisModule_AzCorr::fill_histograms(uhh2::Event& event, string tag
 
 ZprimeAnalysisModule_AzCorr::ZprimeAnalysisModule_AzCorr(uhh2::Context& ctx){
 
-  debug = true; // false/true
+  debug = false; // false/true
 
   for(auto & kv : ctx.get_all()){
     cout << " " << kv.first << " = " << kv.second << endl;
@@ -452,19 +457,25 @@ ZprimeAnalysisModule_AzCorr::ZprimeAnalysisModule_AzCorr(uhh2::Context& ctx){
   h_Mttbar = ctx.declare_event_output<float> ("Mttbar");
   h_lep1_pt = ctx.declare_event_output<float> ("lep1_pt");
   h_lep1_eta = ctx.declare_event_output<float> ("lep1_eta");
-  h_ak4jet1_pt = ctx.declare_event_output<float> ("ak4jet1_pt");
-  h_ak4jet1_eta = ctx.declare_event_output<float> ("ak4jet1_eta");
-  h_ak8jet1_pt = ctx.declare_event_output<float> ("ak8jet1_pt");
-  h_ak8jet1_eta = ctx.declare_event_output<float> ("ak8jet1_eta");
+  // h_ak4jet1_pt = ctx.declare_event_output<float> ("ak4jet1_pt");
+  // h_ak4jet1_eta = ctx.declare_event_output<float> ("ak4jet1_eta");
+  // h_ak8jet1_pt = ctx.declare_event_output<float> ("ak8jet1_pt");
+  // h_ak8jet1_eta = ctx.declare_event_output<float> ("ak8jet1_eta");
   h_NPV = ctx.declare_event_output<int> ("NPV");
   h_weight = ctx.declare_event_output<float> ("weight");
 
   // AzCorr Variables
   h_CHSjets_matched = ctx.get_handle<std::vector<Jet>>("CHS_matched");  // Collection of CHS matched jets
-  h_DeepAK8TopTags = ctx.get_handle< std::vector<TopJet> >("DeepAK8TopTags"); // Collection of DeepAK8TopTagged jets
-  h_pt_hadTop=ctx.declare_event_output<float> ("pt_hadTop");  // pt of hadronic top-jet
-  h_deltaR_min=ctx.declare_event_output<float> ("deltaR_min");  // Smallest deltaR(hadronicjet, AK4CHSmatchedjet)
-  h_jets_hadronic_bscore=ctx.declare_event_output<float> ("jets_hadronic_bscore");  // bScores of hadronic sub-jets
+  h_DeepAK8TopTags = ctx.get_handle< std::vector<TopJet>>("DeepAK8TopTags"); // Collection of DeepAK8TopTagged jets
+  
+  h_pt_hadTop=ctx.declare_event_output<float> ("pt_hadTop");          // pt of hadronic top-jet(s)
+  h_pt_hadTop_res=ctx.declare_event_output<float> ("pt_hadTop_res");  // pt of hadronic top-jet from resolved topology
+  h_pt_hadTop_mer=ctx.declare_event_output<float> ("pt_hadTop_mer");  // pt of hadronic top-jets from merged topology
+
+  //h_deltaR_min=ctx.declare_event_output<float> ("deltaR_min");  // Smallest deltaR(hadronicjet, AK4CHSmatchedjet)
+  h_res_jet_bscore=ctx.declare_event_output<float> ("res_jet_bscore");  // bScores of resolved jets
+  h_mer_subjet_bscore=ctx.declare_event_output<float> ("mer_subjet_bscore");  // bScores of merged subjets
+
   h_bscore_max=ctx.declare_event_output<float> ("bscore_max");  // Largest bScores of hadronic sub-jets
   h_recocount=ctx.declare_event_output<int> ("recocount");  // number of toptag and ak4 reco events
   // Phi of lepton from leptonic leg
@@ -553,12 +564,12 @@ ZprimeAnalysisModule_AzCorr::ZprimeAnalysisModule_AzCorr(uhh2::Context& ctx){
     if( (ctx.get("dataset_version").find("WW") != std::string::npos) || (ctx.get("dataset_version").find("ZZ") != std::string::npos) || (ctx.get("dataset_version").find("WZ") != std::string::npos) ) sample_name = "Diboson";
 
     if(isMuon){
-      TFile* f_btag2Dsf_muon = new TFile("/nfs/dust/cms/user/deleokse/RunII_106_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/data/customBtagSF_muon_"+year+".root");
+      TFile* f_btag2Dsf_muon = new TFile("/nfs/dust/cms/user/deleokse/RunII_106_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/macros/src/files_BTagSF/customBtagSF_muon_"+year+".root");
       ratio_hist_muon = (TH2F*)f_btag2Dsf_muon->Get("N_Jets_vs_HT_" + sample_name);
       ratio_hist_muon->SetDirectory(0);
     }
     else if(!isMuon){
-      TFile* f_btag2Dsf_ele = new TFile("/nfs/dust/cms/user/deleokse/RunII_106_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/data/customBtagSF_electron_"+year+".root");
+      TFile* f_btag2Dsf_ele = new TFile("/nfs/dust/cms/user/deleokse/RunII_106_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/macros/src/files_BTagSF/customBtagSF_electron_"+year+".root");
       ratio_hist_ele = (TH2F*)f_btag2Dsf_ele->Get("N_Jets_vs_HT_" + sample_name);
       ratio_hist_ele->SetDirectory(0);
     }
@@ -594,9 +605,13 @@ bool ZprimeAnalysisModule_AzCorr::process(uhh2::Event& event){
   event.set(h_weight,-100);
 
   if(debug) cout<<"Initializing Azimuthal Correlation set"<<endl;
-  event.set(h_pt_hadTop, -10);  // pt of hadronic top-jet
-  event.set(h_deltaR_min, -10);  // Smallest deltaR(hadronicjet, AK4CHSmatchedjet)
-  event.set(h_jets_hadronic_bscore, -2);  // bScores of hadronic sub-jets before ANY of MY btagging requirements
+  event.set(h_pt_hadTop, -10);      // pt of hadronic top-jet(s)
+  event.set(h_pt_hadTop_res, -10);  // pt of hadronic top-jets from resolved topology
+  event.set(h_pt_hadTop_mer, -10);  // pt of hadronic top-jet from merged topology
+
+  //event.set(h_deltaR_min, -10);  // Smallest deltaR(hadronicjet, AK4CHSmatchedjet)
+  event.set(h_res_jet_bscore, -2);  // bScores of resolved top's jets before ANY of MY btagging requirements
+  event.set(h_mer_subjet_bscore, -2);  // bScores of merged top's subjets before ANY of MY btagging requirements
   event.set(h_bscore_max, -10);  // Largest bScores of hadronic sub-jets
   event.set(h_recocount, 10);  //  Number of toptag and ak4 reconstructed events
   // Phi of lepton from leptonic leg
@@ -1129,84 +1144,117 @@ bool ZprimeAnalysisModule_AzCorr::process(uhh2::Event& event){
   // Everything below this line is for the Azimuthal Correlation studies -----------------------------------------------
 
   // Define bool that tells me if zprime was reconstructed using Chi2
-  // bool is_zprime_reconstructed_chi2 = event.get(h_is_zprime_reconstructed_chi2);
+  bool is_zprime_reconstructed_chi2 = event.get(h_is_zprime_reconstructed_chi2);
   if(is_zprime_reconstructed_chi2){
     if(debug) cout<<" Zprime was reconstructed using Chi2--------"<<endl;
 
-    ZprimeCandidate* BestZprimeCandidate = event.get(h_BestZprimeCandidateChi2); // Zprime candidate
+    ZprimeCandidate* BestZprimeCandidate = event.get(h_BestZprimeCandidateChi2); // Zprime best-candidate
     if(debug) cout <<" jets_hadronic size: "<< BestZprimeCandidate->jets_hadronic().size() <<endl;
-
     vector <Jet> AK4CHSjets_matched = event.get(h_CHSjets_matched); // CHSjets that have been matched to an AK4Puppi jet
     if(debug) cout <<" AK4CHSjets_matched size: "<< AK4CHSjets_matched.size() <<endl;
-
-    vector <TopJet> DeepAK8TopTaggedjets = event.get(h_DeepAK8TopTags); // Puppi jets TopTagged by DeepAK8TopTagger
-    if(debug) cout <<" DeepAK8TopTaggedjets size: "<< DeepAK8TopTaggedjets.size() <<endl;
-
-    vector <float> jets_hadronic_bscores; // bScores for hadronic jets
-    float pt_hadTop_thresh = 150; // Define cut-variable as pt of hadTop for low/high regions
-
-    vector <float> hadronic_jets_bscores; // bScores for hadronic jets
-    float btag_medWP = 0.2783; // threshold for medium Working Point of btagging
-
-    float pt_hadTop = BestZprimeCandidate->top_hadronic_v4().pt();  // Plot pt of hadronic Top jet
-    if(pt_hadTop != -10) event.set(h_pt_hadTop, pt_hadTop);
-
-    // Plot number of toptag- and ak4-reconstructed events
-    bool is_toptag_reconstruction = BestZprimeCandidate->is_toptag_reconstruction();
+    vector <TopJet> TopTaggedJets = event.get(h_DeepAK8TopTags); // Puppi jets TopTagged by DeepAK8TopTagger
+    if(debug) cout <<" TopTaggedJets size: "<< TopTaggedJets.size() <<endl;
+    bool is_toptag_reconstruction = BestZprimeCandidate->is_toptag_reconstruction(); // Reco process id
     if(debug) cout<<" is_toptag_reconstruction evaluates to: "<< is_toptag_reconstruction <<endl;
     int n_toptagreco = 1;
     int n_ak4reco = 2;
+    vector <float> jets_hadronic_bscores; // bScores-vector for resolved hadronic jets
+    float pt_hadTop_thresh = 150; // Define cut-variable as pt of hadTop for low/high regions
+    float btag_medWP = 0.2783; // threshold for medium Working Point of btagging
+
+    // Plot number of toptag- and ak4-reconstructed events
     if(is_toptag_reconstruction) event.set(h_recocount, n_toptagreco);
     if(!is_toptag_reconstruction) event.set(h_recocount, n_ak4reco);
 
+    // Plot pt of hadronic Top jet
+    float pt_hadTop = BestZprimeCandidate->top_hadronic_v4().pt();
+    if(pt_hadTop != -10) event.set(h_pt_hadTop, pt_hadTop);
+    if(pt_hadTop != -10 && !is_toptag_reconstruction) event.set(h_pt_hadTop_res, pt_hadTop);
+    if(pt_hadTop != -10 && is_toptag_reconstruction) event.set(h_pt_hadTop_mer, pt_hadTop);
 
-    // Loop over hadronic jets to generate elements of bscores vector from the matching CHS jets
-    for(unsigned int i=0; i<BestZprimeCandidate->jets_hadronic().size(); i++){
-      double deltaR_min = 99;
-      for(unsigned int j=0; j<AK4CHSjets_matched.size(); j++){
-        double deltaR_CHS = deltaR(BestZprimeCandidate->jets_hadronic().at(i), AK4CHSjets_matched.at(j));
-        if(deltaR_CHS < deltaR_min) deltaR_min = deltaR_CHS;
-      }
-      event.set(h_deltaR_min, deltaR_min);
-      // Loop over CHSjets again to add bScore of matching CHSjet to vector of bScores for hadronic jets
-      for(unsigned int k=0; k<AK4CHSjets_matched.size(); k++){
-        if(deltaR(BestZprimeCandidate->jets_hadronic().at(i), AK4CHSjets_matched.at(k)) == deltaR_min) 
-        jets_hadronic_bscores.emplace_back(AK4CHSjets_matched.at(k).btag_DeepJet());}
-    }// Hadronic jets have corresponding bscore in jets_hadronic_bscores (corresponding by index)
-
-    // Plot all the bscores of hadronic jets
-    float jets_hadronic_bscore = -2;
-    for(unsigned int m=0; m<jets_hadronic_bscores.size(); m++){
-      jets_hadronic_bscore = jets_hadronic_bscores.at(m);
-      event.set(h_jets_hadronic_bscore, jets_hadronic_bscore);
-    }
-
+    // // Extract highest bscore for what will eventually become bjet
     float bscore_max = -2;
-    // Loop over bscores to find largest bscore and plot
-    for(unsigned int i=0; i<jets_hadronic_bscores.size(); i++){
-      float bscore = jets_hadronic_bscores.at(i);
-      if(bscore > bscore_max) bscore_max = bscore;
+
+    // Resolved jets
+    if(!is_toptag_reconstruction){
+      // Loop over resolved hadronic jets to find their bscore via CHS jets
+      for(unsigned int i=0; i<BestZprimeCandidate->jets_hadronic().size(); i++){
+        double deltaR_min = 99;
+        // Match resolved hadronic jets to CHS jets (which have bscores)
+        for(unsigned int j=0; j<AK4CHSjets_matched.size(); j++){
+          double deltaR_CHS = deltaR(BestZprimeCandidate->jets_hadronic().at(i), AK4CHSjets_matched.at(j));
+          if(deltaR_CHS < deltaR_min) deltaR_min = deltaR_CHS;}
+        // Build bScore-vector for resolved hadronic jets whose bscore will correspond by index
+        for(unsigned int k=0; k<AK4CHSjets_matched.size(); k++){
+          if(deltaR(BestZprimeCandidate->jets_hadronic().at(i), AK4CHSjets_matched.at(k)) == deltaR_min) 
+          jets_hadronic_bscores.emplace_back(AK4CHSjets_matched.at(k).btag_DeepJet());}
+      }
+      // Loop over bScores-vector to extract highest bscore
+      for(unsigned int i=0; i<jets_hadronic_bscores.size(); i++){
+        float bscore = jets_hadronic_bscores.at(i);
+        if(bscore > bscore_max) bscore_max = bscore;
+      }
+      // Plot all bscores of resolved top's jets
+      float res_jet_bscore = -2;
+      for(unsigned int j=0; j<jets_hadronic_bscores.size(); j++){
+        res_jet_bscore = jets_hadronic_bscores.at(j);
+        event.set(h_res_jet_bscore, res_jet_bscore);
+      }
     }
+
+    // Merged jet
+    if(is_toptag_reconstruction){
+      // Loop over hadronic top's subjets to extract highest bscore
+      for(unsigned int i=0; i < BestZprimeCandidate.tophad_topjet_ptr()->subjets().size(); i++){
+        float bscore = BestZprimeCandidate.tophad_topjet_ptr()->subjets().at(i).bDiscriminator(“pfCombinedInclusiveSecondaryVertexV2BJetTags”);
+        if(bscore > bscore_max) bscore_max = bscore;
+      }
+      // Plot all bscores of merged top's subjets
+      float mer_subjet_bscore = -2;
+      for(unsigned int j=0; j < BestZprimeCandidate.tophad_topjet_ptr()->subjets().size(); j++){
+        float bscore = BestZprimeCandidate.tophad_topjet_ptr()->subjets().at(j).bDiscriminator(“pfCombinedInclusiveSecondaryVertexV2BJetTags”);
+        event.set(h_mer_subjet_bscore, mer_subjet_bscore);
+      }
+    }
+
     if(debug) cout<<" bscore_max is: "<< bscore_max <<endl;
 
     // Cut on bscore_max <= 0.2783 to impose Medium WP on hadronic jets
     if(bscore_max >= btag_medWP){
       event.set(h_bscore_max, bscore_max); // Plot max bscores
       //// Boost lepton_v4, hadronic-b_v4, and +2/3 top 3-vector into ttbar rest-frame ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-      if(debug) cout<<" Initial-state vectors:"<<endl;
+
+      // Hadronic-b 4vector 
+      TLorentzVector had_top_b(0, 0, 0, 0);
+      // Resolved topology
+      if(!is_toptag_reconstruction){
+        for(unsigned int i=0; i< BestZprimeCandidate->jets_hadronic().size(); i++){
+          float bscore = jets_hadronic_bscores.at(i);
+          if(bscore == bscore_max) had_top_b.SetPtEtaPhiE(BestZprimeCandidate->jets_hadronic().at(i).pt(), 
+                                                          BestZprimeCandidate->jets_hadronic().at(i).eta(), 
+                                                          BestZprimeCandidate->jets_hadronic().at(i).phi(), 
+                                                          BestZprimeCandidate->jets_hadronic().at(i).energy());
+        }
+      }
+      // Merged topology
+      if(is_toptag_reconstruction){
+        for(unsigned int j=0; j < BestZprimeCandidate.tophad_topjet_ptr()->subjets().size(); j++){
+          float bscore = BestZprimeCandidate.tophad_topjet_ptr()->subjets().at(j).bDiscriminator(“pfCombinedInclusiveSecondaryVertexV2BJetTags”);
+          if(bscore == bscore_max) had_top_b.SetPtEtaPhiE(BestZprimeCandidate.tophad_topjet_ptr()->subjets().at(j).pt(), 
+                                                          BestZprimeCandidate.tophad_topjet_ptr()->subjets().at(j).eta(), 
+                                                          BestZprimeCandidate.tophad_topjet_ptr()->subjets().at(j).phi(), 
+                                                          BestZprimeCandidate.tophad_topjet_ptr()->subjets().at(j).energy());
+        }
+      }
+
       // Lepton 4-vector
       TLorentzVector lep_top_lep(0, 0, 0, 0);
       LorentzVector lep = BestZprimeCandidate->lepton().v4();
       lep_top_lep.SetPtEtaPhiE(lep.pt(), lep.eta(), lep.phi(), lep.E());
 
-      // Hadronic-b 4vector
-      TLorentzVector had_top_b(0, 0, 0, 0);
-      for(unsigned int j=0; j<BestZprimeCandidate->jets_hadronic().size(); j++){ // Loop over hadronic jets
-        float bscore = jets_hadronic_bscores.at(j);
-        if(bscore == bscore_max) had_top_b.SetPtEtaPhiE(BestZprimeCandidate->jets_hadronic().at(j).pt(), BestZprimeCandidate->jets_hadronic().at(j).eta(), BestZprimeCandidate->jets_hadronic().at(j).phi(), BestZprimeCandidate->jets_hadronic().at(j).energy());
-      }
-      if(debug) cout<<" lepton PtEtaPhiE 4vector is: ("<< lep_top_lep.Pt() <<", "<< lep_top_lep.Eta()<<", " << lep_top_lep.Phi()<<", " << lep_top_lep.E() <<")"<<endl;
+      if(debug) cout<<" Initial-state vectors:"<<endl;
       if(debug) cout<<" b-jet  PtEtaPhiE 4vector is: ("<< had_top_b.Pt() <<", "<< had_top_b.Eta() <<", "<< had_top_b.Phi() <<", "<< had_top_b.E() <<")"<<endl;
+      if(debug) cout<<" lepton PtEtaPhiE 4vector is: ("<< lep_top_lep.Pt() <<", "<< lep_top_lep.Eta()<<", " << lep_top_lep.Phi()<<", " << lep_top_lep.E() <<")"<<endl;
 
       // Positive Top vectors
       TLorentzVector PosTop(0, 0, 0, 0);   // Need a TLorentzVector version of PosTop to perform boost

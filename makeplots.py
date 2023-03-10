@@ -36,8 +36,8 @@ if channel=="ele":
     _fileDir = "/nfs/dust/cms/group/zprime-uhh/Analysis_AzimthCorr_UL18/"
 else:
     _channelText = "#mu+jets"
-    plotDirectory = "analysisPlots_Corr/muon/helicitybasis_NoChi2"
-    _fileDir = "/nfs/dust/cms/group/zprime-uhh/Analysis_AzimthCorr_UL18/muon/workdir_AzimthCorr_UL18_muon"
+    plotDirectory = "analysisPlots_Corr/muon/updatedCode/UL17"
+    _fileDir = "/nfs/dust/cms/user/ricardo/AzCorrAnalysis/muon/workdir_AzCorr_UL17_muon"
 print "channel is ", channel
 print "The input root files will come from", _fileDir
 print "The output will go into", plotDirectory, "\n"
@@ -45,48 +45,42 @@ print "The output will go into", plotDirectory, "\n"
 
 ### define the histograms dictionary with entry syntax: {"variable_handle" : ["Plot name", "vertical-axis name", number of bins, [x-min, x-max]]}
 if channel=="mu": 
-    histograms =  {"Mttbar_afterChi2Cut"             : ["M_{ttbar} [GeV]",                       "Events", 25, [   0, 1000]]
-                   } # debug
+    # histograms =  {"recocount"                       : ["Reco Count",                      "Events",  2, [   1,   3]]
+    #                } # debug
 
-    #  histograms = {"recocount"                       : ["Reco Count",                      "Events",  2, [   1,   3]],
-    #                "chi2_afterChi2Cut"               : ["#Chi^{2}",                        "Events", 40, [   0, 200]],
-    #                "Mttbar_afterChi2Cut"             : ["M_{ttbar}",                       "Events", 45, [   0, 900]],
-    #                "ak4jet1_pt_afterChi2Cut"         : ["AK4_{p_{T}}",                     "Events", 25, [   0, 500]],
-    #                "ak4jet1_eta_afterChi2Cut"        : ["AK4_{#eta}",                      "Events", 30, [   0,   3]],
-    #                "ak8jet1_pt_afterChi2Cut"         : ["AK8_{p_{T}}",                     "Events", 25, [   0, 500]],
-    #                "ak8jet1_eta_afterChi2Cut"        : ["AK8_{#eta}",                      "Events", 30, [   0,   3]],
-    #                "pt_hadTop"                       : ["Hadronic Top-Jet p_{T}",          "Events", 25, [   0, 500]],
-    #                "deltaR_min"                      : ["#Delta R_{min}",                  "Events", 10, [   0, .25]],
-    #                "jets_hadronic_bscore"            : ["b-scores of hadronic jets",       "Events", 20, [   0,   1]],
-    #                "bscore_max"                      : ["max b-scores of hadronic jets",   "Events", 20, [   0,   1]],
-    #                "phi_lep"                         : ["#phi_{#mu}",                      "Events", 12, [-3.5, 3.5]],
-    #                "phi_lep_high"                    : ["#phi_{#mu}^{high pt}",            "Events", 12, [-3.5, 3.5]],
-    #                "phi_lep_low"                     : ["#phi_{#mu}_{low pt}",             "Events", 12, [-3.5, 3.5]],
-    #                "phi_b"                           : ["#phi_{b}",                        "Events", 12, [-3.5, 3.5]],
-    #                "phi_b_high"                      : ["#phi_{b}^{high pt}",              "Events", 12, [-3.5, 3.5]],
-    #                "phi_b_low"                       : ["#phi_{b}_{low pt}",               "Events", 12, [-3.5, 3.5]],
-    #                "sphi"                            : ["#Sigma#phi",                      "Events", 12, [-3.5, 3.5]],
-    #                "sphi_low"                        : ["#Sigma#phi_{low pt}",             "Events", 12, [-3.5, 3.5]],
-    #                "sphi_high"                       : ["#Sigma#phi^{high pt}",            "Events", 12, [-3.5, 3.5]],
-    #                "sphi_plus"                       : ["#Sigma#phi (#mu^{+})",            "Events", 12, [-3.5, 3.5]],
-    #                "dphi"                            : ["#Delta#phi",                      "Events", 12, [-3.5, 3.5]],
-    #                "dphi_low"                        : ["#Delta#phi_{low pt}",             "Events", 12, [-3.5, 3.5]],
-    #                "dphi_high"                       : ["#Delta#phi^{high pt}",            "Events", 12, [-3.5, 3.5]],
-    #                "phi_lepPlus"                     : ["#phi_{#mu^{+}}",                  "Events", 12, [-3.5, 3.5]],
-    #                "phi_lepMinus"                    : ["#phi_{#mu^{-}}",                  "Events", 12, [-3.5, 3.5]],
-    #                "sphi_plus"                       : ["#Sigma#phi (#mu^{+})",            "Events", 12, [-3.5, 3.5]],
-    #                "sphi_plus_high"                  : ["#Sigma#phi^{high pt} (#mu^{+})",  "Events", 12, [-3.5, 3.5]],
-    #                "sphi_plus_low"                   : ["#Sigma#phi_{low pt} (#mu^{+})",   "Events", 12, [-3.5, 3.5]],
-    #                "dphi_plus"                       : ["#Delta#phi (#mu^{+})",            "Events", 12, [-3.5, 3.5]],
-    #                "dphi_plus_high"                  : ["#Delta#phi^{high pt} (#mu^{+})",  "Events", 12, [-3.5, 3.5]],
-    #                "dphi_plus_low"                   : ["#Delta#phi_{low pt} (#mu^{+})",   "Events", 12, [-3.5, 3.5]],
-    #                "sphi_minus"                      : ["#Sigma#phi (#mu^{-})",            "Events", 12, [-3.5, 3.5]],
-    #                "sphi_minus_high"                 : ["#Sigma#phi^{high pt} (#mu^{-})",  "Events", 12, [-3.5, 3.5]],
-    #                "sphi_minus_low"                  : ["#Sigma#phi_{low pt} (#mu^{-})",   "Events", 12, [-3.5, 3.5]],
-    #                "dphi_minus"                      : ["#Delta#phi (#mu^{-})",            "Events", 12, [-3.5, 3.5]],
-    #                "dphi_minus_high"                 : ["#Delta#phi^{high pt} (#mu^{-})",  "Events", 12, [-3.5, 3.5]],
-    #                "dphi_minus_low"                  : ["#Delta#phi_{low pt} (#mu^{-})",   "Events", 12, [-3.5, 3.5]]
-    #              } # plots
+     histograms = {#"recocount"                       : ["Reco Count",                      "Events",  2, [   1,   3]],
+                   #"pt_hadTop"                       : ["Hadronic Top-Jet p_{T}",          "Events", 25, [   0, 500]],
+                   "deltaR_min"                      : ["#Delta R_{min}",                  "Events", 10, [   0, .25]],
+                   "jets_hadronic_bscore"            : ["b-scores of hadronic jets",       "Events", 20, [   0,   1]],
+                   #"bscore_max"                      : ["max b-scores of hadronic jets",   "Events", 20, [   0,   1]],
+                   #"phi_lep"                         : ["#phi_{#mu}",                      "Events", 12, [-3.5, 3.5]],
+                   "phi_lep_high"                    : ["#phi_{#mu}^{high pt}",            "Events", 12, [-3.5, 3.5]],
+                   "phi_lep_low"                     : ["#phi_{#mu}_{low pt}",             "Events", 12, [-3.5, 3.5]],
+                   #"phi_b"                           : ["#phi_{b}",                        "Events", 12, [-3.5, 3.5]],
+                   #"phi_b_high"                      : ["#phi_{b}^{high pt}",              "Events", 12, [-3.5, 3.5]],
+                   #"phi_b_low"                       : ["#phi_{b}_{low pt}",               "Events", 12, [-3.5, 3.5]],
+                   #"sphi"                            : ["#Sigma#phi",                      "Events", 12, [-3.5, 3.5]],
+                   "sphi_low"                        : ["#Sigma#phi_{low pt}",             "Events", 12, [-3.5, 3.5]],
+                   #"sphi_high"                       : ["#Sigma#phi^{high pt}",            "Events", 12, [-3.5, 3.5]],
+                   "sphi_plus"                       : ["#Sigma#phi (#mu^{+})",            "Events", 12, [-3.5, 3.5]],
+                   #"dphi"                            : ["#Delta#phi",                      "Events", 12, [-3.5, 3.5]],
+                   "dphi_low"                        : ["#Delta#phi_{low pt}",             "Events", 12, [-3.5, 3.5]],
+                   #"dphi_high"                       : ["#Delta#phi^{high pt}",            "Events", 12, [-3.5, 3.5]],
+                   "phi_lepPlus"                     : ["#phi_{#mu^{+}}",                  "Events", 12, [-3.5, 3.5]],
+                   "phi_lepMinus"                    : ["#phi_{#mu^{-}}",                  "Events", 12, [-3.5, 3.5]],
+                   "sphi_plus"                       : ["#Sigma#phi (#mu^{+})",            "Events", 12, [-3.5, 3.5]],
+                   "sphi_plus_high"                  : ["#Sigma#phi^{high pt} (#mu^{+})",  "Events", 12, [-3.5, 3.5]],
+                   #"sphi_plus_low"                   : ["#Sigma#phi_{low pt} (#mu^{+})",   "Events", 12, [-3.5, 3.5]],
+                   "dphi_plus"                       : ["#Delta#phi (#mu^{+})",            "Events", 12, [-3.5, 3.5]],
+                   "dphi_plus_high"                  : ["#Delta#phi^{high pt} (#mu^{+})",  "Events", 12, [-3.5, 3.5]],
+                   "dphi_plus_low"                   : ["#Delta#phi_{low pt} (#mu^{+})",   "Events", 12, [-3.5, 3.5]],
+                   "sphi_minus"                      : ["#Sigma#phi (#mu^{-})",            "Events", 12, [-3.5, 3.5]],
+                   "sphi_minus_high"                 : ["#Sigma#phi^{high pt} (#mu^{-})",  "Events", 12, [-3.5, 3.5]],
+                   #"sphi_minus_low"                  : ["#Sigma#phi_{low pt} (#mu^{-})",   "Events", 12, [-3.5, 3.5]],
+                   #"dphi_minus"                      : ["#Delta#phi (#mu^{-})",            "Events", 12, [-3.5, 3.5]],
+                   "dphi_minus_high"                 : ["#Delta#phi^{high pt} (#mu^{-})",  "Events", 12, [-3.5, 3.5]],
+                   "dphi_minus_low"                  : ["#Delta#phi_{low pt} (#mu^{-})",   "Events", 12, [-3.5, 3.5]]
+                 } # plots
 
     # histograms = {"jets_hadronic_bscore_after2btag" : ["b-scores of hadronic jets 2btag",      "Events", 20, [   0,   1]],
     #               "bscore_max_2btag"                : ["max b-scores of hadronic jets 2btag",  "Events", 20, [   0,   1]],
@@ -120,20 +114,16 @@ if channel=="mu":
     #               "dphi_minus_low_2btag"            : ["#Delta#phi_{low pt} (#mu^{-}) 2btag",  "Events", 12, [-3.5, 3.5]]
     #             } # 2btag plots
 else:
-	histograms = {"phi_lepTop" : ["ele^{#phi} of Best #Chi^{2} Reconstructed Top", "Events", 12, [-3.5, 3.5]],
-                  "phi_hadTop" : ["had^{#phi} of Best #Chi^{2} Reconstructed Top", "Events", 12, [-3.5, 3.5]]
-                }
+	histograms = {}
 
-# The stackList dictionary defines maps the list of samples to plot with their color
-# All three TTbar decay channels
-stackList = {"TTToSemiLeptonic":[kRed], "TTToSemiLeptonic_2":[kRed], "TTToSemiLeptonic_3":[kRed], "TTToSemiLeptonic_4":[kRed], "TTTo2L2Nu":[kRed+1], "TTTo2L2Nu_2":[kRed+1], "TTToHadronic":[kRed-4], "QCD":[kTeal],"WJets":[kGreen], "ST":[kYellow], "DY":[kBlue], "Diboson":[kOrange]}
-# Only SemiLeptonic decay channel
-# stackList = {"TTToSemiLeptonic_1":[kRed], "TTToSemiLeptonic_2":[kRed], "TTToSemiLeptonic_3":[kRed]}
-#print "stackList is ", stackList
 
-# define the sample_names array that has filenames of samples that will contribute to each plot
+### The sample_names array has filenames of samples that will contribute to each plot
+sample_names = ["TTToSemiLeptonic", "TTToSemiLeptonic_2", "TTToSemiLeptonic_3", "TTTo2L2Nu", "TTToHadronic", "DY", "QCD", "WJets", "ST", "Diboson"]
+
+
+### The stackList dictionary maps the list of samples to their color
 # All three TTbar decay channels
-sample_names = ["TTToSemiLeptonic", "TTToSemiLeptonic_2", "TTToSemiLeptonic_3", "TTToSemiLeptonic_4", "TTTo2L2Nu", "TTTo2L2Nu_2", "TTToHadronic", "DY", "QCD", "WJets", "ST", "Diboson"]
+stackList = {"TTToSemiLeptonic":[kRed], "TTToSemiLeptonic_2":[kRed], "TTToSemiLeptonic_3":[kRed], "TTTo2L2Nu":[kRed+1], "TTToHadronic":[kRed-4], "QCD":[kTeal],"WJets":[kGreen], "ST":[kYellow], "DY":[kBlue], "Diboson":[kOrange]}
 
 ### end User input section i.e. modify each time new set of plots are being generated ------------------------------------------------------------------------------------
 
@@ -285,6 +275,7 @@ normFactor = 1.
 for histName in histograms:
     print "--- Working on the", histName, "histogram ---"
     for sample in sample_names:
+        #print "sample is", sample
         _file[sample] = TFile("%s/uhh2.AnalysisModuleRunner.MC.%s.root"%(_fileDir,sample),"read")
         tree_MC[histName][sample]=_file[sample].Get("AnalysisTree")
         tree_MC[histName][sample].Draw("%s>>h_%s_%s(%i,%f,%f)"%(histName,histName,sample,histograms[histName][2],histograms[histName][3][0],histograms[histName][3][1]),"weight*weight_pu")
