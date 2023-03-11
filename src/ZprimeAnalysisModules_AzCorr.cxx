@@ -1195,9 +1195,8 @@ bool ZprimeAnalysisModule_AzCorr::process(uhh2::Event& event){
         if(bscore > bscore_max) bscore_max = bscore;
       }
       // Plot all bscores of resolved top's jets
-      float res_jet_bscore = -2;
       for(unsigned int j=0; j<jets_hadronic_bscores.size(); j++){
-        res_jet_bscore = jets_hadronic_bscores.at(j);
+        float res_jet_bscore = jets_hadronic_bscores.at(j);
         event.set(h_res_jet_bscore, res_jet_bscore);
       }
     }
@@ -1205,14 +1204,15 @@ bool ZprimeAnalysisModule_AzCorr::process(uhh2::Event& event){
     // Merged jet
     if(is_toptag_reconstruction){
       // Loop over hadronic top's subjets to extract highest bscore
-      for(unsigned int i=0; i < BestZprimeCandidate.tophad_topjet_ptr()->subjets().size(); i++){
-        float bscore = BestZprimeCandidate.tophad_topjet_ptr()->subjets().at(i).bDiscriminator(“pfCombinedInclusiveSecondaryVertexV2BJetTags”);
+      for(unsigned int i=0; i < BestZprimeCandidate->tophad_topjet_ptr()->subjets().size(); i++){
+        //float bscore = BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(i).bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
+        float bscore = BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(i).btag_DeepFlavour_b();
         if(bscore > bscore_max) bscore_max = bscore;
       }
       // Plot all bscores of merged top's subjets
-      float mer_subjet_bscore = -2;
-      for(unsigned int j=0; j < BestZprimeCandidate.tophad_topjet_ptr()->subjets().size(); j++){
-        float bscore = BestZprimeCandidate.tophad_topjet_ptr()->subjets().at(j).bDiscriminator(“pfCombinedInclusiveSecondaryVertexV2BJetTags”);
+      for(unsigned int j=0; j < BestZprimeCandidate->tophad_topjet_ptr()->subjets().size(); j++){
+        //float bscore = BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
+        float mer_subjet_bscore = BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).btag_DeepFlavour_b();
         event.set(h_mer_subjet_bscore, mer_subjet_bscore);
       }
     }
@@ -1238,12 +1238,13 @@ bool ZprimeAnalysisModule_AzCorr::process(uhh2::Event& event){
       }
       // Merged topology
       if(is_toptag_reconstruction){
-        for(unsigned int j=0; j < BestZprimeCandidate.tophad_topjet_ptr()->subjets().size(); j++){
-          float bscore = BestZprimeCandidate.tophad_topjet_ptr()->subjets().at(j).bDiscriminator(“pfCombinedInclusiveSecondaryVertexV2BJetTags”);
-          if(bscore == bscore_max) had_top_b.SetPtEtaPhiE(BestZprimeCandidate.tophad_topjet_ptr()->subjets().at(j).pt(), 
-                                                          BestZprimeCandidate.tophad_topjet_ptr()->subjets().at(j).eta(), 
-                                                          BestZprimeCandidate.tophad_topjet_ptr()->subjets().at(j).phi(), 
-                                                          BestZprimeCandidate.tophad_topjet_ptr()->subjets().at(j).energy());
+        for(unsigned int j=0; j < BestZprimeCandidate->tophad_topjet_ptr()->subjets().size(); j++){
+          //float bscore = BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
+          float bscore = BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).btag_DeepFlavour_b();
+          if(bscore == bscore_max) had_top_b.SetPtEtaPhiE(BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).pt(), 
+                                                          BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).eta(), 
+                                                          BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).phi(), 
+                                                          BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).energy());
         }
       }
 
