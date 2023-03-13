@@ -17,10 +17,12 @@ import numpy as np
 
 class Process():
 
-    def __init__(self, name, legend=None, tcolor=None):
+    def __init__(self, name, legend=None, tcolor=None, scale=1., xsec_uncert=0.):
         self.name = name
         self.legend = legend or name
         self.tcolor = tcolor or root.kBlack
+        self.scale = scale or 1.
+        self.xsec_uncert = xsec_uncert or 0.
 
 
 def transform_TH1_to_TGraphAsymmErrors(th1, poisson_errors=False, n_sigma=1., bin_width=False):
@@ -161,7 +163,7 @@ class NiceStackWithRatio():
 
         self.data_name = data_name
         self.totalprocs_name = totalprocs_name
-        self.totalprocs_tcolor = root.kBlue
+        self.totalprocs_tcolor = root.kBlack
 
         self.binning = None
 
@@ -255,6 +257,7 @@ class NiceStackWithRatio():
                     err2 += hist.GetBinError(i_bin)**2
                 self.totalprocs.SetBinContent(i_bin, binc)
                 self.totalprocs.SetBinError(i_bin, math.sqrt(err2))
+
             self.totalprocs.SetLineColor(self.totalprocs_tcolor)
             self.totalprocs.SetLineWidth(1)
             self.totalprocs.SetMarkerSize(0)
@@ -277,7 +280,7 @@ class NiceStackWithRatio():
             self.get_binning(self.totalprocs)
         return self.stack
 
-    def get_signals(self):
+    def create_signals(self):
         self.signal_hists = []
         for i_signal, signal in enumerate(self.signals):
             hist = self.infile.Get(os.path.join(self.infile_directory, signal.name))
@@ -285,6 +288,8 @@ class NiceStackWithRatio():
             hist.SetLineColor(signal.tcolor)
             hist.SetLineWidth(2)
             hist.SetLineStyle(7)
+            print(signal.name + " scaled with factor " + str(signal.scale))
+            hist.Scale(signal.scale)
             self.signal_hists.append(hist)
         return self.signal_hists
 
@@ -302,12 +307,13 @@ class NiceStackWithRatio():
         return self.data
 
     def get_syst_unc_for_bin(self, i_bin, direction):
-        if not len(self.syst_names):
-            return 0.
+        # if not len(self.syst_names):
+        #     return 0.
         err2 = 0.
         for process in self.processes:
             hist_nominal = self.infile.Get(os.path.join(self.infile_directory, process.name))
             nominal = hist_nominal.GetBinContent(i_bin)
+            err2 += (nominal * process.xsec_uncert)**2
             for syst in self.syst_names:
                 hist_syst_down = self.infile.Get(os.path.join(self.infile_directory, process.name+'_'+syst+'Down'))
                 hist_syst_up = self.infile.Get(os.path.join(self.infile_directory, process.name+'_'+syst+'Up'))
@@ -566,7 +572,8 @@ class NiceStackWithRatio():
 
     def create_ratio_signal(self):
         self.signal_ratiohists = []
-        for signal_hist in self.get_signals():
+        for signal in self.signal_hists:
+            signal_hist = signal.Clone()
             signal_hist.Divide(self.totalprocs)
             self.signal_ratiohists.append(signal_hist)
         return self.signal_ratiohists
@@ -588,9 +595,12 @@ class NiceStackWithRatio():
         self.ratio_null_hist.GetYaxis().SetTitleSize(self.text_size / self.border_y)
         self.ratio_null_hist.GetYaxis().SetTitleOffset(0.45)
         self.ratio_null_hist.GetYaxis().CenterTitle()
-        self.ratio_null_hist.SetMinimum(0.7)
-        self.ratio_null_hist.SetMaximum(1.3)
-        self.ratio_null_hist.GetYaxis().SetNdivisions(403)
+        # self.ratio_null_hist.SetMinimum(0.7)
+        # self.ratio_null_hist.SetMaximum(1.3)
+        # self.ratio_null_hist.GetYaxis().SetNdivisions(403)
+        self.ratio_null_hist.SetMinimum(0.3)
+        self.ratio_null_hist.SetMaximum(1.7)
+        self.ratio_null_hist.GetYaxis().SetNdivisions(503)
 
         # Fix inconsistent tick lengths:
         # https://root-forum.cern.ch/t/inconsistent-tick-length/18563/8
@@ -606,27 +616,27 @@ class NiceStackWithRatio():
 
         if not self.blind_data:
             # Minimize the "outlier" data points in ratio plot by adjusting the y axis range
-            n_ratio_data_outliers = 0
             n_points = self.ratio_data.GetN()
-            for i_point in range(0, n_points):
-                point_y = self.ratio_data.GetY()[i_point]
-                if point_y <= 0.: continue # ignore data points which are zero for this algorithm
-                if point_y < self.ratio_null_hist.GetMinimum() or point_y > self.ratio_null_hist.GetMaximum():
-                    n_ratio_data_outliers += 1
-            if n_ratio_data_outliers > self.max_ratio_data_outliers:
-                self.ratio_null_hist.SetMinimum(0.3)
-                self.ratio_null_hist.SetMaximum(1.7)
-                self.ratio_null_hist.GetYaxis().SetNdivisions(503)
-            n_ratio_data_outliers = 0
-            for i_point in range(0, n_points):
-                point_y = self.ratio_data.GetY()[i_point]
-                if point_y <= 0.: continue # ignore data points which are zero for this algorithm
-                if point_y < self.ratio_null_hist.GetMinimum() or point_y > self.ratio_null_hist.GetMaximum():
-                    n_ratio_data_outliers += 1
-            if n_ratio_data_outliers > self.max_ratio_data_outliers:
-                self.ratio_null_hist.SetMinimum(0.0)
-                self.ratio_null_hist.SetMaximum(2.0)
-                self.ratio_null_hist.GetYaxis().SetNdivisions(503)
+            # n_ratio_data_outliers = 0
+            # for i_point in range(0, n_points):
+            #     point_y = self.ratio_data.GetY()[i_point]
+            #     if point_y <= 0.: continue # ignore data points which are zero for this algorithm
+            #     if point_y < self.ratio_null_hist.GetMinimum() or point_y > self.ratio_null_hist.GetMaximum():
+            #         n_ratio_data_outliers += 1
+            # if n_ratio_data_outliers > self.max_ratio_data_outliers:
+            #     self.ratio_null_hist.SetMinimum(0.3)
+            #     self.ratio_null_hist.SetMaximum(1.7)
+            #     self.ratio_null_hist.GetYaxis().SetNdivisions(503)
+            # n_ratio_data_outliers = 0
+            # for i_point in range(0, n_points):
+            #     point_y = self.ratio_data.GetY()[i_point]
+            #     if point_y <= 0.: continue # ignore data points which are zero for this algorithm
+            #     if point_y < self.ratio_null_hist.GetMinimum() or point_y > self.ratio_null_hist.GetMaximum():
+            #         n_ratio_data_outliers += 1
+            # if n_ratio_data_outliers > self.max_ratio_data_outliers:
+            #     self.ratio_null_hist.SetMinimum(0.0)
+            #     self.ratio_null_hist.SetMaximum(2.0)
+            #     self.ratio_null_hist.GetYaxis().SetNdivisions(503)
 
             # Now set "arrow" markers for all remaining outliers at the upper/lower edge of ratio plot:
             for i_point in range(0, n_points):
@@ -707,8 +717,9 @@ class NiceStackWithRatio():
             self.create_stack().Draw('hist')
         self.create_stack_unc().Draw('2')
 
-        for signal in self.get_signals():
-            signal.Draw('same hist')
+        self.create_signals()
+        for signal_hist in self.signal_hists:
+            signal_hist.Draw('hist same')
 
         # self.create_data().Draw('same e x0') # if self.data would be a TH1
         if not self.blind_data: self.create_data().Draw('pz0')
@@ -717,8 +728,11 @@ class NiceStackWithRatio():
         if self.draw_ratio_mc_stat:
             self.create_ratio_mc_stat().Draw('same e2')
         self.create_ratio_unc().Draw('same 2')
-        for signal_ratio in self.create_ratio_signal():
+
+        self.create_ratio_signal()
+        for signal_ratio in self.signal_ratiohists:
             signal_ratio.Draw('same hist')
+
         # self.create_ratio_data().Draw('same e x0') # if ratio data would be a TH1
         if not self.blind_data: self.create_ratio_data().Draw('pz0')
         self.cosmetics_main()

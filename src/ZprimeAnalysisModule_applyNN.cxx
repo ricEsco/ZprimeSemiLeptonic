@@ -43,6 +43,7 @@
 #include <UHH2/ZprimeSemiLeptonic/include/ZprimeSemiLeptonicCHSMatchHists.h>
 #include <UHH2/ZprimeSemiLeptonic/include/ZprimeCandidate.h>
 #include <UHH2/ZprimeSemiLeptonic/include/ElecTriggerSF.h>
+#include <UHH2/ZprimeSemiLeptonic/include/TopTagScaleFactor.h>
 
 #include <UHH2/common/include/TTbarGen.h>
 #include <UHH2/common/include/TTbarReconstruction.h>
@@ -129,6 +130,7 @@ protected:
   uhh2::Event::Handle<float> h_Ak8_j1_pt;
   uhh2::Event::Handle<float> h_Ak8_j1_tau21;
   uhh2::Event::Handle<float> h_Ak8_j1_tau32;
+  uhh2::Event::Handle<float> h_Ak8_j1_deepak8tscore;
 
   uhh2::Event::Handle<float> h_Ak8_j2_E;
   uhh2::Event::Handle<float> h_Ak8_j2_eta;
@@ -137,6 +139,7 @@ protected:
   uhh2::Event::Handle<float> h_Ak8_j2_pt;
   uhh2::Event::Handle<float> h_Ak8_j2_tau21;
   uhh2::Event::Handle<float> h_Ak8_j2_tau32;
+  uhh2::Event::Handle<float> h_Ak8_j2_deepak8tscore;
 
   uhh2::Event::Handle<float> h_Ak8_j3_E;
   uhh2::Event::Handle<float> h_Ak8_j3_eta;
@@ -145,9 +148,9 @@ protected:
   uhh2::Event::Handle<float> h_Ak8_j3_pt;
   uhh2::Event::Handle<float> h_Ak8_j3_tau21;
   uhh2::Event::Handle<float> h_Ak8_j3_tau32;
+  uhh2::Event::Handle<float> h_Ak8_j3_deepak8tscore;
 
   uhh2::Event::Handle<float> h_N_Ak8;
-
 };
 
 
@@ -211,6 +214,7 @@ NeuralNetworkModule::NeuralNetworkModule(Context& ctx, const std::string & Model
   h_Ak8_j1_pt    = ctx.get_handle<float>("Ak8_j1_pt");
   h_Ak8_j1_tau21 = ctx.get_handle<float>("Ak8_j1_tau21");
   h_Ak8_j1_tau32 = ctx.get_handle<float>("Ak8_j1_tau32");
+  h_Ak8_j1_deepak8tscore = ctx.get_handle<float>("Ak8_j1_deepak8tscore");
 
   h_Ak8_j2_E     = ctx.get_handle<float>("Ak8_j2_E");
   h_Ak8_j2_eta   = ctx.get_handle<float>("Ak8_j2_eta");
@@ -219,6 +223,7 @@ NeuralNetworkModule::NeuralNetworkModule(Context& ctx, const std::string & Model
   h_Ak8_j2_pt    = ctx.get_handle<float>("Ak8_j2_pt");
   h_Ak8_j2_tau21 = ctx.get_handle<float>("Ak8_j2_tau21");
   h_Ak8_j2_tau32 = ctx.get_handle<float>("Ak8_j2_tau32");
+  h_Ak8_j2_deepak8tscore = ctx.get_handle<float>("Ak8_j2_deepak8tscore");
 
   h_Ak8_j3_E     = ctx.get_handle<float>("Ak8_j3_E");
   h_Ak8_j3_eta   = ctx.get_handle<float>("Ak8_j3_eta");
@@ -227,27 +232,27 @@ NeuralNetworkModule::NeuralNetworkModule(Context& ctx, const std::string & Model
   h_Ak8_j3_pt    = ctx.get_handle<float>("Ak8_j3_pt");
   h_Ak8_j3_tau21 = ctx.get_handle<float>("Ak8_j3_tau21");
   h_Ak8_j3_tau32 = ctx.get_handle<float>("Ak8_j3_tau32");
+  h_Ak8_j3_deepak8tscore = ctx.get_handle<float>("Ak8_j3_deepak8tscore");
 
   h_N_Ak8 = ctx.get_handle<float>("N_Ak8");
-
 }
 
 void NeuralNetworkModule::CreateInputs(Event & event){
   NNInputs.clear();
   NNoutputs.clear();
 
-  string varname[59];
-  string scal[59];
-  string mean[59];
-  string std[59];
-  double mean_val[59];
-  double std_val[59];
+  string varname[62];
+  string scal[62];
+  string mean[62];
+  string std[62];
+  double mean_val[62];
+  double std_val[62];
   //Only Ele or Mu variables!!
-  //ifstream normfile ("/nfs/dust/cms/user/deleokse/RunII_106_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/KerasNN/NN_DeepAK8_UL17_muon/NormInfo.txt", ios::in);
-  ifstream normfile ("/nfs/dust/cms/user/deleokse/RunII_106_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/KerasNN/NN_DeepAK8_UL18_ele/NormInfo.txt", ios::in);
+  ifstream normfile ("/nfs/dust/cms/user/jabuschh/uhh2-106X_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/KerasNN/NN_DeepAK8_UL17_muon/NormInfo.txt", ios::in);
+   // ifstream normfile ("/nfs/dust/cms/user/jabuschh/uhh2-106X_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/KerasNN/NN_DeepAK8_UL17_ele/NormInfo.txt", ios::in);
   if(!normfile.good()) throw runtime_error("NeuralNetworkModule: The specified norm file does not exist.");
   if (normfile.is_open()){
-    for(int i = 0; i < 59; ++i)
+    for(int i = 0; i < 62; ++i)
     {
       normfile >> varname[i] >> scal[i] >> mean[i] >> std[i];
       mean_val[i] = std::stod(mean[i]);
@@ -256,16 +261,13 @@ void NeuralNetworkModule::CreateInputs(Event & event){
     normfile.close();
   }
 
-
-  NNInputs.push_back( tensorflow::Tensor(tensorflow::DT_FLOAT, {1, 59}));
-
+  NNInputs.push_back( tensorflow::Tensor(tensorflow::DT_FLOAT, {1, 62}));
 
   //Only Ele or Mu variables!!
+  vector<uhh2::Event::Handle<float>> inputs = { h_Ak4_j1_E, h_Ak4_j1_deepjetbscore, h_Ak4_j1_eta, h_Ak4_j1_m, h_Ak4_j1_phi, h_Ak4_j1_pt,h_Ak4_j2_E,h_Ak4_j2_deepjetbscore,h_Ak4_j2_eta,h_Ak4_j2_m,h_Ak4_j2_phi,h_Ak4_j2_pt,h_Ak4_j3_E,h_Ak4_j3_deepjetbscore,h_Ak4_j3_eta,h_Ak4_j3_m,h_Ak4_j3_phi, h_Ak4_j3_pt,  h_Ak4_j4_E, h_Ak4_j4_deepjetbscore,  h_Ak4_j4_eta, h_Ak4_j4_m,   h_Ak4_j4_phi, h_Ak4_j4_pt,  h_Ak4_j5_E, h_Ak4_j5_deepjetbscore,  h_Ak4_j5_eta, h_Ak4_j5_m,   h_Ak4_j5_phi, h_Ak4_j5_pt,  h_Ak8_j1_E, h_Ak8_j1_deepak8tscore,    h_Ak8_j1_eta,   h_Ak8_j1_mSD,   h_Ak8_j1_phi,   h_Ak8_j1_pt,    h_Ak8_j1_tau21, h_Ak8_j1_tau32, h_Ak8_j2_E,  h_Ak8_j2_deepak8tscore,   h_Ak8_j2_eta,   h_Ak8_j2_mSD,   h_Ak8_j2_phi,   h_Ak8_j2_pt,    h_Ak8_j2_tau21, h_Ak8_j2_tau32, h_Ak8_j3_E,  h_Ak8_j3_deepak8tscore,   h_Ak8_j3_eta,   h_Ak8_j3_mSD,   h_Ak8_j3_phi,h_Ak8_j3_pt,h_Ak8_j3_tau21,h_Ak8_j3_tau32,h_MET_phi,h_MET_pt,h_Mu_E,  h_Mu_eta,h_Mu_phi,h_Mu_pt, h_N_Ak4,h_N_Ak8 };
+   // vector<uhh2::Event::Handle<float>> inputs = { h_Ak4_j1_E, h_Ak4_j1_deepjetbscore, h_Ak4_j1_eta, h_Ak4_j1_m, h_Ak4_j1_phi, h_Ak4_j1_pt,h_Ak4_j2_E,h_Ak4_j2_deepjetbscore,h_Ak4_j2_eta,h_Ak4_j2_m,h_Ak4_j2_phi,h_Ak4_j2_pt,h_Ak4_j3_E,h_Ak4_j3_deepjetbscore,h_Ak4_j3_eta,h_Ak4_j3_m,h_Ak4_j3_phi, h_Ak4_j3_pt,  h_Ak4_j4_E, h_Ak4_j4_deepjetbscore,  h_Ak4_j4_eta, h_Ak4_j4_m,   h_Ak4_j4_phi, h_Ak4_j4_pt,  h_Ak4_j5_E, h_Ak4_j5_deepjetbscore,  h_Ak4_j5_eta, h_Ak4_j5_m,   h_Ak4_j5_phi, h_Ak4_j5_pt,  h_Ak8_j1_E,   h_Ak8_j1_deepak8tscore,  h_Ak8_j1_eta,   h_Ak8_j1_mSD,   h_Ak8_j1_phi,   h_Ak8_j1_pt,    h_Ak8_j1_tau21, h_Ak8_j1_tau32, h_Ak8_j2_E,  h_Ak8_j2_deepak8tscore,   h_Ak8_j2_eta,   h_Ak8_j2_mSD,   h_Ak8_j2_phi,   h_Ak8_j2_pt,    h_Ak8_j2_tau21, h_Ak8_j2_tau32, h_Ak8_j3_E,  h_Ak8_j3_deepak8tscore,   h_Ak8_j3_eta,   h_Ak8_j3_mSD,   h_Ak8_j3_phi,h_Ak8_j3_pt,h_Ak8_j3_tau21,h_Ak8_j3_tau32,h_Ele_E, h_Ele_eta, h_Ele_phi, h_Ele_pt, h_MET_phi,h_MET_pt,h_N_Ak4,h_N_Ak8 };
 
-  // vector<uhh2::Event::Handle<float>> inputs = { h_Ak4_j1_E, h_Ak4_j1_deepjetbscore, h_Ak4_j1_eta, h_Ak4_j1_m, h_Ak4_j1_phi, h_Ak4_j1_pt,h_Ak4_j2_E,h_Ak4_j2_deepjetbscore,h_Ak4_j2_eta,h_Ak4_j2_m,h_Ak4_j2_phi,h_Ak4_j2_pt,h_Ak4_j3_E,h_Ak4_j3_deepjetbscore,h_Ak4_j3_eta,h_Ak4_j3_m,h_Ak4_j3_phi, h_Ak4_j3_pt,  h_Ak4_j4_E, h_Ak4_j4_deepjetbscore,  h_Ak4_j4_eta, h_Ak4_j4_m,   h_Ak4_j4_phi, h_Ak4_j4_pt,  h_Ak4_j5_E, h_Ak4_j5_deepjetbscore,  h_Ak4_j5_eta, h_Ak4_j5_m,   h_Ak4_j5_phi, h_Ak4_j5_pt,  h_Ak8_j1_E,     h_Ak8_j1_eta,   h_Ak8_j1_mSD,   h_Ak8_j1_phi,   h_Ak8_j1_pt,    h_Ak8_j1_tau21, h_Ak8_j1_tau32, h_Ak8_j2_E,     h_Ak8_j2_eta,   h_Ak8_j2_mSD,   h_Ak8_j2_phi,   h_Ak8_j2_pt,    h_Ak8_j2_tau21, h_Ak8_j2_tau32, h_Ak8_j3_E,     h_Ak8_j3_eta,   h_Ak8_j3_mSD,   h_Ak8_j3_phi,h_Ak8_j3_pt,h_Ak8_j3_tau21,h_Ak8_j3_tau32,h_MET_phi,h_MET_pt,h_Mu_E,  h_Mu_eta,h_Mu_phi,h_Mu_pt, h_N_Ak4,h_N_Ak8 };
-  vector<uhh2::Event::Handle<float>> inputs = { h_Ak4_j1_E, h_Ak4_j1_deepjetbscore, h_Ak4_j1_eta, h_Ak4_j1_m, h_Ak4_j1_phi, h_Ak4_j1_pt,h_Ak4_j2_E,h_Ak4_j2_deepjetbscore,h_Ak4_j2_eta,h_Ak4_j2_m,h_Ak4_j2_phi,h_Ak4_j2_pt,h_Ak4_j3_E,h_Ak4_j3_deepjetbscore,h_Ak4_j3_eta,h_Ak4_j3_m,h_Ak4_j3_phi, h_Ak4_j3_pt,  h_Ak4_j4_E, h_Ak4_j4_deepjetbscore,  h_Ak4_j4_eta, h_Ak4_j4_m,   h_Ak4_j4_phi, h_Ak4_j4_pt,  h_Ak4_j5_E, h_Ak4_j5_deepjetbscore,  h_Ak4_j5_eta, h_Ak4_j5_m,   h_Ak4_j5_phi, h_Ak4_j5_pt,  h_Ak8_j1_E,     h_Ak8_j1_eta,   h_Ak8_j1_mSD,   h_Ak8_j1_phi,   h_Ak8_j1_pt,    h_Ak8_j1_tau21, h_Ak8_j1_tau32, h_Ak8_j2_E,     h_Ak8_j2_eta,   h_Ak8_j2_mSD,   h_Ak8_j2_phi,   h_Ak8_j2_pt,    h_Ak8_j2_tau21, h_Ak8_j2_tau32, h_Ak8_j3_E,     h_Ak8_j3_eta,   h_Ak8_j3_mSD,   h_Ak8_j3_phi,h_Ak8_j3_pt,h_Ak8_j3_tau21,h_Ak8_j3_tau32,h_Ele_E, h_Ele_eta, h_Ele_phi, h_Ele_pt, h_MET_phi,h_MET_pt,h_N_Ak4,h_N_Ak8 };
-
-  for(int i = 0; i < 59; ++i){
+  for(int i = 0; i < 62; ++i){
     NNInputs.at(0).tensor<float, 2>()(0,i)  = (event.get(inputs.at(i))   - mean_val[i]) / (std_val[i]);
   }
 
@@ -325,8 +327,8 @@ protected:
   std::unique_ptr<uhh2::Selection> met_sel;
   std::unique_ptr<uhh2::Selection> htlep_sel;
   std::unique_ptr<Selection> sel_1btag, sel_2btag;
-  std::unique_ptr<Selection> HEM_selection;
-  unique_ptr<Selection> ThetaStar_selection_bin1, ThetaStar_selection_bin2, ThetaStar_selection_bin3;
+  unique_ptr<Selection> ThetaStar_selection_bin1, ThetaStar_selection_bin2, ThetaStar_selection_bin3, ThetaStar_selection_bin4, ThetaStar_selection_bin5, ThetaStar_selection_bin6;
+  unique_ptr<Selection> AbsThetaStar_selection_bin1, AbsThetaStar_selection_bin2, AbsThetaStar_selection_bin3, AbsThetaStar_selection_bin4, AbsThetaStar_selection_bin5;
 
   // NN variables handles
   unique_ptr<Variables_NN> Variables_module;
@@ -356,18 +358,40 @@ protected:
   std::unique_ptr<Hists> h_Zprime_SystVariations_DNN_output0_NoTopTag;
   std::unique_ptr<Hists> h_Zprime_SystVariations_DNN_output1_NoTopTag;
   std::unique_ptr<Hists> h_Zprime_SystVariations_DNN_output2_NoTopTag;
+  std::unique_ptr<Hists> h_Zprime_SystVariations_DNN_output0_abs_thetastar_bin1;
+  std::unique_ptr<Hists> h_Zprime_SystVariations_DNN_output0_abs_thetastar_bin2;
+  std::unique_ptr<Hists> h_Zprime_SystVariations_DNN_output0_abs_thetastar_bin3;
+  std::unique_ptr<Hists> h_Zprime_SystVariations_DNN_output0_abs_thetastar_bin4;
+  std::unique_ptr<Hists> h_Zprime_SystVariations_DNN_output0_abs_thetastar_bin5;
+  std::unique_ptr<Hists> h_Zprime_SystVariations_DNN_output0_TopTag_abs_thetastar_bin1;
+  std::unique_ptr<Hists> h_Zprime_SystVariations_DNN_output0_TopTag_abs_thetastar_bin2;
+  std::unique_ptr<Hists> h_Zprime_SystVariations_DNN_output0_TopTag_abs_thetastar_bin3;
+  std::unique_ptr<Hists> h_Zprime_SystVariations_DNN_output0_TopTag_abs_thetastar_bin4;
+  std::unique_ptr<Hists> h_Zprime_SystVariations_DNN_output0_TopTag_abs_thetastar_bin5;
+  std::unique_ptr<Hists> h_Zprime_SystVariations_DNN_output0_NoTopTag_abs_thetastar_bin1;
+  std::unique_ptr<Hists> h_Zprime_SystVariations_DNN_output0_NoTopTag_abs_thetastar_bin2;
+  std::unique_ptr<Hists> h_Zprime_SystVariations_DNN_output0_NoTopTag_abs_thetastar_bin3;
+  std::unique_ptr<Hists> h_Zprime_SystVariations_DNN_output0_NoTopTag_abs_thetastar_bin4;
+  std::unique_ptr<Hists> h_Zprime_SystVariations_DNN_output0_NoTopTag_abs_thetastar_bin5;
   std::unique_ptr<Hists> h_Zprime_SystVariations_DNN_output0_thetastar_bin1;
   std::unique_ptr<Hists> h_Zprime_SystVariations_DNN_output0_thetastar_bin2;
   std::unique_ptr<Hists> h_Zprime_SystVariations_DNN_output0_thetastar_bin3;
   std::unique_ptr<Hists> h_Zprime_SystVariations_DNN_output0_thetastar_bin4;
+  std::unique_ptr<Hists> h_Zprime_SystVariations_DNN_output0_thetastar_bin5;
+  std::unique_ptr<Hists> h_Zprime_SystVariations_DNN_output0_thetastar_bin6;
   std::unique_ptr<Hists> h_Zprime_SystVariations_DNN_output0_TopTag_thetastar_bin1;
   std::unique_ptr<Hists> h_Zprime_SystVariations_DNN_output0_TopTag_thetastar_bin2;
   std::unique_ptr<Hists> h_Zprime_SystVariations_DNN_output0_TopTag_thetastar_bin3;
   std::unique_ptr<Hists> h_Zprime_SystVariations_DNN_output0_TopTag_thetastar_bin4;
+  std::unique_ptr<Hists> h_Zprime_SystVariations_DNN_output0_TopTag_thetastar_bin5;
+  std::unique_ptr<Hists> h_Zprime_SystVariations_DNN_output0_TopTag_thetastar_bin6;
   std::unique_ptr<Hists> h_Zprime_SystVariations_DNN_output0_NoTopTag_thetastar_bin1;
   std::unique_ptr<Hists> h_Zprime_SystVariations_DNN_output0_NoTopTag_thetastar_bin2;
   std::unique_ptr<Hists> h_Zprime_SystVariations_DNN_output0_NoTopTag_thetastar_bin3;
   std::unique_ptr<Hists> h_Zprime_SystVariations_DNN_output0_NoTopTag_thetastar_bin4;
+  std::unique_ptr<Hists> h_Zprime_SystVariations_DNN_output0_NoTopTag_thetastar_bin5;
+  std::unique_ptr<Hists> h_Zprime_SystVariations_DNN_output0_NoTopTag_thetastar_bin6;
+
 
   // Hists with PDF variations
   std::unique_ptr<Hists> h_Zprime_PDFVariations_DNN_output0;
@@ -379,19 +403,39 @@ protected:
   std::unique_ptr<Hists> h_Zprime_PDFVariations_DNN_output0_NoTopTag;
   std::unique_ptr<Hists> h_Zprime_PDFVariations_DNN_output1_NoTopTag;
   std::unique_ptr<Hists> h_Zprime_PDFVariations_DNN_output2_NoTopTag;
+  std::unique_ptr<Hists> h_Zprime_PDFVariations_DNN_output0_abs_thetastar_bin1;
+  std::unique_ptr<Hists> h_Zprime_PDFVariations_DNN_output0_abs_thetastar_bin2;
+  std::unique_ptr<Hists> h_Zprime_PDFVariations_DNN_output0_abs_thetastar_bin3;
+  std::unique_ptr<Hists> h_Zprime_PDFVariations_DNN_output0_abs_thetastar_bin4;
+  std::unique_ptr<Hists> h_Zprime_PDFVariations_DNN_output0_abs_thetastar_bin5;
+  std::unique_ptr<Hists> h_Zprime_PDFVariations_DNN_output0_TopTag_abs_thetastar_bin1;
+  std::unique_ptr<Hists> h_Zprime_PDFVariations_DNN_output0_TopTag_abs_thetastar_bin2;
+  std::unique_ptr<Hists> h_Zprime_PDFVariations_DNN_output0_TopTag_abs_thetastar_bin3;
+  std::unique_ptr<Hists> h_Zprime_PDFVariations_DNN_output0_TopTag_abs_thetastar_bin4;
+  std::unique_ptr<Hists> h_Zprime_PDFVariations_DNN_output0_TopTag_abs_thetastar_bin5;
+  std::unique_ptr<Hists> h_Zprime_PDFVariations_DNN_output0_NoTopTag_abs_thetastar_bin1;
+  std::unique_ptr<Hists> h_Zprime_PDFVariations_DNN_output0_NoTopTag_abs_thetastar_bin2;
+  std::unique_ptr<Hists> h_Zprime_PDFVariations_DNN_output0_NoTopTag_abs_thetastar_bin3;
+  std::unique_ptr<Hists> h_Zprime_PDFVariations_DNN_output0_NoTopTag_abs_thetastar_bin4;
+  std::unique_ptr<Hists> h_Zprime_PDFVariations_DNN_output0_NoTopTag_abs_thetastar_bin5;
   std::unique_ptr<Hists> h_Zprime_PDFVariations_DNN_output0_thetastar_bin1;
   std::unique_ptr<Hists> h_Zprime_PDFVariations_DNN_output0_thetastar_bin2;
   std::unique_ptr<Hists> h_Zprime_PDFVariations_DNN_output0_thetastar_bin3;
   std::unique_ptr<Hists> h_Zprime_PDFVariations_DNN_output0_thetastar_bin4;
+  std::unique_ptr<Hists> h_Zprime_PDFVariations_DNN_output0_thetastar_bin5;
+  std::unique_ptr<Hists> h_Zprime_PDFVariations_DNN_output0_thetastar_bin6;
   std::unique_ptr<Hists> h_Zprime_PDFVariations_DNN_output0_TopTag_thetastar_bin1;
   std::unique_ptr<Hists> h_Zprime_PDFVariations_DNN_output0_TopTag_thetastar_bin2;
   std::unique_ptr<Hists> h_Zprime_PDFVariations_DNN_output0_TopTag_thetastar_bin3;
   std::unique_ptr<Hists> h_Zprime_PDFVariations_DNN_output0_TopTag_thetastar_bin4;
+  std::unique_ptr<Hists> h_Zprime_PDFVariations_DNN_output0_TopTag_thetastar_bin5;
+  std::unique_ptr<Hists> h_Zprime_PDFVariations_DNN_output0_TopTag_thetastar_bin6;
   std::unique_ptr<Hists> h_Zprime_PDFVariations_DNN_output0_NoTopTag_thetastar_bin1;
   std::unique_ptr<Hists> h_Zprime_PDFVariations_DNN_output0_NoTopTag_thetastar_bin2;
   std::unique_ptr<Hists> h_Zprime_PDFVariations_DNN_output0_NoTopTag_thetastar_bin3;
   std::unique_ptr<Hists> h_Zprime_PDFVariations_DNN_output0_NoTopTag_thetastar_bin4;
-
+  std::unique_ptr<Hists> h_Zprime_PDFVariations_DNN_output0_NoTopTag_thetastar_bin5;
+  std::unique_ptr<Hists> h_Zprime_PDFVariations_DNN_output0_NoTopTag_thetastar_bin6;
 
   // Configuration
   bool isMC, ishotvr, isdeepAK8;
@@ -464,6 +508,7 @@ protected:
   Event::Handle<float> h_Ak8_j1_pt;
   Event::Handle<float> h_Ak8_j1_tau21;
   Event::Handle<float> h_Ak8_j1_tau32;
+  Event::Handle<float> h_Ak8_j1_deepak8tscore;
 
   Event::Handle<float> h_Ak8_j2_E;
   Event::Handle<float> h_Ak8_j2_eta;
@@ -472,6 +517,7 @@ protected:
   Event::Handle<float> h_Ak8_j2_pt;
   Event::Handle<float> h_Ak8_j2_tau21;
   Event::Handle<float> h_Ak8_j2_tau32;
+  Event::Handle<float> h_Ak8_j2_deepak8tscore;
 
   Event::Handle<float> h_Ak8_j3_E;
   Event::Handle<float> h_Ak8_j3_eta;
@@ -480,6 +526,7 @@ protected:
   Event::Handle<float> h_Ak8_j3_pt;
   Event::Handle<float> h_Ak8_j3_tau21;
   Event::Handle<float> h_Ak8_j3_tau32;
+  Event::Handle<float> h_Ak8_j3_deepak8tscore;
 
   Event::Handle<float> h_N_Ak8;
 
@@ -630,6 +677,7 @@ ZprimeAnalysisModule_applyNN::ZprimeAnalysisModule_applyNN(uhh2::Context& ctx){
   MCScale_module.reset(new MCScaleVariation(ctx));
   hadronic_top.reset(new HadronicTop(ctx));
   // sf_toptag.reset(new HOTVRScaleFactor(ctx, toptagID, ctx.get("Sys_TopTag", "nominal"), "HadronicTop", "TopTagSF", "HOTVRTopTagSFs"));
+  sf_toptag.reset(new TopTagScaleFactor(ctx));
   NLOCorrections_module.reset(new NLOCorrections(ctx));
   ps_weights.reset(new PSWeights(ctx));
 
@@ -662,17 +710,44 @@ ZprimeAnalysisModule_applyNN::ZprimeAnalysisModule_applyNN(uhh2::Context& ctx){
   Chi2CandidateMatched_selection.reset(new Chi2CandidateMatchedSelection(ctx));
   ZprimeTopTag_selection.reset(new ZprimeTopTagSelection(ctx));
 
-  HEM_selection.reset(new HEMSelection(ctx)); // HEM issue in 2018, veto on leptons and jets
-
   Variables_module.reset(new Variables_NN(ctx, mode)); // variables for NN
 
   // Selections on scattering angle theta star
-  double theta_bin1(0.5);
-  ThetaStar_selection_bin1.reset(new ThetaStarSelection(ctx, theta_bin1));
-  double theta_bin2(0.7);
-  ThetaStar_selection_bin2.reset(new ThetaStarSelection(ctx, theta_bin2));
-  double theta_bin3(0.9);
-  ThetaStar_selection_bin3.reset(new ThetaStarSelection(ctx, theta_bin3));
+  double theta_bin1_low (-1.);
+  double theta_bin1_high (-0.7);
+  ThetaStar_selection_bin1.reset(new ThetaStarSelection(ctx, theta_bin1_low, theta_bin1_high));
+  double theta_bin2_low (-0.7);
+  double theta_bin2_high (-0.5);
+  ThetaStar_selection_bin2.reset(new ThetaStarSelection(ctx, theta_bin2_low, theta_bin2_high));
+  double theta_bin3_low (-0.5);
+  double theta_bin3_high (0.0);
+  ThetaStar_selection_bin3.reset(new ThetaStarSelection(ctx, theta_bin3_low, theta_bin3_high));
+  double theta_bin4_low (0.0);
+  double theta_bin4_high (0.5);
+  ThetaStar_selection_bin4.reset(new ThetaStarSelection(ctx, theta_bin4_low, theta_bin4_high));
+  double theta_bin5_low (0.5);
+  double theta_bin5_high (0.7);
+  ThetaStar_selection_bin5.reset(new ThetaStarSelection(ctx, theta_bin5_low, theta_bin5_high));
+  double theta_bin6_low (0.7);
+  double theta_bin6_high (1.);
+  ThetaStar_selection_bin6.reset(new ThetaStarSelection(ctx, theta_bin6_low, theta_bin6_high));
+
+  // Selections on absolute value of scattering angle theta star
+  double abs_theta_bin1_low (0.);
+  double abs_theta_bin1_high (0.4);
+  AbsThetaStar_selection_bin1.reset(new AbsThetaStarSelection(ctx, abs_theta_bin1_low, abs_theta_bin1_high));
+  double abs_theta_bin2_low (0.4);
+  double abs_theta_bin2_high (0.6);
+  AbsThetaStar_selection_bin2.reset(new AbsThetaStarSelection(ctx, abs_theta_bin2_low, abs_theta_bin2_high));
+  double abs_theta_bin3_low (0.6);
+  double abs_theta_bin3_high (0.8);
+  AbsThetaStar_selection_bin3.reset(new AbsThetaStarSelection(ctx, abs_theta_bin3_low, abs_theta_bin3_high));
+  double abs_theta_bin4_low (0.8);
+  double abs_theta_bin4_high (0.9);
+  AbsThetaStar_selection_bin4.reset(new AbsThetaStarSelection(ctx, abs_theta_bin4_low, abs_theta_bin4_high));
+  double abs_theta_bin5_low (0.9);
+  double abs_theta_bin5_high (1.);
+  AbsThetaStar_selection_bin5.reset(new AbsThetaStarSelection(ctx, abs_theta_bin5_low, abs_theta_bin5_high));
 
   // Top Taggers
   TopTaggerHOTVR.reset(new HOTVRTopTagger(ctx));
@@ -707,18 +782,39 @@ ZprimeAnalysisModule_applyNN::ZprimeAnalysisModule_applyNN(uhh2::Context& ctx){
   h_Zprime_SystVariations_DNN_output0_NoTopTag.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "Zprime_SystVariations_DNN_output0_NoTopTag"));
   h_Zprime_SystVariations_DNN_output1_NoTopTag.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "Zprime_SystVariations_DNN_output1_NoTopTag"));
   h_Zprime_SystVariations_DNN_output2_NoTopTag.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "Zprime_SystVariations_DNN_output2_NoTopTag"));
+  h_Zprime_SystVariations_DNN_output0_abs_thetastar_bin1.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "Zprime_SystVariations_DNN_output0_abs_thetastar_bin1"));
+  h_Zprime_SystVariations_DNN_output0_abs_thetastar_bin2.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "Zprime_SystVariations_DNN_output0_abs_thetastar_bin2"));
+  h_Zprime_SystVariations_DNN_output0_abs_thetastar_bin3.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "Zprime_SystVariations_DNN_output0_abs_thetastar_bin3"));
+  h_Zprime_SystVariations_DNN_output0_abs_thetastar_bin4.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "Zprime_SystVariations_DNN_output0_abs_thetastar_bin4"));
+  h_Zprime_SystVariations_DNN_output0_abs_thetastar_bin5.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "Zprime_SystVariations_DNN_output0_abs_thetastar_bin5"));
+  h_Zprime_SystVariations_DNN_output0_TopTag_abs_thetastar_bin1.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "Zprime_SystVariations_DNN_output0_TopTag_abs_thetastar_bin1"));
+  h_Zprime_SystVariations_DNN_output0_TopTag_abs_thetastar_bin2.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "Zprime_SystVariations_DNN_output0_TopTag_abs_thetastar_bin2"));
+  h_Zprime_SystVariations_DNN_output0_TopTag_abs_thetastar_bin3.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "Zprime_SystVariations_DNN_output0_TopTag_abs_thetastar_bin3"));
+  h_Zprime_SystVariations_DNN_output0_TopTag_abs_thetastar_bin4.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "Zprime_SystVariations_DNN_output0_TopTag_abs_thetastar_bin4"));
+  h_Zprime_SystVariations_DNN_output0_TopTag_abs_thetastar_bin5.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "Zprime_SystVariations_DNN_output0_TopTag_abs_thetastar_bin5"));
+  h_Zprime_SystVariations_DNN_output0_NoTopTag_abs_thetastar_bin1.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "Zprime_SystVariations_DNN_output0_NoTopTag_abs_thetastar_bin1"));
+  h_Zprime_SystVariations_DNN_output0_NoTopTag_abs_thetastar_bin2.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "Zprime_SystVariations_DNN_output0_NoTopTag_abs_thetastar_bin2"));
+  h_Zprime_SystVariations_DNN_output0_NoTopTag_abs_thetastar_bin3.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "Zprime_SystVariations_DNN_output0_NoTopTag_abs_thetastar_bin3"));
+  h_Zprime_SystVariations_DNN_output0_NoTopTag_abs_thetastar_bin4.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "Zprime_SystVariations_DNN_output0_NoTopTag_abs_thetastar_bin4"));
+  h_Zprime_SystVariations_DNN_output0_NoTopTag_abs_thetastar_bin5.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "Zprime_SystVariations_DNN_output0_NoTopTag_abs_thetastar_bin5"));
   h_Zprime_SystVariations_DNN_output0_thetastar_bin1.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "Zprime_SystVariations_DNN_output0_thetastar_bin1"));
   h_Zprime_SystVariations_DNN_output0_thetastar_bin2.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "Zprime_SystVariations_DNN_output0_thetastar_bin2"));
   h_Zprime_SystVariations_DNN_output0_thetastar_bin3.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "Zprime_SystVariations_DNN_output0_thetastar_bin3"));
   h_Zprime_SystVariations_DNN_output0_thetastar_bin4.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "Zprime_SystVariations_DNN_output0_thetastar_bin4"));
+  h_Zprime_SystVariations_DNN_output0_thetastar_bin5.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "Zprime_SystVariations_DNN_output0_thetastar_bin5"));
+  h_Zprime_SystVariations_DNN_output0_thetastar_bin6.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "Zprime_SystVariations_DNN_output0_thetastar_bin6"));
   h_Zprime_SystVariations_DNN_output0_TopTag_thetastar_bin1.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "Zprime_SystVariations_DNN_output0_TopTag_thetastar_bin1"));
   h_Zprime_SystVariations_DNN_output0_TopTag_thetastar_bin2.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "Zprime_SystVariations_DNN_output0_TopTag_thetastar_bin2"));
   h_Zprime_SystVariations_DNN_output0_TopTag_thetastar_bin3.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "Zprime_SystVariations_DNN_output0_TopTag_thetastar_bin3"));
   h_Zprime_SystVariations_DNN_output0_TopTag_thetastar_bin4.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "Zprime_SystVariations_DNN_output0_TopTag_thetastar_bin4"));
+  h_Zprime_SystVariations_DNN_output0_TopTag_thetastar_bin5.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "Zprime_SystVariations_DNN_output0_TopTag_thetastar_bin5"));
+  h_Zprime_SystVariations_DNN_output0_TopTag_thetastar_bin6.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "Zprime_SystVariations_DNN_output0_TopTag_thetastar_bin6"));
   h_Zprime_SystVariations_DNN_output0_NoTopTag_thetastar_bin1.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "Zprime_SystVariations_DNN_output0_NoTopTag_thetastar_bin1"));
   h_Zprime_SystVariations_DNN_output0_NoTopTag_thetastar_bin2.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "Zprime_SystVariations_DNN_output0_NoTopTag_thetastar_bin2"));
   h_Zprime_SystVariations_DNN_output0_NoTopTag_thetastar_bin3.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "Zprime_SystVariations_DNN_output0_NoTopTag_thetastar_bin3"));
   h_Zprime_SystVariations_DNN_output0_NoTopTag_thetastar_bin4.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "Zprime_SystVariations_DNN_output0_NoTopTag_thetastar_bin4"));
+  h_Zprime_SystVariations_DNN_output0_NoTopTag_thetastar_bin5.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "Zprime_SystVariations_DNN_output0_NoTopTag_thetastar_bin5"));
+  h_Zprime_SystVariations_DNN_output0_NoTopTag_thetastar_bin6.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "Zprime_SystVariations_DNN_output0_NoTopTag_thetastar_bin6"));
 
   // Hist with PDF variations
   h_Zprime_PDFVariations_DNN_output0.reset(new ZprimeSemiLeptonicPDFHists(ctx, "Zprime_PDFVariations_DNN_output0"));
@@ -730,21 +826,42 @@ ZprimeAnalysisModule_applyNN::ZprimeAnalysisModule_applyNN(uhh2::Context& ctx){
   h_Zprime_PDFVariations_DNN_output0_NoTopTag.reset(new ZprimeSemiLeptonicPDFHists(ctx, "Zprime_PDFVariations_DNN_output0_NoTopTag"));
   h_Zprime_PDFVariations_DNN_output1_NoTopTag.reset(new ZprimeSemiLeptonicPDFHists(ctx, "Zprime_PDFVariations_DNN_output1_NoTopTag"));
   h_Zprime_PDFVariations_DNN_output2_NoTopTag.reset(new ZprimeSemiLeptonicPDFHists(ctx, "Zprime_PDFVariations_DNN_output2_NoTopTag"));
+  h_Zprime_PDFVariations_DNN_output0_abs_thetastar_bin1.reset(new ZprimeSemiLeptonicPDFHists(ctx, "Zprime_PDFVariations_DNN_output0_abs_thetastar_bin1"));
+  h_Zprime_PDFVariations_DNN_output0_abs_thetastar_bin2.reset(new ZprimeSemiLeptonicPDFHists(ctx, "Zprime_PDFVariations_DNN_output0_abs_thetastar_bin2"));
+  h_Zprime_PDFVariations_DNN_output0_abs_thetastar_bin3.reset(new ZprimeSemiLeptonicPDFHists(ctx, "Zprime_PDFVariations_DNN_output0_abs_thetastar_bin3"));
+  h_Zprime_PDFVariations_DNN_output0_abs_thetastar_bin4.reset(new ZprimeSemiLeptonicPDFHists(ctx, "Zprime_PDFVariations_DNN_output0_abs_thetastar_bin4"));
+  h_Zprime_PDFVariations_DNN_output0_abs_thetastar_bin5.reset(new ZprimeSemiLeptonicPDFHists(ctx, "Zprime_PDFVariations_DNN_output0_abs_thetastar_bin5"));
+  h_Zprime_PDFVariations_DNN_output0_TopTag_abs_thetastar_bin1.reset(new ZprimeSemiLeptonicPDFHists(ctx, "Zprime_PDFVariations_DNN_output0_TopTag_abs_thetastar_bin1"));
+  h_Zprime_PDFVariations_DNN_output0_TopTag_abs_thetastar_bin2.reset(new ZprimeSemiLeptonicPDFHists(ctx, "Zprime_PDFVariations_DNN_output0_TopTag_abs_thetastar_bin2"));
+  h_Zprime_PDFVariations_DNN_output0_TopTag_abs_thetastar_bin3.reset(new ZprimeSemiLeptonicPDFHists(ctx, "Zprime_PDFVariations_DNN_output0_TopTag_abs_thetastar_bin3"));
+  h_Zprime_PDFVariations_DNN_output0_TopTag_abs_thetastar_bin4.reset(new ZprimeSemiLeptonicPDFHists(ctx, "Zprime_PDFVariations_DNN_output0_TopTag_abs_thetastar_bin4"));
+  h_Zprime_PDFVariations_DNN_output0_TopTag_abs_thetastar_bin5.reset(new ZprimeSemiLeptonicPDFHists(ctx, "Zprime_PDFVariations_DNN_output0_TopTag_abs_thetastar_bin5"));
+  h_Zprime_PDFVariations_DNN_output0_NoTopTag_abs_thetastar_bin1.reset(new ZprimeSemiLeptonicPDFHists(ctx, "Zprime_PDFVariations_DNN_output0_NoTopTag_abs_thetastar_bin1"));
+  h_Zprime_PDFVariations_DNN_output0_NoTopTag_abs_thetastar_bin2.reset(new ZprimeSemiLeptonicPDFHists(ctx, "Zprime_PDFVariations_DNN_output0_NoTopTag_abs_thetastar_bin2"));
+  h_Zprime_PDFVariations_DNN_output0_NoTopTag_abs_thetastar_bin3.reset(new ZprimeSemiLeptonicPDFHists(ctx, "Zprime_PDFVariations_DNN_output0_NoTopTag_abs_thetastar_bin3"));
+  h_Zprime_PDFVariations_DNN_output0_NoTopTag_abs_thetastar_bin4.reset(new ZprimeSemiLeptonicPDFHists(ctx, "Zprime_PDFVariations_DNN_output0_NoTopTag_abs_thetastar_bin4"));
+  h_Zprime_PDFVariations_DNN_output0_NoTopTag_abs_thetastar_bin5.reset(new ZprimeSemiLeptonicPDFHists(ctx, "Zprime_PDFVariations_DNN_output0_NoTopTag_abs_thetastar_bin5"));
   h_Zprime_PDFVariations_DNN_output0_thetastar_bin1.reset(new ZprimeSemiLeptonicPDFHists(ctx, "Zprime_PDFVariations_DNN_output0_thetastar_bin1"));
   h_Zprime_PDFVariations_DNN_output0_thetastar_bin2.reset(new ZprimeSemiLeptonicPDFHists(ctx, "Zprime_PDFVariations_DNN_output0_thetastar_bin2"));
   h_Zprime_PDFVariations_DNN_output0_thetastar_bin3.reset(new ZprimeSemiLeptonicPDFHists(ctx, "Zprime_PDFVariations_DNN_output0_thetastar_bin3"));
   h_Zprime_PDFVariations_DNN_output0_thetastar_bin4.reset(new ZprimeSemiLeptonicPDFHists(ctx, "Zprime_PDFVariations_DNN_output0_thetastar_bin4"));
+  h_Zprime_PDFVariations_DNN_output0_thetastar_bin5.reset(new ZprimeSemiLeptonicPDFHists(ctx, "Zprime_PDFVariations_DNN_output0_thetastar_bin5"));
+  h_Zprime_PDFVariations_DNN_output0_thetastar_bin6.reset(new ZprimeSemiLeptonicPDFHists(ctx, "Zprime_PDFVariations_DNN_output0_thetastar_bin6"));
   h_Zprime_PDFVariations_DNN_output0_TopTag_thetastar_bin1.reset(new ZprimeSemiLeptonicPDFHists(ctx, "Zprime_PDFVariations_DNN_output0_TopTag_thetastar_bin1"));
   h_Zprime_PDFVariations_DNN_output0_TopTag_thetastar_bin2.reset(new ZprimeSemiLeptonicPDFHists(ctx, "Zprime_PDFVariations_DNN_output0_TopTag_thetastar_bin2"));
   h_Zprime_PDFVariations_DNN_output0_TopTag_thetastar_bin3.reset(new ZprimeSemiLeptonicPDFHists(ctx, "Zprime_PDFVariations_DNN_output0_TopTag_thetastar_bin3"));
   h_Zprime_PDFVariations_DNN_output0_TopTag_thetastar_bin4.reset(new ZprimeSemiLeptonicPDFHists(ctx, "Zprime_PDFVariations_DNN_output0_TopTag_thetastar_bin4"));
+  h_Zprime_PDFVariations_DNN_output0_TopTag_thetastar_bin5.reset(new ZprimeSemiLeptonicPDFHists(ctx, "Zprime_PDFVariations_DNN_output0_TopTag_thetastar_bin5"));
+  h_Zprime_PDFVariations_DNN_output0_TopTag_thetastar_bin6.reset(new ZprimeSemiLeptonicPDFHists(ctx, "Zprime_PDFVariations_DNN_output0_TopTag_thetastar_bin6"));
   h_Zprime_PDFVariations_DNN_output0_NoTopTag_thetastar_bin1.reset(new ZprimeSemiLeptonicPDFHists(ctx, "Zprime_PDFVariations_DNN_output0_NoTopTag_thetastar_bin1"));
   h_Zprime_PDFVariations_DNN_output0_NoTopTag_thetastar_bin2.reset(new ZprimeSemiLeptonicPDFHists(ctx, "Zprime_PDFVariations_DNN_output0_NoTopTag_thetastar_bin2"));
   h_Zprime_PDFVariations_DNN_output0_NoTopTag_thetastar_bin3.reset(new ZprimeSemiLeptonicPDFHists(ctx, "Zprime_PDFVariations_DNN_output0_NoTopTag_thetastar_bin3"));
   h_Zprime_PDFVariations_DNN_output0_NoTopTag_thetastar_bin4.reset(new ZprimeSemiLeptonicPDFHists(ctx, "Zprime_PDFVariations_DNN_output0_NoTopTag_thetastar_bin4"));
+  h_Zprime_PDFVariations_DNN_output0_NoTopTag_thetastar_bin5.reset(new ZprimeSemiLeptonicPDFHists(ctx, "Zprime_PDFVariations_DNN_output0_NoTopTag_thetastar_bin5"));
+  h_Zprime_PDFVariations_DNN_output0_NoTopTag_thetastar_bin6.reset(new ZprimeSemiLeptonicPDFHists(ctx, "Zprime_PDFVariations_DNN_output0_NoTopTag_thetastar_bin6"));
 
   // Book histograms
-  vector<string> histogram_tags = {"Weights_Init", "Weights_HEM", "Weights_PU", "Weights_Lumi", "Weights_TopPt", "Weights_MCScale", "Weights_Prefiring", "Weights_TopTag_SF", "Weights_PS", "NLOCorrections", "IdMuon_SF", "IdEle_SF", "IsoMuon_SF", "RecoEle_SF", "MuonReco_SF", "TriggerMuon_SF", "BeforeBtagSF", "AfterBtagSF", "AfterCustomBtagSF", "TriggerEle_SF", "NNInputsBeforeReweight", "TopTagVeto", "DNN_output0_beforeChi2Cut", "DNN_output0_TopTag_beforeChi2Cut", "DNN_output0_NoTopTag_beforeChi2Cut", "DNN_output0","DNN_output1","DNN_output2","DNN_output0_TopTag","DNN_output1_TopTag","DNN_output2_TopTag","DNN_output0_NoTopTag","DNN_output1_NoTopTag","DNN_output2_NoTopTag", "DNN_output0_thetastar_bin1", "DNN_output0_thetastar_bin2", "DNN_output0_thetastar_bin3", "DNN_output0_thetastar_bin4", "DNN_output0_TopTag_thetastar_bin1", "DNN_output0_TopTag_thetastar_bin2", "DNN_output0_TopTag_thetastar_bin3", "DNN_output0_TopTag_thetastar_bin4", "DNN_output0_NoTopTag_thetastar_bin1", "DNN_output0_NoTopTag_thetastar_bin2", "DNN_output0_NoTopTag_thetastar_bin3", "DNN_output0_NoTopTag_thetastar_bin4"};
+  vector<string> histogram_tags = {"Weights_Init", "Weights_PU", "Weights_Lumi", "Weights_TopPt", "Weights_MCScale", "Weights_Prefiring", "Weights_TopTag_SF", "Weights_PS", "NLOCorrections", "IdMuon_SF", "IdEle_SF", "IsoMuon_SF", "RecoEle_SF", "MuonReco_SF", "TriggerMuon_SF", "BeforeBtagSF", "AfterBtagSF", "AfterCustomBtagSF", "TriggerEle_SF", "NNInputsBeforeReweight", "TopTagVeto", "DNN_output0_beforeChi2Cut", "DNN_output0_TopTag_beforeChi2Cut", "DNN_output0_NoTopTag_beforeChi2Cut", "DNN_output0","DNN_output1","DNN_output2","DNN_output0_TopTag","DNN_output1_TopTag","DNN_output2_TopTag","DNN_output0_NoTopTag","DNN_output1_NoTopTag","DNN_output2_NoTopTag", "DNN_output0_abs_thetastar_bin1", "DNN_output0_abs_thetastar_bin2", "DNN_output0_abs_thetastar_bin3", "DNN_output0_abs_thetastar_bin4", "DNN_output0_abs_thetastar_bin5", "DNN_output0_TopTag_abs_thetastar_bin1", "DNN_output0_TopTag_abs_thetastar_bin2", "DNN_output0_TopTag_abs_thetastar_bin3", "DNN_output0_TopTag_abs_thetastar_bin4", "DNN_output0_TopTag_abs_thetastar_bin5", "DNN_output0_NoTopTag_abs_thetastar_bin1", "DNN_output0_NoTopTag_abs_thetastar_bin2", "DNN_output0_NoTopTag_abs_thetastar_bin3", "DNN_output0_NoTopTag_abs_thetastar_bin4", "DNN_output0_NoTopTag_abs_thetastar_bin5", "DNN_output0_thetastar_bin1", "DNN_output0_thetastar_bin2", "DNN_output0_thetastar_bin3", "DNN_output0_thetastar_bin4", "DNN_output0_thetastar_bin5", "DNN_output0_thetastar_bin6", "DNN_output0_TopTag_thetastar_bin1", "DNN_output0_TopTag_thetastar_bin2", "DNN_output0_TopTag_thetastar_bin3", "DNN_output0_TopTag_thetastar_bin4", "DNN_output0_TopTag_thetastar_bin5", "DNN_output0_TopTag_thetastar_bin6", "DNN_output0_NoTopTag_thetastar_bin1", "DNN_output0_NoTopTag_thetastar_bin2", "DNN_output0_NoTopTag_thetastar_bin3", "DNN_output0_NoTopTag_thetastar_bin4", "DNN_output0_NoTopTag_thetastar_bin5", "DNN_output0_NoTopTag_thetastar_bin6"};
   book_histograms(ctx, histogram_tags);
 
   h_MulticlassNN_output.reset(new ZprimeSemiLeptonicMulticlassNNHists(ctx, "MulticlassNN"));
@@ -768,12 +885,12 @@ ZprimeAnalysisModule_applyNN::ZprimeAnalysisModule_applyNN(uhh2::Context& ctx){
     if( (ctx.get("dataset_version").find("WW") != std::string::npos) || (ctx.get("dataset_version").find("ZZ") != std::string::npos) || (ctx.get("dataset_version").find("WZ") != std::string::npos) ) sample_name = "Diboson";
 
     if(isMuon){
-      TFile* f_btag2Dsf_muon = new TFile("/nfs/dust/cms/user/deleokse/RunII_106_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/data/customBtagSF_muon_"+year+".root");
+      TFile* f_btag2Dsf_muon = new TFile("/nfs/dust/cms/user/deleokse/RunII_106_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/macros/src/files_BTagSF/customBtagSF_muon_"+year+".root");
       ratio_hist_muon = (TH2F*)f_btag2Dsf_muon->Get("N_Jets_vs_HT_" + sample_name);
       ratio_hist_muon->SetDirectory(0);
     }
     else if(!isMuon){
-      TFile* f_btag2Dsf_ele = new TFile("/nfs/dust/cms/user/deleokse/RunII_106_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/data/customBtagSF_electron_"+year+".root");
+      TFile* f_btag2Dsf_ele = new TFile("/nfs/dust/cms/user/deleokse/RunII_106_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/macros/src/files_BTagSF/customBtagSF_electron_"+year+".root");
       ratio_hist_ele = (TH2F*)f_btag2Dsf_ele->Get("N_Jets_vs_HT_" + sample_name);
       ratio_hist_ele->SetDirectory(0);
     }
@@ -836,6 +953,7 @@ ZprimeAnalysisModule_applyNN::ZprimeAnalysisModule_applyNN(uhh2::Context& ctx){
   h_Ak8_j1_pt    = ctx.get_handle<float>("Ak8_j1_pt");
   h_Ak8_j1_tau21 = ctx.get_handle<float>("Ak8_j1_tau21");
   h_Ak8_j1_tau32 = ctx.get_handle<float>("Ak8_j1_tau32");
+  h_Ak8_j1_deepak8tscore = ctx.get_handle<float>("Ak8_j1_deepak8tscore");
 
   h_Ak8_j2_E     = ctx.get_handle<float>("Ak8_j2_E");
   h_Ak8_j2_eta   = ctx.get_handle<float>("Ak8_j2_eta");
@@ -844,6 +962,7 @@ ZprimeAnalysisModule_applyNN::ZprimeAnalysisModule_applyNN(uhh2::Context& ctx){
   h_Ak8_j2_pt    = ctx.get_handle<float>("Ak8_j2_pt");
   h_Ak8_j2_tau21 = ctx.get_handle<float>("Ak8_j2_tau21");
   h_Ak8_j2_tau32 = ctx.get_handle<float>("Ak8_j2_tau32");
+  h_Ak8_j2_deepak8tscore = ctx.get_handle<float>("Ak8_j2_deepak8tscore");
 
   h_Ak8_j3_E     = ctx.get_handle<float>("Ak8_j3_E");
   h_Ak8_j3_eta   = ctx.get_handle<float>("Ak8_j3_eta");
@@ -852,6 +971,7 @@ ZprimeAnalysisModule_applyNN::ZprimeAnalysisModule_applyNN(uhh2::Context& ctx){
   h_Ak8_j3_pt    = ctx.get_handle<float>("Ak8_j3_pt");
   h_Ak8_j3_tau21 = ctx.get_handle<float>("Ak8_j3_tau21");
   h_Ak8_j3_tau32 = ctx.get_handle<float>("Ak8_j3_tau32");
+  h_Ak8_j3_deepak8tscore = ctx.get_handle<float>("Ak8_j3_deepak8tscore");
 
   h_N_Ak8 = ctx.get_handle<float>("N_Ak8");
 
@@ -860,9 +980,8 @@ ZprimeAnalysisModule_applyNN::ZprimeAnalysisModule_applyNN(uhh2::Context& ctx){
   h_NNoutput1 = ctx.declare_event_output<double>("NNoutput1");
   h_NNoutput2 = ctx.declare_event_output<double>("NNoutput2");
   ////Only Ele or Mu variables!!
-  //NNModule.reset( new NeuralNetworkModule(ctx, "/nfs/dust/cms/user/deleokse/RunII_106_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/KerasNN/NN_DeepAK8_UL17_muon/model.pb", "/nfs/dust/cms/user/deleokse/RunII_106_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/KerasNN/NN_DeepAK8_UL17_muon/model.config.pbtxt"));
-  NNModule.reset( new NeuralNetworkModule(ctx, "/nfs/dust/cms/user/deleokse/RunII_106_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/KerasNN/NN_DeepAK8_UL18_ele/model.pb", "/nfs/dust/cms/user/deleokse/RunII_106_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/KerasNN/NN_DeepAK8_UL18_ele/model.config.pbtxt"));
-
+  NNModule.reset( new NeuralNetworkModule(ctx, "/nfs/dust/cms/user/jabuschh/uhh2-106X_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/KerasNN/NN_DeepAK8_UL17_muon/model.pb", "/nfs/dust/cms/user/jabuschh/uhh2-106X_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/KerasNN/NN_DeepAK8_UL17_muon/model.config.pbtxt"));
+   // NNModule.reset( new NeuralNetworkModule(ctx, "/nfs/dust/cms/user/jabuschh/uhh2-106X_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/KerasNN/NN_DeepAK8_UL17_ele/model.pb", "/nfs/dust/cms/user/jabuschh/uhh2-106X_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/KerasNN/NN_DeepAK8_UL17_ele/model.config.pbtxt"));
 }
 
 /*
@@ -893,17 +1012,12 @@ bool ZprimeAnalysisModule_applyNN::process(uhh2::Event& event){
     hadronic_top->process(event);
   }else if(isdeepAK8){
     TopTaggerDeepAK8->process(event);
+    hadronic_top->process(event);
   }
   if(debug) cout<<"Top Tagger ok"<<endl;
 
   fill_histograms(event, "Weights_Init");
   lumihists_Weights_Init->fill(event);
-
-  if(!HEM_selection->passes(event)){
-    if(!isMC) return false;
-    else event.weight = event.weight*(1-0.64774715284); // calculated following instructions ar https://twiki.cern.ch/twiki/bin/view/CMS/PdmV2018Analysis
-  }
-  fill_histograms(event, "Weights_HEM");
 
   // pileup weight
   PUWeight_module->process(event);
@@ -940,9 +1054,10 @@ bool ZprimeAnalysisModule_applyNN::process(uhh2::Event& event){
   fill_histograms(event, "Weights_PS");
   lumihists_Weights_PS->fill(event);
 
-  // HOTVR TopTag SFs
-  //if(ishotvr) sf_toptag->process(event);
-  //fill_histograms(event, "Weights_TopTag_SF");
+  // DeepAK8 TopTag SFs
+  if(isdeepAK8) sf_toptag->process(event);
+  if(debug) cout << "Weights_TopTag_SF: ok" << endl;
+  fill_histograms(event, "Weights_TopTag_SF");
 
   //Clean muon collection with ID based on muon pT
   double muon_pt_high(55.);
@@ -1182,6 +1297,78 @@ bool ZprimeAnalysisModule_applyNN::process(uhh2::Event& event){
     }
   }
 
+  //Define categories on absolute value of theta star to reduce ttbar background - only in SR == out0
+  if( out0 == max_score ){
+    if(Chi2_selection->passes(event)){  // cut on chi2<30 - only in SR == out0
+      if(AbsThetaStar_selection_bin1->passes(event)){
+        fill_histograms(event, "DNN_output0_abs_thetastar_bin1");
+        h_Zprime_SystVariations_DNN_output0_abs_thetastar_bin1->fill(event);
+        h_Zprime_PDFVariations_DNN_output0_abs_thetastar_bin1->fill(event);
+      }if(AbsThetaStar_selection_bin2->passes(event)){
+        fill_histograms(event, "DNN_output0_abs_thetastar_bin2");
+        h_Zprime_SystVariations_DNN_output0_abs_thetastar_bin2->fill(event);
+        h_Zprime_PDFVariations_DNN_output0_abs_thetastar_bin2->fill(event);
+      }if(AbsThetaStar_selection_bin3->passes(event)){
+        fill_histograms(event, "DNN_output0_abs_thetastar_bin3");
+        h_Zprime_SystVariations_DNN_output0_abs_thetastar_bin3->fill(event);
+        h_Zprime_PDFVariations_DNN_output0_abs_thetastar_bin3->fill(event);
+      }if(AbsThetaStar_selection_bin4->passes(event)){
+        fill_histograms(event, "DNN_output0_abs_thetastar_bin4");
+        h_Zprime_SystVariations_DNN_output0_abs_thetastar_bin4->fill(event);
+        h_Zprime_PDFVariations_DNN_output0_abs_thetastar_bin4->fill(event);
+      }if(AbsThetaStar_selection_bin5->passes(event)){
+        fill_histograms(event, "DNN_output0_abs_thetastar_bin5");
+        h_Zprime_SystVariations_DNN_output0_abs_thetastar_bin5->fill(event);
+        h_Zprime_PDFVariations_DNN_output0_abs_thetastar_bin5->fill(event);
+      }
+      if( ZprimeTopTag_selection->passes(event) ){
+        if(AbsThetaStar_selection_bin1->passes(event)){
+          fill_histograms(event, "DNN_output0_TopTag_abs_thetastar_bin1");
+          h_Zprime_SystVariations_DNN_output0_TopTag_abs_thetastar_bin1->fill(event);
+          h_Zprime_PDFVariations_DNN_output0_TopTag_abs_thetastar_bin1->fill(event);
+        }if(AbsThetaStar_selection_bin2->passes(event)){
+          fill_histograms(event, "DNN_output0_TopTag_abs_thetastar_bin2");
+          h_Zprime_SystVariations_DNN_output0_TopTag_abs_thetastar_bin2->fill(event);
+          h_Zprime_PDFVariations_DNN_output0_TopTag_abs_thetastar_bin2->fill(event);
+        }if(AbsThetaStar_selection_bin3->passes(event)){
+          fill_histograms(event, "DNN_output0_TopTag_abs_thetastar_bin3");
+          h_Zprime_SystVariations_DNN_output0_TopTag_abs_thetastar_bin3->fill(event);
+          h_Zprime_PDFVariations_DNN_output0_TopTag_abs_thetastar_bin3->fill(event);
+        }if(AbsThetaStar_selection_bin4->passes(event)){
+          fill_histograms(event, "DNN_output0_TopTag_abs_thetastar_bin4");
+          h_Zprime_SystVariations_DNN_output0_TopTag_abs_thetastar_bin4->fill(event);
+          h_Zprime_PDFVariations_DNN_output0_TopTag_abs_thetastar_bin4->fill(event);
+        }if(AbsThetaStar_selection_bin5->passes(event)){
+          fill_histograms(event, "DNN_output0_TopTag_abs_thetastar_bin5");
+          h_Zprime_SystVariations_DNN_output0_TopTag_abs_thetastar_bin5->fill(event);
+          h_Zprime_PDFVariations_DNN_output0_TopTag_abs_thetastar_bin5->fill(event);
+        }
+      }else{
+        if(AbsThetaStar_selection_bin1->passes(event)){
+          fill_histograms(event, "DNN_output0_NoTopTag_abs_thetastar_bin1");
+          h_Zprime_SystVariations_DNN_output0_NoTopTag_abs_thetastar_bin1->fill(event);
+          h_Zprime_PDFVariations_DNN_output0_NoTopTag_abs_thetastar_bin1->fill(event);
+        }if(AbsThetaStar_selection_bin2->passes(event)){
+          fill_histograms(event, "DNN_output0_NoTopTag_abs_thetastar_bin2");
+          h_Zprime_SystVariations_DNN_output0_NoTopTag_abs_thetastar_bin2->fill(event);
+          h_Zprime_PDFVariations_DNN_output0_NoTopTag_abs_thetastar_bin2->fill(event);
+        }if(AbsThetaStar_selection_bin3->passes(event)){
+          fill_histograms(event, "DNN_output0_NoTopTag_abs_thetastar_bin3");
+          h_Zprime_SystVariations_DNN_output0_NoTopTag_abs_thetastar_bin3->fill(event);
+          h_Zprime_PDFVariations_DNN_output0_NoTopTag_abs_thetastar_bin3->fill(event);
+        }if(AbsThetaStar_selection_bin4->passes(event)){
+          fill_histograms(event, "DNN_output0_NoTopTag_abs_thetastar_bin4");
+          h_Zprime_SystVariations_DNN_output0_NoTopTag_abs_thetastar_bin4->fill(event);
+          h_Zprime_PDFVariations_DNN_output0_NoTopTag_abs_thetastar_bin4->fill(event);
+        }if(AbsThetaStar_selection_bin5->passes(event)){
+          fill_histograms(event, "DNN_output0_NoTopTag_abs_thetastar_bin5");
+          h_Zprime_SystVariations_DNN_output0_NoTopTag_abs_thetastar_bin5->fill(event);
+          h_Zprime_PDFVariations_DNN_output0_NoTopTag_abs_thetastar_bin5->fill(event);
+        }
+      }
+    } // end chi2 cut
+  }//end out0
+
   //Define categories on theta star to reduce ttbar background - only in SR == out0
   if( out0 == max_score ){
     if(Chi2_selection->passes(event)){  // cut on chi2<30 - only in SR == out0
@@ -1189,58 +1376,83 @@ bool ZprimeAnalysisModule_applyNN::process(uhh2::Event& event){
         fill_histograms(event, "DNN_output0_thetastar_bin1");
         h_Zprime_SystVariations_DNN_output0_thetastar_bin1->fill(event);
         h_Zprime_PDFVariations_DNN_output0_thetastar_bin1->fill(event);
-      }else if(ThetaStar_selection_bin2->passes(event)){
+      }if(ThetaStar_selection_bin2->passes(event)){
         fill_histograms(event, "DNN_output0_thetastar_bin2");
         h_Zprime_SystVariations_DNN_output0_thetastar_bin2->fill(event);
         h_Zprime_PDFVariations_DNN_output0_thetastar_bin2->fill(event);
-      }else if(ThetaStar_selection_bin3->passes(event)){
+      }if(ThetaStar_selection_bin3->passes(event)){
         fill_histograms(event, "DNN_output0_thetastar_bin3");
         h_Zprime_SystVariations_DNN_output0_thetastar_bin3->fill(event);
         h_Zprime_PDFVariations_DNN_output0_thetastar_bin3->fill(event);
-      }else{
+      }if(ThetaStar_selection_bin4->passes(event)){
         fill_histograms(event, "DNN_output0_thetastar_bin4");
         h_Zprime_SystVariations_DNN_output0_thetastar_bin4->fill(event);
         h_Zprime_PDFVariations_DNN_output0_thetastar_bin4->fill(event);
+      }if(ThetaStar_selection_bin5->passes(event)){
+        fill_histograms(event, "DNN_output0_thetastar_bin5");
+        h_Zprime_SystVariations_DNN_output0_thetastar_bin5->fill(event);
+        h_Zprime_PDFVariations_DNN_output0_thetastar_bin5->fill(event);
+      }if(ThetaStar_selection_bin6->passes(event)){
+        fill_histograms(event, "DNN_output0_thetastar_bin6");
+        h_Zprime_SystVariations_DNN_output0_thetastar_bin6->fill(event);
+        h_Zprime_PDFVariations_DNN_output0_thetastar_bin6->fill(event);
       }
       if( ZprimeTopTag_selection->passes(event) ){
         if(ThetaStar_selection_bin1->passes(event)){
           fill_histograms(event, "DNN_output0_TopTag_thetastar_bin1");
           h_Zprime_SystVariations_DNN_output0_TopTag_thetastar_bin1->fill(event);
           h_Zprime_PDFVariations_DNN_output0_TopTag_thetastar_bin1->fill(event);
-        }else if(ThetaStar_selection_bin2->passes(event)){
+        }if(ThetaStar_selection_bin2->passes(event)){
           fill_histograms(event, "DNN_output0_TopTag_thetastar_bin2");
           h_Zprime_SystVariations_DNN_output0_TopTag_thetastar_bin2->fill(event);
           h_Zprime_PDFVariations_DNN_output0_TopTag_thetastar_bin2->fill(event);
-        }else if(ThetaStar_selection_bin3->passes(event)){
+        }if(ThetaStar_selection_bin3->passes(event)){
           fill_histograms(event, "DNN_output0_TopTag_thetastar_bin3");
           h_Zprime_SystVariations_DNN_output0_TopTag_thetastar_bin3->fill(event);
           h_Zprime_PDFVariations_DNN_output0_TopTag_thetastar_bin3->fill(event);
-        }else{
+        }if(ThetaStar_selection_bin4->passes(event)){
           fill_histograms(event, "DNN_output0_TopTag_thetastar_bin4");
           h_Zprime_SystVariations_DNN_output0_TopTag_thetastar_bin4->fill(event);
           h_Zprime_PDFVariations_DNN_output0_TopTag_thetastar_bin4->fill(event);
+        }if(ThetaStar_selection_bin5->passes(event)){
+          fill_histograms(event, "DNN_output0_TopTag_thetastar_bin5");
+          h_Zprime_SystVariations_DNN_output0_TopTag_thetastar_bin5->fill(event);
+          h_Zprime_PDFVariations_DNN_output0_TopTag_thetastar_bin5->fill(event);
+        }if(ThetaStar_selection_bin6->passes(event)){
+          fill_histograms(event, "DNN_output0_TopTag_thetastar_bin6");
+          h_Zprime_SystVariations_DNN_output0_TopTag_thetastar_bin6->fill(event);
+          h_Zprime_PDFVariations_DNN_output0_TopTag_thetastar_bin6->fill(event);
         }
       }else{
         if(ThetaStar_selection_bin1->passes(event)){
           fill_histograms(event, "DNN_output0_NoTopTag_thetastar_bin1");
           h_Zprime_SystVariations_DNN_output0_NoTopTag_thetastar_bin1->fill(event);
           h_Zprime_PDFVariations_DNN_output0_NoTopTag_thetastar_bin1->fill(event);
-        }else if(ThetaStar_selection_bin2->passes(event)){
+        }if(ThetaStar_selection_bin2->passes(event)){
           fill_histograms(event, "DNN_output0_NoTopTag_thetastar_bin2");
           h_Zprime_SystVariations_DNN_output0_NoTopTag_thetastar_bin2->fill(event);
           h_Zprime_PDFVariations_DNN_output0_NoTopTag_thetastar_bin2->fill(event);
-        }else if(ThetaStar_selection_bin3->passes(event)){
+        }if(ThetaStar_selection_bin3->passes(event)){
           fill_histograms(event, "DNN_output0_NoTopTag_thetastar_bin3");
           h_Zprime_SystVariations_DNN_output0_NoTopTag_thetastar_bin3->fill(event);
           h_Zprime_PDFVariations_DNN_output0_NoTopTag_thetastar_bin3->fill(event);
-        }else{
+        }if(ThetaStar_selection_bin4->passes(event)){
           fill_histograms(event, "DNN_output0_NoTopTag_thetastar_bin4");
           h_Zprime_SystVariations_DNN_output0_NoTopTag_thetastar_bin4->fill(event);
           h_Zprime_PDFVariations_DNN_output0_NoTopTag_thetastar_bin4->fill(event);
+        }if(ThetaStar_selection_bin5->passes(event)){
+          fill_histograms(event, "DNN_output0_NoTopTag_thetastar_bin5");
+          h_Zprime_SystVariations_DNN_output0_NoTopTag_thetastar_bin5->fill(event);
+          h_Zprime_PDFVariations_DNN_output0_NoTopTag_thetastar_bin5->fill(event);
+        }if(ThetaStar_selection_bin6->passes(event)){
+          fill_histograms(event, "DNN_output0_NoTopTag_thetastar_bin6");
+          h_Zprime_SystVariations_DNN_output0_NoTopTag_thetastar_bin6->fill(event);
+          h_Zprime_PDFVariations_DNN_output0_NoTopTag_thetastar_bin6->fill(event);
         }
       }
     } // end chi2 cut
   }//end out0
+
   return true;
 }
 

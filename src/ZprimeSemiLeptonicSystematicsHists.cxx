@@ -80,6 +80,11 @@ Hists(ctx, dirname) {
   h_btag_lfstats1_down = ctx.get_handle<float>("weight_btagdisc_lfstats1_down");
   h_btag_lfstats2_up   = ctx.get_handle<float>("weight_btagdisc_lfstats2_up");
   h_btag_lfstats2_down = ctx.get_handle<float>("weight_btagdisc_lfstats2_down");
+  h_ttag               = ctx.get_handle<float>("weight_toptagsf");
+  h_ttag_corr_up       = ctx.get_handle<float>("weight_toptagsf_corr_up");
+  h_ttag_corr_down     = ctx.get_handle<float>("weight_toptagsf_corr_down");
+  h_ttag_uncorr_up     = ctx.get_handle<float>("weight_toptagsf_uncorr_up");
+  h_ttag_uncorr_down   = ctx.get_handle<float>("weight_toptagsf_uncorr_down");
 
   h_BestZprimeCandidateChi2 = ctx.get_handle<ZprimeCandidate*>("ZprimeCandidateBestChi2");
   h_is_zprime_reconstructed_chi2 = ctx.get_handle<bool>("is_zprime_reconstructed_chi2");
@@ -89,53 +94,55 @@ Hists(ctx, dirname) {
 void ZprimeSemiLeptonicSystematicsHists::init(){
 
   // Zprime reconstruction
-  vector<float> bins_Zprime = {0,400,600,800,1000,1200,1400,1600,1800,2000,2200,2400,2600,2800,3000,3200,3400,3600,3800,4000,4400,4800,5200,5600,6000,6100};
-
-  M_Zprime                    = book<TH1F>("M_Zprime", "M_{t#bar{t}} [GeV]",  bins_Zprime.size()-1, &bins_Zprime[0]);
-  M_Zprime_mu_reco_up         = book<TH1F>("M_Zprime_mu_reco_up",   "M_{t#bar{t}} [GeV] mu_reco_up",  bins_Zprime.size()-1, &bins_Zprime[0]);
-  M_Zprime_mu_reco_down       = book<TH1F>("M_Zprime_mu_reco_down", "M_{t#bar{t}} [GeV] mu_reco_down",  bins_Zprime.size()-1, &bins_Zprime[0]);
-  M_Zprime_pu_up              = book<TH1F>("M_Zprime_pu_up",   "M_{t#bar{t}} [GeV] pu_up",  bins_Zprime.size()-1, &bins_Zprime[0]);
-  M_Zprime_pu_down            = book<TH1F>("M_Zprime_pu_down", "M_{t#bar{t}} [GeV] pu_down",  bins_Zprime.size()-1, &bins_Zprime[0]);
-  M_Zprime_prefiring_up       = book<TH1F>("M_Zprime_prefiring_up",   "M_{t#bar{t}} [GeV] prefiring_up",  bins_Zprime.size()-1, &bins_Zprime[0]);
-  M_Zprime_prefiring_down     = book<TH1F>("M_Zprime_prefiring_down", "M_{t#bar{t}} [GeV] prefiring_down",  bins_Zprime.size()-1, &bins_Zprime[0]);
-  M_Zprime_mu_id_up           = book<TH1F>("M_Zprime_mu_id_up",   "M_{t#bar{t}} [GeV] mu_id_up",  bins_Zprime.size()-1, &bins_Zprime[0]);
-  M_Zprime_mu_id_down         = book<TH1F>("M_Zprime_mu_id_down", "M_{t#bar{t}} [GeV] mu_id_down",  bins_Zprime.size()-1, &bins_Zprime[0]);
-  M_Zprime_mu_iso_up          = book<TH1F>("M_Zprime_mu_iso_up",   "M_{t#bar{t}} [GeV] mu_iso_up",  bins_Zprime.size()-1, &bins_Zprime[0]);
-  M_Zprime_mu_iso_down        = book<TH1F>("M_Zprime_mu_iso_down", "M_{t#bar{t}} [GeV] mu_iso_down",  bins_Zprime.size()-1, &bins_Zprime[0]);
-  M_Zprime_mu_trigger_up      = book<TH1F>("M_Zprime_mu_trigger_up",   "M_{t#bar{t}} [GeV] mu_trigger_up",  bins_Zprime.size()-1, &bins_Zprime[0]);
-  M_Zprime_mu_trigger_down    = book<TH1F>("M_Zprime_mu_trigger_down", "M_{t#bar{t}} [GeV] mu_trigger_down",  bins_Zprime.size()-1, &bins_Zprime[0]);
-  M_Zprime_ele_id_up          = book<TH1F>("M_Zprime_ele_id_up",   "M_{t#bar{t}} [GeV] ele_id_up",  bins_Zprime.size()-1, &bins_Zprime[0]);
-  M_Zprime_ele_id_down        = book<TH1F>("M_Zprime_ele_id_down", "M_{t#bar{t}} [GeV] ele_id_down",  bins_Zprime.size()-1, &bins_Zprime[0]);
-  M_Zprime_ele_trigger_up     = book<TH1F>("M_Zprime_ele_trigger_up",   "M_{t#bar{t}} [GeV] ele_trigger_up",  bins_Zprime.size()-1, &bins_Zprime[0]);
-  M_Zprime_ele_trigger_down   = book<TH1F>("M_Zprime_ele_trigger_down", "M_{t#bar{t}} [GeV] ele_trigger_down",  bins_Zprime.size()-1, &bins_Zprime[0]);
-  M_Zprime_ele_reco_up        = book<TH1F>("M_Zprime_ele_reco_up",   "M_{t#bar{t}} [GeV] ele_reco_up",  bins_Zprime.size()-1, &bins_Zprime[0]);
-  M_Zprime_ele_reco_down      = book<TH1F>("M_Zprime_ele_reco_down", "M_{t#bar{t}} [GeV] ele_reco_down",  bins_Zprime.size()-1, &bins_Zprime[0]);
-  M_Zprime_murmuf_upup        = book<TH1F>("M_Zprime_murmuf_upup", "M_{t#bar{t}} [GeV] murmuf_upup",  bins_Zprime.size()-1, &bins_Zprime[0]);
-  M_Zprime_murmuf_upnone      = book<TH1F>("M_Zprime_murmuf_upnone", "M_{t#bar{t}} [GeV] murmuf_upnone",  bins_Zprime.size()-1, &bins_Zprime[0]);
-  M_Zprime_murmuf_noneup      = book<TH1F>("M_Zprime_murmuf_noneup", "M_{t#bar{t}} [GeV] murmuf_noneup",  bins_Zprime.size()-1, &bins_Zprime[0]);
-  M_Zprime_murmuf_nonedown    = book<TH1F>("M_Zprime_murmuf_nonedown", "M_{t#bar{t}} [GeV] murmuf_nonedown",  bins_Zprime.size()-1, &bins_Zprime[0]);
-  M_Zprime_murmuf_downnone    = book<TH1F>("M_Zprime_murmuf_downnone", "M_{t#bar{t}} [GeV] murmuf_downnone",  bins_Zprime.size()-1, &bins_Zprime[0]);
-  M_Zprime_murmuf_downdown    = book<TH1F>("M_Zprime_murmuf_downdown", "M_{t#bar{t}} [GeV] murmuf_downdown",  bins_Zprime.size()-1, &bins_Zprime[0]);
-  M_Zprime_isr_up             = book<TH1F>("M_Zprime_isr_up", "M_{t#bar{t}} [GeV] isr_up", bins_Zprime.size()-1, &bins_Zprime[0]);
-  M_Zprime_isr_down           = book<TH1F>("M_Zprime_isr_down", "M_{t#bar{t}} [GeV] isr_down", bins_Zprime.size()-1, &bins_Zprime[0]);
-  M_Zprime_fsr_up             = book<TH1F>("M_Zprime_fsr_up", "M_{t#bar{t}} [GeV] fsr_up", bins_Zprime.size()-1, &bins_Zprime[0]);
-  M_Zprime_fsr_down           = book<TH1F>("M_Zprime_fsr_down", "M_{t#bar{t}} [GeV] fsr_down", bins_Zprime.size()-1, &bins_Zprime[0]);
-  M_Zprime_btag_cferr1_up     = book<TH1F>("M_Zprime_btag_cferr1_up", "M_{t#bar{t}} [GeV] btag_cferr1_up",  bins_Zprime.size()-1, &bins_Zprime[0]);
-  M_Zprime_btag_cferr1_down   = book<TH1F>("M_Zprime_btag_cferr1_down", "M_{t#bar{t}} [GeV] btag_cferr1_down",  bins_Zprime.size()-1, &bins_Zprime[0]);
-  M_Zprime_btag_cferr2_up     = book<TH1F>("M_Zprime_btag_cferr2_up", "M_{t#bar{t}} [GeV] btag_cferr2_up",  bins_Zprime.size()-1, &bins_Zprime[0]);
-  M_Zprime_btag_cferr2_down   = book<TH1F>("M_Zprime_btag_cferr2_down", "M_{t#bar{t}} [GeV] btag_cferr2_down",  bins_Zprime.size()-1, &bins_Zprime[0]);
-  M_Zprime_btag_hf_up         = book<TH1F>("M_Zprime_btag_hf_up", "M_{t#bar{t}} [GeV] btag_hf_up",  bins_Zprime.size()-1, &bins_Zprime[0]);
-  M_Zprime_btag_hf_down       = book<TH1F>("M_Zprime_btag_hf_down", "M_{t#bar{t}} [GeV] btag_hf_down",  bins_Zprime.size()-1, &bins_Zprime[0]);
-  M_Zprime_btag_hfstats1_up   = book<TH1F>("M_Zprime_btag_hfstats1_up", "M_{t#bar{t}} [GeV] btag_hfstats1_up",  bins_Zprime.size()-1, &bins_Zprime[0]);
-  M_Zprime_btag_hfstats1_down = book<TH1F>("M_Zprime_btag_hfstats1_down", "M_{t#bar{t}} [GeV] btag_hfstats1_down",  bins_Zprime.size()-1, &bins_Zprime[0]);
-  M_Zprime_btag_hfstats2_up   = book<TH1F>("M_Zprime_btag_hfstats2_up", "M_{t#bar{t}} [GeV] btag_hfstats2_up",  bins_Zprime.size()-1, &bins_Zprime[0]);
-  M_Zprime_btag_hfstats2_down = book<TH1F>("M_Zprime_btag_hfstats2_down", "M_{t#bar{t}} [GeV] btag_hfstats2_down",  bins_Zprime.size()-1, &bins_Zprime[0]);
-  M_Zprime_btag_lf_up         = book<TH1F>("M_Zprime_btag_lf_up", "M_{t#bar{t}} [GeV] btag_lf_up",  bins_Zprime.size()-1, &bins_Zprime[0]);
-  M_Zprime_btag_lf_down       = book<TH1F>("M_Zprime_btag_lf_down", "M_{t#bar{t}} [GeV] btag_lf_down",  bins_Zprime.size()-1, &bins_Zprime[0]);
-  M_Zprime_btag_lfstats1_up   = book<TH1F>("M_Zprime_btag_lfstats1_up", "M_{t#bar{t}} [GeV] btag_lfstats1_up",  bins_Zprime.size()-1, &bins_Zprime[0]);
-  M_Zprime_btag_lfstats1_down = book<TH1F>("M_Zprime_btag_lfstats1_down", "M_{t#bar{t}} [GeV] btag_lfstats1_down",  bins_Zprime.size()-1, &bins_Zprime[0]);
-  M_Zprime_btag_lfstats2_up   = book<TH1F>("M_Zprime_btag_lfstats2_up", "M_{t#bar{t}} [GeV] btag_lfstats2_up",  bins_Zprime.size()-1, &bins_Zprime[0]);
-  M_Zprime_btag_lfstats2_down = book<TH1F>("M_Zprime_btag_lfstats2_down", "M_{t#bar{t}} [GeV] btag_lfstats2_down",  bins_Zprime.size()-1, &bins_Zprime[0]);
+  M_Zprime                    = book<TH1F>("M_Zprime", "M_{t#bar{t}} [GeV]",                                       400, 0, 10000);
+  M_Zprime_mu_reco_up         = book<TH1F>("M_Zprime_mu_reco_up",   "M_{t#bar{t}} [GeV] mu_reco_up",               400, 0, 10000);
+  M_Zprime_mu_reco_down       = book<TH1F>("M_Zprime_mu_reco_down", "M_{t#bar{t}} [GeV] mu_reco_down",             400, 0, 10000);
+  M_Zprime_pu_up              = book<TH1F>("M_Zprime_pu_up",   "M_{t#bar{t}} [GeV] pu_up",                         400, 0, 10000);
+  M_Zprime_pu_down            = book<TH1F>("M_Zprime_pu_down", "M_{t#bar{t}} [GeV] pu_down",                       400, 0, 10000);
+  M_Zprime_prefiring_up       = book<TH1F>("M_Zprime_prefiring_up",   "M_{t#bar{t}} [GeV] prefiring_up",           400, 0, 10000);
+  M_Zprime_prefiring_down     = book<TH1F>("M_Zprime_prefiring_down", "M_{t#bar{t}} [GeV] prefiring_down",         400, 0, 10000);
+  M_Zprime_mu_id_up           = book<TH1F>("M_Zprime_mu_id_up",   "M_{t#bar{t}} [GeV] mu_id_up",                   400, 0, 10000);
+  M_Zprime_mu_id_down         = book<TH1F>("M_Zprime_mu_id_down", "M_{t#bar{t}} [GeV] mu_id_down",                 400, 0, 10000);
+  M_Zprime_mu_iso_up          = book<TH1F>("M_Zprime_mu_iso_up",   "M_{t#bar{t}} [GeV] mu_iso_up",                 400, 0, 10000);
+  M_Zprime_mu_iso_down        = book<TH1F>("M_Zprime_mu_iso_down", "M_{t#bar{t}} [GeV] mu_iso_down",               400, 0, 10000);
+  M_Zprime_mu_trigger_up      = book<TH1F>("M_Zprime_mu_trigger_up",   "M_{t#bar{t}} [GeV] mu_trigger_up",         400, 0, 10000);
+  M_Zprime_mu_trigger_down    = book<TH1F>("M_Zprime_mu_trigger_down", "M_{t#bar{t}} [GeV] mu_trigger_down",       400, 0, 10000);
+  M_Zprime_ele_id_up          = book<TH1F>("M_Zprime_ele_id_up",   "M_{t#bar{t}} [GeV] ele_id_up",                 400, 0, 10000);
+  M_Zprime_ele_id_down        = book<TH1F>("M_Zprime_ele_id_down", "M_{t#bar{t}} [GeV] ele_id_down",               400, 0, 10000);
+  M_Zprime_ele_trigger_up     = book<TH1F>("M_Zprime_ele_trigger_up",   "M_{t#bar{t}} [GeV] ele_trigger_up",       400, 0, 10000);
+  M_Zprime_ele_trigger_down   = book<TH1F>("M_Zprime_ele_trigger_down", "M_{t#bar{t}} [GeV] ele_trigger_down",     400, 0, 10000);
+  M_Zprime_ele_reco_up        = book<TH1F>("M_Zprime_ele_reco_up",   "M_{t#bar{t}} [GeV] ele_reco_up",             400, 0, 10000);
+  M_Zprime_ele_reco_down      = book<TH1F>("M_Zprime_ele_reco_down", "M_{t#bar{t}} [GeV] ele_reco_down",           400, 0, 10000);
+  M_Zprime_murmuf_upup        = book<TH1F>("M_Zprime_murmuf_upup", "M_{t#bar{t}} [GeV] murmuf_upup",               400, 0, 10000);
+  M_Zprime_murmuf_upnone      = book<TH1F>("M_Zprime_murmuf_upnone", "M_{t#bar{t}} [GeV] murmuf_upnone",           400, 0, 10000);
+  M_Zprime_murmuf_noneup      = book<TH1F>("M_Zprime_murmuf_noneup", "M_{t#bar{t}} [GeV] murmuf_noneup",           400, 0, 10000);
+  M_Zprime_murmuf_nonedown    = book<TH1F>("M_Zprime_murmuf_nonedown", "M_{t#bar{t}} [GeV] murmuf_nonedown",       400, 0, 10000);
+  M_Zprime_murmuf_downnone    = book<TH1F>("M_Zprime_murmuf_downnone", "M_{t#bar{t}} [GeV] murmuf_downnone",       400, 0, 10000);
+  M_Zprime_murmuf_downdown    = book<TH1F>("M_Zprime_murmuf_downdown", "M_{t#bar{t}} [GeV] murmuf_downdown",       400, 0, 10000);
+  M_Zprime_isr_up             = book<TH1F>("M_Zprime_isr_up", "M_{t#bar{t}} [GeV] isr_up",                         400, 0, 10000);
+  M_Zprime_isr_down           = book<TH1F>("M_Zprime_isr_down", "M_{t#bar{t}} [GeV] isr_down",                     400, 0, 10000);
+  M_Zprime_fsr_up             = book<TH1F>("M_Zprime_fsr_up", "M_{t#bar{t}} [GeV] fsr_up",                         400, 0, 10000);
+  M_Zprime_fsr_down           = book<TH1F>("M_Zprime_fsr_down", "M_{t#bar{t}} [GeV] fsr_down",                     400, 0, 10000);
+  M_Zprime_btag_cferr1_up     = book<TH1F>("M_Zprime_btag_cferr1_up", "M_{t#bar{t}} [GeV] btag_cferr1_up",         400, 0, 10000);
+  M_Zprime_btag_cferr1_down   = book<TH1F>("M_Zprime_btag_cferr1_down", "M_{t#bar{t}} [GeV] btag_cferr1_down",     400, 0, 10000);
+  M_Zprime_btag_cferr2_up     = book<TH1F>("M_Zprime_btag_cferr2_up", "M_{t#bar{t}} [GeV] btag_cferr2_up",         400, 0, 10000);
+  M_Zprime_btag_cferr2_down   = book<TH1F>("M_Zprime_btag_cferr2_down", "M_{t#bar{t}} [GeV] btag_cferr2_down",     400, 0, 10000);
+  M_Zprime_btag_hf_up         = book<TH1F>("M_Zprime_btag_hf_up", "M_{t#bar{t}} [GeV] btag_hf_up",                 400, 0, 10000);
+  M_Zprime_btag_hf_down       = book<TH1F>("M_Zprime_btag_hf_down", "M_{t#bar{t}} [GeV] btag_hf_down",             400, 0, 10000);
+  M_Zprime_btag_hfstats1_up   = book<TH1F>("M_Zprime_btag_hfstats1_up", "M_{t#bar{t}} [GeV] btag_hfstats1_up",     400, 0, 10000);
+  M_Zprime_btag_hfstats1_down = book<TH1F>("M_Zprime_btag_hfstats1_down", "M_{t#bar{t}} [GeV] btag_hfstats1_down", 400, 0, 10000);
+  M_Zprime_btag_hfstats2_up   = book<TH1F>("M_Zprime_btag_hfstats2_up", "M_{t#bar{t}} [GeV] btag_hfstats2_up",     400, 0, 10000);
+  M_Zprime_btag_hfstats2_down = book<TH1F>("M_Zprime_btag_hfstats2_down", "M_{t#bar{t}} [GeV] btag_hfstats2_down", 400, 0, 10000);
+  M_Zprime_btag_lf_up         = book<TH1F>("M_Zprime_btag_lf_up", "M_{t#bar{t}} [GeV] btag_lf_up",                 400, 0, 10000);
+  M_Zprime_btag_lf_down       = book<TH1F>("M_Zprime_btag_lf_down", "M_{t#bar{t}} [GeV] btag_lf_down",             400, 0, 10000);
+  M_Zprime_btag_lfstats1_up   = book<TH1F>("M_Zprime_btag_lfstats1_up", "M_{t#bar{t}} [GeV] btag_lfstats1_up",     400, 0, 10000);
+  M_Zprime_btag_lfstats1_down = book<TH1F>("M_Zprime_btag_lfstats1_down", "M_{t#bar{t}} [GeV] btag_lfstats1_down", 400, 0, 10000);
+  M_Zprime_btag_lfstats2_up   = book<TH1F>("M_Zprime_btag_lfstats2_up", "M_{t#bar{t}} [GeV] btag_lfstats2_up",     400, 0, 10000);
+  M_Zprime_btag_lfstats2_down = book<TH1F>("M_Zprime_btag_lfstats2_down", "M_{t#bar{t}} [GeV] btag_lfstats2_down", 400, 0, 10000);
+  M_Zprime_ttag_corr_up       = book<TH1F>("M_Zprime_ttag_corr_up", "M_{t#bar{t}} [GeV] ttag_corr_up",             400, 0, 10000);
+  M_Zprime_ttag_corr_down     = book<TH1F>("M_Zprime_ttag_corr_down", "M_{t#bar{t}} [GeV] ttag_corr_down",         400, 0, 10000);
+  M_Zprime_ttag_uncorr_up     = book<TH1F>("M_Zprime_ttag_uncorr_up", "M_{t#bar{t}} [GeV] ttag_uncorr_up",         400, 0, 10000);
+  M_Zprime_ttag_uncorr_down   = book<TH1F>("M_Zprime_ttag_uncorr_down", "M_{t#bar{t}} [GeV] ttag_counrr_down",     400, 0, 10000);
 }
 
 
@@ -196,9 +203,14 @@ void ZprimeSemiLeptonicSystematicsHists::fill(const Event & event){
   float btag_lfstats1_down = event.get(h_btag_lfstats1_down);
   float btag_lfstats2_up   = event.get(h_btag_lfstats2_up);
   float btag_lfstats2_down = event.get(h_btag_lfstats2_down);
+  float ttag_nominal       = event.get(h_ttag);
+  float ttag_corr_up       = event.get(h_ttag_corr_up);
+  float ttag_corr_down     = event.get(h_ttag_corr_down);
+  float ttag_uncorr_up     = event.get(h_ttag_uncorr_up);
+  float ttag_uncorr_down   = event.get(h_ttag_uncorr_down);
 
   // only up/down variations
-  vector<string> names       = {"ele_reco", "ele_id", "ele_trigger", "mu_reco", "mu_iso", "mu_id", "mu_trigger", "pu", "prefiring" };
+  vector<string> names       = {"ele_reco", "ele_id", "ele_trigger", "mu_reco", "mu_iso", "mu_id", "mu_trigger", "pu", "prefiring"};
   vector<float> syst_nominal = {ele_reco_nominal, ele_id_nominal, ele_trigger_nominal, mu_reco_nominal, mu_iso_nominal, mu_id_nominal, mu_trigger_nominal, pu_nominal, prefiring_nominal};
   vector<float> syst_up      = {ele_reco_up, ele_id_up, ele_trigger_up, mu_reco_up, mu_iso_up, mu_id_up, mu_trigger_up, pu_up, prefiring_up};
   vector<float> syst_down    = {ele_reco_down, ele_id_down, ele_trigger_down, mu_reco_down, mu_iso_down, mu_id_down, mu_trigger_down, pu_down, prefiring_down};
@@ -212,6 +224,10 @@ void ZprimeSemiLeptonicSystematicsHists::fill(const Event & event){
   // btag variations need special treatment
   vector<float> syst_btag  = {btag_cferr1_up, btag_cferr1_down, btag_cferr2_up, btag_cferr2_down, btag_hf_up, btag_hf_down, btag_hfstats1_up, btag_hfstats1_down, btag_hfstats2_up, btag_hfstats2_down, btag_lf_up, btag_lf_down, btag_lfstats1_up, btag_lfstats1_down, btag_lfstats2_up, btag_lfstats2_down};
   vector<TH1F*> hists_btag  = {M_Zprime_btag_cferr1_up, M_Zprime_btag_cferr1_down, M_Zprime_btag_cferr2_up, M_Zprime_btag_cferr2_down, M_Zprime_btag_hf_up, M_Zprime_btag_hf_down, M_Zprime_btag_hfstats1_up, M_Zprime_btag_hfstats1_down, M_Zprime_btag_hfstats2_up, M_Zprime_btag_hfstats2_down, M_Zprime_btag_lf_up, M_Zprime_btag_lf_down, M_Zprime_btag_lfstats1_up, M_Zprime_btag_lfstats1_down, M_Zprime_btag_lfstats2_up, M_Zprime_btag_lfstats2_down};
+
+  // ttag variations need special treatment
+  vector<float> syst_ttag = {ttag_corr_up, ttag_corr_down, ttag_uncorr_up, ttag_uncorr_down};
+  vector<TH1F*> hists_ttag = {M_Zprime_ttag_corr_up, M_Zprime_ttag_corr_down, M_Zprime_ttag_uncorr_up, M_Zprime_ttag_uncorr_down};
 
   // parton shower variations (ISR, FSR) need special treatment
   vector<float> syst_ps = {isr_up, isr_down, fsr_up, fsr_down};
@@ -238,6 +254,10 @@ void ZprimeSemiLeptonicSystematicsHists::fill(const Event & event){
     for(unsigned int i=0; i<hists_btag.size(); i++){
       hists_btag.at(i)->Fill(Mreco, weight * syst_btag.at(i)/btag_nominal);
     }
+    // ttag variations!
+    for(unsigned int i=0; i<hists_ttag.size(); i++){
+      hists_ttag.at(i)->Fill(Mreco, weight * syst_ttag.at(i)/ttag_nominal);
+    }
     // ps variations
     for(unsigned int i=0; i<hists_ps.size(); i++){
      hists_ps.at(i)->Fill(Mreco, weight * syst_ps.at(i));
@@ -245,7 +265,5 @@ void ZprimeSemiLeptonicSystematicsHists::fill(const Event & event){
   }
 
 } //Method
-
-
 
 ZprimeSemiLeptonicSystematicsHists::~ZprimeSemiLeptonicSystematicsHists(){}
