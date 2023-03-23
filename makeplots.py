@@ -3,8 +3,8 @@ from ROOT import *
 import os
 import sys
 from optparse import OptionParser
-#from numpy import log10
 import numpy as np
+from numpy import log10
 from array import array
 import CMS_lumi
 from Style import *
@@ -33,11 +33,11 @@ Log=options.isLog
 # Channel info
 if channel=="ele":
     _channelText = "e+jets"
-    plotDirectory = "analysisPlots_Corr/electron/"
-    _fileDir = "/nfs/dust/cms/group/zprime-uhh/Analysis_AzimthCorr_UL18/"
+    plotDirectory = ""
+    _fileDir = "/nfs/dust/cms/group/zprime-uhh//"
 else:
     _channelText = "#mu+jets"
-    plotDirectory = "/nfs/dust/cms/user/ricardo/AzCorrAnalysis/muon/plots/UL17"
+    plotDirectory = "/nfs/dust/cms/user/ricardo/AzCorrAnalysis/muon/plots/UL17/rebinned/"
     _fileDir = "/nfs/dust/cms/user/ricardo/AzCorrAnalysis/muon/workdir_AzCorr_UL17_muon"
 print "channel is ", channel
 print "The input root files will come from", _fileDir
@@ -46,8 +46,19 @@ print "The output will go into", plotDirectory, "\n"
 
 ### define the histograms dictionary with entry syntax: {"variable_handle" : ["Plot name", "vertical-axis name", number of bins, [x-min, x-max]]}
 if channel=="mu": 
-     histograms =  {"dphi_low"                        : ["#Delta#phi_{low pt}",             "Events", 12, [-np.pi, np.pi]]
-                    } # debug
+      histograms =  {"phi_b"                           : ["#phi_{b}",                        "Events", 36, [-np.pi, np.pi]],
+                     "phi_b_high"                      : ["#phi_{b}^{high pt}",              "Events", 36, [-np.pi, np.pi]],
+                     "phi_b_low"                       : ["#phi_{b}_{low pt}",               "Events", 36, [-np.pi, np.pi]],
+                     "phi_lep"                         : ["#phi_{#mu}",                      "Events", 36, [-np.pi, np.pi]],
+                     "phi_lep_high"                    : ["#phi_{#mu}^{high pt}",            "Events", 36, [-np.pi, np.pi]],
+                     "phi_lep_low"                     : ["#phi_{#mu}_{low pt}",             "Events", 36, [-np.pi, np.pi]],
+                     "sphi"                            : ["#Sigma#phi",                      "Events", 36, [-np.pi, np.pi]],
+                     "sphi_low"                        : ["#Sigma#phi_{low pt}",             "Events", 36, [-np.pi, np.pi]],
+                     "sphi_high"                       : ["#Sigma#phi^{high pt}",            "Events", 36, [-np.pi, np.pi]],
+                     "dphi"                            : ["#Delta#phi",                      "Events", 36, [-np.pi, np.pi]],
+                     "dphi_low"                        : ["#Delta#phi_{low pt}",             "Events", 36, [-np.pi, np.pi]],
+                     "dphi_high"                       : ["#Delta#phi^{high pt}",            "Events", 36, [-np.pi, np.pi]]
+                     } # debug
 
     #  histograms = {"recocount"                       : ["Reco Count",                      "Events",  2, [     1,     3]],
     #                "pt_hadTop_res"                   : ["Resolved-top p_{T}",              "Events", 25, [     0,   500]],
@@ -62,13 +73,13 @@ if channel=="mu":
     #                "phi_b"                           : ["#phi_{b}",                        "Events", 12, [-np.pi, np.pi]],
     #                "phi_b_high"                      : ["#phi_{b}^{high pt}",              "Events", 12, [-np.pi, np.pi]],
     #                "phi_b_low"                       : ["#phi_{b}_{low pt}",               "Events", 12, [-np.pi, np.pi]],
-    #                "sphi"                            : ["#Sigma#phi",                      "Events", 12, [-np.pi, np.pi]],
-    #                "sphi_low"                        : ["#Sigma#phi_{low pt}",             "Events", 12, [-np.pi, np.pi]],
-    #                "sphi_high"                       : ["#Sigma#phi^{high pt}",            "Events", 12, [-np.pi, np.pi]],
-    #                "sphi_plus"                       : ["#Sigma#phi (#mu^{+})",            "Events", 12, [-np.pi, np.pi]],
-    #                "dphi"                            : ["#Delta#phi",                      "Events", 12, [-np.pi, np.pi]],
-    #                "dphi_low"                        : ["#Delta#phi_{low pt}",             "Events", 12, [-np.pi, np.pi]],
-    #                "dphi_high"                       : ["#Delta#phi^{high pt}",            "Events", 12, [-np.pi, np.pi]],
+                #    "sphi"                            : ["#Sigma#phi",                      "Events", 12, [-np.pi, np.pi]],
+                #    "sphi_low"                        : ["#Sigma#phi_{low pt}",             "Events", 12, [-np.pi, np.pi]],
+                #    "sphi_high"                       : ["#Sigma#phi^{high pt}",            "Events", 12, [-np.pi, np.pi]],
+                #    "sphi_plus"                       : ["#Sigma#phi (#mu^{+})",            "Events", 12, [-np.pi, np.pi]],
+                #    "dphi"                            : ["#Delta#phi",                      "Events", 12, [-np.pi, np.pi]],
+                #    "dphi_low"                        : ["#Delta#phi_{low pt}",             "Events", 12, [-np.pi, np.pi]],
+                #    "dphi_high"                       : ["#Delta#phi^{high pt}",            "Events", 12, [-np.pi, np.pi]],
     #                "phi_lepPlus"                     : ["#phi_{#mu^{+}}",                  "Events", 12, [-np.pi, np.pi]],
     #                "phi_lepMinus"                    : ["#phi_{#mu^{-}}",                  "Events", 12, [-np.pi, np.pi]],
     #                "sphi_plus"                       : ["#Sigma#phi (#mu^{+})",            "Events", 12, [-np.pi, np.pi]],
@@ -153,7 +164,8 @@ R = 0.10*W
 legendHeightPer = 0.01
 legList = stackList.keys() 
 #legList.reverse()
-legendStart = 0.69
+#legendStart = 0.69
+legendStart = 0.79
 legendEnd = 0.99-(R/W)
 #legend = TLegend(2*legendStart - legendEnd, 1-T/H-0.01 - legendHeightPer*(len(legList)+1), legendEnd, 0.99-(T/H)-0.01)
 legend = TLegend(2*legendStart - legendEnd , 0.99 - (T/H)/(1.-padRatio+padOverlap) - legendHeightPer/(1.-padRatio+padOverlap)*round((len(legList)+1)/2.), legendEnd, 0.99-(T/H)/(1.-padRatio+padOverlap))
