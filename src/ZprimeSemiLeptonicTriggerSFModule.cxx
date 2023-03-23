@@ -90,6 +90,7 @@ protected:
 
   // Selections
   std::unique_ptr<Selection> Trigger_ele_A_selection, Trigger_ele_B_selection, Trigger_ph_A_selection;
+  std::unique_ptr<Selection> HEM_selection;
 
 };
 
@@ -190,6 +191,7 @@ ZprimeSemiLeptonicTriggerSFModule::ZprimeSemiLeptonicTriggerSFModule(uhh2::Conte
   sf_ele_id_dummy.reset(new uhh2::ElectronIdScaleFactors(ctx, boost::none, boost::none, boost::none, boost::none, true));
   sf_ele_reco_dummy.reset(new uhh2::ElectronRecoScaleFactors(ctx, boost::none, boost::none, boost::none, boost::none, true));
 
+  HEM_selection.reset(new HEMSelection(ctx));
 
   if(isMC){
     TString sample_name = "";
@@ -214,15 +216,18 @@ bool ZprimeSemiLeptonicTriggerSFModule::process(uhh2::Event& event){
   if(debug) cout << " ------------------------------------------- " << endl;
   if(debug) cout << event.event << endl;
 
-
+  if(!HEM_selection->passes(event)){
+    if(!isMC) return false;
+    else event.weight = event.weight*(1-0.64774715284); // calculated following instructions ar https://twiki.cern.ch/twiki/bin/view/CMS/PdmV2018Analysis
+  }
   PUWeight_module->process(event);
   LumiWeight_module->process(event);
   //TopPtReweight_module->process(event);
   MCScale_module->process(event);
   if (isMC) {
-     if (Prefiring_direction == "nominal") event.weight *= event.prefiringWeight;
-     else if (Prefiring_direction == "up") event.weight *= event.prefiringWeightUp;
-     else if (Prefiring_direction == "down") event.weight *= event.prefiringWeightDown;
+    if (Prefiring_direction == "nominal") event.weight *= event.prefiringWeight;
+    else if (Prefiring_direction == "up") event.weight *= event.prefiringWeightUp;
+    else if (Prefiring_direction == "down") event.weight *= event.prefiringWeightDown;
   }
 
   double muon_pt_high(55.);
@@ -285,15 +290,15 @@ bool ZprimeSemiLeptonicTriggerSFModule::process(uhh2::Event& event){
 
   // apply custom SF to correct for BTag SF shape effects on NJets/HT
   if(isMC){
-     float custom_sf;
+    float custom_sf;
 
-     vector<Jet>* jets = event.jets;
-     int Njets = jets->size();
-     double st_jets = 0.;
-     for(const auto & jet : *jets) st_jets += jet.pt();
-     custom_sf = ratio_hist_muon->GetBinContent( ratio_hist_muon->GetXaxis()->FindBin(Njets), ratio_hist_muon->GetYaxis()->FindBin(st_jets) );
+    vector<Jet>* jets = event.jets;
+    int Njets = jets->size();
+    double st_jets = 0.;
+    for(const auto & jet : *jets) st_jets += jet.pt();
+    custom_sf = ratio_hist_muon->GetBinContent( ratio_hist_muon->GetXaxis()->FindBin(Njets), ratio_hist_muon->GetYaxis()->FindBin(st_jets) );
 
-     event.weight *= custom_sf;
+    event.weight *= custom_sf;
   }
   NLOCorrections_module->process(event);
 
@@ -309,26 +314,26 @@ bool ZprimeSemiLeptonicTriggerSFModule::process(uhh2::Event& event){
     passed_elec_trigger = Trigger_ele_A_selection->passes(event);
   }
   if(ele_is_high){
-      if(isMC && (isUL16preVFP || isUL16postVFP || isUL18) ){
+    if(isMC && (isUL16preVFP || isUL16postVFP || isUL18) ){
+      passed_elec_trigger = (Trigger_ele_A_selection->passes(event) || Trigger_ele_B_selection->passes(event) || Trigger_ph_A_selection->passes(event));
+    }
+    if(isMC && isUL17){
+      float runB_ele = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+      if(runB_ele <= 0.1158){ // in RunB (below runnumb 299329) Ele115 does not exist, use Ele35 instead. To apply randomly in MC if random numb < RunB percetage (11.58%, calculated by Christopher Matthies)
+        passed_elec_trigger = (Trigger_ele_A_selection->passes(event) || Trigger_ph_A_selection->passes(event));
+      }else{
         passed_elec_trigger = (Trigger_ele_A_selection->passes(event) || Trigger_ele_B_selection->passes(event) || Trigger_ph_A_selection->passes(event));
       }
-      if(isMC && isUL17){
-        float runB_ele = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
-        if(runB_ele <= 0.1158){ // in RunB (below runnumb 299329) Ele115 does not exist, use Ele35 instead. To apply randomly in MC if random numb < RunB percetage (11.58%, calculated by Christopher Matthies)
-           passed_elec_trigger = (Trigger_ele_A_selection->passes(event) || Trigger_ph_A_selection->passes(event));
-        }else{
-           passed_elec_trigger = (Trigger_ele_A_selection->passes(event) || Trigger_ele_B_selection->passes(event) || Trigger_ph_A_selection->passes(event));
-        }
+    }
+    if(!isMC && (isUL16preVFP || isUL16postVFP || isUL18) ){
+      passed_elec_trigger = (Trigger_ele_A_selection->passes(event) || Trigger_ele_B_selection->passes(event)|| Trigger_ph_A_selection->passes(event));
+    }else if(!isMC && isUL17){
+      if(event.run <= 299329){
+        passed_elec_trigger = (Trigger_ele_A_selection->passes(event) || Trigger_ph_A_selection->passes(event));
+      }else{
+        passed_elec_trigger = (Trigger_ele_A_selection->passes(event) || Trigger_ele_B_selection->passes(event)|| Trigger_ph_A_selection->passes(event));
       }
-      if(!isMC && (isUL16preVFP || isUL16postVFP || isUL18) ){
-           passed_elec_trigger = (Trigger_ele_A_selection->passes(event) || Trigger_ele_B_selection->passes(event)|| Trigger_ph_A_selection->passes(event));
-      }else if(!isMC && isUL17){
-           if(event.run <= 299329){
-                  passed_elec_trigger = (Trigger_ele_A_selection->passes(event) || Trigger_ph_A_selection->passes(event));
-             }else{
-                  passed_elec_trigger = (Trigger_ele_A_selection->passes(event) || Trigger_ele_B_selection->passes(event)|| Trigger_ph_A_selection->passes(event));
-            }
-      }
+    }
 
   }
 
