@@ -1154,11 +1154,11 @@ bool ZprimeAnalysisModule_AzCorr::process(uhh2::Event& event){
 
     ZprimeCandidate* BestZprimeCandidate = event.get(h_BestZprimeCandidateChi2); // Zprime best-candidate
     if(debug) cout <<" jets_hadronic size: "<< BestZprimeCandidate->jets_hadronic().size() <<endl;
-    vector <Jet> AK4CHSjets_matched = event.get(h_CHSjets_matched); // CHSjets that have been matched to an AK4Puppi jet
+    vector <Jet> AK4CHSjets_matched = event.get(h_CHSjets_matched); // AK4Puppijets that have been matched to CHSjets
     if(debug) cout <<" AK4CHSjets_matched size: "<< AK4CHSjets_matched.size() <<endl;
-    vector <TopJet> TopTaggedJets = event.get(h_DeepAK8TopTags); // Puppi jets TopTagged by DeepAK8TopTagger
+    vector <TopJet> TopTaggedJets = event.get(h_DeepAK8TopTags); // AK8Puppi jets TopTagged by DeepAK8TopTagger
     if(debug) cout <<" TopTaggedJets size: "<< TopTaggedJets.size() <<endl;
-    bool is_toptag_reconstruction = BestZprimeCandidate->is_toptag_reconstruction(); // Reco process id
+    bool is_toptag_reconstruction = BestZprimeCandidate->is_toptag_reconstruction(); // Reconstruction process
     if(debug) cout<<" is_toptag_reconstruction evaluates to: "<< is_toptag_reconstruction <<endl;
     int n_toptagreco = 1;
     int n_ak4reco = 2;
@@ -1244,7 +1244,7 @@ bool ZprimeAnalysisModule_AzCorr::process(uhh2::Event& event){
       if(is_toptag_reconstruction){
         for(unsigned int j=0; j < BestZprimeCandidate->tophad_topjet_ptr()->subjets().size(); j++){
           //float bscore = BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
-          float bscore = BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).btag_DeepFlavour_b();
+          float bscore = BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).btag_DeepJet();
           if(bscore == bscore_max) had_top_b.SetPtEtaPhiE(BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).pt(), 
                                                           BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).eta(), 
                                                           BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).phi(), 
