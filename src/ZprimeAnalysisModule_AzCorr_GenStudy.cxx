@@ -1159,16 +1159,16 @@ bool ZprimeAnalysisModule_AzCorr_GenStudy::process(uhh2::Event& event){
     if(pt_hadTop != -10) event.set(h_pt_hadTop, pt_hadTop);
 
     // Define 4vectors of hadronic b
-    //LorentzVector Gen_b = ttbargen.BHad().v4();
-    TLorentzVector hadTop_b(ttbargen.BHad().v4());
+    LorentzVector Gen_b = ttbargen.BHad().v4();
+    TLorentzVector hadTop_b;
     // Set ttbar sysetem 4vector using components
-    //hadTop_b.SetPtEtaPhiE(Gen_b.pt(),Gen_b.eta(),Gen_b.phi(),Gen_b.energy());
+    hadTop_b.SetPtEtaPhiE(Gen_b.pt(),Gen_b.eta(),Gen_b.phi(),Gen_b.energy());
 
     // Define 4vectors of lepton
-    //LorentzVector Gen_Lep = ttbargen.ChargedLepton().v4();
-    TLorentzVector lepTop_lep(ttbargen.ChargedLepton().v4());
+    LorentzVector Gen_Lep = ttbargen.ChargedLepton().v4();
+    TLorentzVector lepTop_lep;
     // Set ttbar sysetem 4vector using components
-    //lepTop_lep.SetPtEtaPhiE(Gen_Lep.pt(), Gen_Lep.eta(), Gen_Lep.phi(), Gen_Lep.energy());
+    lepTop_lep.SetPtEtaPhiE(Gen_Lep.pt(), Gen_Lep.eta(), Gen_Lep.phi(), Gen_Lep.energy());
 
     // Plot LAB FRAME phi-coordinates
     float phi_b_LabFrame = hadTop_b.Phi();
@@ -1180,11 +1180,11 @@ bool ZprimeAnalysisModule_AzCorr_GenStudy::process(uhh2::Event& event){
     if(debug) cout<<" Start First Boost"<<endl;
 
     // Top vectors
-    TLorentzVector PosTop(ttbargen.Top().v4());
-    TLorentzVector NegTop(ttbargen.Antitop().v4());
+    TLorentzVector PosTop;
+    TLorentzVector NegTop;
     // Set top 4vectors using components
-    //PosTop.SetPtEtaPhiE(ttbargen.Top().v4().pt(), ttbargen.Top().v4().eta(), ttbargen.Top().v4().phi(), ttbargen.Top().v4().energy());
-    //NegTop.SetPtEtaPhiE(ttbargen.Antitop().v4().pt(), ttbargen.Antitop().v4().eta(), ttbargen.Antitop().v4().phi(), ttbargen.Antitop().v4().energy());
+    PosTop.SetPtEtaPhiE(ttbargen.Top().v4().pt(), ttbargen.Top().v4().eta(), ttbargen.Top().v4().phi(), ttbargen.Top().v4().energy());
+    NegTop.SetPtEtaPhiE(ttbargen.Antitop().v4().pt(), ttbargen.Antitop().v4().eta(), ttbargen.Antitop().v4().phi(), ttbargen.Antitop().v4().energy());
 
     // 4vector to represent ttbar system
     TLorentzVector ttbar(PosTop + NegTop);
@@ -1212,7 +1212,7 @@ bool ZprimeAnalysisModule_AzCorr_GenStudy::process(uhh2::Event& event){
 
     // Rotation angles
     float angle1 = PosTop.Phi();
-    float angle2 = PosTop.v4().Theta();
+    float angle2 = PosTop.Theta();
 
     // Rotate tops and decay products about beam-line
     lepTop_lep.RotateZ(-1.*angle1);
