@@ -63,11 +63,11 @@ using namespace uhh2;
 ██████  ███████ ██      ██ ██   ████ ██    ██    ██  ██████  ██   ████
 */
 
-class ZprimeAnalysisModule_AzCorr : public ModuleBASE {
+class ZprimeAnalysisModule_AzCorr_GenStudy : public ModuleBASE {
 
 public:
 
-  explicit ZprimeAnalysisModule_AzCorr(uhh2::Context&);
+  explicit ZprimeAnalysisModule_AzCorr_GenStudy(uhh2::Context&);
   virtual bool process(uhh2::Event&) override;
   void book_histograms(uhh2::Context&, vector<string>);
   void fill_histograms(uhh2::Event&, string);
@@ -135,30 +135,25 @@ protected:
 
   uhh2::Event::Handle<ZprimeCandidate*> h_BestZprimeCandidateChi2;
 
-  // AzCorr variables
-  uhh2::Event::Handle< std::vector<Jet> > h_CHSjets_matched;  // Collection of CHS matched jets
-  uhh2::Event::Handle< std::vector<TopJet> > h_DeepAK8TopTags;  // Collection of DeepAK8TopTagged jets
+  // SpinCorr variables
+  uhh2::Event::Handle<std::vector<Jet>> h_CHSjets_matched;  // Collection of CHS matched jets
+  uhh2::Event::Handle<std::vector<TopJet>> h_DeepAK8TopTags;  // Collection of DeepAK8TopTagged jets
+  uhh2::Event::Handle<TTbarGen> h_ttbargen;
+  std::unique_ptr<TTbarGenProducer> ttgenprod;
   
   Event::Handle<float> h_pt_hadTop;     // pt of hadronic top-jet(s)
-  Event::Handle<float> h_pt_hadTop_res; // pt of hadronic top-jet from resolved topology
-  Event::Handle<float> h_pt_hadTop_mer; // pt of hadronic top-jets from merged topology
-
-  //Event::Handle<float> h_deltaR_min;  // Smallest deltaR(hadronicjet, AK4CHSmatchedjet)
-  Event::Handle<float> h_res_jet_bscore;    // bScores of resolved jets before ANY of MY btagging requirements
-  Event::Handle<float> h_mer_subjet_bscore; // bScores of merged subjets before ANY of MY btagging requirements
-  Event::Handle<float> h_bscore_max;  // Largest bScores of hadronic sub-jets
 
   // Phi of lepton from leptonic leg
   Event::Handle<float> h_phi_lep_LabFrame;
   Event::Handle<float> h_phi_lep_CoMFrame;
-  Event::Handle<float> h_phi_lep_topRestFrame;
+  Event::Handle<float> h_phi_lep_helicityFrame;
   Event::Handle<float> h_phi_lep;
   Event::Handle<float> h_phi_lep_high; 
   Event::Handle<float> h_phi_lep_low; 
   // Phi of b-jet from hadronic leg
   Event::Handle<float> h_phi_b_LabFrame;
   Event::Handle<float> h_phi_b_CoMFrame;
-  Event::Handle<float> h_phi_b_topRestFrame;
+  Event::Handle<float> h_phi_b_helicityFrame;
   Event::Handle<float> h_phi_b;
   Event::Handle<float> h_phi_b_high; 
   Event::Handle<float> h_phi_b_low; 
@@ -221,7 +216,7 @@ protected:
 
 };
 
-void ZprimeAnalysisModule_AzCorr::book_histograms(uhh2::Context& ctx, vector<string> tags){
+void ZprimeAnalysisModule_AzCorr_GenStudy::book_histograms(uhh2::Context& ctx, vector<string> tags){
   for(const auto & tag : tags){
     string mytag = tag + "_Skimming";
     mytag = tag + "_General";
@@ -229,7 +224,7 @@ void ZprimeAnalysisModule_AzCorr::book_histograms(uhh2::Context& ctx, vector<str
   }
 }
 
-void ZprimeAnalysisModule_AzCorr::fill_histograms(uhh2::Event& event, string tag){
+void ZprimeAnalysisModule_AzCorr_GenStudy::fill_histograms(uhh2::Event& event, string tag){
   string mytag = tag + "_Skimming";
   mytag = tag + "_General";
   HFolder(mytag)->fill(event);
@@ -243,7 +238,7 @@ void ZprimeAnalysisModule_AzCorr::fill_histograms(uhh2::Event& event, string tag
 █  ██████  ██████  ██   ████ ███████    ██    ██   ██  ██████   ██████    ██     ██████  ██   ██
 */
 
-ZprimeAnalysisModule_AzCorr::ZprimeAnalysisModule_AzCorr(uhh2::Context& ctx){
+ZprimeAnalysisModule_AzCorr_GenStudy::ZprimeAnalysisModule_AzCorr_GenStudy(uhh2::Context& ctx){
 
   debug = false; // false/true
 
@@ -458,6 +453,7 @@ ZprimeAnalysisModule_AzCorr::ZprimeAnalysisModule_AzCorr(uhh2::Context& ctx){
   CandidateBuilder.reset(new ZprimeCandidateBuilder(ctx, mode));
 
   // Zprime discriminators
+  if(isMC) ttgenprod.reset(new TTbarGenProducer(ctx));
   Chi2DiscriminatorZprime.reset(new ZprimeChi2Discriminator(ctx));
   h_is_zprime_reconstructed_chi2 = ctx.get_handle<bool>("is_zprime_reconstructed_chi2");
   CorrectMatchDiscriminatorZprime.reset(new ZprimeCorrectMatchDiscriminator(ctx));
@@ -476,30 +472,22 @@ ZprimeAnalysisModule_AzCorr::ZprimeAnalysisModule_AzCorr(uhh2::Context& ctx){
   h_NPV = ctx.declare_event_output<int> ("NPV");
   h_weight = ctx.declare_event_output<float> ("weight");
 
-  // AzCorr Variables
+  // Spin Corr Variables
   h_CHSjets_matched = ctx.get_handle<std::vector<Jet>>("CHS_matched");       // Collection of CHS matched jets
-  h_DeepAK8TopTags = ctx.get_handle< std::vector<TopJet>>("DeepAK8TopTags"); // Collection of DeepAK8TopTagged jets
-  
-  h_pt_hadTop=ctx.declare_event_output<float> ("pt_hadTop");          // pt of hadronic top-jet(s)
-  h_pt_hadTop_res=ctx.declare_event_output<float> ("pt_hadTop_res");  // pt of hadronic top-jet from resolved topology
-  h_pt_hadTop_mer=ctx.declare_event_output<float> ("pt_hadTop_mer");  // pt of hadronic top-jets from merged topology
-
-  //h_deltaR_min=ctx.declare_event_output<float> ("deltaR_min");              // Smallest deltaR(hadronicjet, AK4CHSmatchedjet)
-  h_res_jet_bscore=ctx.declare_event_output<float> ("res_jet_bscore");        // bScores of resolved jets
-  h_mer_subjet_bscore=ctx.declare_event_output<float> ("mer_subjet_bscore");  // bScores of merged subjets
-  h_bscore_max=ctx.declare_event_output<float> ("bscore_max");                // Largest bScores of hadronic sub-jets
-
+  h_DeepAK8TopTags = ctx.get_handle<std::vector<TopJet>>("DeepAK8TopTags");  // Collection of DeepAK8TopTagged jets
+  h_ttbargen = ctx.get_handle<TTbarGen>("ttbargen");                         // Access to gen-level particles
+  h_pt_hadTop=ctx.declare_event_output<float> ("pt_hadTop");                 // pt of hadronic top-jet(s)
   // Phi of lepton from leptonic leg
   h_phi_lep_LabFrame=ctx.declare_event_output<float> ("phi_lep_LabFrame");
   h_phi_lep_CoMFrame=ctx.declare_event_output<float> ("phi_lep_CoMFrame");
-  h_phi_lep_topRestFrame=ctx.declare_event_output<float> ("phi_lep_topRestFrame");
+  h_phi_lep_helicityFrame=ctx.declare_event_output<float> ("phi_lep_helicityFrame");
   h_phi_lep=ctx.declare_event_output<float> ("phi_lep");
   h_phi_lep_high=ctx.declare_event_output<float> ("phi_lep_high");
   h_phi_lep_low=ctx.declare_event_output<float> ("phi_lep_low");
   // Phi of b-jet from hadronic leg
   h_phi_b_LabFrame=ctx.declare_event_output<float> ("phi_b_LabFrame");
   h_phi_b_CoMFrame=ctx.declare_event_output<float> ("phi_b_CoMFrame");
-  h_phi_b_topRestFrame=ctx.declare_event_output<float> ("phi_b_topRestFrame");
+  h_phi_b_helicityFrame=ctx.declare_event_output<float> ("phi_b_helicityFrame");
   h_phi_b=ctx.declare_event_output<float> ("phi_b");
   h_phi_b_high=ctx.declare_event_output<float> ("phi_b_high");
   h_phi_b_low=ctx.declare_event_output<float> ("phi_b_low");
@@ -600,7 +588,7 @@ ZprimeAnalysisModule_AzCorr::ZprimeAnalysisModule_AzCorr(uhh2::Context& ctx){
 ██      ██   ██  ██████   ██████ ███████ ███████ ███████
 */
 
-bool ZprimeAnalysisModule_AzCorr::process(uhh2::Event& event){
+bool ZprimeAnalysisModule_AzCorr_GenStudy::process(uhh2::Event& event){
 
   if(debug) cout << "++++++++++++ NEW EVENT ++++++++++++++" << endl;
   if(debug) cout << " run.event: " << event.run << ". " << event.event << endl;
@@ -619,27 +607,19 @@ bool ZprimeAnalysisModule_AzCorr::process(uhh2::Event& event){
   event.set(h_NPV,-100);
   event.set(h_weight,-100);
 
-  if(debug) cout<<"Initializing Azimuthal Correlation set"<<endl;
-  event.set(h_pt_hadTop, -10);      // pt of hadronic top-jet(s)
-  event.set(h_pt_hadTop_res, -10);  // pt of hadronic top-jets from resolved topology
-  event.set(h_pt_hadTop_mer, -10);  // pt of hadronic top-jet from merged topology
-
-  //event.set(h_deltaR_min, -10);      // Smallest deltaR(hadronicjet, AK4CHSmatchedjet)
-  event.set(h_res_jet_bscore, -2);     // bScores of resolved top's jets before ANY of MY btagging requirements
-  event.set(h_mer_subjet_bscore, -2);  // bScores of merged top's subjets before ANY of MY btagging requirements
-  event.set(h_bscore_max, -10);        // Largest bScores of hadronic sub-jets
-
+  if(debug) cout<<"Initializing Spin Correlation set"<<endl;
+  event.set(h_pt_hadTop, -10);      // pt of hadronic top
   // Phi of lepton from leptonic leg
   event.set(h_phi_lep_LabFrame, -10);    
   event.set(h_phi_lep_CoMFrame, -10);
-  event.set(h_phi_lep_topRestFrame, -10);
+  event.set(h_phi_lep_helicityFrame, -10);
   event.set(h_phi_lep, -10);
   event.set(h_phi_lep_high, -10);
   event.set(h_phi_lep_low, -10); 
   // Phi of b-jet from hadronic leg
   event.set(h_phi_b_LabFrame, -10);
   event.set(h_phi_b_CoMFrame, -10);
-  event.set(h_phi_b_topRestFrame, -10);
+  event.set(h_phi_b_helicityFrame, -10);
   event.set(h_phi_b, -10);     
   event.set(h_phi_b_high, -10);
   event.set(h_phi_b_low, -10); 
@@ -670,7 +650,6 @@ bool ZprimeAnalysisModule_AzCorr::process(uhh2::Event& event){
   event.set(h_dphi_minus, -10);         
   event.set(h_dphi_minus_low, -10);     
   event.set(h_dphi_minus_high, -10);
-
 
 
   if(!event.isRealData){
@@ -1162,289 +1141,122 @@ bool ZprimeAnalysisModule_AzCorr::process(uhh2::Event& event){
   event.set(h_NPV, event.pvs->size());
   event.set(h_MET, event.met->pt());
 
-  // Everything below this line is for the Azimuthal (Spin) Correlation studies -----------------------------------------------
+  // Everything below this line is for the Spin Correlation studies -----------------------------------------------
 
-  // Define bool that tells me if zprime was reconstructed using Chi2
-  bool is_zprime_reconstructed_chi2 = event.get(h_is_zprime_reconstructed_chi2);
-  if(is_zprime_reconstructed_chi2){
-    if(debug) cout<<" Zprime was reconstructed using Chi2--------"<<endl;
+  // fill ttbargen information
+  ttgenprod->process(event);
 
-    ZprimeCandidate* BestZprimeCandidate = event.get(h_BestZprimeCandidateChi2);     // Zprime best-candidate
-    vector <Jet> AK4CHSjets_matched = event.get(h_CHSjets_matched);                  // AK4Puppijets that have been matched to CHSjets
-    vector <TopJet> TopTaggedJets = event.get(h_DeepAK8TopTags);                     // AK8Puppi jets TopTagged by DeepAK8TopTagger
-    bool is_toptag_reconstruction = BestZprimeCandidate->is_toptag_reconstruction(); // Reconstruction process id
-    vector <float> jets_hadronic_bscores; // bScores-vector for resolved hadronic jets
+  // Variable to access gen-particles
+  TTbarGen ttbargen = event.get(h_ttbargen);
+
+  // Make sure ttbar decays semileptonically
+  if(ttbargen.IsSemiLeptonicDecay()){
     float pt_hadTop_thresh = 150;         // Define cut-variable as pt of hadTop for low/high regions
-    float btag_medWP = 0.2783; // medium WP for UL18
-    // float btag_medWP = 0.3040; // medium WP for UL17
 
-    // Plot pt of hadronic Top jet
-    float pt_hadTop = BestZprimeCandidate->top_hadronic_v4().pt();
+    // Plot pt of hadronic Top 
+    LorentzVector Gen_HadTop = ttbargen.TopHad().v4();
+    float pt_hadTop = Gen_HadTop.pt();
     if(pt_hadTop != -10) event.set(h_pt_hadTop, pt_hadTop);
-    if(pt_hadTop != -10 && !is_toptag_reconstruction) event.set(h_pt_hadTop_res, pt_hadTop);
-    if(pt_hadTop != -10 && is_toptag_reconstruction) event.set(h_pt_hadTop_mer, pt_hadTop);
 
-    // // Extract highest bscore for what will eventually become bjet
-    float bscore_max = -2;
+    // Define 4vectors of hadronic b
+    //LorentzVector Gen_b = ttbargen.BHad().v4();
+    TLorentzVector hadTop_b(ttbargen.BHad().v4());
+    // Set ttbar sysetem 4vector using components
+    //hadTop_b.SetPtEtaPhiE(Gen_b.pt(),Gen_b.eta(),Gen_b.phi(),Gen_b.energy());
 
-    // Resolved jets
-    if(!is_toptag_reconstruction){
-      // Loop over resolved hadronic jets to find their bscore via CHS jets
-      for(unsigned int i=0; i<BestZprimeCandidate->jets_hadronic().size(); i++){
-        double deltaR_min = 99;
-        // Match resolved hadronic jets to CHS jets (which have bscores)
-        for(unsigned int j=0; j<AK4CHSjets_matched.size(); j++){
-          double deltaR_CHS = deltaR(BestZprimeCandidate->jets_hadronic().at(i), AK4CHSjets_matched.at(j));
-          if(deltaR_CHS < deltaR_min) deltaR_min = deltaR_CHS;}
-        // Build bScore-vector for resolved hadronic jets whose bscore will correspond by index
-        for(unsigned int k=0; k<AK4CHSjets_matched.size(); k++){
-          if(deltaR(BestZprimeCandidate->jets_hadronic().at(i), AK4CHSjets_matched.at(k)) == deltaR_min) 
-          jets_hadronic_bscores.emplace_back(AK4CHSjets_matched.at(k).btag_DeepJet());}
-      }
-      // Loop over bScores-vector to extract highest bscore
-      for(unsigned int i=0; i<jets_hadronic_bscores.size(); i++){
-        float bscore = jets_hadronic_bscores.at(i);
-        if(bscore > bscore_max) bscore_max = bscore;
-      }
-      // Plot all bscores of resolved top's jets
-      for(unsigned int j=0; j<jets_hadronic_bscores.size(); j++){
-        float res_jet_bscore = jets_hadronic_bscores.at(j);
-        event.set(h_res_jet_bscore, res_jet_bscore);
-      }
+    // Define 4vectors of lepton
+    //LorentzVector Gen_Lep = ttbargen.ChargedLepton().v4();
+    TLorentzVector lepTop_lep(ttbargen.ChargedLepton().v4());
+    // Set ttbar sysetem 4vector using components
+    //lepTop_lep.SetPtEtaPhiE(Gen_Lep.pt(), Gen_Lep.eta(), Gen_Lep.phi(), Gen_Lep.energy());
+
+    // Plot LAB FRAME phi-coordinates
+    float phi_b_LabFrame = hadTop_b.Phi();
+    if(phi_b_LabFrame != -10) event.set(h_phi_b_LabFrame, phi_b_LabFrame);
+    float phi_lep_LabFrame = lepTop_lep.Phi();
+    if(phi_lep_LabFrame != -10) event.set(h_phi_lep_LabFrame, phi_lep_LabFrame);
+
+    //---------------------------------------------------------- Boost into CoM-frame ----------------------------------------------------------//
+    if(debug) cout<<" Start First Boost"<<endl;
+
+    // Top vectors
+    TLorentzVector PosTop(ttbargen.Top().v4());
+    TLorentzVector NegTop(ttbargen.Antitop().v4());
+    // Set top 4vectors using components
+    //PosTop.SetPtEtaPhiE(ttbargen.Top().v4().pt(), ttbargen.Top().v4().eta(), ttbargen.Top().v4().phi(), ttbargen.Top().v4().energy());
+    //NegTop.SetPtEtaPhiE(ttbargen.Antitop().v4().pt(), ttbargen.Antitop().v4().eta(), ttbargen.Antitop().v4().phi(), ttbargen.Antitop().v4().energy());
+
+    // 4vector to represent ttbar system
+    TLorentzVector ttbar(PosTop + NegTop);
+    // Set ttbar sysetem 4vector using components
+    //ttbar.SetPtEtaPhiE((ttbargen.Top().v4() + ttbargen.Antitop().v4()).pt(), (ttbargen.Top().v4() + ttbargen.Antitop().v4()).eta(), (ttbargen.Top().v4() + ttbargen.Antitop().v4()).phi(), (ttbargen.Top().v4() + ttbargen.Antitop().v4()).E());
+
+    // Boost into ttbar Center of Momentum configuration 
+    lepTop_lep.Boost(-ttbar.BoostVector());
+    hadTop_b.Boost(-ttbar.BoostVector());
+    PosTop.Boost(-ttbar.BoostVector());
+    NegTop.Boost(-ttbar.BoostVector());
+
+    // Plot phi-coordinates in CoM frame
+    float phi_b_CoMFrame = hadTop_b.Phi();
+    event.set(h_phi_b_CoMFrame, phi_b_CoMFrame);
+    float phi_lep_CoMFrame = lepTop_lep.Phi();
+    event.set(h_phi_lep_CoMFrame, phi_lep_CoMFrame);
+
+    // Cross-check back-to-back configuration of ttbar system
+    if(debug) cout<<" Angle between tops is: "<< PosTop.Angle(NegTop.Vect())<<endl;
+    //---------------------------------------------------------- Boost into CoM-frame ----------------------------------------------------------//
+
+    //-------------- Rotate into Helicity Frame --------------//
+    if(debug) cout<<"  Start Rotating"<<endl;
+
+    // Rotation angles
+    float angle1 = PosTop.Phi();
+    float angle2 = PosTop.v4().Theta();
+
+    // Rotate tops and decay products about beam-line
+    lepTop_lep.RotateZ(-1.*angle1);
+    hadTop_b.RotateZ(-1.*angle1);
+    PosTop.RotateZ(-1.*angle1);
+    NegTop.RotateZ(-1.*angle1);
+    // Rotate tops and decay products about y-zxis
+    lepTop_lep.RotateY(-1.*angle2);
+    hadTop_b.RotateY(-1.*angle2);
+    PosTop.RotateY(-1.*angle2);
+    NegTop.RotateY(-1.*angle2);
+
+    // Plot phi-coordinates in helicity-frame
+    float phi_b_helicityFrame = hadTop_b.Phi();
+    event.set(h_phi_b_helicityFrame, phi_b_helicityFrame);
+    float phi_lep_helicityFrame = lepTop_lep.Phi();
+    event.set(h_phi_lep_helicityFrame, phi_lep_helicityFrame);
+
+    //-------------- Rotate into Helicity Frame --------------//
+
+    //--------------------------- Boost into ttbar rest-frame ---------------------------//
+    if(debug) cout<<"   Start Second Boost"<<endl;
+    // // Boost the top's to rest individually, bringing their children with them
+    // // Decay products get boosted in opposite directions depending on their mother top
+
+    // POSITIVE LEPTON CONFIGURATION
+    if(ttbargen.ChargedLepton().charge() > 0){ // Positively charged lepton
+      lepTop_lep.Boost(-PosTop.BoostVector()); // means lepton has Positive Top mother
+      hadTop_b.Boost(-NegTop.BoostVector()); // means b-jet has Negative Top mother
     }
 
-    // Merged jet
-    if(is_toptag_reconstruction){
-      // Loop over hadronic top's subjets to extract highest bscore
-      for(unsigned int i=0; i < BestZprimeCandidate->tophad_topjet_ptr()->subjets().size(); i++){
-        // float bscore = BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(i).btag_DeepFlavour_b();
-        float bscore = BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(i).btag_DeepJet();
-        if(bscore > bscore_max) bscore_max = bscore;
-      }
-      // Plot all bscores of merged top's subjets
-      for(unsigned int j=0; j < BestZprimeCandidate->tophad_topjet_ptr()->subjets().size(); j++){
-        // float mer_subjet_bscore = BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).btag_DeepFlavour_b();
-        float mer_subjet_bscore = BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).btag_DeepJet();
-        event.set(h_mer_subjet_bscore, mer_subjet_bscore);
-      }
+    // NEGATIVE LEPTON CONFIGURATION
+    if(ttbargen.ChargedLepton().charge() < 0){ // Negatively charged lepton
+      lepTop_lep.Boost(-NegTop.BoostVector()); // means lepton has Negative Top mother
+      hadTop_b.Boost(-PosTop.BoostVector()); // means b-jet has Positive Top mother
     }
+    //--------------------------- Boost into ttbar rest-frame ---------------------------//
 
-    // Cut on bscore_max >= btag_WP
-    if(bscore_max >= btag_medWP){
-      event.set(h_bscore_max, bscore_max); // Plot max bscores
-
-      // // Define 4vectors of hadronic b-jet and lepton
-      // Hadronic-b 4vector 
-      TLorentzVector had_top_b(0, 0, 0, 0);
-      // Resolved topology
-      if(!is_toptag_reconstruction){
-        for(unsigned int i=0; i< BestZprimeCandidate->jets_hadronic().size(); i++){
-          float bscore = jets_hadronic_bscores.at(i);
-          if(bscore == bscore_max) had_top_b.SetPtEtaPhiE(BestZprimeCandidate->jets_hadronic().at(i).pt(), 
-                                                          BestZprimeCandidate->jets_hadronic().at(i).eta(), 
-                                                          BestZprimeCandidate->jets_hadronic().at(i).phi(), 
-                                                          BestZprimeCandidate->jets_hadronic().at(i).energy());
-        }
-      }
-      // Merged topology
-      if(is_toptag_reconstruction){
-        for(unsigned int j=0; j < BestZprimeCandidate->tophad_topjet_ptr()->subjets().size(); j++){
-          //float bscore = BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
-          float bscore = BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).btag_DeepJet();
-          if(bscore == bscore_max) had_top_b.SetPtEtaPhiE(BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).pt(), 
-                                                          BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).eta(), 
-                                                          BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).phi(), 
-                                                          BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).energy());
-        }
-      }
-
-      // Lepton 4-vector
-      TLorentzVector lep_top_lep(0, 0, 0, 0);
-      LorentzVector lep = BestZprimeCandidate->lepton().v4();
-      lep_top_lep.SetPtEtaPhiE(lep.pt(), lep.eta(), lep.phi(), lep.E());
-
-      // Plot phi-coordinates of bjet and lep in LAB-FRAME
-      float phi_b_LabFrame = had_top_b.Phi();
-      float phi_lep_LabFrame = lep_top_lep.Phi();
-      event.set(h_phi_b_LabFrame, phi_b_LabFrame);
-      event.set(h_phi_lep_LabFrame, phi_lep_LabFrame);
-
-      //---------------------------------------------------------------- Boost lepton_v4, hadronic-b_v4, and +2/3 top 3-vector into ttbar rest-frame ----------------------------------------------------------------//
-      if(debug) cout<<" Start Boosting"<<endl;
-      // Positive Top vectors
-      TLorentzVector PosTop(0, 0, 0, 0);   // Need a TLorentzVector version of PosTop to perform boost
-      LorentzVector PosTop_LV;             // Need a LorentzVector version to perform spatial rotation
-      LorentzVector BoostedPosTop_LV;      // Intermediate step to construct 3vector
-      TVector3 PosTop_v3;                  // Need a 3vector version to convert PxPyPz coordinates to cartesian for rotation
-      LorentzVector TwiceBoostedPosTop_LV; // Intermediate step to construct 3vector
-      TVector3 TwiceBoostedPosTop_v3;      // Cross-check if Pos- and Neg- Tops are at rest after boost 
-      // Negative Top vectors
-      TLorentzVector NegTop(0, 0, 0, 0);    // Cross-check if Pos- and Neg- Tops are back to back after first boost
-      LorentzVector NegTop_LV;              // Cross-check if Pos- and Neg- Tops are back to back after first boost
-      LorentzVector BoostedNegTop_LV;       // Intermediate step to construct 3vector
-      TVector3 NegTop_v3;                   // Cross-check if Pos- and Neg- Tops are back to back after first boost
-      LorentzVector TwiceBoostedNegTop_LV;  // Intermediate step to construct 3vector
-      TVector3 TwiceBoostedNegTop_v3;       // Cross-check if Pos- and Neg- Tops are at rest after boost
-
-      // Decay products get boosted in opposite directions depending on their mother top
-      // POSITIVE LEPTON CONFIGURATION
-      if(BestZprimeCandidate->lepton().charge() > 0){  
-        PosTop_LV = BestZprimeCandidate->top_leptonic_v4();
-        PosTop.SetPtEtaPhiE(BestZprimeCandidate->top_leptonic_v4().pt(), BestZprimeCandidate->top_leptonic_v4().eta(), BestZprimeCandidate->top_leptonic_v4().phi(), BestZprimeCandidate->top_leptonic_v4().energy());
-        NegTop_LV = BestZprimeCandidate->top_hadronic_v4();
-        NegTop.SetPtEtaPhiE(BestZprimeCandidate->top_hadronic_v4().pt(), BestZprimeCandidate->top_hadronic_v4().eta(), BestZprimeCandidate->top_hadronic_v4().phi(), BestZprimeCandidate->top_hadronic_v4().energy());
-
-        // 4vectors to represent ttbar system
-        LorentzVector lep_top = BestZprimeCandidate->top_leptonic_v4();
-        LorentzVector had_top = BestZprimeCandidate->top_hadronic_v4();
-        TLorentzVector ttbar(0, 0, 0, 0);
-        ttbar.SetPtEtaPhiE((had_top+lep_top).pt(), (had_top+lep_top).eta(), (had_top+lep_top).phi(), (had_top+lep_top).E());
-        
-        // Boost into ttbar Center of Momentum configuration 
-        lep_top_lep.Boost(-ttbar.BoostVector());
-        had_top_b.Boost(-ttbar.BoostVector());
-        PosTop.Boost(-ttbar.BoostVector());
-        NegTop.Boost(-ttbar.BoostVector());
-
-        // Plot phi-coordinates of bjet and lep in CoM frame
-        float phi_b_CoMFrame = had_top_b.Phi();
-        float phi_lep_CoMFrame = lep_top_lep.Phi();
-        event.set(h_phi_b_CoMFrame, phi_b_CoMFrame);
-        event.set(h_phi_lep_CoMFrame, phi_lep_CoMFrame);
-
-        // Get spatial part of PosTop in cartesian coordinates
-        BoostedPosTop_LV.SetPt(PosTop.Pt());
-        BoostedPosTop_LV.SetEta(PosTop.Eta());
-        BoostedPosTop_LV.SetPhi(PosTop.Phi()); 
-        BoostedPosTop_LV.SetE(PosTop.E());
-        PosTop_v3 = toVector(toXYZ(BoostedPosTop_LV));  // USE THIS VECTOR FOR ROTATION THAT FOLLOWS SECOND BOOST
-        // Get spatial part of NegTop in cartesian coordinates
-        BoostedNegTop_LV.SetPt(NegTop.Pt());
-        BoostedNegTop_LV.SetEta(NegTop.Eta());
-        BoostedNegTop_LV.SetPhi(NegTop.Phi()); 
-        BoostedNegTop_LV.SetE(NegTop.E());
-        NegTop_v3 = toVector(toXYZ(BoostedNegTop_LV));
-
-        // Cross-check back-to-back configuration of ttbar system
-        // float back2back = PosTop_v3.Angle(NegTop_v3);
-
-        // Now we boost the top's to rest individually, bringing their children with them
-        lep_top_lep.Boost(-PosTop.BoostVector()); // Positive charged lepton has Positive Top mother
-        had_top_b.Boost(-NegTop.BoostVector()); // Positive charged lepton means b-jet has Negative Top mother
-        PosTop.Boost(-PosTop.BoostVector());  // Okay to boost to rest since 3vector version is used for rotation
-        NegTop.Boost(-NegTop.BoostVector());  // Boost just to cross-check tops are really at rest
-
-        // Plot phi-coordinates of bjet and lep in top's rest-frame
-        float phi_b_topRestFrame = had_top_b.Phi();
-        float phi_lep_topRestFrame = lep_top_lep.Phi();
-        event.set(h_phi_b_topRestFrame, phi_b_topRestFrame);
-        event.set(h_phi_lep_topRestFrame, phi_lep_topRestFrame);
-
-        // Get spatial part of twice boosted PosTop in cartesian coordinates to cross-check boost
-        TwiceBoostedPosTop_LV.SetPt(PosTop.Pt());
-        TwiceBoostedPosTop_LV.SetEta(PosTop.Eta());
-        TwiceBoostedPosTop_LV.SetPhi(PosTop.Phi()); 
-        TwiceBoostedPosTop_LV.SetE(PosTop.E());
-        TwiceBoostedPosTop_v3 = toVector(toXYZ(TwiceBoostedPosTop_LV));
-        // Get spatial part of twice boosted NegTop in cartesian coordinates to cross-check boost
-        TwiceBoostedNegTop_LV.SetPt(NegTop.Pt());
-        TwiceBoostedNegTop_LV.SetEta(NegTop.Eta());
-        TwiceBoostedNegTop_LV.SetPhi(NegTop.Phi()); 
-        TwiceBoostedNegTop_LV.SetE(NegTop.E());
-        TwiceBoostedNegTop_v3 = toVector(toXYZ(TwiceBoostedNegTop_LV));
-      }
-      
-      // NEGATIVE LEPTON CONFIGURATION
-      if(BestZprimeCandidate->lepton().charge() < 0){  
-        PosTop_LV = BestZprimeCandidate->top_hadronic_v4();
-        PosTop.SetPtEtaPhiE(BestZprimeCandidate->top_hadronic_v4().pt(), BestZprimeCandidate->top_hadronic_v4().eta(), BestZprimeCandidate->top_hadronic_v4().phi(), BestZprimeCandidate->top_hadronic_v4().energy());
-        NegTop_LV = BestZprimeCandidate->top_leptonic_v4();
-        NegTop.SetPtEtaPhiE(BestZprimeCandidate->top_leptonic_v4().pt(), BestZprimeCandidate->top_leptonic_v4().eta(), BestZprimeCandidate->top_leptonic_v4().phi(), BestZprimeCandidate->top_leptonic_v4().energy());
-
-        // 4vectors to represent ttbar system
-        LorentzVector lep_top = BestZprimeCandidate->top_leptonic_v4();
-        LorentzVector had_top = BestZprimeCandidate->top_hadronic_v4();
-        TLorentzVector ttbar(0, 0, 0, 0);
-        ttbar.SetPtEtaPhiE((had_top+lep_top).pt(), (had_top+lep_top).eta(), (had_top+lep_top).phi(), (had_top+lep_top).E());
-        
-        // Boost into ttbar Center of Momentum configuration 
-        lep_top_lep.Boost(-ttbar.BoostVector());
-        had_top_b.Boost(-ttbar.BoostVector());
-        PosTop.Boost(-ttbar.BoostVector());
-        NegTop.Boost(-ttbar.BoostVector());
-
-        // Plot phi-coordinates of bjet and lep in CoM frame
-        float phi_b_CoMFrame = had_top_b.Phi();
-        float phi_lep_CoMFrame = lep_top_lep.Phi();
-        event.set(h_phi_b_CoMFrame, phi_b_CoMFrame);
-        event.set(h_phi_lep_CoMFrame, phi_lep_CoMFrame);
-
-        // Get spatial part of PosTop in cartesian coordinates
-        BoostedPosTop_LV.SetPt(PosTop.Pt());
-        BoostedPosTop_LV.SetEta(PosTop.Eta());
-        BoostedPosTop_LV.SetPhi(PosTop.Phi()); 
-        BoostedPosTop_LV.SetE(PosTop.E());
-        PosTop_v3 = toVector(toXYZ(BoostedPosTop_LV));  // USE THIS VECTOR FOR ROTATION THAT FOLLOWS SECOND BOOST
-        // Get spatial part of NegTop in cartesian coordinates
-        BoostedNegTop_LV.SetPt(NegTop.Pt());
-        BoostedNegTop_LV.SetEta(NegTop.Eta());
-        BoostedNegTop_LV.SetPhi(NegTop.Phi()); 
-        BoostedNegTop_LV.SetE(NegTop.E());
-        NegTop_v3 = toVector(toXYZ(BoostedNegTop_LV));
-
-        // Cross-check back-to-back configuration of ttbar system
-        //float back2back = PosTop_v3.Angle(NegTop_v3);
-
-        // Now we boost the top's to rest individually, bringing their children with them
-        lep_top_lep.Boost(-NegTop.BoostVector()); // Negative charged lepton has Negative Top mother
-        had_top_b.Boost(-PosTop.BoostVector()); // Negative charged lepton means b-jet has Positive Top mother
-        NegTop.Boost(-NegTop.BoostVector());  // Boost just to cross-check tops are really at rest
-        PosTop.Boost(-PosTop.BoostVector());  // Okay to boost to rest since 3vector version is used for rotation
-
-        // Plot phi-coordinates of bjet and lep in top's rest-frame
-        event.set(h_phi_b_topRestFrame, had_top_b.Phi());
-        event.set(h_phi_lep_topRestFrame, lep_top_lep.Phi());
-
-        // Get spatial part of PosTop in cartesian coordinates
-        TwiceBoostedPosTop_LV.SetPt(PosTop.Pt());
-        TwiceBoostedPosTop_LV.SetEta(PosTop.Eta());
-        TwiceBoostedPosTop_LV.SetPhi(PosTop.Phi()); 
-        TwiceBoostedPosTop_LV.SetE(PosTop.E());
-        TwiceBoostedPosTop_v3 = toVector(toXYZ(TwiceBoostedPosTop_LV));
-        // Get spatial part of twice boosted NegTop in cartesian coordinates to cross-check boost
-        TwiceBoostedNegTop_LV.SetPt(NegTop.Pt());
-        TwiceBoostedNegTop_LV.SetEta(NegTop.Eta());
-        TwiceBoostedNegTop_LV.SetPhi(NegTop.Phi()); 
-        TwiceBoostedNegTop_LV.SetE(NegTop.E());
-        TwiceBoostedNegTop_v3 = toVector(toXYZ(TwiceBoostedNegTop_LV));
-      }
-      //---------------------------------------------------------------- Boost lepton_v4, hadronic-b_v4, and +2/3 top 3-vector into ttbar rest-frame ----------------------------------------------------------------//
-
-      //---------------- Rotate vectors such that +2/3 top 3vector --> +z-axis ----------------//
-      if(debug) cout<<"  Start Rotating"<<endl;
-      // Find rotation vector using built-in crossproduct method
-      TVector3 Rotation_v3;
-      TVector3 PosZaxis(0, 0, 1);
-      Rotation_v3 = PosTop_v3.Cross(PosZaxis);
-
-      // Find angle between PosTop and +z-axis
-      float angle = PosTop_v3.Angle(PosZaxis);
-
-      // Rotate lepton and b vectors
-      lep_top_lep.Rotate(angle, Rotation_v3);
-      had_top_b.Rotate(angle, Rotation_v3);
-      PosTop.Rotate(angle, Rotation_v3);
-      NegTop.Rotate(angle, Rotation_v3);
-      TwiceBoostedPosTop_v3.Rotate(angle, Rotation_v3);
-      TwiceBoostedNegTop_v3.Rotate(angle, Rotation_v3);
-      //---------------- Rotate vectors such that +2/3 top 3vector --> +z-axis ----------------//
-      
       if(debug) cout<<"   Finished results are:"<<endl;
       // Define phi-coordinates from these twice boosted and once rotated 4vectors
-      float phi_lep = lep_top_lep.Phi();
+      float phi_lep = lepTop_lep.Phi();
       event.set(h_phi_lep, phi_lep);
       if(debug) cout<<"   phi_lep is: "<< phi_lep <<endl;
-      float phi_b = had_top_b.Phi();
+      float phi_b = hadTop_b.Phi();
       event.set(h_phi_b, phi_b);
       if(debug) cout<<"   phi_b is: "<< phi_b <<endl;
 
@@ -1479,7 +1291,7 @@ bool ZprimeAnalysisModule_AzCorr::process(uhh2::Event& event){
       }
 
       // Positively charged leptons
-      if(BestZprimeCandidate->lepton().charge() > 0){
+      if(ttbargen.ChargedLepton().charge() > 0){
         // Plot phi for positive leptons
         event.set(h_phi_lepPlus, phi_lep);
         // sphi_plus  is defined as (lep + had) for positive leptons
@@ -1501,7 +1313,7 @@ bool ZprimeAnalysisModule_AzCorr::process(uhh2::Event& event){
       }
 
       //Negatively charged leptons
-      if(BestZprimeCandidate->lepton().charge() < 0){
+      if(ttbargen.ChargedLepton().charge() < 0){
         // Plot phi for negative leptons
         event.set(h_phi_lepMinus, phi_lep);
         // sphi_minus is defined as (had + lep) for negative leptons
@@ -1521,10 +1333,9 @@ bool ZprimeAnalysisModule_AzCorr::process(uhh2::Event& event){
         if(pt_hadTop > pt_hadTop_thresh){event.set(h_dphi_minus_high, dphi_minus);}
         if(pt_hadTop < pt_hadTop_thresh){event.set(h_dphi_minus_low, dphi_minus);}
       }
-    }
   }
 
   return true;
 }
 
-UHH2_REGISTER_ANALYSIS_MODULE(ZprimeAnalysisModule_AzCorr)
+UHH2_REGISTER_ANALYSIS_MODULE(ZprimeAnalysisModule_AzCorr_GenStudy)

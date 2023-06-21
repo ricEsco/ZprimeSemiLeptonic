@@ -5,7 +5,7 @@ cmsTextFont   = 61;  # default is helvetic-bold
 
 writeExtraText = False;
 isPreliminary = False;
-extraText   = "Preliminary";
+extraText   = "Private work (CMS data/simulation)";
 extraTextFont = 52;  # default is helvetica-italics
 
 writeChannelText = False
@@ -27,9 +27,10 @@ relExtraDY = 1.2;
 # ratio of "CMS" and extra text size
 extraOverCmsTextSize  = 0.76;
 
-lumi_13TeV = "58.9 fb^{-1}";
-lumi_8TeV  = "19.7 fb^{-1}";
-lumi_7TeV  = "5.1 fb^{-1}";
+lumi_2018 = "59.8 fb^{-1}";
+lumi_2017 = "41.5 fb^{-1}";
+lumi_2016 = "36.3 fb^{-1}";
+lumi_Run2 = "137.6 fb^{-1}";
 lumi_sqrtS = "";
 
 drawLogo      = False;
@@ -41,7 +42,7 @@ drawLogo      = False;
 # mode generally : 
 #   iPos = 10*(alignement 1/2/3) + position (1/2/3 = left/center/right)
 
-def CMS_lumi( pad, iPeriod, iPosX, extraLumiText = "" ):
+def CMS_lumi( pad, iYear, iPosX, extraLumiText = "" ):
     outOfFrame    = False;
     if iPosX/10==0 :
         outOfFrame = True;
@@ -64,42 +65,26 @@ def CMS_lumi( pad, iPeriod, iPosX, extraLumiText = "" ):
 
     pad.cd();
 
-    lumiText = ""
-    if iPeriod==1:
-        lumiText += lumi_7TeV;
-        lumiText += " (7 TeV)";
-    elif iPeriod==2:
-        lumiText += lumi_8TeV;
-        lumiText += " (8 TeV)";
-    elif iPeriod==3:
-        lumiText = lumi_8TeV; 
-        lumiText += " (8 TeV)";
-        lumiText += " + ";
-        lumiText += lumi_7TeV;
-        lumiText += " (7 TeV)";
-    elif iPeriod==4:
-        lumiText += lumi_13TeV;
+    lumiText = "";
+    if iYear==16:
+        lumiText += lumi_2016;
         lumiText += " (13 TeV)";
-    elif iPeriod==7:
-        if outOfFrame : lumiText += "#scale[0.85]{";
-        lumiText += lumi_13TeV; 
+    elif iYear==17:
+        lumiText += lumi_2017;
         lumiText += " (13 TeV)";
-        lumiText += " + ";
-        lumiText += lumi_8TeV; 
-        lumiText += " (8 TeV)";
-        lumiText += " + ";
-        lumiText += lumi_7TeV;
-        lumiText += " (7 TeV)";
-        if outOfFrame: lumiText += "}";
-    elif iPeriod==12:
-        lumiText += "8 TeV";
-    elif iPeriod==0:
+    elif iYear==18:
+        lumiText += lumi_2018;
+        lumiText += " (13 TeV)";
+    elif iYear==2:
+        lumiText += lumi_Run2;
+        lumiText += " (13 TeV)";
+    elif iYear=="":
         lumiText += lumi_sqrtS;
 
     if not extraLumiText =="":
         if not extraLumiText[0] == " ":
-            extraLumiText = " " + extraLumiText
-        lumiText += extraLumiText
+            extraLumiText = " " + extraLumiText;
+        lumiText += extraLumiText;
    
     # print lumiText
 

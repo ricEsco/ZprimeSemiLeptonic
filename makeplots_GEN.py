@@ -43,8 +43,8 @@ if channel=="ele":
     _fileDir = "/nfs/dust/cms/group/zprime-uhh//"
 else:
     _channelText = "#mu+jets"
-    plotDirectory = "/nfs/dust/cms/user/ricardo/AzCorrAnalysis/muon/plots/UL17/"
-    _fileDir = "/nfs/dust/cms/user/ricardo/AzCorrAnalysis/muon/workdir_AzCorr_UL17_muon"
+    plotDirectory = "/nfs/dust/cms/user/ricardo/SpinCorrAnalysis_Gen/plots/UL16/"
+    _fileDir =      "/nfs/dust/cms/user/ricardo/SpinCorrAnalysis_Gen/muon/workdir_SpinCorr_Gen_UL16_muon"
 print "channel is ", channel
 print "The input root files will come from", _fileDir
 print "The output will go into", plotDirectory, "\n"
@@ -52,7 +52,8 @@ print "The output will go into", plotDirectory, "\n"
 
 ### define the histograms dictionary with entry syntax: {"variable_handle" : ["Plot name", "vertical-axis name", number of bins, [x-min, x-max]]}
 if channel=="mu": 
-    #   histograms =  {"phi_lep_LabFrame"                : ["#phi_{#mu} LabFrame",             "Events", 12, [-np.pi, np.pi]],
+    #    histograms =  {"pt_hadTop"                       : ["Hadronic-top (both) p_{T}",       "Events", 25, [     0,   500]],
+    #                  "phi_lep_LabFrame"                : ["#phi_{#mu} LabFrame",             "Events", 12, [-np.pi, np.pi]],
     #                  "phi_lep_CoMFrame"                : ["#phi_{#mu} CoMFrame",             "Events", 12, [-np.pi, np.pi]],
     #                  "phi_lep_topRestFrame"            : ["#phi_{#mu} topRestFrame",         "Events", 12, [-np.pi, np.pi]],
     #                  "phi_b_LabFrame"                  : ["#phi_{b} LabFrame",               "Events", 12, [-np.pi, np.pi]],
@@ -62,53 +63,56 @@ if channel=="mu":
     #                  "phi_lep"                         : ["#phi_{#mu}",                      "Events", 12, [-np.pi, np.pi]],
     #                  "sphi"                            : ["#Sigma#phi",                      "Events", 12, [-np.pi, np.pi]],
     #                  "dphi"                            : ["#Delta#phi",                      "Events", 12, [-np.pi, np.pi]],
-    #                  } # debug
+    #                 } # debug
 
-     histograms = {"pt_hadTop_res"                   : ["Resolved-top p_{T}",              "Events", 25, [     0,   500]],
-                   "pt_hadTop_mer"                   : ["Merged-top p_{T}",                "Events", 29, [   350,   950]],
-                   "pt_hadTop"                       : ["Hadronic-top (both) p_{T}",       "Events", 25, [     0,   500]],
-                   "res_jet_bscore"                  : ["b-scores of Resolved-top jets",   "Events", 20, [     0,     1]],
-                   "mer_subjet_bscore"               : ["b-scores of Merged-top subjets",  "Events", 20, [     0,     1]],
-                   "bscore_max"                      : ["max b-scores of hadronic jets",   "Events", 20, [     0,     1]],
-                   "phi_lep"                         : ["#phi_{#mu}",                      "Events", 12, [-np.pi, np.pi]],
-                   "phi_lep_high"                    : ["#phi_{#mu}^{high pt}",            "Events", 12, [-np.pi, np.pi]],
-                   "phi_lep_low"                     : ["#phi_{#mu}_{low pt}",             "Events", 12, [-np.pi, np.pi]],
-                   "phi_b"                           : ["#phi_{b}",                        "Events", 12, [-np.pi, np.pi]],
-                   "phi_b_high"                      : ["#phi_{b}^{high pt}",              "Events", 12, [-np.pi, np.pi]],
-                   "phi_b_low"                       : ["#phi_{b}_{low pt}",               "Events", 12, [-np.pi, np.pi]],
-                   "sphi"                            : ["#Sigma#phi",                      "Events", 12, [-np.pi, np.pi]],
-                   "sphi_low"                        : ["#Sigma#phi_{low pt}",             "Events", 12, [-np.pi, np.pi]],
-                   "sphi_high"                       : ["#Sigma#phi^{high pt}",            "Events", 12, [-np.pi, np.pi]],
-                   "sphi_plus"                       : ["#Sigma#phi (#mu^{+})",            "Events", 12, [-np.pi, np.pi]],
-                   "dphi"                            : ["#Delta#phi",                      "Events", 12, [-np.pi, np.pi]],
-                   "dphi_low"                        : ["#Delta#phi_{low pt}",             "Events", 12, [-np.pi, np.pi]],
-                   "dphi_high"                       : ["#Delta#phi^{high pt}",            "Events", 12, [-np.pi, np.pi]],
-                   "phi_lepPlus"                     : ["#phi_{#mu^{+}}",                  "Events", 12, [-np.pi, np.pi]],
-                   "phi_lepMinus"                    : ["#phi_{#mu^{-}}",                  "Events", 12, [-np.pi, np.pi]],
-                   "sphi_plus"                       : ["#Sigma#phi (#mu^{+})",            "Events", 12, [-np.pi, np.pi]],
-                   "sphi_plus_high"                  : ["#Sigma#phi^{high pt} (#mu^{+})",  "Events", 12, [-np.pi, np.pi]],
-                   "sphi_plus_low"                   : ["#Sigma#phi_{low pt} (#mu^{+})",   "Events", 12, [-np.pi, np.pi]],
-                   "dphi_plus"                       : ["#Delta#phi (#mu^{+})",            "Events", 12, [-np.pi, np.pi]],
-                   "dphi_plus_high"                  : ["#Delta#phi^{high pt} (#mu^{+})",  "Events", 12, [-np.pi, np.pi]],
-                   "dphi_plus_low"                   : ["#Delta#phi_{low pt} (#mu^{+})",   "Events", 12, [-np.pi, np.pi]],
-                   "sphi_minus"                      : ["#Sigma#phi (#mu^{-})",            "Events", 12, [-np.pi, np.pi]],
-                   "sphi_minus_high"                 : ["#Sigma#phi^{high pt} (#mu^{-})",  "Events", 12, [-np.pi, np.pi]],
-                   "sphi_minus_low"                  : ["#Sigma#phi_{low pt} (#mu^{-})",   "Events", 12, [-np.pi, np.pi]],
-                   "dphi_minus"                      : ["#Delta#phi (#mu^{-})",            "Events", 12, [-np.pi, np.pi]],
-                   "dphi_minus_high"                 : ["#Delta#phi^{high pt} (#mu^{-})",  "Events", 12, [-np.pi, np.pi]],
-                   "dphi_minus_low"                  : ["#Delta#phi_{low pt} (#mu^{-})",   "Events", 12, [-np.pi, np.pi]]
-                 } # plots
+      histograms = {"pt_hadTop"                       : ["Hadronic-top (both) p_{T}",       "Events", 25, [     0,   500]],
+                    "phi_lep"                         : ["#phi_{#mu}",                      "Events", 12, [-np.pi, np.pi]],
+                    "phi_lep_LabFrame"                : ["#phi_{#mu} LabFrame",             "Events", 12, [-np.pi, np.pi]],
+                    "phi_lep_CoMFrame"                : ["#phi_{#mu} CoMFrame",             "Events", 12, [-np.pi, np.pi]],
+                    "phi_lep_topRestFrame"            : ["#phi_{#mu} topRestFrame",         "Events", 12, [-np.pi, np.pi]],
+                    "phi_lep_high"                    : ["#phi_{#mu}^{high pt}",            "Events", 12, [-np.pi, np.pi]],
+                    "phi_lep_low"                     : ["#phi_{#mu}_{low pt}",             "Events", 12, [-np.pi, np.pi]],
+                    "phi_b"                           : ["#phi_{b}",                        "Events", 12, [-np.pi, np.pi]],
+                    "phi_b_LabFrame"                  : ["#phi_{b} LabFrame",               "Events", 12, [-np.pi, np.pi]],
+                    "phi_b_CoMFrame"                  : ["#phi_{b} CoMFrame",               "Events", 12, [-np.pi, np.pi]],
+                    "phi_b_topRestFrame"              : ["#phi_{b} topRestFrame",           "Events", 12, [-np.pi, np.pi]],
+                    "phi_b_high"                      : ["#phi_{b}^{high pt}",              "Events", 12, [-np.pi, np.pi]],
+                    "phi_b_low"                       : ["#phi_{b}_{low pt}",               "Events", 12, [-np.pi, np.pi]],
+                    "sphi"                            : ["#Sigma#phi",                      "Events", 12, [-np.pi, np.pi]],
+                    "sphi_low"                        : ["#Sigma#phi_{low pt}",             "Events", 12, [-np.pi, np.pi]],
+                    "sphi_high"                       : ["#Sigma#phi^{high pt}",            "Events", 12, [-np.pi, np.pi]],
+                    "sphi_plus"                       : ["#Sigma#phi (#mu^{+})",            "Events", 12, [-np.pi, np.pi]],
+                    "dphi"                            : ["#Delta#phi",                      "Events", 12, [-np.pi, np.pi]],
+                    "dphi_low"                        : ["#Delta#phi_{low pt}",             "Events", 12, [-np.pi, np.pi]],
+                    "dphi_high"                       : ["#Delta#phi^{high pt}",            "Events", 12, [-np.pi, np.pi]],
+                    "phi_lepPlus"                     : ["#phi_{#mu^{+}}",                  "Events", 12, [-np.pi, np.pi]],
+                    "phi_lepMinus"                    : ["#phi_{#mu^{-}}",                  "Events", 12, [-np.pi, np.pi]],
+                    "sphi_plus"                       : ["#Sigma#phi (#mu^{+})",            "Events", 12, [-np.pi, np.pi]],
+                    "sphi_plus_high"                  : ["#Sigma#phi^{high pt} (#mu^{+})",  "Events", 12, [-np.pi, np.pi]],
+                    "sphi_plus_low"                   : ["#Sigma#phi_{low pt} (#mu^{+})",   "Events", 12, [-np.pi, np.pi]],
+                    "dphi_plus"                       : ["#Delta#phi (#mu^{+})",            "Events", 12, [-np.pi, np.pi]],
+                    "dphi_plus_high"                  : ["#Delta#phi^{high pt} (#mu^{+})",  "Events", 12, [-np.pi, np.pi]],
+                    "dphi_plus_low"                   : ["#Delta#phi_{low pt} (#mu^{+})",   "Events", 12, [-np.pi, np.pi]],
+                    "sphi_minus"                      : ["#Sigma#phi (#mu^{-})",            "Events", 12, [-np.pi, np.pi]],
+                    "sphi_minus_high"                 : ["#Sigma#phi^{high pt} (#mu^{-})",  "Events", 12, [-np.pi, np.pi]],
+                    "sphi_minus_low"                  : ["#Sigma#phi_{low pt} (#mu^{-})",   "Events", 12, [-np.pi, np.pi]],
+                    "dphi_minus"                      : ["#Delta#phi (#mu^{-})",            "Events", 12, [-np.pi, np.pi]],
+                    "dphi_minus_high"                 : ["#Delta#phi^{high pt} (#mu^{-})",  "Events", 12, [-np.pi, np.pi]],
+                    "dphi_minus_low"                  : ["#Delta#phi_{low pt} (#mu^{-})",   "Events", 12, [-np.pi, np.pi]]
+                  } # plots
 else:
 	histograms = {}
 
 
 ### The sample_names array has filenames of samples that will contribute to each plot
-sample_names = ["TTToSemiLeptonic", "TTToSemiLeptonic_2", "TTTo2L2Nu", "TTToHadronic", "DY", "QCD", "WJets", "ST", "Diboson"]
+#sample_names = ["TTToSemiLeptonic", "TTToSemiLeptonic_2", "TTTo2L2Nu", "TTToHadronic"]
+sample_names = ["TTToSemiLeptonic", "TTToSemiLeptonic_2"]
 
 
 ### The stackList dictionary maps the list of samples to their color
 # All three TTbar decay channels
-stackList = {"TTToSemiLeptonic":[kRed], "TTToSemiLeptonic_2":[kRed], "TTTo2L2Nu":[kRed+1], "TTToHadronic":[kRed-4], "QCD":[kTeal],"WJets":[kGreen], "ST":[kYellow], "DY":[kBlue], "Diboson":[kOrange]}
+#stackList = {"TTToSemiLeptonic":[kRed], "TTToSemiLeptonic_2":[kRed], "TTTo2L2Nu":[kRed+1], "TTToHadronic":[kRed-4]}
+stackList = {"TTToSemiLeptonic":[kRed], "TTToSemiLeptonic_2":[kRed]}
 
 ### end User input section i.e. modify each time new set of plots are being generated ------------------------------------------------------------------------------------
 
@@ -167,11 +171,13 @@ legendHeightPer = 0.01
 legList = stackList.keys() 
 #legList.reverse()
 #legendStart = 0.69
-legendStart = 0.79
+legendStart = 0.85
 legendEnd = 0.99-(R/W)
 #legend = TLegend(2*legendStart - legendEnd, 1-T/H-0.01 - legendHeightPer*(len(legList)+1), legendEnd, 0.99-(T/H)-0.01)
-legend = TLegend(2*legendStart - legendEnd , 0.99 - (T/H)/(1.-padRatio+padOverlap) - legendHeightPer/(1.-padRatio+padOverlap)*round((len(legList)+1)/2.), legendEnd, 0.99-(T/H)/(1.-padRatio+padOverlap))
-legend.SetNColumns(2)
+# legend = TLegend(2*legendStart - legendEnd , 0.99 - (T/H)/(1.-padRatio+padOverlap) - legendHeightPer/(1.-padRatio+padOverlap)*round((len(legList)+1)/2.), legendEnd, 0.99-(T/H)/(1.-padRatio+padOverlap))
+legend = TLegend(.85, .70, .95, .90)
+legend.SetNColumns(1)
+legend.SetHeader("Gen-Level", "C")
 
 
 ### Canvas info:
@@ -186,30 +192,31 @@ canvas.SetTopMargin( T/H )
 canvas.SetBottomMargin( B/H )
 canvas.SetTickx(0)
 
-canvasRatio = TCanvas('c1Ratio','c1Ratio',W,H)
-canvasRatio.SetFillColor(0)
-canvasRatio.SetBorderMode(0)
-canvasRatio.SetFrameFillStyle(0)
-canvasRatio.SetFrameBorderMode(0)
-canvasRatio.SetLeftMargin( L/W )
-canvasRatio.SetRightMargin( R/W )
-canvasRatio.SetTopMargin( T/H )
-canvasRatio.SetBottomMargin( B/H )
-canvasRatio.SetTickx(0)
-canvasRatio.SetTicky(0)
-canvasRatio.Draw()
-canvasRatio.cd()
+# canvasRatio = TCanvas('c1Ratio','c1Ratio',W,H)
+# canvasRatio.SetFillColor(0)
+# canvasRatio.SetBorderMode(0)
+# canvasRatio.SetFrameFillStyle(0)
+# canvasRatio.SetFrameBorderMode(0)
+# canvasRatio.SetLeftMargin( L/W )
+# canvasRatio.SetRightMargin( R/W )
+# canvasRatio.SetTopMargin( T/H )
+# canvasRatio.SetBottomMargin( B/H )
+# canvasRatio.SetTickx(0)
+# canvasRatio.SetTicky(0)
+# canvasRatio.Draw()
+# canvasRatio.cd()
 
-pad1 = TPad("zxc_p1","zxc_p1",0,padRatio-padOverlap,1,1)
-pad2 = TPad("qwe_p2","qwe_p2",0,0,1,padRatio+padOverlap)
+# pad1 = TPad("zxc_p1","zxc_p1",0,padRatio-padOverlap,1,1)
+pad1 = TPad("zxc_p1","zxc_p1",0,0,1,1)
+# pad2 = TPad("qwe_p2","qwe_p2",0,0,1,padRatio+padOverlap)
 pad1.SetLeftMargin( L/W )
 pad1.SetRightMargin( R/W )
 pad1.SetTopMargin( T/H/(1-padRatio+padOverlap) )
 pad1.SetBottomMargin( (padOverlap+padGap)/(1-padRatio+padOverlap) )
-pad2.SetLeftMargin( L/W )
-pad2.SetRightMargin( R/W )
-pad2.SetTopMargin( (padOverlap)/(padRatio+padOverlap) )
-pad2.SetBottomMargin( B/H/(padRatio+padOverlap) )
+# pad2.SetLeftMargin( L/W )
+# pad2.SetRightMargin( R/W )
+# pad2.SetTopMargin( (padOverlap)/(padRatio+padOverlap) )
+# pad2.SetBottomMargin( B/H/(padRatio+padOverlap) )
 pad1.SetFillColor(0)
 pad1.SetBorderMode(0)
 pad1.SetFrameFillStyle(0)
@@ -217,17 +224,17 @@ pad1.SetFrameBorderMode(0)
 pad1.SetTickx(0)
 pad1.SetTicky(0)
 
-pad2.SetFillColor(0)
-pad2.SetFillStyle(4000)
-pad2.SetBorderMode(0)
-pad2.SetFrameFillStyle(0)
-pad2.SetFrameBorderMode(0)
-pad2.SetTickx(0)
-pad2.SetTicky(0)
+# pad2.SetFillColor(0)
+# pad2.SetFillStyle(4000)
+# pad2.SetBorderMode(0)
+# pad2.SetFrameFillStyle(0)
+# pad2.SetFrameBorderMode(0)
+# pad2.SetTickx(0)
+# pad2.SetTicky(0)
 
-canvasRatio.cd()
+# canvasRatio.cd()
 pad1.Draw()
-pad2.Draw()
+# pad2.Draw()
 canvas.cd()
 canvas.ResetDrawn()
 
@@ -246,15 +253,17 @@ for histName in histograms:
     tree_MC[histName]={}
     hist[histName]={}
     stack[histName] = THStack("hs","stack")
-    legendR[histName] = TLegend(2*legendStart - legendEnd , 0.99 - (T/H)/(1.-padRatio+padOverlap) - legendHeightPer/(1.-padRatio+padOverlap)*round((len(legList)+1)/2.)-0.1, legendEnd, 0.99-(T/H)/(1.-padRatio+padOverlap))
-    legendR[histName].SetNColumns(2)
+    # legendR[histName] = TLegend(2*legendStart - legendEnd , 0.99 - (T/H)/(1.-padRatio+padOverlap) - legendHeightPer/(1.-padRatio+padOverlap)*round((len(legList)+1)/2.)-0.1, legendEnd, 0.99-(T/H)/(1.-padRatio+padOverlap))
+    legendR[histName] = TLegend(.74, .82, .89, .90)
+    legendR[histName].SetHeader("Gen-Level", "C")
+    legendR[histName].SetNColumns(1)
     legendR[histName].SetBorderSize(0)
     legendR[histName].SetFillColor(0)
 canvas.cd()
 
 # Normalization factor for hists
 normFactor = 1.
-
+pad1.cd()
 
 ### We loop through each histogram and fill it with the different samples
 for histName in histograms:
@@ -268,13 +277,7 @@ for histName in histograms:
         hist[histName][sample].SetFillColor(stackList[sample][0])
         hist[histName][sample].SetLineColor(stackList[sample][0])
         # hist[histName][sample].Scale(1./hist[histName][sample].Integral())
-        if (sample=="TTToSemiLeptonic"):
-            legendR[histName].AddEntry(hist[histName][sample],"ttbar",'f')
-            hist[histName][sample].SetYTitle(histograms[histName][1])      
-            print "Filling with", sample
-            stack[histName].Add(hist[histName][sample])
-            continue
-        if (sample=="TTToSemiLeptonic_2" or sample=="TTToSemiLeptonic_3" or sample=="TTToSemiLeptonic_4" or sample=="TTTo2L2Nu_2" or sample=="TTTo2L2Nu" or sample=="TTToHadronic"):
+        if (sample=="TTToSemiLeptonic_2" or sample=="TTToSemiLeptonic_3"):
             hist[histName][sample].SetYTitle(histograms[histName][1])      
             print "Filling with", sample
             stack[histName].Add(hist[histName][sample])
@@ -283,16 +286,16 @@ for histName in histograms:
         hist[histName][sample].SetYTitle(histograms[histName][1])    
         print "Filling with", sample
         stack[histName].Add(hist[histName][sample])   
-    _file["Data"] = TFile("%s/uhh2.AnalysisModuleRunner.DATA.DATA.root"%(_fileDir),"read")
-    tree = _file["Data"].Get("AnalysisTree")
-    tree.Draw("%s>>dat_hist(%i,%f,%f)"%(histName,histograms[histName][2],histograms[histName][3][0],histograms[histName][3][1]))
-    dataHist=tree.GetHistogram()
-    dataHist.SetMarkerColor(kBlack)
-    dataHist.SetYTitle(histograms[histName][1])
+    # _file["Data"] = TFile("%s/uhh2.AnalysisModuleRunner.DATA.DATA.root"%(_fileDir),"read")
+    # tree = _file["Data"].Get("AnalysisTree")
+    # tree.Draw("%s>>dat_hist(%i,%f,%f)"%(histName,histograms[histName][2],histograms[histName][3][0],histograms[histName][3][1]))
+    # dataHist=tree.GetHistogram()
+    # dataHist.SetMarkerColor(kBlack)
+    # dataHist.SetYTitle(histograms[histName][1])
     # dataHist.Scale(10./dataHist.Integral())
     stack[histName].Draw("HIST")
-    print "Filling with Data"
-    dataHist.Draw("pe,x0,same")   
+    # print "Filling with Data"
+    # dataHist.Draw("pe,x0,same")   
     oneLine = TF1("oneline","1",-9e9,9e9)
     oneLine.SetLineColor(kBlack)
     oneLine.SetLineWidth(1)
@@ -315,20 +318,20 @@ for histName in histograms:
         stack[histName].SetMaximum(1.5*maxVal)
         stack[histName].SetMinimum(minVal)
 
-    errorband=stack[histName].GetStack().Last().Clone("error")
-    errorband.Sumw2()
-    errorband.SetLineColor(kBlack)
-    errorband.SetFillColor(kBlack)
-    errorband.SetFillStyle(3245)
-    errorband.SetMarkerSize(0)
+    # errorband=stack[histName].GetStack().Last().Clone("error")
+    # errorband.Sumw2()
+    # errorband.SetLineColor(kBlack)
+    # errorband.SetFillColor(kBlack)
+    # errorband.SetFillStyle(3245)
+    # errorband.SetMarkerSize(0)
     
-    canvasRatio.cd()
-    canvasRatio.ResetDrawn()
-    canvasRatio.Draw()
-    canvasRatio.cd()
+    # canvasRatio.cd()
+    # canvasRatio.ResetDrawn()
+    # canvasRatio.Draw()
+    # canvasRatio.cd()
     
     pad1.Draw()
-    pad2.Draw()
+    # pad2.Draw()
     
     pad1.cd()
     pad1.SetLogy(Log)
@@ -336,57 +339,63 @@ for histName in histograms:
     y2 = pad1.GetY2()
     
     stack[histName].Draw("HIST")
-    stack[histName].GetXaxis().SetTitle('')
-    stack[histName].GetYaxis().SetTitle(dataHist.GetYaxis().GetTitle())
+    # stack[histName].GetXaxis().SetTitle('')
+    stack[histName].GetXaxis().SetTitle(histograms[histName][0])
+    # stack[histName].GetXaxis().SetRangeUser()
+    # stack[histName].GetYaxis().SetTitle(dataHist.GetYaxis().GetTitle())
     stack[histName].SetTitle('')
-    stack[histName].GetXaxis().SetLabelSize(0)
+    stack[histName].GetXaxis().SetLabelSize(0.06)
     stack[histName].GetYaxis().SetLabelSize(gStyle.GetLabelSize()/(1.-padRatio+padOverlap))
     stack[histName].GetYaxis().SetTitleSize(gStyle.GetTitleSize()/(1.-padRatio+padOverlap))
     stack[histName].GetYaxis().SetTitleOffset(gStyle.GetTitleYOffset()*(1.-padRatio+padOverlap))
     stack[histName].GetYaxis().SetTitle("Events")
     # stack[histName].GetYaxis().SetTitle("Normalized Rate")
     
-    dataHist.Draw("E,X0,SAME")
-    legendR[histName].AddEntry(dataHist, "Data", 'pe')
-    ratio = dataHist.Clone("temp")
-    temp = stack[histName].GetStack().Last().Clone("temp")
+    # dataHist.Draw("E,X0,SAME")
+    # legendR[histName].AddEntry(dataHist, "Data", 'pe')
+    # ratio = dataHist.Clone("temp")
+    # temp = stack[histName].GetStack().Last().Clone("temp")
 
-    for i_bin in range(1,temp.GetNbinsX()+1):
-        temp.SetBinError(i_bin,0.)
-    ratio.Divide(temp)
+    # for i_bin in range(1,temp.GetNbinsX()+1):
+    #     temp.SetBinError(i_bin,0.)
+    # ratio.Divide(temp)
     # #print ratio.GetMaximum(), ratio.GetMinimum()
     # #max_=ratio.GetMaximum()*0.1+ratio.GetMaximum()
     # #min_=ratio.GetMinimum()-0.1*ratio.GetMinimum()
 
-    ratio.SetTitle('')
-    ratio.GetXaxis().SetLabelSize(gStyle.GetLabelSize()/(padRatio+padOverlap))
-    ratio.GetYaxis().SetLabelSize(gStyle.GetLabelSize()/(padRatio+padOverlap))
-    ratio.GetXaxis().SetTitleSize(gStyle.GetTitleSize()/(padRatio+padOverlap))
-    ratio.GetYaxis().SetTitleSize(gStyle.GetTitleSize()/(padRatio+padOverlap))
-    ratio.GetYaxis().SetTitleOffset(gStyle.GetTitleYOffset()*(padRatio+padOverlap-padGap))
-    ratio.GetYaxis().SetRangeUser(0.8, 1.2)
-    ratio.GetYaxis().SetNdivisions(504)
-    ratio.GetXaxis().SetTitle(histograms[histName][0])
-    ratio.GetYaxis().SetTitle("Data/MC")
-    CMS_lumi.CMS_lumi(pad1, 17, 11)
+    # ratio.SetTitle('')
+    # ratio.GetXaxis().SetLabelSize(gStyle.GetLabelSize()/(padRatio+padOverlap))
+    # ratio.GetYaxis().SetLabelSize(gStyle.GetLabelSize()/(padRatio+padOverlap))
+    # ratio.GetXaxis().SetTitleSize(gStyle.GetTitleSize()/(padRatio+padOverlap))
+    # ratio.GetYaxis().SetTitleSize(gStyle.GetTitleSize()/(padRatio+padOverlap))
+    # ratio.GetYaxis().SetTitleOffset(gStyle.GetTitleYOffset()*(padRatio+padOverlap-padGap))
+    # ratio.GetYaxis().SetRangeUser(0.8, 1.2)
+    # ratio.GetYaxis().SetNdivisions(504)
+    # ratio.GetXaxis().SetTitle(histograms[histName][0])
+    # ratio.GetYaxis().SetTitle("Data/MC")
+    CMS_lumi.CMS_lumi(pad1, 16, 11) # parameters are: (pad, Year, iPosX, extraLumiText = "") <----------- DONT FORGET TO CHANGE THE YEAR TO GET THE RIGHT LUMI
     legendR[histName].Draw()
-    pad2.cd()
-    ratio.SetMarkerStyle(dataHist.GetMarkerStyle())
-    ratio.SetMarkerSize(dataHist.GetMarkerSize())
-    ratio.SetLineColor(dataHist.GetLineColor())
-    ratio.SetLineWidth(dataHist.GetLineWidth())
-    ratio.Draw('e,x0')
-    errorband.Divide(temp)
-    errorband.Draw('e2,same')
-    oneLine.Draw("same")
+    # pad2.cd()
+    # ratio.SetMarkerStyle(dataHist.GetMarkerStyle())
+    # ratio.SetMarkerSize(dataHist.GetMarkerSize())
+    # ratio.SetLineColor(dataHist.GetLineColor())
+    # ratio.SetLineWidth(dataHist.GetLineWidth())
+    # ratio.Draw('e,x0')
+    # errorband.Divide(temp)
+    # errorband.Draw('e2,same')
+    # oneLine.Draw("same")
     # #pad2.Update()
     pad1.Update()
-    canvasRatio.Update()
-    canvasRatio.RedrawAxis()
+    # canvasRatio.Update()
+    # canvasRatio.RedrawAxis()
+    # if Log:
+    #     canvasRatio.SaveAs("%s/%s_log.png"%(plotDirectory,histName))
+    # else:
+    #     canvasRatio.SaveAs("%s/%s.png"%(plotDirectory,histName))
     if Log:
-        canvasRatio.SaveAs("%s/%s_log.png"%(plotDirectory,histName))
+        canvas.SaveAs("%s/%s_log.png"%(plotDirectory,histName))
     else:
-        canvasRatio.SaveAs("%s/%s.png"%(plotDirectory,histName))
+        canvas.SaveAs("%s/%s.png"%(plotDirectory,histName))
     print "\n"
 
 print "Congratulations, you've successfully generated some Plots."
