@@ -43,8 +43,8 @@ if channel=="ele":
     _fileDir = "/nfs/dust/cms/group/zprime-uhh//"
 else:
     _channelText = "#mu+jets"
-    plotDirectory = "/nfs/dust/cms/user/ricardo/SpinCorrAnalysis_Gen/plots/UL16/"
-    _fileDir =      "/nfs/dust/cms/user/ricardo/SpinCorrAnalysis_Gen/muon/workdir_SpinCorr_Gen_UL16_muon"
+    plotDirectory = "/nfs/dust/cms/user/ricardo/SpinCorrAnalysis_Gen/plots/updatedBoostProcedure/UL18/"
+    _fileDir =      "/nfs/dust/cms/user/ricardo/SpinCorrAnalysis_Gen/updatedBoostProcedure/muon/workdir_SpinCorr_Gen_UL18_muon"
 print "channel is ", channel
 print "The input root files will come from", _fileDir
 print "The output will go into", plotDirectory, "\n"
@@ -52,54 +52,54 @@ print "The output will go into", plotDirectory, "\n"
 
 ### define the histograms dictionary with entry syntax: {"variable_handle" : ["Plot name", "vertical-axis name", number of bins, [x-min, x-max]]}
 if channel=="mu": 
-    #    histograms =  {"pt_hadTop"                       : ["Hadronic-top (both) p_{T}",       "Events", 25, [     0,   500]],
-    #                  "phi_lep_LabFrame"                : ["#phi_{#mu} LabFrame",             "Events", 12, [-np.pi, np.pi]],
-    #                  "phi_lep_CoMFrame"                : ["#phi_{#mu} CoMFrame",             "Events", 12, [-np.pi, np.pi]],
-    #                  "phi_lep_topRestFrame"            : ["#phi_{#mu} topRestFrame",         "Events", 12, [-np.pi, np.pi]],
-    #                  "phi_b_LabFrame"                  : ["#phi_{b} LabFrame",               "Events", 12, [-np.pi, np.pi]],
-    #                  "phi_b_CoMFrame"                  : ["#phi_{b} CoMFrame",               "Events", 12, [-np.pi, np.pi]],
-    #                  "phi_b_topRestFrame"              : ["#phi_{b} topRestFrame",           "Events", 12, [-np.pi, np.pi]],
-    #                  "phi_b"                           : ["#phi_{b}",                        "Events", 12, [-np.pi, np.pi]],
-    #                  "phi_lep"                         : ["#phi_{#mu}",                      "Events", 12, [-np.pi, np.pi]],
-    #                  "sphi"                            : ["#Sigma#phi",                      "Events", 12, [-np.pi, np.pi]],
-    #                  "dphi"                            : ["#Delta#phi",                      "Events", 12, [-np.pi, np.pi]],
-    #                 } # debug
+       histograms =  {"pt_hadTop"                       : ["Hadronic-top (both) p_{T}",       "Events", 25, [     0,   500]],
+                     "phi_lep_LabFrame"                : ["#phi_{#mu} LabFrame",             "Events", 12, [-np.pi, np.pi]],
+                     "phi_lep_CoMFrame"                : ["#phi_{#mu} CoMFrame",             "Events", 12, [-np.pi, np.pi]],
+                     "phi_lep_helicityFrame"            : ["#phi_{#mu} helicityFrame",         "Events", 12, [-np.pi, np.pi]],
+                     "phi_b_LabFrame"                  : ["#phi_{b} LabFrame",               "Events", 12, [-np.pi, np.pi]],
+                     "phi_b_CoMFrame"                  : ["#phi_{b} CoMFrame",               "Events", 12, [-np.pi, np.pi]],
+                     "phi_b_helicityFrame"              : ["#phi_{b} helicityFrame",           "Events", 12, [-np.pi, np.pi]],
+                     "phi_b"                           : ["#phi_{b}",                        "Events", 12, [-np.pi, np.pi]],
+                     "phi_lep"                         : ["#phi_{#mu}",                      "Events", 12, [-np.pi, np.pi]],
+                     "sphi"                            : ["#Sigma#phi",                      "Events", 12, [-np.pi, np.pi]],
+                     "dphi"                            : ["#Delta#phi",                      "Events", 12, [-np.pi, np.pi]],
+                    } # debug
 
-      histograms = {"pt_hadTop"                       : ["Hadronic-top (both) p_{T}",       "Events", 25, [     0,   500]],
-                    "phi_lep"                         : ["#phi_{#mu}",                      "Events", 12, [-np.pi, np.pi]],
-                    "phi_lep_LabFrame"                : ["#phi_{#mu} LabFrame",             "Events", 12, [-np.pi, np.pi]],
-                    "phi_lep_CoMFrame"                : ["#phi_{#mu} CoMFrame",             "Events", 12, [-np.pi, np.pi]],
-                    "phi_lep_topRestFrame"            : ["#phi_{#mu} topRestFrame",         "Events", 12, [-np.pi, np.pi]],
-                    "phi_lep_high"                    : ["#phi_{#mu}^{high pt}",            "Events", 12, [-np.pi, np.pi]],
-                    "phi_lep_low"                     : ["#phi_{#mu}_{low pt}",             "Events", 12, [-np.pi, np.pi]],
-                    "phi_b"                           : ["#phi_{b}",                        "Events", 12, [-np.pi, np.pi]],
-                    "phi_b_LabFrame"                  : ["#phi_{b} LabFrame",               "Events", 12, [-np.pi, np.pi]],
-                    "phi_b_CoMFrame"                  : ["#phi_{b} CoMFrame",               "Events", 12, [-np.pi, np.pi]],
-                    "phi_b_topRestFrame"              : ["#phi_{b} topRestFrame",           "Events", 12, [-np.pi, np.pi]],
-                    "phi_b_high"                      : ["#phi_{b}^{high pt}",              "Events", 12, [-np.pi, np.pi]],
-                    "phi_b_low"                       : ["#phi_{b}_{low pt}",               "Events", 12, [-np.pi, np.pi]],
-                    "sphi"                            : ["#Sigma#phi",                      "Events", 12, [-np.pi, np.pi]],
-                    "sphi_low"                        : ["#Sigma#phi_{low pt}",             "Events", 12, [-np.pi, np.pi]],
-                    "sphi_high"                       : ["#Sigma#phi^{high pt}",            "Events", 12, [-np.pi, np.pi]],
-                    "sphi_plus"                       : ["#Sigma#phi (#mu^{+})",            "Events", 12, [-np.pi, np.pi]],
-                    "dphi"                            : ["#Delta#phi",                      "Events", 12, [-np.pi, np.pi]],
-                    "dphi_low"                        : ["#Delta#phi_{low pt}",             "Events", 12, [-np.pi, np.pi]],
-                    "dphi_high"                       : ["#Delta#phi^{high pt}",            "Events", 12, [-np.pi, np.pi]],
-                    "phi_lepPlus"                     : ["#phi_{#mu^{+}}",                  "Events", 12, [-np.pi, np.pi]],
-                    "phi_lepMinus"                    : ["#phi_{#mu^{-}}",                  "Events", 12, [-np.pi, np.pi]],
-                    "sphi_plus"                       : ["#Sigma#phi (#mu^{+})",            "Events", 12, [-np.pi, np.pi]],
-                    "sphi_plus_high"                  : ["#Sigma#phi^{high pt} (#mu^{+})",  "Events", 12, [-np.pi, np.pi]],
-                    "sphi_plus_low"                   : ["#Sigma#phi_{low pt} (#mu^{+})",   "Events", 12, [-np.pi, np.pi]],
-                    "dphi_plus"                       : ["#Delta#phi (#mu^{+})",            "Events", 12, [-np.pi, np.pi]],
-                    "dphi_plus_high"                  : ["#Delta#phi^{high pt} (#mu^{+})",  "Events", 12, [-np.pi, np.pi]],
-                    "dphi_plus_low"                   : ["#Delta#phi_{low pt} (#mu^{+})",   "Events", 12, [-np.pi, np.pi]],
-                    "sphi_minus"                      : ["#Sigma#phi (#mu^{-})",            "Events", 12, [-np.pi, np.pi]],
-                    "sphi_minus_high"                 : ["#Sigma#phi^{high pt} (#mu^{-})",  "Events", 12, [-np.pi, np.pi]],
-                    "sphi_minus_low"                  : ["#Sigma#phi_{low pt} (#mu^{-})",   "Events", 12, [-np.pi, np.pi]],
-                    "dphi_minus"                      : ["#Delta#phi (#mu^{-})",            "Events", 12, [-np.pi, np.pi]],
-                    "dphi_minus_high"                 : ["#Delta#phi^{high pt} (#mu^{-})",  "Events", 12, [-np.pi, np.pi]],
-                    "dphi_minus_low"                  : ["#Delta#phi_{low pt} (#mu^{-})",   "Events", 12, [-np.pi, np.pi]]
-                  } # plots
+    #   histograms = {"pt_hadTop"                       : ["Hadronic-top (both) p_{T}",       "Events", 25, [     0,   500]],
+    #                 "phi_lep"                         : ["#phi_{#mu}",                      "Events", 12, [-np.pi, np.pi]],
+    #                 "phi_lep_LabFrame"                : ["#phi_{#mu} LabFrame",             "Events", 12, [-np.pi, np.pi]],
+    #                 "phi_lep_CoMFrame"                : ["#phi_{#mu} CoMFrame",             "Events", 12, [-np.pi, np.pi]],
+    #                 "phi_lep_topRestFrame"            : ["#phi_{#mu} topRestFrame",         "Events", 12, [-np.pi, np.pi]],
+    #                 "phi_lep_high"                    : ["#phi_{#mu}^{high pt}",            "Events", 12, [-np.pi, np.pi]],
+    #                 "phi_lep_low"                     : ["#phi_{#mu}_{low pt}",             "Events", 12, [-np.pi, np.pi]],
+    #                 "phi_b"                           : ["#phi_{b}",                        "Events", 12, [-np.pi, np.pi]],
+    #                 "phi_b_LabFrame"                  : ["#phi_{b} LabFrame",               "Events", 12, [-np.pi, np.pi]],
+    #                 "phi_b_CoMFrame"                  : ["#phi_{b} CoMFrame",               "Events", 12, [-np.pi, np.pi]],
+    #                 "phi_b_topRestFrame"              : ["#phi_{b} topRestFrame",           "Events", 12, [-np.pi, np.pi]],
+    #                 "phi_b_high"                      : ["#phi_{b}^{high pt}",              "Events", 12, [-np.pi, np.pi]],
+    #                 "phi_b_low"                       : ["#phi_{b}_{low pt}",               "Events", 12, [-np.pi, np.pi]],
+    #                 "sphi"                            : ["#Sigma#phi",                      "Events", 12, [-np.pi, np.pi]],
+    #                 "sphi_low"                        : ["#Sigma#phi_{low pt}",             "Events", 12, [-np.pi, np.pi]],
+    #                 "sphi_high"                       : ["#Sigma#phi^{high pt}",            "Events", 12, [-np.pi, np.pi]],
+    #                 "sphi_plus"                       : ["#Sigma#phi (#mu^{+})",            "Events", 12, [-np.pi, np.pi]],
+    #                 "dphi"                            : ["#Delta#phi",                      "Events", 12, [-np.pi, np.pi]],
+    #                 "dphi_low"                        : ["#Delta#phi_{low pt}",             "Events", 12, [-np.pi, np.pi]],
+    #                 "dphi_high"                       : ["#Delta#phi^{high pt}",            "Events", 12, [-np.pi, np.pi]],
+    #                 "phi_lepPlus"                     : ["#phi_{#mu^{+}}",                  "Events", 12, [-np.pi, np.pi]],
+    #                 "phi_lepMinus"                    : ["#phi_{#mu^{-}}",                  "Events", 12, [-np.pi, np.pi]],
+    #                 "sphi_plus"                       : ["#Sigma#phi (#mu^{+})",            "Events", 12, [-np.pi, np.pi]],
+    #                 "sphi_plus_high"                  : ["#Sigma#phi^{high pt} (#mu^{+})",  "Events", 12, [-np.pi, np.pi]],
+    #                 "sphi_plus_low"                   : ["#Sigma#phi_{low pt} (#mu^{+})",   "Events", 12, [-np.pi, np.pi]],
+    #                 "dphi_plus"                       : ["#Delta#phi (#mu^{+})",            "Events", 12, [-np.pi, np.pi]],
+    #                 "dphi_plus_high"                  : ["#Delta#phi^{high pt} (#mu^{+})",  "Events", 12, [-np.pi, np.pi]],
+    #                 "dphi_plus_low"                   : ["#Delta#phi_{low pt} (#mu^{+})",   "Events", 12, [-np.pi, np.pi]],
+    #                 "sphi_minus"                      : ["#Sigma#phi (#mu^{-})",            "Events", 12, [-np.pi, np.pi]],
+    #                 "sphi_minus_high"                 : ["#Sigma#phi^{high pt} (#mu^{-})",  "Events", 12, [-np.pi, np.pi]],
+    #                 "sphi_minus_low"                  : ["#Sigma#phi_{low pt} (#mu^{-})",   "Events", 12, [-np.pi, np.pi]],
+    #                 "dphi_minus"                      : ["#Delta#phi (#mu^{-})",            "Events", 12, [-np.pi, np.pi]],
+    #                 "dphi_minus_high"                 : ["#Delta#phi^{high pt} (#mu^{-})",  "Events", 12, [-np.pi, np.pi]],
+    #                 "dphi_minus_low"                  : ["#Delta#phi_{low pt} (#mu^{-})",   "Events", 12, [-np.pi, np.pi]]
+    #               } # plots
 else:
 	histograms = {}
 
