@@ -617,12 +617,21 @@ bool ZprimeAnalysisModule_AzCorr_GenStudy::process(uhh2::Event& event){
   event.set(h_phi_lep_high, -10);
   event.set(h_phi_lep_low, -10); 
   // Phi of b-jet from hadronic leg
-  event.set(h_phi_b_LabFrame, -10);
-  event.set(h_phi_b_CoMFrame, -10);
-  event.set(h_phi_b_helicityFrame, -10);
-  event.set(h_phi_b, -10);     
-  event.set(h_phi_b_high, -10);
-  event.set(h_phi_b_low, -10); 
+  // event.set(h_phi_b_LabFrame, -10);
+  // event.set(h_phi_b_CoMFrame, -10);
+  // event.set(h_phi_b_helicityFrame, -10);
+  // event.set(h_phi_b, -10);     
+  // event.set(h_phi_b_high, -10);
+  // event.set(h_phi_b_low, -10);
+
+  // Phi of less-energetic W daughter
+  event.set(h_phi_qlow_LabFrame, -10);
+  event.set(h_phi_qlow_CoMFrame, -10);
+  event.set(h_phi_qlow_helicityFrame, -10);
+  event.set(h_phi_qlow, -10);     
+  event.set(h_phi_qlow_high, -10);
+  event.set(h_phi_qlow_low, -10);
+
   // Sum of phi-coordinates
   event.set(h_sphi, -10);     
   event.set(h_sphi_low, -10); 
@@ -1158,11 +1167,24 @@ bool ZprimeAnalysisModule_AzCorr_GenStudy::process(uhh2::Event& event){
     float pt_hadTop = Gen_HadTop.pt();
     if(pt_hadTop != -10) event.set(h_pt_hadTop, pt_hadTop);
 
-    // Define 4vectors of hadronic b
-    LorentzVector Gen_b = ttbargen.BHad().v4();
-    TLorentzVector hadTop_b;
-    // Set ttbar sysetem 4vector using components
-    hadTop_b.SetPtEtaPhiE(Gen_b.pt(),Gen_b.eta(),Gen_b.phi(),Gen_b.energy());
+    // // Define 4vectors of hadronic b
+    // LorentzVector Gen_b = ttbargen.BHad().v4();
+    // TLorentzVector hadTop_b;
+    // // Set hadronic b 4vector using components
+    // hadTop_b.SetPtEtaPhiE(Gen_b.pt(),Gen_b.eta(),Gen_b.phi(),Gen_b.energy());
+
+    // Define 4vectors of W jets
+    LorentzVector Gen_q1 = ttbargen.Q1().v4();
+    TLorentzVector hadTop_q1;
+    LorentzVector Gen_q2 = ttbargen.Q2().v4();
+    TLorentzVector hadTop_q2;
+
+    // Define 4vector of less energetic W daughter
+    TLorentzVector hadTop_qlow;
+
+    // Set 4vector of less energetic W daughter using components
+    if(Gen_q1.energy() < Gen_q2.energy()) {hadTop_qlow.SetPtEtaPhiE(Gen_q1.pt(),Gen_q1.eta(),Gen_q1.phi(),Gen_q1.energy());}
+    else {hadTop_qlow.SetPtEtaPhiE(Gen_q2.pt(),Gen_q2.eta(),Gen_q2.phi(),Gen_q2.energy());}
 
     // Define 4vectors of lepton
     LorentzVector Gen_Lep = ttbargen.ChargedLepton().v4();
@@ -1171,8 +1193,10 @@ bool ZprimeAnalysisModule_AzCorr_GenStudy::process(uhh2::Event& event){
     lepTop_lep.SetPtEtaPhiE(Gen_Lep.pt(), Gen_Lep.eta(), Gen_Lep.phi(), Gen_Lep.energy());
 
     // Plot LAB FRAME phi-coordinates
-    float phi_b_LabFrame = hadTop_b.Phi();
-    if(phi_b_LabFrame != -10) event.set(h_phi_b_LabFrame, phi_b_LabFrame);
+    // float phi_b_LabFrame = hadTop_b.Phi();
+    // if(phi_b_LabFrame != -10) event.set(h_phi_b_LabFrame, phi_b_LabFrame);
+    float phi_qlow_LabFrame = hadTop_qlow.Phi();
+    if(phi_qlow_LabFrame != -10) event.set(h_phi_qlow_LabFrame, phi_qlow_LabFrame);
     float phi_lep_LabFrame = lepTop_lep.Phi();
     if(phi_lep_LabFrame != -10) event.set(h_phi_lep_LabFrame, phi_lep_LabFrame);
 
@@ -1193,13 +1217,16 @@ bool ZprimeAnalysisModule_AzCorr_GenStudy::process(uhh2::Event& event){
 
     // Boost into ttbar Center of Momentum configuration 
     lepTop_lep.Boost(-ttbar.BoostVector());
-    hadTop_b.Boost(-ttbar.BoostVector());
+    // hadTop_b.Boost(-ttbar.BoostVector());
+    hadTop_qlow.Boost(-ttbar.BoostVector());
     PosTop.Boost(-ttbar.BoostVector());
     NegTop.Boost(-ttbar.BoostVector());
 
     // Plot phi-coordinates in CoM frame
-    float phi_b_CoMFrame = hadTop_b.Phi();
-    event.set(h_phi_b_CoMFrame, phi_b_CoMFrame);
+    // float phi_b_CoMFrame = hadTop_b.Phi();
+    // event.set(h_phi_b_CoMFrame, phi_b_CoMFrame);
+    float phi_qlow_CoMFrame = hadTop_qlow.Phi();
+    event.set(h_phi_qlow_CoMFrame, phi_qlow_CoMFrame);
     float phi_lep_CoMFrame = lepTop_lep.Phi();
     event.set(h_phi_lep_CoMFrame, phi_lep_CoMFrame);
 
@@ -1216,18 +1243,22 @@ bool ZprimeAnalysisModule_AzCorr_GenStudy::process(uhh2::Event& event){
 
     // Rotate tops and decay products about beam-line
     lepTop_lep.RotateZ(-1.*angle1);
-    hadTop_b.RotateZ(-1.*angle1);
+    // hadTop_b.RotateZ(-1.*angle1);
+    hadTop_qlow.RotateZ(-1.*angle1);
     PosTop.RotateZ(-1.*angle1);
     NegTop.RotateZ(-1.*angle1);
     // Rotate tops and decay products about y-zxis
     lepTop_lep.RotateY(-1.*angle2);
-    hadTop_b.RotateY(-1.*angle2);
+    // hadTop_b.RotateY(-1.*angle2);
+    hadTop_qlow.RotateY(-1.*angle2);
     PosTop.RotateY(-1.*angle2);
     NegTop.RotateY(-1.*angle2);
 
     // Plot phi-coordinates in helicity-frame
-    float phi_b_helicityFrame = hadTop_b.Phi();
-    event.set(h_phi_b_helicityFrame, phi_b_helicityFrame);
+    // float phi_b_helicityFrame = hadTop_b.Phi();
+    // event.set(h_phi_b_helicityFrame, phi_b_helicityFrame);
+    float phi_qlow_helicityFrame = hadTop_qlow.Phi();
+    event.set(h_phi_qlow_helicityFrame, phi_qlow_helicityFrame);
     float phi_lep_helicityFrame = lepTop_lep.Phi();
     event.set(h_phi_lep_helicityFrame, phi_lep_helicityFrame);
 
@@ -1241,13 +1272,15 @@ bool ZprimeAnalysisModule_AzCorr_GenStudy::process(uhh2::Event& event){
     // POSITIVE LEPTON CONFIGURATION
     if(ttbargen.ChargedLepton().charge() > 0){ // Positively charged lepton
       lepTop_lep.Boost(-PosTop.BoostVector()); // means lepton has Positive Top mother
-      hadTop_b.Boost(-NegTop.BoostVector()); // means b-jet has Negative Top mother
+      // hadTop_b.Boost(-NegTop.BoostVector()); // means b-jet has Negative Top mother
+      hadTop_qlow.Boost(-NegTop.BoostVector()); // means W-daughter has Negative Top mother
     }
 
     // NEGATIVE LEPTON CONFIGURATION
     if(ttbargen.ChargedLepton().charge() < 0){ // Negatively charged lepton
       lepTop_lep.Boost(-NegTop.BoostVector()); // means lepton has Negative Top mother
-      hadTop_b.Boost(-PosTop.BoostVector()); // means b-jet has Positive Top mother
+      // hadTop_b.Boost(-PosTop.BoostVector()); // means b-jet has Positive Top mother
+      hadTop_qlow.Boost(-PosTop.BoostVector()); // means W-daughter has Positive Top mother
     }
     //--------------------------- Boost into ttbar rest-frame ---------------------------//
 
@@ -1256,19 +1289,24 @@ bool ZprimeAnalysisModule_AzCorr_GenStudy::process(uhh2::Event& event){
       float phi_lep = lepTop_lep.Phi();
       event.set(h_phi_lep, phi_lep);
       if(debug) cout<<"   phi_lep is: "<< phi_lep <<endl;
-      float phi_b = hadTop_b.Phi();
-      event.set(h_phi_b, phi_b);
-      if(debug) cout<<"   phi_b is: "<< phi_b <<endl;
+      // float phi_b = hadTop_b.Phi();
+      // event.set(h_phi_b, phi_b);
+      // if(debug) cout<<"   phi_b is: "<< phi_b <<endl;
+      float phi_qlow = hadTop_qlow.Phi();
+      event.set(h_phi_qlow, phi_qlow);
+      if(debug) cout<<"   phi_qlow is: "<< phi_qlow <<endl;
 
       // // Define sphi as sum and difference of phi's and plot (mixed charges)
       // Also apply mapping to both to keep original domain of [-pi, pi]
-      float sphi = phi_lep + phi_b;
+      // float sphi = phi_lep + phi_b;
+      float sphi = phi_lep + phi_qlow;
       // Map back into original domain if necessary
       if(sphi > TMath::Pi()) sphi = sphi - 2*TMath::Pi();
       if(sphi < -TMath::Pi()) sphi = sphi + 2*TMath::Pi();
       event.set(h_sphi, sphi);
       if(debug) cout<<"    sphi is: "<< sphi <<endl;
-      float dphi = phi_lep - phi_b;
+      // float dphi = phi_lep - phi_b;
+      float dphi = phi_lep - phi_qlow;
       // Map back into original domain if necessary
       if(dphi > TMath::Pi()) dphi = dphi - 2*TMath::Pi();
       if(dphi < -TMath::Pi()) dphi = dphi + 2*TMath::Pi();
@@ -1278,14 +1316,16 @@ bool ZprimeAnalysisModule_AzCorr_GenStudy::process(uhh2::Event& event){
       // Plot dphi and sphi for high-pt ranges
       if(pt_hadTop > pt_hadTop_thresh){
         event.set(h_phi_lep_high, phi_lep);
-        event.set(h_phi_b_high, phi_b);
+        // event.set(h_phi_b_high, phi_b);
+        event.set(h_phi_qlow_high, phi_qlow);
         event.set(h_sphi_high, sphi);
         event.set(h_dphi_high, dphi);
       }
       // Plot dphi and sphi for low-pt ranges
       if(pt_hadTop < pt_hadTop_thresh){
         event.set(h_phi_lep_low, phi_lep);
-        event.set(h_phi_b_low, phi_b);
+        // event.set(h_phi_b_low, phi_b);
+        event.set(h_phi_qlow_low, phi_qlow);
         event.set(h_sphi_low, sphi);
         event.set(h_dphi_low, dphi);
       }
@@ -1295,7 +1335,8 @@ bool ZprimeAnalysisModule_AzCorr_GenStudy::process(uhh2::Event& event){
         // Plot phi for positive leptons
         event.set(h_phi_lepPlus, phi_lep);
         // sphi_plus  is defined as (lep + had) for positive leptons
-        float sphi_plus = phi_lep + phi_b;
+        // float sphi_plus = phi_lep + phi_b;
+        float sphi_plus = phi_lep + phi_qlow;
         // Map back into original domain if necessary
         if(sphi_plus > TMath::Pi()) sphi_plus = sphi_plus - 2*TMath::Pi();
         if(sphi_plus < -TMath::Pi()) sphi_plus = sphi_plus + 2*TMath::Pi();
@@ -1303,7 +1344,8 @@ bool ZprimeAnalysisModule_AzCorr_GenStudy::process(uhh2::Event& event){
         if(pt_hadTop > pt_hadTop_thresh){event.set(h_sphi_plus_high, sphi_plus);}
         if(pt_hadTop < pt_hadTop_thresh){event.set(h_sphi_plus_low, sphi_plus);}
         // dphi_plus is defined as (lep - had) for positive leptons
-        float dphi_plus = phi_lep - phi_b;
+        // float dphi_plus = phi_lep - phi_b;
+        float dphi_plus = phi_lep - phi_qlow;
         // Map back into original domain if necessary
         if(dphi_plus > TMath::Pi()) dphi_plus = dphi_plus - 2*TMath::Pi();
         if(dphi_plus < -TMath::Pi()) dphi_plus = dphi_plus + 2*TMath::Pi();
@@ -1317,7 +1359,8 @@ bool ZprimeAnalysisModule_AzCorr_GenStudy::process(uhh2::Event& event){
         // Plot phi for negative leptons
         event.set(h_phi_lepMinus, phi_lep);
         // sphi_minus is defined as (had + lep) for negative leptons
-        float sphi_minus = phi_b + phi_lep;
+        // float sphi_minus = phi_b + phi_lep;
+        float sphi_minus = phi_qlow + phi_lep;
         // Map back into original domain if necessary
         if(sphi_minus > TMath::Pi()) sphi_minus = sphi_minus - 2*TMath::Pi();
         if(sphi_minus < -TMath::Pi()) sphi_minus = sphi_minus + 2*TMath::Pi();
@@ -1325,7 +1368,8 @@ bool ZprimeAnalysisModule_AzCorr_GenStudy::process(uhh2::Event& event){
         if(pt_hadTop > pt_hadTop_thresh){event.set(h_sphi_minus_high, sphi_minus);}     
         if(pt_hadTop < pt_hadTop_thresh){event.set(h_sphi_minus_low, sphi_minus);}
         // dphi_minus is defined as (had - lep) for negative leptons
-        float dphi_minus = phi_b - phi_lep;
+        // float dphi_minus = phi_b - phi_lep;
+        float dphi_minus = phi_qlow - phi_lep;
         // Map back into original domain if necessary
         if(dphi_minus > TMath::Pi()) dphi_minus = dphi_minus - 2*TMath::Pi();
         if(dphi_minus < -TMath::Pi()) dphi_minus = dphi_minus + 2*TMath::Pi();
