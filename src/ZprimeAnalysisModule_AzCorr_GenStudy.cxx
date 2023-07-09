@@ -150,13 +150,22 @@ protected:
   Event::Handle<float> h_phi_lep;
   Event::Handle<float> h_phi_lep_high; 
   Event::Handle<float> h_phi_lep_low; 
-  // Phi of b-jet from hadronic leg
-  Event::Handle<float> h_phi_b_LabFrame;
-  Event::Handle<float> h_phi_b_CoMFrame;
-  Event::Handle<float> h_phi_b_helicityFrame;
-  Event::Handle<float> h_phi_b;
-  Event::Handle<float> h_phi_b_high; 
-  Event::Handle<float> h_phi_b_low; 
+  // // Phi of b-jet from hadronic leg
+  // Event::Handle<float> h_phi_b_LabFrame;
+  // Event::Handle<float> h_phi_b_CoMFrame;
+  // Event::Handle<float> h_phi_b_helicityFrame;
+  // Event::Handle<float> h_phi_b;
+  // Event::Handle<float> h_phi_b_high; 
+  // Event::Handle<float> h_phi_b_low;
+
+// Phi of less-energetic W daughter from hadronic leg
+  Event::Handle<float> h_phi_qlow_LabFrame;
+  Event::Handle<float> h_phi_qlow_CoMFrame;
+  Event::Handle<float> h_phi_qlow_helicityFrame;
+  Event::Handle<float> h_phi_qlow;
+  Event::Handle<float> h_phi_qlow_high; 
+  Event::Handle<float> h_phi_qlow_low;
+
   // Sum of phi-coordinates
   Event::Handle<float> h_sphi;
   Event::Handle<float> h_sphi_low;
@@ -484,13 +493,22 @@ ZprimeAnalysisModule_AzCorr_GenStudy::ZprimeAnalysisModule_AzCorr_GenStudy(uhh2:
   h_phi_lep=ctx.declare_event_output<float> ("phi_lep");
   h_phi_lep_high=ctx.declare_event_output<float> ("phi_lep_high");
   h_phi_lep_low=ctx.declare_event_output<float> ("phi_lep_low");
-  // Phi of b-jet from hadronic leg
-  h_phi_b_LabFrame=ctx.declare_event_output<float> ("phi_b_LabFrame");
-  h_phi_b_CoMFrame=ctx.declare_event_output<float> ("phi_b_CoMFrame");
-  h_phi_b_helicityFrame=ctx.declare_event_output<float> ("phi_b_helicityFrame");
-  h_phi_b=ctx.declare_event_output<float> ("phi_b");
-  h_phi_b_high=ctx.declare_event_output<float> ("phi_b_high");
-  h_phi_b_low=ctx.declare_event_output<float> ("phi_b_low");
+  // // Phi of b-jet from hadronic leg
+  // h_phi_b_LabFrame=ctx.declare_event_output<float> ("phi_b_LabFrame");
+  // h_phi_b_CoMFrame=ctx.declare_event_output<float> ("phi_b_CoMFrame");
+  // h_phi_b_helicityFrame=ctx.declare_event_output<float> ("phi_b_helicityFrame");
+  // h_phi_b=ctx.declare_event_output<float> ("phi_b");
+  // h_phi_b_high=ctx.declare_event_output<float> ("phi_b_high");
+  // h_phi_b_low=ctx.declare_event_output<float> ("phi_b_low");
+
+// Phi of less-energetic W daughter from hadronic leg
+  h_phi_qlow_LabFrame=ctx.declare_event_output<float> ("phi_qlow_LabFrame");
+  h_phi_qlow_CoMFrame=ctx.declare_event_output<float> ("phi_qlow_CoMFrame");
+  h_phi_qlow_helicityFrame=ctx.declare_event_output<float> ("phi_qlow_helicityFrame");
+  h_phi_qlow=ctx.declare_event_output<float> ("phi_qlow");
+  h_phi_qlow_high=ctx.declare_event_output<float> ("phi_qlow_high");
+  h_phi_qlow_low=ctx.declare_event_output<float> ("phi_qlow_low");
+
   // Sum of phi-coordinates
   h_sphi=ctx.declare_event_output<float> ("sphi");
   h_sphi_high=ctx.declare_event_output<float> ("sphi_high");
