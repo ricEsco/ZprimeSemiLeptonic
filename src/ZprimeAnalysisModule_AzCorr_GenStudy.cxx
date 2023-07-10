@@ -1193,21 +1193,19 @@ bool ZprimeAnalysisModule_AzCorr_GenStudy::process(uhh2::Event& event){
 
     // Define 4vectors of W jets
     LorentzVector Gen_q1 = ttbargen.Q1().v4();
-    TLorentzVector hadTop_q1;
     LorentzVector Gen_q2 = ttbargen.Q2().v4();
-    TLorentzVector hadTop_q2;
 
     // Define 4vector of less energetic W daughter
     TLorentzVector hadTop_qlow;
 
     // Set 4vector of less energetic W daughter using components
-    if(Gen_q1.energy() < Gen_q2.energy()) {hadTop_qlow.SetPtEtaPhiE(Gen_q1.pt(),Gen_q1.eta(),Gen_q1.phi(),Gen_q1.energy());}
-    else {hadTop_qlow.SetPtEtaPhiE(Gen_q2.pt(),Gen_q2.eta(),Gen_q2.phi(),Gen_q2.energy());}
+    if(Gen_q1.energy() < Gen_q2.energy()){hadTop_qlow.SetPtEtaPhiE(Gen_q1.pt(),Gen_q1.eta(),Gen_q1.phi(),Gen_q1.energy());}
+    else{hadTop_qlow.SetPtEtaPhiE(Gen_q2.pt(),Gen_q2.eta(),Gen_q2.phi(),Gen_q2.energy());}
 
     // Define 4vectors of lepton
     LorentzVector Gen_Lep = ttbargen.ChargedLepton().v4();
     TLorentzVector lepTop_lep;
-    // Set ttbar sysetem 4vector using components
+    // Set lepton 4vector using components
     lepTop_lep.SetPtEtaPhiE(Gen_Lep.pt(), Gen_Lep.eta(), Gen_Lep.phi(), Gen_Lep.energy());
 
     // Plot LAB FRAME phi-coordinates
@@ -1230,8 +1228,6 @@ bool ZprimeAnalysisModule_AzCorr_GenStudy::process(uhh2::Event& event){
 
     // 4vector to represent ttbar system
     TLorentzVector ttbar(PosTop + NegTop);
-    // Set ttbar sysetem 4vector using components
-    //ttbar.SetPtEtaPhiE((ttbargen.Top().v4() + ttbargen.Antitop().v4()).pt(), (ttbargen.Top().v4() + ttbargen.Antitop().v4()).eta(), (ttbargen.Top().v4() + ttbargen.Antitop().v4()).phi(), (ttbargen.Top().v4() + ttbargen.Antitop().v4()).E());
 
     // Boost into ttbar Center of Momentum configuration 
     lepTop_lep.Boost(-ttbar.BoostVector());
