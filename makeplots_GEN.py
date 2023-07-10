@@ -43,7 +43,7 @@ if channel=="ele":
     _fileDir = "/nfs/dust/cms/group/zprime-uhh//"
 else:
     _channelText = "#mu+jets"
-    plotDirectory = "/nfs/dust/cms/user/ricardo/SpinCorrAnalysis_Gen/plots/updatedBoostProcedure/UL18/"
+    plotDirectory = "/nfs/dust/cms/user/ricardo/SpinCorrAnalysis_Gen/plots/updatedBoostProcedure/bjet/UL18"
     _fileDir =      "/nfs/dust/cms/user/ricardo/SpinCorrAnalysis_Gen/updatedBoostProcedure/muon/workdir_SpinCorr_Gen_UL18_muon"
 print "channel is ", channel
 print "The input root files will come from", _fileDir
@@ -52,15 +52,19 @@ print "The output will go into", plotDirectory, "\n"
 
 ### define the histograms dictionary with entry syntax: {"variable_handle" : ["Plot name", "vertical-axis name", number of bins, [x-min, x-max]]}
 if channel=="mu": 
-       histograms =  {"pt_hadTop"                       : ["Hadronic-top (both) p_{T}",       "Events", 25, [     0,   500]],
+       histograms =  {"pt_hadTop"                      : ["Hadronic-top (both) p_{T}",       "Events", 25, [     0,   500]],
                      "phi_lep_LabFrame"                : ["#phi_{#mu} LabFrame",             "Events", 12, [-np.pi, np.pi]],
                      "phi_lep_CoMFrame"                : ["#phi_{#mu} CoMFrame",             "Events", 12, [-np.pi, np.pi]],
-                     "phi_lep_helicityFrame"            : ["#phi_{#mu} helicityFrame",         "Events", 12, [-np.pi, np.pi]],
-                     "phi_b_LabFrame"                  : ["#phi_{b} LabFrame",               "Events", 12, [-np.pi, np.pi]],
-                     "phi_b_CoMFrame"                  : ["#phi_{b} CoMFrame",               "Events", 12, [-np.pi, np.pi]],
-                     "phi_b_helicityFrame"              : ["#phi_{b} helicityFrame",           "Events", 12, [-np.pi, np.pi]],
-                     "phi_b"                           : ["#phi_{b}",                        "Events", 12, [-np.pi, np.pi]],
+                     "phi_lep_helicityFrame"           : ["#phi_{#mu} helicityFrame",         "Events", 12, [-np.pi, np.pi]],
                      "phi_lep"                         : ["#phi_{#mu}",                      "Events", 12, [-np.pi, np.pi]],
+                    #  "phi_b_LabFrame"                  : ["#phi_{b} LabFrame",               "Events", 12, [-np.pi, np.pi]],
+                    #  "phi_b_CoMFrame"                  : ["#phi_{b} CoMFrame",               "Events", 12, [-np.pi, np.pi]],
+                    #  "phi_b_helicityFrame"             : ["#phi_{b} helicityFrame",           "Events", 12, [-np.pi, np.pi]],
+                    #  "phi_b"                           : ["#phi_{b}",                        "Events", 12, [-np.pi, np.pi]],
+                     "phi_qlow_LabFrame"               : ["#phi_{q-low} LabFrame",           "Events", 12, [-np.pi, np.pi]],
+                     "phi_qlow_CoMFrame"               : ["#phi_{q-low} CoMFrame",           "Events", 12, [-np.pi, np.pi]],
+                     "phi_qlow_helicityFrame"          : ["#phi_{q-low} helicityFrame",      "Events", 12, [-np.pi, np.pi]],
+                     "phi_qlow"                        : ["#phi_{q-low}",                    "Events", 12, [-np.pi, np.pi]],
                      "sphi"                            : ["#Sigma#phi",                      "Events", 12, [-np.pi, np.pi]],
                      "dphi"                            : ["#Delta#phi",                      "Events", 12, [-np.pi, np.pi]],
                     } # debug
