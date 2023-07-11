@@ -43,7 +43,7 @@ if channel=="ele":
     _fileDir = "/nfs/dust/cms/group/zprime-uhh//"
 else:
     _channelText = "#mu+jets"
-    plotDirectory = "/nfs/dust/cms/user/ricardo/SpinCorrAnalysis_Gen/plots/updatedBoostProcedure/bjet/UL18"
+    plotDirectory = "/nfs/dust/cms/user/ricardo/SpinCorrAnalysis_Gen/plots/updatedBoostProcedure/UL18/qlow/"
     _fileDir =      "/nfs/dust/cms/user/ricardo/SpinCorrAnalysis_Gen/updatedBoostProcedure/muon/workdir_SpinCorr_Gen_UL18_muon"
 print "channel is ", channel
 print "The input root files will come from", _fileDir
@@ -61,12 +61,19 @@ if channel=="mu":
                     #  "phi_b_CoMFrame"                  : ["#phi_{b} CoMFrame",               "Events", 12, [-np.pi, np.pi]],
                     #  "phi_b_helicityFrame"             : ["#phi_{b} helicityFrame",           "Events", 12, [-np.pi, np.pi]],
                     #  "phi_b"                           : ["#phi_{b}",                        "Events", 12, [-np.pi, np.pi]],
-                     "phi_qlow_LabFrame"               : ["#phi_{q-low} LabFrame",           "Events", 12, [-np.pi, np.pi]],
-                     "phi_qlow_CoMFrame"               : ["#phi_{q-low} CoMFrame",           "Events", 12, [-np.pi, np.pi]],
-                     "phi_qlow_helicityFrame"          : ["#phi_{q-low} helicityFrame",      "Events", 12, [-np.pi, np.pi]],
+                     "phi_hadTop_q1_LabFrame"               : ["#phi_{q1} LabFrame",           "Events", 12, [-np.pi, np.pi]],
+                     "phi_hadTop_q1_CoMFrame"               : ["#phi_{q1} CoMFrame",           "Events", 12, [-np.pi, np.pi]],
+                     "phi_hadTop_q1_helicityFrame"          : ["#phi_{q1} helicityFrame",      "Events", 12, [-np.pi, np.pi]],
+                     "phi_hadTop_q2_LabFrame"               : ["#phi_{q2} LabFrame",           "Events", 12, [-np.pi, np.pi]],
+                     "phi_hadTop_q2_CoMFrame"               : ["#phi_{q2} CoMFrame",           "Events", 12, [-np.pi, np.pi]],
+                     "phi_hadTop_q2_helicityFrame"          : ["#phi_{q2} helicityFrame",      "Events", 12, [-np.pi, np.pi]],
                      "phi_qlow"                        : ["#phi_{q-low}",                    "Events", 12, [-np.pi, np.pi]],
                      "sphi"                            : ["#Sigma#phi",                      "Events", 12, [-np.pi, np.pi]],
+                     "sphi_low"                        : ["#Sigma#phi_{low pt}",             "Events", 12, [-np.pi, np.pi]],
+                     "sphi_high"                       : ["#Sigma#phi^{high pt}",            "Events", 12, [-np.pi, np.pi]],
                      "dphi"                            : ["#Delta#phi",                      "Events", 12, [-np.pi, np.pi]],
+                     "dphi_low"                        : ["#Delta#phi_{low pt}",             "Events", 12, [-np.pi, np.pi]],
+                     "dphi_high"                       : ["#Delta#phi^{high pt}",            "Events", 12, [-np.pi, np.pi]],
                     } # debug
 
     #   histograms = {"pt_hadTop"                       : ["Hadronic-top (both) p_{T}",       "Events", 25, [     0,   500]],
