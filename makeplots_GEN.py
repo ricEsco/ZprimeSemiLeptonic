@@ -74,6 +74,7 @@ if channel=="mu":
                      "dphi"                            : ["#Delta#phi",                      "Events", 12, [-np.pi, np.pi]],
                      "dphi_low"                        : ["#Delta#phi_{low pt}",             "Events", 12, [-np.pi, np.pi]],
                      "dphi_high"                       : ["#Delta#phi^{high pt}",            "Events", 12, [-np.pi, np.pi]],
+                     "ttbar_mass_LabFrame"             : ["Mass_{t#bar{t}}",                 "Events", 20, [     0,  2000]],
                     } # debug
 
     #   histograms = {"pt_hadTop"                       : ["Hadronic-top (both) p_{T}",       "Events", 25, [     0,   500]],

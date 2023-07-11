@@ -143,6 +143,9 @@ protected:
   
   Event::Handle<float> h_pt_hadTop;     // pt of hadronic top-jet(s)
 
+  // Plotting mass of ttbar system
+  Event::Handle<float> h_ttbar_mass_LabFrame;
+
   // Phi of lepton from leptonic leg
   Event::Handle<float> h_phi_lep_LabFrame;
   Event::Handle<float> h_phi_lep_CoMFrame;
@@ -502,6 +505,8 @@ ZprimeAnalysisModule_AzCorr_GenStudy::ZprimeAnalysisModule_AzCorr_GenStudy(uhh2:
   h_DeepAK8TopTags = ctx.get_handle<std::vector<TopJet>>("DeepAK8TopTags");  // Collection of DeepAK8TopTagged jets
   h_ttbargen = ctx.get_handle<TTbarGen>("ttbargen");                         // Access to gen-level particles
   h_pt_hadTop=ctx.declare_event_output<float> ("pt_hadTop");                 // pt of hadronic top-jet(s)
+  // Plotting mass of ttbar system
+  h_ttbar_mass_LabFrame=ctx.declare_event_output<float> ("ttbar_mass_LabFrame");
   // Phi of lepton from leptonic leg
   h_phi_lep_LabFrame=ctx.declare_event_output<float> ("phi_lep_LabFrame");
   h_phi_lep_CoMFrame=ctx.declare_event_output<float> ("phi_lep_CoMFrame");
@@ -659,6 +664,8 @@ bool ZprimeAnalysisModule_AzCorr_GenStudy::process(uhh2::Event& event){
 
   if(debug) cout<<"Initializing Spin Correlation set"<<endl;
   event.set(h_pt_hadTop, -10);      // pt of hadronic top
+  // Plotting mass of ttbar system
+  event.set(h_ttbar_mass_LabFrame, -10);
   // Phi of lepton from leptonic leg
   event.set(h_phi_lep_LabFrame, -10);    
   event.set(h_phi_lep_CoMFrame, -10);
@@ -1274,9 +1281,6 @@ bool ZprimeAnalysisModule_AzCorr_GenStudy::process(uhh2::Event& event){
     float phi_lep_LabFrame = lepTop_lep.Phi();
     if(phi_lep_LabFrame != -10) event.set(h_phi_lep_LabFrame, phi_lep_LabFrame);
 
-    //---------------------------------------------------------- Boost into CoM-frame ----------------------------------------------------------//
-    if(debug) cout<<" Start First Boost"<<endl;
-
     // Top vectors
     TLorentzVector PosTop;
     TLorentzVector NegTop;
@@ -1286,6 +1290,12 @@ bool ZprimeAnalysisModule_AzCorr_GenStudy::process(uhh2::Event& event){
 
     // 4vector to represent ttbar system
     TLorentzVector ttbar(PosTop + NegTop);
+
+    // Plotting mass of ttbar system
+    event.set(h_ttbar_mass_LabFrame, ttbar.M());
+
+    //---------------------------------------------------------- Boost into CoM-frame ----------------------------------------------------------//
+    if(debug) cout<<" Start First Boost"<<endl;
 
     // Boost into ttbar Center of Momentum configuration 
     lepTop_lep.Boost(-ttbar.BoostVector());
