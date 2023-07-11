@@ -159,20 +159,20 @@ protected:
   // Event::Handle<float> h_phi_b_low;
 
   // Phi of q1 W daughter from hadronic leg
-  Event::Handle<float> h_phi_q1_LabFrame;
-  Event::Handle<float> h_phi_q1_CoMFrame;
-  Event::Handle<float> h_phi_q1_helicityFrame;
-  // Event::Handle<float> h_phi_q1;
-  // Event::Handle<float> h_phi_q1_high;
-  // Event::Handle<float> h_phi_q1_low;
+  Event::Handle<float> h_phi_hadTop_q1_LabFrame;
+  Event::Handle<float> h_phi_hadTop_q1_CoMFrame;
+  Event::Handle<float> h_phi_hadTop_q1_helicityFrame;
+  // Event::Handle<float> h_phi_hadTop_q1;
+  // Event::Handle<float> h_phi_hadTop_q1_high;
+  // Event::Handle<float> h_phi_hadTop_q1_low;
 
   // Phi of q2 W daughter from hadronic leg
-  Event::Handle<float> h_phi_q2_LabFrame;
-  Event::Handle<float> h_phi_q2_CoMFrame;
-  Event::Handle<float> h_phi_q2_helicityFrame;
-  // Event::Handle<float> h_phi_q2;
-  // Event::Handle<float> h_phi_q2_high;
-  // Event::Handle<float> h_phi_q2_low;
+  Event::Handle<float> h_phi_hadTop_q2_LabFrame;
+  Event::Handle<float> h_phi_hadTop_q2_CoMFrame;
+  Event::Handle<float> h_phi_hadTop_q2_helicityFrame;
+  // Event::Handle<float> h_phi_hadTop_q2;
+  // Event::Handle<float> h_phi_hadTop_q2_high;
+  // Event::Handle<float> h_phi_hadTop_q2_low;
 
   // Phi of less-energetic W daughter from hadronic leg
   // Event::Handle<float> h_phi_qlow_LabFrame; // not set until top's rest-frame
