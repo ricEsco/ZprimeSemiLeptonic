@@ -518,20 +518,20 @@ ZprimeAnalysisModule_AzCorr_GenStudy::ZprimeAnalysisModule_AzCorr_GenStudy(uhh2:
   // h_phi_b_low=ctx.declare_event_output<float> ("phi_b_low");
 
   // Phi of q1 W daughter from hadronic leg
-  h_phi_q1_LabFrame=ctx.declare_event_output<float> ("phi_q1_LabFrame");
-  h_phi_q1_CoMFrame=ctx.declare_event_output<float> ("phi_q1_CoMFrame");
-  h_phi_q1_helicityFrame=ctx.declare_event_output<float> ("phi_q1_helicityFrame");
-  // h_phi_q1=ctx.declare_event_output<float> ("phi_q1");
-  // h_phi_q1_high=ctx.declare_event_output<float> ("phi_q1_high");
-  // h_phi_q1_low=ctx.declare_event_output<float> ("phi_q1_low");
+  h_phi_hadTop_q1_LabFrame=ctx.declare_event_output<float> ("phi_hadTop_q1_LabFrame");
+  h_phi_hadTop_q1_CoMFrame=ctx.declare_event_output<float> ("phi_hadTop_q1_CoMFrame");
+  h_phi_hadTop_q1_helicityFrame=ctx.declare_event_output<float> ("phi_hadTop_q1_helicityFrame");
+  // h_phi_hadTop_q1=ctx.declare_event_output<float> ("phi_hadTop_q1");
+  // h_phi_hadTop_q1_high=ctx.declare_event_output<float> ("phi_hadTop_q1_high");
+  // h_phi_hadTop_q1_low=ctx.declare_event_output<float> ("phi_hadTop_q1_low");
 
   // Phi of q2 W daughter from hadronic leg
-  h_phi_q2_LabFrame=ctx.declare_event_output<float> ("phi_q2_LabFrame");
-  h_phi_q2_CoMFrame=ctx.declare_event_output<float> ("phi_q2_CoMFrame");
-  h_phi_q2_helicityFrame=ctx.declare_event_output<float> ("phi_q2_helicityFrame");
-  // h_phi_q2=ctx.declare_event_output<float> ("phi_q2");
-  // h_phi_q2_high=ctx.declare_event_output<float> ("phi_q2_high");
-  // h_phi_q2_low=ctx.declare_event_output<float> ("phi_q2_low");
+  h_phi_hadTop_q2_LabFrame=ctx.declare_event_output<float> ("phi_hadTop_q2_LabFrame");
+  h_phi_hadTop_q2_CoMFrame=ctx.declare_event_output<float> ("phi_hadTop_q2_CoMFrame");
+  h_phi_hadTop_q2_helicityFrame=ctx.declare_event_output<float> ("phi_hadTop_q2_helicityFrame");
+  // h_phi_hadTop_q2=ctx.declare_event_output<float> ("phi_hadTop_q2");
+  // h_phi_hadTop_q2_high=ctx.declare_event_output<float> ("phi_hadTop_q2_high");
+  // h_phi_hadTop_q2_low=ctx.declare_event_output<float> ("phi_hadTop_q2_low");
 
   // Phi of less-energetic W daughter from hadronic leg
   // h_phi_qlow_LabFrame=ctx.declare_event_output<float> ("phi_qlow_LabFrame"); // not set until top's rest-frame
@@ -675,20 +675,20 @@ bool ZprimeAnalysisModule_AzCorr_GenStudy::process(uhh2::Event& event){
   // event.set(h_phi_b_low, -10);
 
   // Phi of q1 from W-decay of hadronic leg
-  event.set(h_phi_q1_LabFrame, -10);
-  event.set(h_phi_q1_CoMFrame, -10);
-  event.set(h_phi_q1_helicityFrame, -10);
-  // event.set(h_phi_q1, -10);
-  // event.set(h_phi_q1_high, -10);
-  // event.set(h_phi_q1_low, -10);
+  event.set(h_phi_hadTop_q1_LabFrame, -10);
+  event.set(h_phi_hadTop_q1_CoMFrame, -10);
+  event.set(h_phi_hadTop_q1_helicityFrame, -10);
+  // event.set(h_phi_hadTop_q1, -10);
+  // event.set(h_phi_hadTop_q1_high, -10);
+  // event.set(h_phi_hadTop_q1_low, -10);
 
   // Phi of q2 from W-decay of hadronic leg
-  event.set(h_phi_q2_LabFrame, -10);
-  event.set(h_phi_q2_CoMFrame, -10);
-  event.set(h_phi_q2_helicityFrame, -10);
-  // event.set(h_phi_q2, -10);
-  // event.set(h_phi_q2_high, -10);
-  // event.set(h_phi_q2_low, -10);
+  event.set(h_phi_hadTop_q2_LabFrame, -10);
+  event.set(h_phi_hadTop_q2_CoMFrame, -10);
+  event.set(h_phi_hadTop_q2_helicityFrame, -10);
+  // event.set(h_phi_hadTop_q2, -10);
+  // event.set(h_phi_hadTop_q2_high, -10);
+  // event.set(h_phi_hadTop_q2_low, -10);
 
   // Phi of less-energetic W daughter
   // event.set(h_phi_qlow_LabFrame, -10); // set in top's rest-frame
@@ -1375,7 +1375,6 @@ bool ZprimeAnalysisModule_AzCorr_GenStudy::process(uhh2::Event& event){
     //--------------------------- Boost into ttbar rest-frame ---------------------------//
 
     // Now that W daughters are in mother-top's rest-frame, we can compare their energies to determine which is less energetic
-
     // Set 4vector of less-energetic W-daughter
     if(hadTop_q1.E() < hadTop_q2.E()){hadTop_qlow = hadTop_q1;}
     else{hadTop_qlow = hadTop_q2;}
