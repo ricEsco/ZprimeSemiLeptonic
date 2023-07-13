@@ -152,7 +152,10 @@ protected:
   Event::Handle<float> h_phi_lep_helicityFrame;
   Event::Handle<float> h_phi_lep;
   Event::Handle<float> h_phi_lep_high; 
-  Event::Handle<float> h_phi_lep_low; 
+  Event::Handle<float> h_phi_lep_low;
+  Event::Handle<float> h_phi_lep_highMass; 
+  Event::Handle<float> h_phi_lep_lowMass;
+
   // // Phi of b-jet from hadronic leg
   // Event::Handle<float> h_phi_b_LabFrame;
   // Event::Handle<float> h_phi_b_CoMFrame;
@@ -160,39 +163,40 @@ protected:
   // Event::Handle<float> h_phi_b;
   // Event::Handle<float> h_phi_b_high; 
   // Event::Handle<float> h_phi_b_low;
+  // Event::Handle<float> h_phi_b_highMass; 
+  // Event::Handle<float> h_phi_b_lowMass;
 
   // Phi of q1 W daughter from hadronic leg
   Event::Handle<float> h_phi_hadTop_q1_LabFrame;
   Event::Handle<float> h_phi_hadTop_q1_CoMFrame;
   Event::Handle<float> h_phi_hadTop_q1_helicityFrame;
-  // Event::Handle<float> h_phi_hadTop_q1;
-  // Event::Handle<float> h_phi_hadTop_q1_high;
-  // Event::Handle<float> h_phi_hadTop_q1_low;
 
   // Phi of q2 W daughter from hadronic leg
   Event::Handle<float> h_phi_hadTop_q2_LabFrame;
   Event::Handle<float> h_phi_hadTop_q2_CoMFrame;
   Event::Handle<float> h_phi_hadTop_q2_helicityFrame;
-  // Event::Handle<float> h_phi_hadTop_q2;
-  // Event::Handle<float> h_phi_hadTop_q2_high;
-  // Event::Handle<float> h_phi_hadTop_q2_low;
 
   // Phi of less-energetic W daughter from hadronic leg
-  // Event::Handle<float> h_phi_qlow_LabFrame; // not set until top's rest-frame
-  // Event::Handle<float> h_phi_qlow_CoMFrame; // not set until top's rest-frame
-  // Event::Handle<float> h_phi_qlow_helicityFrame; // not set until top's rest-frame
   Event::Handle<float> h_phi_qlow;
   Event::Handle<float> h_phi_qlow_high; 
   Event::Handle<float> h_phi_qlow_low;
+  Event::Handle<float> h_phi_qlow_highMass; 
+  Event::Handle<float> h_phi_qlow_lowMass;
 
   // Sum of phi-coordinates
   Event::Handle<float> h_sphi;
   Event::Handle<float> h_sphi_low;
   Event::Handle<float> h_sphi_high;
+  Event::Handle<float> h_sphi_lowMass;
+  Event::Handle<float> h_sphi_highMass;
+
   // Difference of phi-coordinates
   Event::Handle<double> h_dphi;
   Event::Handle<double> h_dphi_low;
   Event::Handle<double> h_dphi_high;
+  Event::Handle<double> h_dphi_lowMass;
+  Event::Handle<double> h_dphi_highMass;
+
   // Above variables now separated by charge of lepton in system
   Event::Handle<float> h_phi_lepPlus;
   Event::Handle<float> h_phi_lepMinus;
@@ -505,8 +509,10 @@ ZprimeAnalysisModule_AzCorr_GenStudy::ZprimeAnalysisModule_AzCorr_GenStudy(uhh2:
   h_DeepAK8TopTags = ctx.get_handle<std::vector<TopJet>>("DeepAK8TopTags");  // Collection of DeepAK8TopTagged jets
   h_ttbargen = ctx.get_handle<TTbarGen>("ttbargen");                         // Access to gen-level particles
   h_pt_hadTop=ctx.declare_event_output<float> ("pt_hadTop");                 // pt of hadronic top-jet(s)
+  
   // Plotting mass of ttbar system
   h_ttbar_mass_LabFrame=ctx.declare_event_output<float> ("ttbar_mass_LabFrame");
+
   // Phi of lepton from leptonic leg
   h_phi_lep_LabFrame=ctx.declare_event_output<float> ("phi_lep_LabFrame");
   h_phi_lep_CoMFrame=ctx.declare_event_output<float> ("phi_lep_CoMFrame");
@@ -514,6 +520,9 @@ ZprimeAnalysisModule_AzCorr_GenStudy::ZprimeAnalysisModule_AzCorr_GenStudy(uhh2:
   h_phi_lep=ctx.declare_event_output<float> ("phi_lep");
   h_phi_lep_high=ctx.declare_event_output<float> ("phi_lep_high");
   h_phi_lep_low=ctx.declare_event_output<float> ("phi_lep_low");
+  h_phi_lep_highMass=ctx.declare_event_output<float> ("phi_lep_highMass");
+  h_phi_lep_lowMass=ctx.declare_event_output<float> ("phi_lep_lowMass");
+
   // // Phi of b-jet from hadronic leg
   // h_phi_b_LabFrame=ctx.declare_event_output<float> ("phi_b_LabFrame");
   // h_phi_b_CoMFrame=ctx.declare_event_output<float> ("phi_b_CoMFrame");
@@ -521,6 +530,8 @@ ZprimeAnalysisModule_AzCorr_GenStudy::ZprimeAnalysisModule_AzCorr_GenStudy(uhh2:
   // h_phi_b=ctx.declare_event_output<float> ("phi_b");
   // h_phi_b_high=ctx.declare_event_output<float> ("phi_b_high");
   // h_phi_b_low=ctx.declare_event_output<float> ("phi_b_low");
+  // h_phi_b_highMass=ctx.declare_event_output<float> ("phi_b_highMass");
+  // h_phi_b_lowMass=ctx.declare_event_output<float> ("phi_b_lowMass");
 
   // Phi of q1 W daughter from hadronic leg
   h_phi_hadTop_q1_LabFrame=ctx.declare_event_output<float> ("phi_hadTop_q1_LabFrame");
@@ -545,15 +556,23 @@ ZprimeAnalysisModule_AzCorr_GenStudy::ZprimeAnalysisModule_AzCorr_GenStudy(uhh2:
   h_phi_qlow=ctx.declare_event_output<float> ("phi_qlow");
   h_phi_qlow_high=ctx.declare_event_output<float> ("phi_qlow_high");
   h_phi_qlow_low=ctx.declare_event_output<float> ("phi_qlow_low");
+  h_phi_qlow_highMass=ctx.declare_event_output<float> ("phi_qlow_highMass");
+  h_phi_qlow_lowMass=ctx.declare_event_output<float> ("phi_qlow_lowMass");
 
   // Sum of phi-coordinates
   h_sphi=ctx.declare_event_output<float> ("sphi");
   h_sphi_high=ctx.declare_event_output<float> ("sphi_high");
   h_sphi_low=ctx.declare_event_output<float> ("sphi_low");
+  h_sphi_highMass=ctx.declare_event_output<float> ("sphi_highMass");
+  h_sphi_lowMass=ctx.declare_event_output<float> ("sphi_lowMass");
+
   // Difference of phi-coordinates
   h_dphi=ctx.declare_event_output<double> ("dphi");
   h_dphi_high=ctx.declare_event_output<double> ("dphi_high");
   h_dphi_low=ctx.declare_event_output<double> ("dphi_low");
+  h_dphi_highMass=ctx.declare_event_output<double> ("dphi_highMass");
+  h_dphi_lowMass=ctx.declare_event_output<double> ("dphi_lowMass");
+
   // Above variables now separated by charge of lepton in system
   h_phi_lepPlus=ctx.declare_event_output<float> ("phi_lepPlus");
   h_phi_lepMinus=ctx.declare_event_output<float> ("phi_lepMinus");
@@ -666,6 +685,7 @@ bool ZprimeAnalysisModule_AzCorr_GenStudy::process(uhh2::Event& event){
   event.set(h_pt_hadTop, -10);      // pt of hadronic top
   // Plotting mass of ttbar system
   event.set(h_ttbar_mass_LabFrame, -10);
+
   // Phi of lepton from leptonic leg
   event.set(h_phi_lep_LabFrame, -10);    
   event.set(h_phi_lep_CoMFrame, -10);
@@ -673,6 +693,9 @@ bool ZprimeAnalysisModule_AzCorr_GenStudy::process(uhh2::Event& event){
   event.set(h_phi_lep, -10);
   event.set(h_phi_lep_high, -10);
   event.set(h_phi_lep_low, -10); 
+  event.set(h_phi_lep_highMass, -10);
+  event.set(h_phi_lep_lowMass, -10);
+
   // Phi of b-jet from hadronic leg
   // event.set(h_phi_b_LabFrame, -10);
   // event.set(h_phi_b_CoMFrame, -10);
@@ -680,6 +703,8 @@ bool ZprimeAnalysisModule_AzCorr_GenStudy::process(uhh2::Event& event){
   // event.set(h_phi_b, -10);     
   // event.set(h_phi_b_high, -10);
   // event.set(h_phi_b_low, -10);
+  // event.set(h_phi_b_highMass, -10);
+  // event.set(h_phi_b_lowMass, -10);
 
   // Phi of q1 from W-decay of hadronic leg
   event.set(h_phi_hadTop_q1_LabFrame, -10);
@@ -704,15 +729,23 @@ bool ZprimeAnalysisModule_AzCorr_GenStudy::process(uhh2::Event& event){
   event.set(h_phi_qlow, -10);     
   event.set(h_phi_qlow_high, -10);
   event.set(h_phi_qlow_low, -10);
+  event.set(h_phi_qlow_highMass, -10);
+  event.set(h_phi_qlow_lowMass, -10);
 
   // Sum of phi-coordinates
   event.set(h_sphi, -10);     
   event.set(h_sphi_low, -10); 
   event.set(h_sphi_high, -10);
+  event.set(h_sphi_highMass, -10);
+  event.set(h_sphi_lowMass, -10);
+
   // Difference of phi-coordinates
   event.set(h_dphi, -10);     
   event.set(h_dphi_low, -10); 
   event.set(h_dphi_high, -10);
+  event.set(h_dphi_highMass, -10);
+  event.set(h_dphi_lowMass, -10);
+
   // Above variables now separated by charge of lepton in system
   event.set(h_phi_lepPlus, -10);
   event.set(h_phi_lepMinus, -10);
@@ -1234,6 +1267,7 @@ bool ZprimeAnalysisModule_AzCorr_GenStudy::process(uhh2::Event& event){
   // Make sure ttbar decays semileptonically
   if(ttbargen.IsSemiLeptonicDecay()){
     float pt_hadTop_thresh = 150;         // Define cut-variable as pt of hadTop for low/high regions
+    float ttbar_mass_thresh = 750;         // Define cut-variable as mass of ttbar-system for low/high regions
 
     //-------------------------------------------------- Start in LAB-frame --------------------------------------------------//
 
@@ -1384,8 +1418,7 @@ bool ZprimeAnalysisModule_AzCorr_GenStudy::process(uhh2::Event& event){
     }
     //--------------------------- Boost into ttbar rest-frame ---------------------------//
 
-    // Now that W daughters are in mother-top's rest-frame, we can compare their energies to determine which is less energetic
-    // Set 4vector of less-energetic W-daughter
+    // Set 4vector of less-energetic W-daughter // Now we can compare their energies to determine which is less energetic in this rest-frame
     if(hadTop_q1.E() < hadTop_q2.E()){hadTop_qlow = hadTop_q1;}
     else{hadTop_qlow = hadTop_q2;}
 
@@ -1401,7 +1434,7 @@ bool ZprimeAnalysisModule_AzCorr_GenStudy::process(uhh2::Event& event){
     event.set(h_phi_qlow, phi_qlow);
     if(debug) cout<<"   phi_qlow is: "<< phi_qlow <<endl;
 
-    // // Define sphi as sum and difference of phi's and plot (mixed charges)
+    // // Define sphi as sum and dphi as difference of phi's and plot (mixed charges)
     // Also apply mapping to both to keep original domain of [-pi, pi]
     // float sphi = phi_lep + phi_b;
     float sphi = phi_lep + phi_qlow;
@@ -1433,6 +1466,23 @@ bool ZprimeAnalysisModule_AzCorr_GenStudy::process(uhh2::Event& event){
       event.set(h_phi_qlow_low, phi_qlow);
       event.set(h_sphi_low, sphi);
       event.set(h_dphi_low, dphi);
+    }
+
+    // Plot dphi and sphi for high ttbar mass ranges
+    if(ttbar.M() > ttbar_mass_thresh){
+      event.set(h_phi_lep_highMass, phi_lep);
+      // event.set(h_phi_b_high, phi_b);
+      event.set(h_phi_qlow_highMass, phi_qlow);
+      event.set(h_sphi_highMass, sphi);
+      event.set(h_dphi_highMass, dphi);
+    }
+    // Plot dphi and sphi for low ttbar mass ranges
+    if(ttbar.M() < ttbar_mass_thresh){
+      event.set(h_phi_lep_lowMass, phi_lep);
+      // event.set(h_phi_b_low, phi_b);
+      event.set(h_phi_qlow_lowMass, phi_qlow);
+      event.set(h_sphi_lowMass, sphi);
+      event.set(h_dphi_lowMass, dphi);
     }
 
     // Positively charged leptons
