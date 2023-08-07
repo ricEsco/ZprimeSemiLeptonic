@@ -141,77 +141,92 @@ protected:
   uhh2::Event::Handle<TTbarGen> h_ttbargen;
   std::unique_ptr<TTbarGenProducer> ttgenprod;
   
-  Event::Handle<float> h_pt_hadTop;     // pt of hadronic top-jet(s)
+  Event::Handle<double> h_pt_hadTop;     // pt of hadronic top-jet(s)
 
   // Plotting mass of ttbar system
-  Event::Handle<float> h_ttbar_mass_LabFrame;
+  Event::Handle<double> h_ttbar_mass_LabFrame;
+
+  // Plotting longitudinal boost of ttbar system
+  Event::Handle<double> h_ttbar_boost_LabFrame;
 
   // Phi of lepton from leptonic leg
-  Event::Handle<float> h_phi_lep_LabFrame;
-  Event::Handle<float> h_phi_lep_CoMFrame;
-  Event::Handle<float> h_phi_lep_helicityFrame;
-  Event::Handle<float> h_phi_lep;
-  Event::Handle<float> h_phi_lep_high; 
-  Event::Handle<float> h_phi_lep_low;
-  Event::Handle<float> h_phi_lep_highMass; 
-  Event::Handle<float> h_phi_lep_lowMass;
+  Event::Handle<double> h_phi_lep_LabFrame;
+  Event::Handle<double> h_phi_lep_CoMFrame;
+  Event::Handle<double> h_phi_lep_helicityFrame;
+  Event::Handle<double> h_phi_lep;
+  Event::Handle<double> h_phi_lep_high; 
+  Event::Handle<double> h_phi_lep_low;
+  Event::Handle<double> h_phi_lep_highMass; 
+  Event::Handle<double> h_phi_lep_lowMass;
 
   // // Phi of b-jet from hadronic leg
-  // Event::Handle<float> h_phi_b_LabFrame;
-  // Event::Handle<float> h_phi_b_CoMFrame;
-  // Event::Handle<float> h_phi_b_helicityFrame;
-  // Event::Handle<float> h_phi_b;
-  // Event::Handle<float> h_phi_b_high; 
-  // Event::Handle<float> h_phi_b_low;
-  // Event::Handle<float> h_phi_b_highMass; 
-  // Event::Handle<float> h_phi_b_lowMass;
+  // Event::Handle<double> h_phi_b_LabFrame;
+  // Event::Handle<double> h_phi_b_CoMFrame;
+  // Event::Handle<double> h_phi_b_helicityFrame;
+  // Event::Handle<double> h_phi_b;
+  // Event::Handle<double> h_phi_b_high; 
+  // Event::Handle<double> h_phi_b_low;
+  // Event::Handle<double> h_phi_b_highMass; 
+  // Event::Handle<double> h_phi_b_lowMass;
 
   // Phi of q1 W daughter from hadronic leg
-  Event::Handle<float> h_phi_hadTop_q1_LabFrame;
-  Event::Handle<float> h_phi_hadTop_q1_CoMFrame;
-  Event::Handle<float> h_phi_hadTop_q1_helicityFrame;
+  Event::Handle<double> h_phi_hadTop_q1_LabFrame;
+  Event::Handle<double> h_phi_hadTop_q1_CoMFrame;
+  Event::Handle<double> h_phi_hadTop_q1_helicityFrame;
 
   // Phi of q2 W daughter from hadronic leg
-  Event::Handle<float> h_phi_hadTop_q2_LabFrame;
-  Event::Handle<float> h_phi_hadTop_q2_CoMFrame;
-  Event::Handle<float> h_phi_hadTop_q2_helicityFrame;
+  Event::Handle<double> h_phi_hadTop_q2_LabFrame;
+  Event::Handle<double> h_phi_hadTop_q2_CoMFrame;
+  Event::Handle<double> h_phi_hadTop_q2_helicityFrame;
 
   // Phi of less-energetic W daughter from hadronic leg
-  Event::Handle<float> h_phi_qlow;
-  Event::Handle<float> h_phi_qlow_high; 
-  Event::Handle<float> h_phi_qlow_low;
-  Event::Handle<float> h_phi_qlow_highMass; 
-  Event::Handle<float> h_phi_qlow_lowMass;
+  Event::Handle<double> h_phi_qlow;
+  Event::Handle<double> h_phi_qlow_high; 
+  Event::Handle<double> h_phi_qlow_low;
+  Event::Handle<double> h_phi_qlow_highMass; 
+  Event::Handle<double> h_phi_qlow_lowMass;
 
   // Sum of phi-coordinates
-  Event::Handle<float> h_sphi;
-  Event::Handle<float> h_sphi_low;
-  Event::Handle<float> h_sphi_high;
-  Event::Handle<float> h_sphi_lowMass;
-  Event::Handle<float> h_sphi_highMass;
+  Event::Handle<double> h_sphi;
+  Event::Handle<double> h_sphi_low;
+  Event::Handle<double> h_sphi_high;
+  Event::Handle<double> h_sphi_Mass1;
+  Event::Handle<double> h_sphi_Mass2;
+  Event::Handle<double> h_sphi_Mass3;
+  Event::Handle<double> h_sphi_Mass4;
+  Event::Handle<double> h_sphi_boost1;
+  Event::Handle<double> h_sphi_boost2;
+  Event::Handle<double> h_sphi_boost3;
+  Event::Handle<double> h_sphi_boost4;
 
   // Difference of phi-coordinates
   Event::Handle<double> h_dphi;
   Event::Handle<double> h_dphi_low;
   Event::Handle<double> h_dphi_high;
-  Event::Handle<double> h_dphi_lowMass;
-  Event::Handle<double> h_dphi_highMass;
+  Event::Handle<double> h_dphi_Mass1;
+  Event::Handle<double> h_dphi_Mass2;
+  Event::Handle<double> h_dphi_Mass3;
+  Event::Handle<double> h_dphi_Mass4;
+  Event::Handle<double> h_dphi_boost1;
+  Event::Handle<double> h_dphi_boost2;
+  Event::Handle<double> h_dphi_boost3;
+  Event::Handle<double> h_dphi_boost4;
 
   // Above variables now separated by charge of lepton in system
-  Event::Handle<float> h_phi_lepPlus;
-  Event::Handle<float> h_phi_lepMinus;
+  Event::Handle<double> h_phi_lepPlus;
+  Event::Handle<double> h_phi_lepMinus;
   // sphi_plus  is defined as (lepTop + hadTop) for positive leptons
-  Event::Handle<float> h_sphi_plus;
-  Event::Handle<float> h_sphi_plus_low;
-  Event::Handle<float> h_sphi_plus_high;
+  Event::Handle<double> h_sphi_plus;
+  Event::Handle<double> h_sphi_plus_low;
+  Event::Handle<double> h_sphi_plus_high;
   // dphi_plus is defined as (lepTop - hadTop) for positive leptons
   Event::Handle<double> h_dphi_plus;
   Event::Handle<double> h_dphi_plus_low;
   Event::Handle<double> h_dphi_plus_high;
   // sphi_minus is defined as (hadTop + lepTop) for negative leptons
-  Event::Handle<float> h_sphi_minus;
-  Event::Handle<float> h_sphi_minus_low;
-  Event::Handle<float> h_sphi_minus_high;
+  Event::Handle<double> h_sphi_minus;
+  Event::Handle<double> h_sphi_minus_low;
+  Event::Handle<double> h_sphi_minus_high;
   // dphi_minus is defined as (hadTop - lepTop) for negative leptons
   Event::Handle<double> h_dphi_minus;
   Event::Handle<double> h_dphi_minus_low;
@@ -508,77 +523,92 @@ ZprimeAnalysisModule_AzCorr_GenStudy::ZprimeAnalysisModule_AzCorr_GenStudy(uhh2:
   h_CHSjets_matched = ctx.get_handle<std::vector<Jet>>("CHS_matched");       // Collection of CHS matched jets
   h_DeepAK8TopTags = ctx.get_handle<std::vector<TopJet>>("DeepAK8TopTags");  // Collection of DeepAK8TopTagged jets
   h_ttbargen = ctx.get_handle<TTbarGen>("ttbargen");                         // Access to gen-level particles
-  h_pt_hadTop=ctx.declare_event_output<float> ("pt_hadTop");                 // pt of hadronic top-jet(s)
+  h_pt_hadTop=ctx.declare_event_output<double> ("pt_hadTop");                 // pt of hadronic top-jet(s)
   
   // Plotting mass of ttbar system
-  h_ttbar_mass_LabFrame=ctx.declare_event_output<float> ("ttbar_mass_LabFrame");
+  h_ttbar_mass_LabFrame=ctx.declare_event_output<double> ("ttbar_mass_LabFrame");
+
+  // Plotting longitudinal boost of ttbar system
+  h_ttbar_boost_LabFrame=ctx.declare_event_output<double> ("ttbar_boost_LabFrame");
 
   // Phi of lepton from leptonic leg
-  h_phi_lep_LabFrame=ctx.declare_event_output<float> ("phi_lep_LabFrame");
-  h_phi_lep_CoMFrame=ctx.declare_event_output<float> ("phi_lep_CoMFrame");
-  h_phi_lep_helicityFrame=ctx.declare_event_output<float> ("phi_lep_helicityFrame");
-  h_phi_lep=ctx.declare_event_output<float> ("phi_lep");
-  h_phi_lep_high=ctx.declare_event_output<float> ("phi_lep_high");
-  h_phi_lep_low=ctx.declare_event_output<float> ("phi_lep_low");
-  h_phi_lep_highMass=ctx.declare_event_output<float> ("phi_lep_highMass");
-  h_phi_lep_lowMass=ctx.declare_event_output<float> ("phi_lep_lowMass");
+  h_phi_lep_LabFrame=ctx.declare_event_output<double> ("phi_lep_LabFrame");
+  h_phi_lep_CoMFrame=ctx.declare_event_output<double> ("phi_lep_CoMFrame");
+  h_phi_lep_helicityFrame=ctx.declare_event_output<double> ("phi_lep_helicityFrame");
+  h_phi_lep=ctx.declare_event_output<double> ("phi_lep");
+  h_phi_lep_high=ctx.declare_event_output<double> ("phi_lep_high");
+  h_phi_lep_low=ctx.declare_event_output<double> ("phi_lep_low");
+  h_phi_lep_highMass=ctx.declare_event_output<double> ("phi_lep_highMass");
+  h_phi_lep_lowMass=ctx.declare_event_output<double> ("phi_lep_lowMass");
 
   // // Phi of b-jet from hadronic leg
-  // h_phi_b_LabFrame=ctx.declare_event_output<float> ("phi_b_LabFrame");
-  // h_phi_b_CoMFrame=ctx.declare_event_output<float> ("phi_b_CoMFrame");
-  // h_phi_b_helicityFrame=ctx.declare_event_output<float> ("phi_b_helicityFrame");
-  // h_phi_b=ctx.declare_event_output<float> ("phi_b");
-  // h_phi_b_high=ctx.declare_event_output<float> ("phi_b_high");
-  // h_phi_b_low=ctx.declare_event_output<float> ("phi_b_low");
-  // h_phi_b_highMass=ctx.declare_event_output<float> ("phi_b_highMass");
-  // h_phi_b_lowMass=ctx.declare_event_output<float> ("phi_b_lowMass");
+  // h_phi_b_LabFrame=ctx.declare_event_output<double> ("phi_b_LabFrame");
+  // h_phi_b_CoMFrame=ctx.declare_event_output<double> ("phi_b_CoMFrame");
+  // h_phi_b_helicityFrame=ctx.declare_event_output<double> ("phi_b_helicityFrame");
+  // h_phi_b=ctx.declare_event_output<double> ("phi_b");
+  // h_phi_b_high=ctx.declare_event_output<double> ("phi_b_high");
+  // h_phi_b_low=ctx.declare_event_output<double> ("phi_b_low");
+  // h_phi_b_highMass=ctx.declare_event_output<double> ("phi_b_highMass");
+  // h_phi_b_lowMass=ctx.declare_event_output<double> ("phi_b_lowMass");
 
   // Phi of q1 W daughter from hadronic leg
-  h_phi_hadTop_q1_LabFrame=ctx.declare_event_output<float> ("phi_hadTop_q1_LabFrame");
-  h_phi_hadTop_q1_CoMFrame=ctx.declare_event_output<float> ("phi_hadTop_q1_CoMFrame");
-  h_phi_hadTop_q1_helicityFrame=ctx.declare_event_output<float> ("phi_hadTop_q1_helicityFrame");
+  h_phi_hadTop_q1_LabFrame=ctx.declare_event_output<double> ("phi_hadTop_q1_LabFrame");
+  h_phi_hadTop_q1_CoMFrame=ctx.declare_event_output<double> ("phi_hadTop_q1_CoMFrame");
+  h_phi_hadTop_q1_helicityFrame=ctx.declare_event_output<double> ("phi_hadTop_q1_helicityFrame");
 
   // Phi of q2 W daughter from hadronic leg
-  h_phi_hadTop_q2_LabFrame=ctx.declare_event_output<float> ("phi_hadTop_q2_LabFrame");
-  h_phi_hadTop_q2_CoMFrame=ctx.declare_event_output<float> ("phi_hadTop_q2_CoMFrame");
-  h_phi_hadTop_q2_helicityFrame=ctx.declare_event_output<float> ("phi_hadTop_q2_helicityFrame");
+  h_phi_hadTop_q2_LabFrame=ctx.declare_event_output<double> ("phi_hadTop_q2_LabFrame");
+  h_phi_hadTop_q2_CoMFrame=ctx.declare_event_output<double> ("phi_hadTop_q2_CoMFrame");
+  h_phi_hadTop_q2_helicityFrame=ctx.declare_event_output<double> ("phi_hadTop_q2_helicityFrame");
 
   // Phi of less-energetic (in top's rest frame) W daughter from hadronic leg
-  h_phi_qlow=ctx.declare_event_output<float> ("phi_qlow");
-  h_phi_qlow_high=ctx.declare_event_output<float> ("phi_qlow_high");
-  h_phi_qlow_low=ctx.declare_event_output<float> ("phi_qlow_low");
-  h_phi_qlow_highMass=ctx.declare_event_output<float> ("phi_qlow_highMass");
-  h_phi_qlow_lowMass=ctx.declare_event_output<float> ("phi_qlow_lowMass");
+  h_phi_qlow=ctx.declare_event_output<double> ("phi_qlow");
+  h_phi_qlow_high=ctx.declare_event_output<double> ("phi_qlow_high");
+  h_phi_qlow_low=ctx.declare_event_output<double> ("phi_qlow_low");
+  h_phi_qlow_highMass=ctx.declare_event_output<double> ("phi_qlow_highMass");
+  h_phi_qlow_lowMass=ctx.declare_event_output<double> ("phi_qlow_lowMass");
 
   // Sum of phi-coordinates
-  h_sphi=ctx.declare_event_output<float> ("sphi");
-  h_sphi_high=ctx.declare_event_output<float> ("sphi_high");
-  h_sphi_low=ctx.declare_event_output<float> ("sphi_low");
-  h_sphi_highMass=ctx.declare_event_output<float> ("sphi_highMass");
-  h_sphi_lowMass=ctx.declare_event_output<float> ("sphi_lowMass");
+  h_sphi=ctx.declare_event_output<double> ("sphi");
+  h_sphi_high=ctx.declare_event_output<double> ("sphi_high");
+  h_sphi_low=ctx.declare_event_output<double> ("sphi_low");
+  h_sphi_Mass1=ctx.declare_event_output<double> ("sphi_Mass1");
+  h_sphi_Mass2=ctx.declare_event_output<double> ("sphi_Mass2");
+  h_sphi_Mass3=ctx.declare_event_output<double> ("sphi_Mass3");
+  h_sphi_Mass4=ctx.declare_event_output<double> ("sphi_Mass4");
+  h_sphi_boost1=ctx.declare_event_output<double> ("sphi_boost1");
+  h_sphi_boost2=ctx.declare_event_output<double> ("sphi_boost2");
+  h_sphi_boost3=ctx.declare_event_output<double> ("sphi_boost3");
+  h_sphi_boost4=ctx.declare_event_output<double> ("sphi_boost4");
 
   // Difference of phi-coordinates
   h_dphi=ctx.declare_event_output<double> ("dphi");
   h_dphi_high=ctx.declare_event_output<double> ("dphi_high");
   h_dphi_low=ctx.declare_event_output<double> ("dphi_low");
-  h_dphi_highMass=ctx.declare_event_output<double> ("dphi_highMass");
-  h_dphi_lowMass=ctx.declare_event_output<double> ("dphi_lowMass");
+  h_dphi_Mass1=ctx.declare_event_output<double> ("dphi_Mass1");
+  h_dphi_Mass2=ctx.declare_event_output<double> ("dphi_Mass2");
+  h_dphi_Mass3=ctx.declare_event_output<double> ("dphi_Mass3");
+  h_dphi_Mass4=ctx.declare_event_output<double> ("dphi_Mass4");
+  h_dphi_boost1=ctx.declare_event_output<double> ("dphi_boost1");
+  h_dphi_boost2=ctx.declare_event_output<double> ("dphi_boost2");
+  h_dphi_boost3=ctx.declare_event_output<double> ("dphi_boost3");
+  h_dphi_boost4=ctx.declare_event_output<double> ("dphi_boost4");
 
   // Above variables now separated by charge of lepton in system
-  h_phi_lepPlus=ctx.declare_event_output<float> ("phi_lepPlus");
-  h_phi_lepMinus=ctx.declare_event_output<float> ("phi_lepMinus");
+  h_phi_lepPlus=ctx.declare_event_output<double> ("phi_lepPlus");
+  h_phi_lepMinus=ctx.declare_event_output<double> ("phi_lepMinus");
   // sphi_plus  is defined as (lepTop + hadTop) for positive leptons
-  h_sphi_plus=ctx.declare_event_output<float> ("sphi_plus");
-  h_sphi_plus_low=ctx.declare_event_output<float> ("sphi_plus_low");
-  h_sphi_plus_high=ctx.declare_event_output<float> ("sphi_plus_high");
+  h_sphi_plus=ctx.declare_event_output<double> ("sphi_plus");
+  h_sphi_plus_low=ctx.declare_event_output<double> ("sphi_plus_low");
+  h_sphi_plus_high=ctx.declare_event_output<double> ("sphi_plus_high");
   // dphi_plus is defined as (lepTop - hadTop) for positive leptons
   h_dphi_plus=ctx.declare_event_output<double> ("dphi_plus");
   h_dphi_plus_low=ctx.declare_event_output<double> ("dphi_plus_low");
   h_dphi_plus_high=ctx.declare_event_output<double> ("dphi_plus_high");
   // sphi_minus is defined as (hadTop + lepTop) for negative leptons
-  h_sphi_minus=ctx.declare_event_output<float> ("sphi_minus");
-  h_sphi_minus_low=ctx.declare_event_output<float> ("sphi_minus_low");
-  h_sphi_minus_high=ctx.declare_event_output<float> ("sphi_minus_high");
+  h_sphi_minus=ctx.declare_event_output<double> ("sphi_minus");
+  h_sphi_minus_low=ctx.declare_event_output<double> ("sphi_minus_low");
+  h_sphi_minus_high=ctx.declare_event_output<double> ("sphi_minus_high");
   // dphi_minus is defined as (hadTop - lepTop) for negative leptons
   h_dphi_minus=ctx.declare_event_output<double> ("dphi_minus");
   h_dphi_minus_low=ctx.declare_event_output<double> ("dphi_minus_low");
@@ -677,6 +707,9 @@ bool ZprimeAnalysisModule_AzCorr_GenStudy::process(uhh2::Event& event){
   // Plotting mass of ttbar system
   event.set(h_ttbar_mass_LabFrame, -10);
 
+  // Plotting longitudinal boost of ttbar system
+  event.set(h_ttbar_boost_LabFrame, -10);
+
   // Phi of lepton from leptonic leg
   event.set(h_phi_lep_LabFrame, -10);    
   event.set(h_phi_lep_CoMFrame, -10);
@@ -718,15 +751,27 @@ bool ZprimeAnalysisModule_AzCorr_GenStudy::process(uhh2::Event& event){
   event.set(h_sphi, -10);     
   event.set(h_sphi_low, -10); 
   event.set(h_sphi_high, -10);
-  event.set(h_sphi_highMass, -10);
-  event.set(h_sphi_lowMass, -10);
-
+  event.set(h_sphi_Mass1, -10);
+  event.set(h_sphi_Mass2, -10);
+  event.set(h_sphi_Mass3, -10);
+  event.set(h_sphi_Mass4, -10);
+  event.set(h_sphi_boost1, -10);
+  event.set(h_sphi_boost2 , -10);
+  event.set(h_sphi_boost3 , -10);
+  event.set(h_sphi_boost4 , -10);
+  
   // Difference of phi-coordinates
   event.set(h_dphi, -10);     
   event.set(h_dphi_low, -10); 
   event.set(h_dphi_high, -10);
-  event.set(h_dphi_highMass, -10);
-  event.set(h_dphi_lowMass, -10);
+  event.set(h_dphi_Mass1, -10);
+  event.set(h_dphi_Mass2, -10);
+  event.set(h_dphi_Mass3, -10);
+  event.set(h_dphi_Mass4, -10);
+  event.set(h_dphi_boost1 , -10);
+  event.set(h_dphi_boost2 , -10);
+  event.set(h_dphi_boost3 , -10);
+  event.set(h_dphi_boost4 , -10);
 
   // Above variables now separated by charge of lepton in system
   event.set(h_phi_lepPlus, -10);
@@ -1310,6 +1355,14 @@ bool ZprimeAnalysisModule_AzCorr_GenStudy::process(uhh2::Event& event){
     // Plotting mass of ttbar system
     event.set(h_ttbar_mass_LabFrame, ttbar.M());
 
+    // Constructing longitudinal boost of ttbar system
+    float numerator = fabs(PosTop.Pz() + NegTop.Pz());
+    float denominator = PosTop.E() + NegTop.E();
+    float boost = numerator/denominator;
+
+    // Plotting longitudinal boost of ttbar system
+    event.set(h_ttbar_boost_LabFrame, boost);
+
     //---------------------------------------------------------- Boost into CoM-frame ----------------------------------------------------------//
     if(debug) cout<<" Start First Boost"<<endl;
 
@@ -1418,14 +1471,12 @@ bool ZprimeAnalysisModule_AzCorr_GenStudy::process(uhh2::Event& event){
 
     // // Define sphi as sum and dphi as difference of phi's and plot (mixed charges)
     // Also apply mapping to both to keep original domain of [-pi, pi]
-    // float sphi = phi_lep + phi_b;
     float sphi = phi_lep + phi_qlow;
     // Map back into original domain if necessary
     if(sphi > TMath::Pi()) sphi = sphi - 2*TMath::Pi();
     if(sphi < -TMath::Pi()) sphi = sphi + 2*TMath::Pi();
     event.set(h_sphi, sphi);
     if(debug) cout<<"    sphi is: "<< sphi <<endl;
-    // float dphi = phi_lep - phi_b;
     float dphi = phi_lep - phi_qlow;
     // Map back into original domain if necessary
     if(dphi > TMath::Pi()) dphi = dphi - 2*TMath::Pi();
@@ -1436,7 +1487,6 @@ bool ZprimeAnalysisModule_AzCorr_GenStudy::process(uhh2::Event& event){
     // Plot dphi and sphi for high-pt ranges
     if(pt_hadTop > pt_hadTop_thresh){
       event.set(h_phi_lep_high, phi_lep);
-      // event.set(h_phi_b_high, phi_b);
       event.set(h_phi_qlow_high, phi_qlow);
       event.set(h_sphi_high, sphi);
       event.set(h_dphi_high, dphi);
@@ -1444,77 +1494,103 @@ bool ZprimeAnalysisModule_AzCorr_GenStudy::process(uhh2::Event& event){
     // Plot dphi and sphi for low-pt ranges
     if(pt_hadTop < pt_hadTop_thresh){
       event.set(h_phi_lep_low, phi_lep);
-      // event.set(h_phi_b_low, phi_b);
       event.set(h_phi_qlow_low, phi_qlow);
       event.set(h_sphi_low, sphi);
       event.set(h_dphi_low, dphi);
     }
 
-    // Plot dphi and sphi for high ttbar mass ranges
-    if(ttbar.M() > ttbar_mass_thresh){
-      event.set(h_phi_lep_highMass, phi_lep);
-      // event.set(h_phi_b_high, phi_b);
-      event.set(h_phi_qlow_highMass, phi_qlow);
-      event.set(h_sphi_highMass, sphi);
-      event.set(h_dphi_highMass, dphi);
+    // Plot dphi and sphi for various ranges of ttbar mass
+    // 0 < Mass1 < 500
+    if(ttbar.M() < 500){
+      event.set(h_sphi_Mass1, sphi);
+      event.set(h_dphi_Mass1, dphi);
     }
-    // Plot dphi and sphi for low ttbar mass ranges
-    if(ttbar.M() < ttbar_mass_thresh){
-      event.set(h_phi_lep_lowMass, phi_lep);
-      // event.set(h_phi_b_low, phi_b);
-      event.set(h_phi_qlow_lowMass, phi_qlow);
-      event.set(h_sphi_lowMass, sphi);
-      event.set(h_dphi_lowMass, dphi);
+    // 500 < Mass2 < 750
+    if(ttbar.M() > 500 &&  ttbar.M() < 750){
+      event.set(h_sphi_Mass2, sphi);
+      event.set(h_dphi_Mass2, dphi);
+    }
+    // 750 < Mass3 < 1500
+    if(ttbar.M() > 750 &&  ttbar.M() < 1500){
+      event.set(h_sphi_Mass3, sphi);
+      event.set(h_dphi_Mass3, dphi);
+    }
+    // 1500 < Mass4
+    if(ttbar.M() > 1500){
+      event.set(h_sphi_Mass4, sphi);
+      event.set(h_dphi_Mass4, dphi);
+    }
+
+    // Plot dphi and sphi for various ranges of longitudinal boost of ttbar system
+    // 0 < boost1 < 0.3
+    if(boost < 0.3){
+      event.set(h_sphi_boost1, sphi);
+      event.set(h_dphi_boost1, dphi);
+    }
+    // 0.3 < boost2 < 0.6
+    if(boost > 0.3 &&  boost < 0.6){
+      event.set(h_sphi_boost2, sphi);
+      event.set(h_dphi_boost2, dphi);
+    }
+    // 0.6 < boost3 < 0.8
+    if(boost > 0.6 &&  boost < 0.8){
+      event.set(h_sphi_boost3, sphi);
+      event.set(h_dphi_boost3, dphi);
+    }
+    // 0.8 < boost4 < 1.0
+    if(boost > 0.8 &&  boost < 1.0){
+      event.set(h_sphi_boost4, sphi);
+      event.set(h_dphi_boost4, dphi);
     }
 
     // Positively charged leptons
-    if(ttbargen.ChargedLepton().charge() > 0){
-      // Plot phi for positive leptons
-      event.set(h_phi_lepPlus, phi_lep);
-      // sphi_plus  is defined as (lep + had) for positive leptons
-      // float sphi_plus = phi_lep + phi_b;
-      float sphi_plus = phi_lep + phi_qlow;
-      // Map back into original domain if necessary
-      if(sphi_plus > TMath::Pi()) sphi_plus = sphi_plus - 2*TMath::Pi();
-      if(sphi_plus < -TMath::Pi()) sphi_plus = sphi_plus + 2*TMath::Pi();
-      event.set(h_sphi_plus, sphi_plus);
-      if(pt_hadTop > pt_hadTop_thresh){event.set(h_sphi_plus_high, sphi_plus);}
-      if(pt_hadTop < pt_hadTop_thresh){event.set(h_sphi_plus_low, sphi_plus);}
-      // dphi_plus is defined as (lep - had) for positive leptons
-      // float dphi_plus = phi_lep - phi_b;
-      float dphi_plus = phi_lep - phi_qlow;
-      // Map back into original domain if necessary
-      if(dphi_plus > TMath::Pi()) dphi_plus = dphi_plus - 2*TMath::Pi();
-      if(dphi_plus < -TMath::Pi()) dphi_plus = dphi_plus + 2*TMath::Pi();
-      event.set(h_dphi_plus, dphi_plus);         
-      if(pt_hadTop > pt_hadTop_thresh){event.set(h_dphi_plus_high, dphi_plus);}     
-      if(pt_hadTop < pt_hadTop_thresh){event.set(h_dphi_plus_low, dphi_plus);}
-    }
+    // if(ttbargen.ChargedLepton().charge() > 0){
+    //   // Plot phi for positive leptons
+    //   event.set(h_phi_lepPlus, phi_lep);
+    //   // sphi_plus  is defined as (lep + had) for positive leptons
+    //   // float sphi_plus = phi_lep + phi_b;
+    //   float sphi_plus = phi_lep + phi_qlow;
+    //   // Map back into original domain if necessary
+    //   if(sphi_plus > TMath::Pi()) sphi_plus = sphi_plus - 2*TMath::Pi();
+    //   if(sphi_plus < -TMath::Pi()) sphi_plus = sphi_plus + 2*TMath::Pi();
+    //   event.set(h_sphi_plus, sphi_plus);
+    //   if(pt_hadTop > pt_hadTop_thresh){event.set(h_sphi_plus_high, sphi_plus);}
+    //   if(pt_hadTop < pt_hadTop_thresh){event.set(h_sphi_plus_low, sphi_plus);}
+    //   // dphi_plus is defined as (lep - had) for positive leptons
+    //   // float dphi_plus = phi_lep - phi_b;
+    //   float dphi_plus = phi_lep - phi_qlow;
+    //   // Map back into original domain if necessary
+    //   if(dphi_plus > TMath::Pi()) dphi_plus = dphi_plus - 2*TMath::Pi();
+    //   if(dphi_plus < -TMath::Pi()) dphi_plus = dphi_plus + 2*TMath::Pi();
+    //   event.set(h_dphi_plus, dphi_plus);         
+    //   if(pt_hadTop > pt_hadTop_thresh){event.set(h_dphi_plus_high, dphi_plus);}     
+    //   if(pt_hadTop < pt_hadTop_thresh){event.set(h_dphi_plus_low, dphi_plus);}
+    // }
 
     //Negatively charged leptons
-    if(ttbargen.ChargedLepton().charge() < 0){
-      // Plot phi for negative leptons
-      event.set(h_phi_lepMinus, phi_lep);
-      // sphi_minus is defined as (had + lep) for negative leptons
-      // float sphi_minus = phi_b + phi_lep;
-      float sphi_minus = phi_qlow + phi_lep;
-      // Map back into original domain if necessary
-      if(sphi_minus > TMath::Pi()) sphi_minus = sphi_minus - 2*TMath::Pi();
-      if(sphi_minus < -TMath::Pi()) sphi_minus = sphi_minus + 2*TMath::Pi();
-      event.set(h_sphi_minus, sphi_minus);         
-      if(pt_hadTop > pt_hadTop_thresh){event.set(h_sphi_minus_high, sphi_minus);}     
-      if(pt_hadTop < pt_hadTop_thresh){event.set(h_sphi_minus_low, sphi_minus);}
-      // dphi_minus is defined as (had - lep) for negative leptons
-      // float dphi_minus = phi_b - phi_lep;
-      float dphi_minus = phi_qlow - phi_lep;
-      // Map back into original domain if necessary
-      if(dphi_minus > TMath::Pi()) dphi_minus = dphi_minus - 2*TMath::Pi();
-      if(dphi_minus < -TMath::Pi()) dphi_minus = dphi_minus + 2*TMath::Pi();
-      event.set(h_dphi_minus, dphi_minus);         
-      if(pt_hadTop > pt_hadTop_thresh){event.set(h_dphi_minus_high, dphi_minus);}
-      if(pt_hadTop < pt_hadTop_thresh){event.set(h_dphi_minus_low, dphi_minus);}
-    }
-  }
+  //   if(ttbargen.ChargedLepton().charge() < 0){
+  //     // Plot phi for negative leptons
+  //     event.set(h_phi_lepMinus, phi_lep);
+  //     // sphi_minus is defined as (had + lep) for negative leptons
+  //     // float sphi_minus = phi_b + phi_lep;
+  //     float sphi_minus = phi_qlow + phi_lep;
+  //     // Map back into original domain if necessary
+  //     if(sphi_minus > TMath::Pi()) sphi_minus = sphi_minus - 2*TMath::Pi();
+  //     if(sphi_minus < -TMath::Pi()) sphi_minus = sphi_minus + 2*TMath::Pi();
+  //     event.set(h_sphi_minus, sphi_minus);         
+  //     if(pt_hadTop > pt_hadTop_thresh){event.set(h_sphi_minus_high, sphi_minus);}     
+  //     if(pt_hadTop < pt_hadTop_thresh){event.set(h_sphi_minus_low, sphi_minus);}
+  //     // dphi_minus is defined as (had - lep) for negative leptons
+  //     // float dphi_minus = phi_b - phi_lep;
+  //     float dphi_minus = phi_qlow - phi_lep;
+  //     // Map back into original domain if necessary
+  //     if(dphi_minus > TMath::Pi()) dphi_minus = dphi_minus - 2*TMath::Pi();
+  //     if(dphi_minus < -TMath::Pi()) dphi_minus = dphi_minus + 2*TMath::Pi();
+  //     event.set(h_dphi_minus, dphi_minus);         
+  //     if(pt_hadTop > pt_hadTop_thresh){event.set(h_dphi_minus_high, dphi_minus);}
+  //     if(pt_hadTop < pt_hadTop_thresh){event.set(h_dphi_minus_low, dphi_minus);}
+  //   }
+  // }
 
   return true;
 }
