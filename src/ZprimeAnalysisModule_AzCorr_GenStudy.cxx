@@ -194,6 +194,7 @@ protected:
   Event::Handle<double> h_sphi_Mass2;
   Event::Handle<double> h_sphi_Mass3;
   Event::Handle<double> h_sphi_Mass4;
+  Event::Handle<double> h_sphi_Mass5;
   Event::Handle<double> h_sphi_boost1;
   Event::Handle<double> h_sphi_boost2;
   Event::Handle<double> h_sphi_boost3;
@@ -207,6 +208,7 @@ protected:
   Event::Handle<double> h_dphi_Mass2;
   Event::Handle<double> h_dphi_Mass3;
   Event::Handle<double> h_dphi_Mass4;
+  Event::Handle<double> h_dphi_Mass5;
   Event::Handle<double> h_dphi_boost1;
   Event::Handle<double> h_dphi_boost2;
   Event::Handle<double> h_dphi_boost3;
@@ -576,6 +578,7 @@ ZprimeAnalysisModule_AzCorr_GenStudy::ZprimeAnalysisModule_AzCorr_GenStudy(uhh2:
   h_sphi_Mass2=ctx.declare_event_output<double> ("sphi_Mass2");
   h_sphi_Mass3=ctx.declare_event_output<double> ("sphi_Mass3");
   h_sphi_Mass4=ctx.declare_event_output<double> ("sphi_Mass4");
+  h_sphi_Mass5=ctx.declare_event_output<double> ("sphi_Mass5");
   h_sphi_boost1=ctx.declare_event_output<double> ("sphi_boost1");
   h_sphi_boost2=ctx.declare_event_output<double> ("sphi_boost2");
   h_sphi_boost3=ctx.declare_event_output<double> ("sphi_boost3");
@@ -589,6 +592,7 @@ ZprimeAnalysisModule_AzCorr_GenStudy::ZprimeAnalysisModule_AzCorr_GenStudy(uhh2:
   h_dphi_Mass2=ctx.declare_event_output<double> ("dphi_Mass2");
   h_dphi_Mass3=ctx.declare_event_output<double> ("dphi_Mass3");
   h_dphi_Mass4=ctx.declare_event_output<double> ("dphi_Mass4");
+  h_dphi_Mass5=ctx.declare_event_output<double> ("dphi_Mass5");
   h_dphi_boost1=ctx.declare_event_output<double> ("dphi_boost1");
   h_dphi_boost2=ctx.declare_event_output<double> ("dphi_boost2");
   h_dphi_boost3=ctx.declare_event_output<double> ("dphi_boost3");
@@ -755,6 +759,7 @@ bool ZprimeAnalysisModule_AzCorr_GenStudy::process(uhh2::Event& event){
   event.set(h_sphi_Mass2, -10);
   event.set(h_sphi_Mass3, -10);
   event.set(h_sphi_Mass4, -10);
+  event.set(h_sphi_Mass5, -10);
   event.set(h_sphi_boost1, -10);
   event.set(h_sphi_boost2 , -10);
   event.set(h_sphi_boost3 , -10);
@@ -768,6 +773,7 @@ bool ZprimeAnalysisModule_AzCorr_GenStudy::process(uhh2::Event& event){
   event.set(h_dphi_Mass2, -10);
   event.set(h_dphi_Mass3, -10);
   event.set(h_dphi_Mass4, -10);
+  event.set(h_dphi_Mass5, -10);
   event.set(h_dphi_boost1 , -10);
   event.set(h_dphi_boost2 , -10);
   event.set(h_dphi_boost3 , -10);
@@ -1293,14 +1299,14 @@ bool ZprimeAnalysisModule_AzCorr_GenStudy::process(uhh2::Event& event){
 
   // Make sure ttbar decays semileptonically
   if(ttbargen.IsSemiLeptonicDecay()){
-    float pt_hadTop_thresh = 150;         // Define cut-variable as pt of hadTop for low/high regions
+    double pt_hadTop_thresh = 150.;         // Define cut-variable as pt of hadTop for low/high regions
     // float ttbar_mass_thresh = 750;         // Define cut-variable as mass of ttbar-system for low/high regions
 
     //-------------------------------------------------- Start in LAB-frame --------------------------------------------------//
 
     // Plot pt of hadronic Top 
     LorentzVector Gen_HadTop = ttbargen.TopHad().v4();
-    float pt_hadTop = Gen_HadTop.pt();
+    double pt_hadTop = Gen_HadTop.pt();
     if(pt_hadTop != -10) event.set(h_pt_hadTop, pt_hadTop);
 
     // // Define 4vectors of hadronic b
@@ -1331,15 +1337,15 @@ bool ZprimeAnalysisModule_AzCorr_GenStudy::process(uhh2::Event& event){
     lepTop_lep.SetPtEtaPhiE(Gen_Lep.pt(), Gen_Lep.eta(), Gen_Lep.phi(), Gen_Lep.energy());
 
     // Plot LAB FRAME phi-coordinates
-    // float phi_b_LabFrame = hadTop_b.Phi();
+    // double phi_b_LabFrame = hadTop_b.Phi();
     // if(phi_b_LabFrame != -10) event.set(h_phi_b_LabFrame, phi_b_LabFrame);
-    // float phi_qlow_LabFrame = hadTop_qlow.Phi();// NOT SET UNTIL TOP REST-FRAME
+    // double phi_qlow_LabFrame = hadTop_qlow.Phi();// NOT SET UNTIL TOP REST-FRAME
     // if(phi_qlow_LabFrame != -10) event.set(h_phi_qlow_LabFrame, phi_qlow_LabFrame);// NOT SET UNTIL TOP REST-FRAME
-    float phi_hadTop_q1_LabFrame = hadTop_q1.Phi();
+    double phi_hadTop_q1_LabFrame = hadTop_q1.Phi();
     if(phi_hadTop_q1_LabFrame != -10) event.set(h_phi_hadTop_q1_LabFrame, phi_hadTop_q1_LabFrame);
-    float phi_hadTop_q2_LabFrame = hadTop_q2.Phi();
+    double phi_hadTop_q2_LabFrame = hadTop_q2.Phi();
     if(phi_hadTop_q2_LabFrame != -10) event.set(h_phi_hadTop_q2_LabFrame, phi_hadTop_q2_LabFrame);
-    float phi_lep_LabFrame = lepTop_lep.Phi();
+    double phi_lep_LabFrame = lepTop_lep.Phi();
     if(phi_lep_LabFrame != -10) event.set(h_phi_lep_LabFrame, phi_lep_LabFrame);
 
     // Top vectors
@@ -1356,9 +1362,9 @@ bool ZprimeAnalysisModule_AzCorr_GenStudy::process(uhh2::Event& event){
     event.set(h_ttbar_mass_LabFrame, ttbar.M());
 
     // Constructing longitudinal boost of ttbar system
-    float numerator = fabs(PosTop.Pz() + NegTop.Pz());
-    float denominator = PosTop.E() + NegTop.E();
-    float boost = numerator/denominator;
+    double numerator = fabs(PosTop.Pz() + NegTop.Pz());
+    double denominator = PosTop.E() + NegTop.E();
+    double boost = numerator/denominator;
 
     // Plotting longitudinal boost of ttbar system
     event.set(h_ttbar_boost_LabFrame, boost);
@@ -1369,7 +1375,6 @@ bool ZprimeAnalysisModule_AzCorr_GenStudy::process(uhh2::Event& event){
     // Boost into ttbar Center of Momentum configuration 
     lepTop_lep.Boost(-ttbar.BoostVector());
     // hadTop_b.Boost(-ttbar.BoostVector());
-    // hadTop_qlow.Boost(-ttbar.BoostVector());// NOT SET UNTIL TOP REST-FRAME
     hadTop_q1.Boost(-ttbar.BoostVector());
     hadTop_q2.Boost(-ttbar.BoostVector());
     PosTop.Boost(-ttbar.BoostVector());
@@ -1378,13 +1383,11 @@ bool ZprimeAnalysisModule_AzCorr_GenStudy::process(uhh2::Event& event){
     // Plot phi-coordinates in CoM frame
     // float phi_b_CoMFrame = hadTop_b.Phi();
     // event.set(h_phi_b_CoMFrame, phi_b_CoMFrame);
-    // float phi_qlow_CoMFrame = hadTop_qlow.Phi();// NOT SET UNTIL TOP REST-FRAME
-    // event.set(h_phi_qlow_CoMFrame, phi_qlow_CoMFrame);// NOT SET UNTIL TOP REST-FRAME
-    float phi_hadTop_q1_CoMFrame = hadTop_q1.Phi();
+    double phi_hadTop_q1_CoMFrame = hadTop_q1.Phi();
     event.set(h_phi_hadTop_q1_CoMFrame, phi_hadTop_q1_CoMFrame);
-    float phi_hadTop_q2_CoMFrame = hadTop_q2.Phi();
+    double phi_hadTop_q2_CoMFrame = hadTop_q2.Phi();
     event.set(h_phi_hadTop_q2_CoMFrame, phi_hadTop_q2_CoMFrame);
-    float phi_lep_CoMFrame = lepTop_lep.Phi();
+    double phi_lep_CoMFrame = lepTop_lep.Phi();
     event.set(h_phi_lep_CoMFrame, phi_lep_CoMFrame);
 
     // Cross-check back-to-back configuration of ttbar system
@@ -1395,8 +1398,8 @@ bool ZprimeAnalysisModule_AzCorr_GenStudy::process(uhh2::Event& event){
     if(debug) cout<<"  Start Rotating"<<endl;
 
     // Rotation angles
-    float angle1 = PosTop.Phi();
-    float angle2 = PosTop.Theta();
+    double angle1 = PosTop.Phi();
+    double angle2 = PosTop.Theta();
 
     // Rotate tops and decay products about beam-line
     lepTop_lep.RotateZ(-1.*angle1);
@@ -1420,11 +1423,11 @@ bool ZprimeAnalysisModule_AzCorr_GenStudy::process(uhh2::Event& event){
     // event.set(h_phi_b_helicityFrame, phi_b_helicityFrame);
     // float phi_qlow_helicityFrame = hadTop_qlow.Phi(); // NOT SET UNTIL TOP REST-FRAME
     // event.set(h_phi_qlow_helicityFrame, phi_qlow_helicityFrame); // NOT SET UNTIL TOP REST-FRAME
-    float phi_hadTop_q1_helicityFrame = hadTop_q1.Phi();
+    double phi_hadTop_q1_helicityFrame = hadTop_q1.Phi();
     event.set(h_phi_hadTop_q1_helicityFrame, phi_hadTop_q1_helicityFrame);
-    float phi_hadTop_q2_helicityFrame = hadTop_q2.Phi();
+    double phi_hadTop_q2_helicityFrame = hadTop_q2.Phi();
     event.set(h_phi_hadTop_q2_helicityFrame, phi_hadTop_q2_helicityFrame);
-    float phi_lep_helicityFrame = lepTop_lep.Phi();
+    double phi_lep_helicityFrame = lepTop_lep.Phi();
     event.set(h_phi_lep_helicityFrame, phi_lep_helicityFrame);
 
     //-------------- Rotate into Helicity Frame --------------//
@@ -1456,31 +1459,34 @@ bool ZprimeAnalysisModule_AzCorr_GenStudy::process(uhh2::Event& event){
     // Set 4vector of less-energetic W-daughter // Now we can compare their energies to determine which is less energetic in this rest-frame
     if(hadTop_q1.E() < hadTop_q2.E()){hadTop_qlow = hadTop_q1;}
     else{hadTop_qlow = hadTop_q2;}
-
     if(debug) cout<<"   Finished results are:"<<endl;
+
     // Define phi-coordinates from these twice boosted and once rotated 4vectors
-    float phi_lep = lepTop_lep.Phi();
+    double phi_lep = lepTop_lep.Phi();
     event.set(h_phi_lep, phi_lep);
     if(debug) cout<<"   phi_lep is: "<< phi_lep <<endl;
-    // float phi_b = hadTop_b.Phi();
+    
+    // double phi_b = hadTop_b.Phi();
     // event.set(h_phi_b, phi_b);
     // if(debug) cout<<"   phi_b is: "<< phi_b <<endl;
-    float phi_qlow = hadTop_qlow.Phi();
+    
+    double phi_qlow = hadTop_qlow.Phi();
     event.set(h_phi_qlow, phi_qlow);
     if(debug) cout<<"   phi_qlow is: "<< phi_qlow <<endl;
 
-    // // Define sphi as sum and dphi as difference of phi's and plot (mixed charges)
-    // Also apply mapping to both to keep original domain of [-pi, pi]
-    float sphi = phi_lep + phi_qlow;
-    // Map back into original domain if necessary
-    if(sphi > TMath::Pi()) sphi = sphi - 2*TMath::Pi();
-    if(sphi < -TMath::Pi()) sphi = sphi + 2*TMath::Pi();
+    // Define sphi as sum of phi coordinates
+    double sphi = phi_lep + phi_qlow;
+    // Map back into original domain [-pi, pi] if necessary
+    if(sphi > TMath::Pi()) sphi = sphi - 2.0 * TMath::Pi();
+    if(sphi < -1.0 * TMath::Pi()) sphi = sphi + 2.0 * TMath::Pi();
     event.set(h_sphi, sphi);
     if(debug) cout<<"    sphi is: "<< sphi <<endl;
-    float dphi = phi_lep - phi_qlow;
-    // Map back into original domain if necessary
-    if(dphi > TMath::Pi()) dphi = dphi - 2*TMath::Pi();
-    if(dphi < -TMath::Pi()) dphi = dphi + 2*TMath::Pi();
+
+    // Define dphi as difference of phi coordinates
+    double dphi = phi_lep - phi_qlow;
+    // Map back into original domain [-pi, pi] if necessary
+    if(dphi > TMath::Pi()) dphi = dphi - 2.0 * TMath::Pi();
+    if(dphi < -1.0 * TMath::Pi()) dphi = dphi + 2.0 * TMath::Pi();
     event.set(h_dphi, dphi);
     if(debug) cout<<"    dphi is: "<< dphi <<endl;
 
@@ -1501,24 +1507,29 @@ bool ZprimeAnalysisModule_AzCorr_GenStudy::process(uhh2::Event& event){
 
     // Plot dphi and sphi for various ranges of ttbar mass
     // 0 < Mass1 < 500
-    if(ttbar.M() < 500){
+    if(ttbar.M() < 500.){
       event.set(h_sphi_Mass1, sphi);
       event.set(h_dphi_Mass1, dphi);
     }
     // 500 < Mass2 < 750
-    if(ttbar.M() > 500 &&  ttbar.M() < 750){
+    if(ttbar.M() > 500. &&  ttbar.M() < 750.){
       event.set(h_sphi_Mass2, sphi);
       event.set(h_dphi_Mass2, dphi);
     }
-    // 750 < Mass3 < 1500
-    if(ttbar.M() > 750 &&  ttbar.M() < 1500){
+    // 750 < Mass3 < 1000
+    if(ttbar.M() > 750. &&  ttbar.M() < 1000.){
       event.set(h_sphi_Mass3, sphi);
       event.set(h_dphi_Mass3, dphi);
     }
-    // 1500 < Mass4
-    if(ttbar.M() > 1500){
+    // 1000 < Mass4 < 1500
+    if(ttbar.M() > 1000. && ttbar.M() < 1500.){
       event.set(h_sphi_Mass4, sphi);
       event.set(h_dphi_Mass4, dphi);
+    }
+    // Mass5 > 1500
+    if(ttbar.M() > 1500.){
+      event.set(h_sphi_Mass5, sphi);
+      event.set(h_dphi_Mass5, dphi);
     }
 
     // Plot dphi and sphi for various ranges of longitudinal boost of ttbar system
