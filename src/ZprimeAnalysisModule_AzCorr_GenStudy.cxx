@@ -1294,7 +1294,7 @@ bool ZprimeAnalysisModule_AzCorr_GenStudy::process(uhh2::Event& event){
   // Make sure ttbar decays semileptonically
   if(ttbargen.IsSemiLeptonicDecay()){
     float pt_hadTop_thresh = 150;         // Define cut-variable as pt of hadTop for low/high regions
-    float ttbar_mass_thresh = 750;         // Define cut-variable as mass of ttbar-system for low/high regions
+    // float ttbar_mass_thresh = 750;         // Define cut-variable as mass of ttbar-system for low/high regions
 
     //-------------------------------------------------- Start in LAB-frame --------------------------------------------------//
 
@@ -1590,7 +1590,7 @@ bool ZprimeAnalysisModule_AzCorr_GenStudy::process(uhh2::Event& event){
   //     if(pt_hadTop > pt_hadTop_thresh){event.set(h_dphi_minus_high, dphi_minus);}
   //     if(pt_hadTop < pt_hadTop_thresh){event.set(h_dphi_minus_low, dphi_minus);}
   //   }
-  // }
+ }
 
   return true;
 }

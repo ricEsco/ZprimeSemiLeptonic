@@ -43,8 +43,8 @@ if channel=="ele":
     _fileDir = "/nfs/dust/cms/group/zprime-uhh//"
 else:
     _channelText = "#mu+jets"
-    plotDirectory = "/nfs/dust/cms/user/ricardo/SpinCorrAnalysis_Gen/plots/updatedBoostProcedure/UL18/qlow"
-    _fileDir =      "/nfs/dust/cms/user/ricardo/SpinCorrAnalysis_Gen/updatedBoostProcedure/muon/workdir_SpinCorr_Gen_UL18_muon"
+    plotDirectory = "/nfs/dust/cms/user/ricardo/SpinCorrAnalysis_Gen/plots/updatedBoostProcedure/UL18/qlow/boostbins"
+    _fileDir =      "/nfs/dust/cms/user/ricardo/SpinCorrAnalysis_Gen/updatedBoostProcedure/muon/qlow/boostbins/workdir_SpinCorr_Gen_UL18_muon"
 print "channel is ", channel
 print "The input root files will come from", _fileDir
 print "The output will go into", plotDirectory, "\n"
@@ -53,32 +53,45 @@ print "The output will go into", plotDirectory, "\n"
 ### define the histograms dictionary with entry syntax: {"variable_handle" : ["Plot name", "vertical-axis name", number of bins, [x-min, x-max]]}
 if channel=="mu": 
        histograms =  {"pt_hadTop"                      : ["Hadronic-top (both) p_{T}",       "Events", 25, [     0,   500]],
-                     "phi_lep_LabFrame"                : ["#phi_{#mu} LabFrame",             "Events", 12, [-np.pi, np.pi]],
-                     "phi_lep_CoMFrame"                : ["#phi_{#mu} CoMFrame",             "Events", 12, [-np.pi, np.pi]],
-                     "phi_lep_helicityFrame"           : ["#phi_{#mu} helicityFrame",         "Events", 12, [-np.pi, np.pi]],
-                     "phi_lep"                         : ["#phi_{#mu}",                      "Events", 12, [-np.pi, np.pi]],
+                    #  "phi_lep_LabFrame"                : ["#phi_{#mu} LabFrame",             "Events", 12, [-np.pi, np.pi]],
+                    #  "phi_lep_CoMFrame"                : ["#phi_{#mu} CoMFrame",             "Events", 12, [-np.pi, np.pi]],
+                    #  "phi_lep_helicityFrame"           : ["#phi_{#mu} helicityFrame",         "Events", 12, [-np.pi, np.pi]],
+                    #  "phi_lep"                         : ["#phi_{#mu}",                      "Events", 12, [-np.pi, np.pi]],
                     #  "phi_b_LabFrame"                  : ["#phi_{b} LabFrame",               "Events", 12, [-np.pi, np.pi]],
                     #  "phi_b_CoMFrame"                  : ["#phi_{b} CoMFrame",               "Events", 12, [-np.pi, np.pi]],
                     #  "phi_b_helicityFrame"             : ["#phi_{b} helicityFrame",           "Events", 12, [-np.pi, np.pi]],
                     #  "phi_b"                           : ["#phi_{b}",                        "Events", 12, [-np.pi, np.pi]],
-                     "phi_hadTop_q1_LabFrame"          : ["#phi_{q1} LabFrame",           "Events", 12, [-np.pi, np.pi]],
-                     "phi_hadTop_q1_CoMFrame"          : ["#phi_{q1} CoMFrame",           "Events", 12, [-np.pi, np.pi]],
-                     "phi_hadTop_q1_helicityFrame"     : ["#phi_{q1} helicityFrame",      "Events", 12, [-np.pi, np.pi]],
-                     "phi_hadTop_q2_LabFrame"          : ["#phi_{q2} LabFrame",           "Events", 12, [-np.pi, np.pi]],
-                     "phi_hadTop_q2_CoMFrame"          : ["#phi_{q2} CoMFrame",           "Events", 12, [-np.pi, np.pi]],
-                     "phi_hadTop_q2_helicityFrame"     : ["#phi_{q2} helicityFrame",      "Events", 12, [-np.pi, np.pi]],
+                    #  "phi_hadTop_q1_LabFrame"          : ["#phi_{q1} LabFrame",           "Events", 12, [-np.pi, np.pi]],
+                    #  "phi_hadTop_q1_CoMFrame"          : ["#phi_{q1} CoMFrame",           "Events", 12, [-np.pi, np.pi]],
+                    #  "phi_hadTop_q1_helicityFrame"     : ["#phi_{q1} helicityFrame",      "Events", 12, [-np.pi, np.pi]],
+                    #  "phi_hadTop_q2_LabFrame"          : ["#phi_{q2} LabFrame",           "Events", 12, [-np.pi, np.pi]],
+                    #  "phi_hadTop_q2_CoMFrame"          : ["#phi_{q2} CoMFrame",           "Events", 12, [-np.pi, np.pi]],
+                    #  "phi_hadTop_q2_helicityFrame"     : ["#phi_{q2} helicityFrame",      "Events", 12, [-np.pi, np.pi]],
                      "phi_qlow"                        : ["#phi_{q-low}",                    "Events", 12, [-np.pi, np.pi]],
                      "sphi"                            : ["#Sigma#phi",                      "Events", 12, [-np.pi, np.pi]],
                      "sphi_low"                        : ["#Sigma#phi_{low pt}",             "Events", 12, [-np.pi, np.pi]],
                      "sphi_high"                       : ["#Sigma#phi^{high pt}",            "Events", 12, [-np.pi, np.pi]],
-                     "sphi_lowMass"                    : ["#Sigma#phi_{low Mass}",           "Events", 12, [-np.pi, np.pi]],
-                     "sphi_highMass"                   : ["#Sigma#phi^{high Mass}",          "Events", 12, [-np.pi, np.pi]],
+                     "sphi_Mass1"                      : ["#Sigma#phi_{Mass 0-500}",         "Events", 12, [-np.pi, np.pi]],
+                     "sphi_Mass2"                      : ["#Sigma#phi_{Mass 500-750}",       "Events", 12, [-np.pi, np.pi]],
+                     "sphi_Mass3"                      : ["#Sigma#phi_{Mass 750-1500}",      "Events", 12, [-np.pi, np.pi]],
+                     "sphi_Mass4"                      : ["#Sigma#phi_{Mass 1500-Inf}",      "Events", 12, [-np.pi, np.pi]],
+                     "sphi_boost1"                     : ["#Sigma#phi_{boost 0-0.3}",        "Events", 12, [-np.pi, np.pi]],
+                     "sphi_boost2"                     : ["#Sigma#phi_{boost 0.3-0.6}",      "Events", 12, [-np.pi, np.pi]],
+                     "sphi_boost3"                     : ["#Sigma#phi_{boost 0.6-0.8}",      "Events", 12, [-np.pi, np.pi]],
+                     "sphi_boost4"                     : ["#Sigma#phi_{boost 0.8-1.0}",      "Events", 12, [-np.pi, np.pi]],
                      "dphi"                            : ["#Delta#phi",                      "Events", 12, [-np.pi, np.pi]],
                      "dphi_low"                        : ["#Delta#phi_{low pt}",             "Events", 12, [-np.pi, np.pi]],
                      "dphi_high"                       : ["#Delta#phi^{high pt}",            "Events", 12, [-np.pi, np.pi]],
-                     "dphi_lowMass"                    : ["#Delta#phi_{low Mass}",           "Events", 12, [-np.pi, np.pi]],
-                     "dphi_highMass"                   : ["#Delta#phi^{high Mass}",          "Events", 12, [-np.pi, np.pi]],
+                     "dphi_Mass1"                      : ["#Delta#phi_{Mass 0-500}",         "Events", 12, [-np.pi, np.pi]],
+                     "dphi_Mass2"                      : ["#Delta#phi_{Mass 500-750}",       "Events", 12, [-np.pi, np.pi]],
+                     "dphi_Mass3"                      : ["#Delta#phi_{Mass 750-1500}",      "Events", 12, [-np.pi, np.pi]],
+                     "dphi_Mass4"                      : ["#Delta#phi_{Mass 1500-Inf}",      "Events", 12, [-np.pi, np.pi]],
+                     "dphi_boost1"                     : ["#Delta#phi_{boost 0-0.3}",        "Events", 12, [-np.pi, np.pi]],
+                     "dphi_boost2"                     : ["#Delta#phi_{boost 0.3-0.6}",      "Events", 12, [-np.pi, np.pi]],
+                     "dphi_boost3"                     : ["#Delta#phi_{boost 0.6-0.8}",      "Events", 12, [-np.pi, np.pi]],
+                     "dphi_boost4"                     : ["#Delta#phi_{boost 0.8-1.0}",      "Events", 12, [-np.pi, np.pi]],
                      "ttbar_mass_LabFrame"             : ["Mass_{t#bar{t}}",                 "Events", 40, [     0,  2000]],
+                     "ttbar_boost_LabFrame"            : ["longitudinal boost_{t#bar{t}}",   "Events", 10, [     0,  1]],
                     } # debug
 
     #   histograms = {"pt_hadTop"                       : ["Hadronic-top (both) p_{T}",       "Events", 25, [     0,   500]],
