@@ -44,7 +44,7 @@ if channel=="ele":
 else:
     _channelText = "#mu+jets"
     plotDirectory = "/nfs/dust/cms/user/ricardo/SpinCorrAnalysis_Gen/plots/updatedBoostProcedure/UL18/qlow/boostbins"
-    _fileDir =      "/nfs/dust/cms/user/ricardo/SpinCorrAnalysis_Gen/updatedBoostProcedure/muon/qlow/boostbins/workdir_SpinCorr_Gen_UL18_muon"
+    _fileDir =      "/nfs/dust/cms/user/ricardo/SpinCorrAnalysis_Gen/updatedBoostProcedure/muon/qlow/boostbins/"
 print "channel is ", channel
 print "The input root files will come from", _fileDir
 print "The output will go into", plotDirectory, "\n"
@@ -73,8 +73,9 @@ if channel=="mu":
                      "sphi_high"                       : ["#Sigma#phi^{high pt}",            "Events", 12, [-np.pi, np.pi]],
                      "sphi_Mass1"                      : ["#Sigma#phi_{Mass 0-500}",         "Events", 12, [-np.pi, np.pi]],
                      "sphi_Mass2"                      : ["#Sigma#phi_{Mass 500-750}",       "Events", 12, [-np.pi, np.pi]],
-                     "sphi_Mass3"                      : ["#Sigma#phi_{Mass 750-1500}",      "Events", 12, [-np.pi, np.pi]],
-                     "sphi_Mass4"                      : ["#Sigma#phi_{Mass 1500-Inf}",      "Events", 12, [-np.pi, np.pi]],
+                     "sphi_Mass3"                      : ["#Sigma#phi_{Mass 750-1000}",      "Events", 12, [-np.pi, np.pi]],
+                     "sphi_Mass4"                      : ["#Sigma#phi_{Mass 1000-1500}",     "Events", 12, [-np.pi, np.pi]],
+                     "sphi_Mass5"                      : ["#Sigma#phi_{Mass 1500-Inf}",      "Events", 12, [-np.pi, np.pi]],
                      "sphi_boost1"                     : ["#Sigma#phi_{boost 0-0.3}",        "Events", 12, [-np.pi, np.pi]],
                      "sphi_boost2"                     : ["#Sigma#phi_{boost 0.3-0.6}",      "Events", 12, [-np.pi, np.pi]],
                      "sphi_boost3"                     : ["#Sigma#phi_{boost 0.6-0.8}",      "Events", 12, [-np.pi, np.pi]],
@@ -84,8 +85,9 @@ if channel=="mu":
                      "dphi_high"                       : ["#Delta#phi^{high pt}",            "Events", 12, [-np.pi, np.pi]],
                      "dphi_Mass1"                      : ["#Delta#phi_{Mass 0-500}",         "Events", 12, [-np.pi, np.pi]],
                      "dphi_Mass2"                      : ["#Delta#phi_{Mass 500-750}",       "Events", 12, [-np.pi, np.pi]],
-                     "dphi_Mass3"                      : ["#Delta#phi_{Mass 750-1500}",      "Events", 12, [-np.pi, np.pi]],
-                     "dphi_Mass4"                      : ["#Delta#phi_{Mass 1500-Inf}",      "Events", 12, [-np.pi, np.pi]],
+                     "dphi_Mass3"                      : ["#Delta#phi_{Mass 750-1000}",      "Events", 12, [-np.pi, np.pi]],
+                     "dphi_Mass4"                      : ["#Delta#phi_{Mass 1000-1500}",     "Events", 12, [-np.pi, np.pi]],
+                     "dphi_Mass5"                      : ["#Delta#phi_{Mass 1500-Inf}",      "Events", 12, [-np.pi, np.pi]],
                      "dphi_boost1"                     : ["#Delta#phi_{boost 0-0.3}",        "Events", 12, [-np.pi, np.pi]],
                      "dphi_boost2"                     : ["#Delta#phi_{boost 0.3-0.6}",      "Events", 12, [-np.pi, np.pi]],
                      "dphi_boost3"                     : ["#Delta#phi_{boost 0.6-0.8}",      "Events", 12, [-np.pi, np.pi]],
