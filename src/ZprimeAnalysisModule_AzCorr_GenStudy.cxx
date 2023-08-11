@@ -1230,7 +1230,7 @@ bool ZprimeAnalysisModule_AzCorr_GenStudy::process(uhh2::Event& event){
   // Make sure ttbar decays semileptonically
   if(ttbargen.IsSemiLeptonicDecay()){
 
-    double pt_hadTop_thresh = 150.;         // Define cut-variable as pt of hadTop for low/high regions
+    auto pt_hadTop_thresh = 150.;         // Define cut-variable as pt of hadTop for low/high regions
 
     //-------------------------------------------------- Start in LAB-frame --------------------------------------------------//
     // Plot pt of hadronic Top 
@@ -1271,9 +1271,10 @@ bool ZprimeAnalysisModule_AzCorr_GenStudy::process(uhh2::Event& event){
     event.set(h_ttbar_mass_LabFrame, ttbar.M());
 
     // Constructing longitudinal boost of ttbar system
-    double numerator = fabs(PosTop.Pz() + NegTop.Pz());
-    double denominator = PosTop.E() + NegTop.E();
-    double boost = numerator/denominator;
+    // double numerator = fabs(PosTop.Pz() + NegTop.Pz());
+    // double denominator = PosTop.E() + NegTop.E();
+    // double boost = numerator/denominator;
+    auto boost = fabs(PosTop.Pz() + NegTop.Pz())/(PosTop.E() + NegTop.E());
 
     // Plotting longitudinal boost of ttbar system
     event.set(h_ttbar_boost_LabFrame, boost);
@@ -1338,14 +1339,14 @@ bool ZprimeAnalysisModule_AzCorr_GenStudy::process(uhh2::Event& event){
 
 
     // Define sphi_lq as sum of phi coordinates between lepton and qlow
-    double sphi_lq = lepTop_lep.Phi() + hadTop_qlow.Phi();
+    auto sphi_lq = lepTop_lep.Phi() + hadTop_qlow.Phi();
     // Map back into original domain [-pi, pi] if necessary
     if(sphi_lq > TMath::Pi()) sphi_lq = sphi_lq - 2.0 * TMath::Pi();
     if(sphi_lq < -1.0 * TMath::Pi()) sphi_lq = sphi_lq + 2.0 * TMath::Pi();
     event.set(h_sphi_lq, sphi_lq);
 
     // Define dphi_lq as difference of phi coordinates between lepton and qlow
-    double dphi_lq = lepTop_lep.Phi() - hadTop_qlow.Phi();
+    auto dphi_lq = lepTop_lep.Phi() - hadTop_qlow.Phi();
     // Map back into original domain [-pi, pi] if necessary
     if(dphi_lq > TMath::Pi()) dphi_lq = dphi_lq - 2.0 * TMath::Pi();
     if(dphi_lq < -1.0 * TMath::Pi()) dphi_lq = dphi_lq + 2.0 * TMath::Pi();
@@ -1353,14 +1354,14 @@ bool ZprimeAnalysisModule_AzCorr_GenStudy::process(uhh2::Event& event){
 
 
     // Define sphi_lb as sum of phi coordinates between lepton and b-quark
-    double sphi_lb = lepTop_lep.Phi() + hadTop_b.Phi();
+    auto sphi_lb = lepTop_lep.Phi() + hadTop_b.Phi();
     // Map back into original domain [-pi, pi] if necessary
     if(sphi_lb > TMath::Pi()) sphi_lb = sphi_lb - 2.0 * TMath::Pi();
     if(sphi_lb < -1.0 * TMath::Pi()) sphi_lb = sphi_lb + 2.0 * TMath::Pi();
     event.set(h_sphi_lb, sphi_lb);
 
     // Define dphi_lb as difference of phi coordinates between lepton and b-quark
-    double dphi_lb = lepTop_lep.Phi() - hadTop_b.Phi();
+    auto dphi_lb = lepTop_lep.Phi() - hadTop_b.Phi();
     // Map back into original domain [-pi, pi] if necessary
     if(dphi_lb > TMath::Pi()) dphi_lb = dphi_lb - 2.0 * TMath::Pi();
     if(dphi_lb < -1.0 * TMath::Pi()) dphi_lb = dphi_lb + 2.0 * TMath::Pi();
