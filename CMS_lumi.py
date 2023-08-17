@@ -5,7 +5,7 @@ cmsTextFont   = 61;  # default is helvetic-bold
 
 writeExtraText = False;
 isPreliminary = False;
-extraText   = "Private work (CMS data/simulation)";
+extraText   = "";
 extraTextFont = 52;  # default is helvetica-italics
 
 writeChannelText = False

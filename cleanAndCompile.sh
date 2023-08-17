@@ -2,5 +2,5 @@
 
 scram b clean
 make clean
-scram b -j1
-make -j1
+scram b -j4
+make -j4

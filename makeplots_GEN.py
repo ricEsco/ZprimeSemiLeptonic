@@ -156,7 +156,7 @@ if not HasCMSStyle:
 ROOT.gROOT.ForceStyle()
 CMS_lumi.channelText = _channelText
 CMS_lumi.writeChannelText = True
-CMS_lumi.writeExtraText = True
+CMS_lumi.writeExtraText = False
 H = 600;
 W = 800;
 # references for T, B, L, R                                                                                                             
@@ -208,8 +208,9 @@ for histName in histograms:
     hist[histName]={}
     stack[histName] = THStack("hs","stack")
     ### Legend info:
-    legendR[histName] = TLegend(.64, .82, .89, .90)
-    legendR[histName].SetHeader("Gen-Level", "R")
+    legendR[histName] = TLegend(.59, .80, .89, .90)
+    #legendR[histName].SetHeader("Gen-Level", "R")
+    # legendR[histName].SetLegendTextSize(0.09)
     legendR[histName].SetNColumns(1)
     legendR[histName].SetBorderSize(0)
     legendR[histName].SetFillColor(0)
@@ -233,7 +234,8 @@ for histName in histograms:
             hist[histName][sample].SetMarkerStyle(1)
             hist[histName][sample].SetLineWidth(2)
             hist[histName][sample].SetYTitle(histograms[histName][1])
-            legendR[histName].AddEntry(hist[histName][sample],"UL 18 TTbar sample",'l')
+            legendR[histName].AddEntry(hist[histName][sample],"UL 18 TTbar-semi",'le')
+            legendR[histName].SetTextSize(0.04)
             print "Filling with", sample
             stack[histName].Add(hist[histName][sample])
             continue

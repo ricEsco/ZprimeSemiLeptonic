@@ -1230,7 +1230,8 @@ bool ZprimeAnalysisModule_AzCorr_GenStudy::process(uhh2::Event& event){
   // Make sure ttbar decays semileptonically
   if(ttbargen.IsSemiLeptonicDecay()){
 
-    auto pt_hadTop_thresh = 150.;         // Define cut-variable as pt of hadTop for low/high regions
+    // Define cut-variable as pt of hadTop for low/high regions
+    auto pt_hadTop_thresh = 150.;         
 
     //-------------------------------------------------- Start in LAB-frame --------------------------------------------------//
     // Plot pt of hadronic Top 
@@ -1238,30 +1239,33 @@ bool ZprimeAnalysisModule_AzCorr_GenStudy::process(uhh2::Event& event){
     if(Gen_HadTop.pt() != -10) event.set(h_pt_hadTop, Gen_HadTop.pt());
 
     // Define 4vectors of decay products
-    LorentzVector Gen_b = ttbargen.BHad().v4(); // b-quark
+
+    // b-quark
+    LorentzVector Gen_b = ttbargen.BHad().v4(); 
     TLorentzVector hadTop_b;
     hadTop_b.SetPtEtaPhiE(Gen_b.pt(),Gen_b.eta(),Gen_b.phi(),Gen_b.energy());
 
-    
-    TLorentzVector hadTop_qlow; // less energetic (in mother top's rest-frame) W-quark (TO BE SET AFTER TOP REST-FRAME)
+    // Least-energetic W-quark will be defined AFTER WE BOOST TO MOTHER TOP'S REST-FRAME
 
-    LorentzVector Gen_q1 = ttbargen.Q1().v4(); //  W-quark1
+    //  W-quark1
+    LorentzVector Gen_q1 = ttbargen.Q1().v4(); 
     TLorentzVector hadTop_q1;
     hadTop_q1.SetPtEtaPhiE(Gen_q1.pt(),Gen_q1.eta(),Gen_q1.phi(),Gen_q1.energy());
 
-    LorentzVector Gen_q2 = ttbargen.Q2().v4(); //  W-quark2
+    //  W-quark2
+    LorentzVector Gen_q2 = ttbargen.Q2().v4(); 
     TLorentzVector hadTop_q2;
     hadTop_q2.SetPtEtaPhiE(Gen_q2.pt(),Gen_q2.eta(),Gen_q2.phi(),Gen_q2.energy());
 
-    LorentzVector Gen_Lep = ttbargen.ChargedLepton().v4(); // lepton
+    // lepton
+    LorentzVector Gen_Lep = ttbargen.ChargedLepton().v4(); 
     TLorentzVector lepTop_lep;
     lepTop_lep.SetPtEtaPhiE(Gen_Lep.pt(), Gen_Lep.eta(), Gen_Lep.phi(), Gen_Lep.energy());
 
     // Top vectors
     TLorentzVector PosTop;
-    TLorentzVector NegTop;
-    // Set top 4vectors using components
     PosTop.SetPtEtaPhiE(ttbargen.Top().v4().pt(), ttbargen.Top().v4().eta(), ttbargen.Top().v4().phi(), ttbargen.Top().v4().energy());
+    TLorentzVector NegTop;
     NegTop.SetPtEtaPhiE(ttbargen.Antitop().v4().pt(), ttbargen.Antitop().v4().eta(), ttbargen.Antitop().v4().phi(), ttbargen.Antitop().v4().energy());
 
     // 4vector to represent ttbar system
@@ -1271,9 +1275,6 @@ bool ZprimeAnalysisModule_AzCorr_GenStudy::process(uhh2::Event& event){
     event.set(h_ttbar_mass_LabFrame, ttbar.M());
 
     // Constructing longitudinal boost of ttbar system
-    // double numerator = fabs(PosTop.Pz() + NegTop.Pz());
-    // double denominator = PosTop.E() + NegTop.E();
-    // double boost = numerator/denominator;
     auto boost = fabs(PosTop.Pz() + NegTop.Pz())/(PosTop.E() + NegTop.E());
 
     // Plotting longitudinal boost of ttbar system
@@ -1281,12 +1282,12 @@ bool ZprimeAnalysisModule_AzCorr_GenStudy::process(uhh2::Event& event){
 
     //---------------------------------------------------------- Boost into CoM-frame ----------------------------------------------------------//
     // Boost into ttbar Center of Momentum configuration 
-    lepTop_lep.Boost(-ttbar.BoostVector());
-    hadTop_b.Boost(-ttbar.BoostVector());
-    hadTop_q1.Boost(-ttbar.BoostVector());
-    hadTop_q2.Boost(-ttbar.BoostVector());
-    PosTop.Boost(-ttbar.BoostVector());
-    NegTop.Boost(-ttbar.BoostVector());
+    lepTop_lep.Boost(-1.*ttbar.BoostVector());
+    hadTop_b.Boost(-1.*ttbar.BoostVector());
+    hadTop_q1.Boost(-1.*ttbar.BoostVector());
+    hadTop_q2.Boost(-1.*ttbar.BoostVector());
+    PosTop.Boost(-1.*ttbar.BoostVector());
+    NegTop.Boost(-1.*ttbar.BoostVector());
 
     // Cross check back-to-back configuration of ttbar system
     if(debug) cout<<" Angle between tops is: "<< PosTop.Angle(NegTop.Vect())<<endl;
@@ -1297,6 +1298,7 @@ bool ZprimeAnalysisModule_AzCorr_GenStudy::process(uhh2::Event& event){
     lepTop_lep.RotateZ(-1.*PosTop.Phi());
     hadTop_b.RotateZ(-1.*PosTop.Phi());
     hadTop_q1.RotateZ(-1.*PosTop.Phi());
+    hadTop_q2.RotateZ(-1.*PosTop.Phi());
     PosTop.RotateZ(-1.*PosTop.Phi());
     NegTop.RotateZ(-1.*PosTop.Phi());
     // Rotate tops and decay products about y-zxis
@@ -1313,59 +1315,97 @@ bool ZprimeAnalysisModule_AzCorr_GenStudy::process(uhh2::Event& event){
     // Decay products get boosted in opposite directions depending on their mother top
 
     // POSITIVE LEPTON CONFIGURATION
-    if(ttbargen.ChargedLepton().charge() > 0){ // Positively charged lepton
-      lepTop_lep.Boost(-PosTop.BoostVector()); // means lepton has Positive Top mother
-      hadTop_b.Boost(-NegTop.BoostVector()); // means b-jet has Negative Top mother
-      hadTop_q1.Boost(-NegTop.BoostVector());
-      hadTop_q2.Boost(-NegTop.BoostVector());
+    if(ttbargen.ChargedLepton().charge() > 0){ // Positively charged lepton means
+      lepTop_lep.Boost(-1.*PosTop.BoostVector()); // lepton has Positive Top mother
+      hadTop_b.Boost(-1.*NegTop.BoostVector());   // b-jet has Negative Top mother
+      hadTop_q1.Boost(-1.*NegTop.BoostVector());
+      hadTop_q2.Boost(-1.*NegTop.BoostVector());
     }
     // NEGATIVE LEPTON CONFIGURATION
-    if(ttbargen.ChargedLepton().charge() < 0){ // Negatively charged lepton
-      lepTop_lep.Boost(-NegTop.BoostVector()); // means lepton has Negative Top mother
-      hadTop_b.Boost(-PosTop.BoostVector()); // means b-jet has Positive Top mother
-      hadTop_q1.Boost(-PosTop.BoostVector());
-      hadTop_q2.Boost(-PosTop.BoostVector());
+    if(ttbargen.ChargedLepton().charge() < 0){ // Negatively charged lepton means
+      lepTop_lep.Boost(-1.*NegTop.BoostVector()); // lepton has Negative Top mother
+      hadTop_b.Boost(-1.*PosTop.BoostVector());   // b-jet has Positive Top mother
+      hadTop_q1.Boost(-1.*PosTop.BoostVector());
+      hadTop_q2.Boost(-1.*PosTop.BoostVector());
     }
     //--------------------------- Boost into ttbar rest-frame ---------------------------//
+
+    // Define least-energetic W-quark
+    TLorentzVector hadTop_qlow;
 
     // Set 4vector of less-energetic W-daughter 
     if(hadTop_q1.E() < hadTop_q2.E()){hadTop_qlow = hadTop_q1;}
     else{hadTop_qlow = hadTop_q2;}
 
-    // Define phi-coordinates from these twice boosted and once rotated 4vectors
+    // Plot phi-coordinates from the boosted 4vectors
     event.set(h_phi_lep, lepTop_lep.Phi());
     event.set(h_phi_b, hadTop_b.Phi());
     event.set(h_phi_qlow, hadTop_qlow.Phi());
 
+    // Define dphi_lq and sphi_lq from phi coordinates of lepton and qlow
+    auto sphi_lq; 
+    auto dphi_lq;
 
-    // Define sphi_lq as sum of phi coordinates between lepton and qlow
-    auto sphi_lq = lepTop_lep.Phi() + hadTop_qlow.Phi();
-    // Map back into original domain [-pi, pi] if necessary
-    if(sphi_lq > TMath::Pi()) sphi_lq = sphi_lq - 2.0 * TMath::Pi();
-    if(sphi_lq < -1.0 * TMath::Pi()) sphi_lq = sphi_lq + 2.0 * TMath::Pi();
-    event.set(h_sphi_lq, sphi_lq);
+    // Define dphi_lb and sphi_lb from phi coordinates of lepton and b-quark
+    auto sphi_lb; 
+    auto dphi_lb;
 
-    // Define dphi_lq as difference of phi coordinates between lepton and qlow
-    auto dphi_lq = lepTop_lep.Phi() - hadTop_qlow.Phi();
-    // Map back into original domain [-pi, pi] if necessary
-    if(dphi_lq > TMath::Pi()) dphi_lq = dphi_lq - 2.0 * TMath::Pi();
-    if(dphi_lq < -1.0 * TMath::Pi()) dphi_lq = dphi_lq + 2.0 * TMath::Pi();
-    event.set(h_dphi_lq, dphi_lq);
+    // sigmaPhi and deltaPhi are both defined as: PosTop_phi +- NegTop_phi
+    auto pie = TMath::Pi();
 
+    // Positive lepton means PosTop has leptonic decay
+    if(ttbargen.ChargedLepton().charge() > 0){
+      sphi_lq = lepTop_lep.Phi() + hadTop_qlow.Phi();
+      // Map back into original domain [-pi, pi] if necessary
+      if(sphi_lq > pie) sphi_lq = sphi_lq - 2.*pie;
+      if(sphi_lq < -1.*pie) sphi_lq = sphi_lq + 2.*pie;
+      event.set(h_sphi_lq, sphi_lq);
 
-    // Define sphi_lb as sum of phi coordinates between lepton and b-quark
-    auto sphi_lb = lepTop_lep.Phi() + hadTop_b.Phi();
-    // Map back into original domain [-pi, pi] if necessary
-    if(sphi_lb > TMath::Pi()) sphi_lb = sphi_lb - 2.0 * TMath::Pi();
-    if(sphi_lb < -1.0 * TMath::Pi()) sphi_lb = sphi_lb + 2.0 * TMath::Pi();
-    event.set(h_sphi_lb, sphi_lb);
+      dphi_lq = lepTop_lep.Phi() - hadTop_qlow.Phi();
+      // Map back into original domain [-pi, pi] if necessary
+      if(dphi_lq > pie) dphi_lq = dphi_lq - 2.*pie;
+      if(dphi_lq < -1.*pie) dphi_lq = dphi_lq + 2.*pie;
+      event.set(h_dphi_lq, dphi_lq);
 
-    // Define dphi_lb as difference of phi coordinates between lepton and b-quark
-    auto dphi_lb = lepTop_lep.Phi() - hadTop_b.Phi();
-    // Map back into original domain [-pi, pi] if necessary
-    if(dphi_lb > TMath::Pi()) dphi_lb = dphi_lb - 2.0 * TMath::Pi();
-    if(dphi_lb < -1.0 * TMath::Pi()) dphi_lb = dphi_lb + 2.0 * TMath::Pi();
-    event.set(h_dphi_lb, dphi_lb);
+      sphi_lb = lepTop_lep.Phi() + hadTop_b.Phi();
+      // Map back into original domain [-pi, pi] if necessary
+      if(sphi_lb > pie) sphi_lb = sphi_lb - 2.*pie;
+      if(sphi_lb < -1.*pie) sphi_lb = sphi_lb + 2.*pie;
+      event.set(h_sphi_lb, sphi_lb);
+
+      dphi_lb = lepTop_lep.Phi() - hadTop_b.Phi();
+      // Map back into original domain [-pi, pi] if necessary
+      if(dphi_lb > pie) dphi_lb = dphi_lb - 2.*pie;
+      if(dphi_lb < -1.*pie) dphi_lb = dphi_lb + 2.*pie;
+      event.set(h_dphi_lb, dphi_lb);
+    }
+
+    // Negative lepton means PosTop has hadronic decay
+    if(ttbargen.ChargedLepton().charge() < 0){
+      sphi_lq =  hadTop_qlow.Phi() + lepTop_lep.Phi();
+      // Map back into original domain [-pi, pi] if necessary
+      if(sphi_lq > pie) sphi_lq = sphi_lq - 2.*pie;
+      if(sphi_lq < -1.*pie) sphi_lq = sphi_lq + 2.*pie;
+      event.set(h_sphi_lq, sphi_lq);
+
+      dphi_lq =  hadTop_qlow.Phi() - lepTop_lep.Phi();
+      // Map back into original domain [-pi, pi] if necessary
+      if(dphi_lq > pie) dphi_lq = dphi_lq - 2.*pie;
+      if(dphi_lq < -1.*pie) dphi_lq = dphi_lq + 2.*pie;
+      event.set(h_dphi_lq, dphi_lq);
+
+      sphi_lb =  hadTop_b.Phi() + lepTop_lep.Phi();
+      // Map back into original domain [-pi, pi] if necessary
+      if(sphi_lb > pie) sphi_lb = sphi_lb - 2.*pie;
+      if(sphi_lb < -1.*pie) sphi_lb = sphi_lb + 2.*pie;
+      event.set(h_sphi_lb, sphi_lb);
+
+      dphi_lb =  hadTop_b.Phi() - lepTop_lep.Phi();
+      // Map back into original domain [-pi, pi] if necessary
+      if(dphi_lb > pie) dphi_lb = dphi_lb - 2.*pie;
+      if(dphi_lb < -1.*pie) dphi_lb = dphi_lb + 2.*pie;
+      event.set(h_dphi_lb, dphi_lb);
+    }
 
 
     // Plot dphi and sphi for high-pt ranges
