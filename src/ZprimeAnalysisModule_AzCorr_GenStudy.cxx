@@ -1342,155 +1342,225 @@ bool ZprimeAnalysisModule_AzCorr_GenStudy::process(uhh2::Event& event){
     event.set(h_phi_b, hadTop_b.Phi());
     event.set(h_phi_qlow, hadTop_qlow.Phi());
 
-    // Define dphi_lq and sphi_lq from phi coordinates of lepton and qlow
-    auto sphi_lq; 
-    auto dphi_lq;
-
-    // Define dphi_lb and sphi_lb from phi coordinates of lepton and b-quark
-    auto sphi_lb; 
-    auto dphi_lb;
-
-    // sigmaPhi and deltaPhi are both defined as: PosTop_phi +- NegTop_phi
+    // sphi and dphi are both defined as: PosTop_phi +- NegTop_phi
     auto pie = TMath::Pi();
 
     // Positive lepton means PosTop has leptonic decay
     if(ttbargen.ChargedLepton().charge() > 0){
-      sphi_lq = lepTop_lep.Phi() + hadTop_qlow.Phi();
-      // Map back into original domain [-pi, pi] if necessary
+      // Define sphi_lq from phi coordinates of lepton and qlow
+      auto sphi_lq = lepTop_lep.Phi() + hadTop_qlow.Phi();
       if(sphi_lq > pie) sphi_lq = sphi_lq - 2.*pie;
       if(sphi_lq < -1.*pie) sphi_lq = sphi_lq + 2.*pie;
       event.set(h_sphi_lq, sphi_lq);
-
-      dphi_lq = lepTop_lep.Phi() - hadTop_qlow.Phi();
-      // Map back into original domain [-pi, pi] if necessary
+      // Define dphi_lq from phi coordinates of lepton and qlow
+      auto dphi_lq = lepTop_lep.Phi() - hadTop_qlow.Phi();
       if(dphi_lq > pie) dphi_lq = dphi_lq - 2.*pie;
       if(dphi_lq < -1.*pie) dphi_lq = dphi_lq + 2.*pie;
       event.set(h_dphi_lq, dphi_lq);
 
-      sphi_lb = lepTop_lep.Phi() + hadTop_b.Phi();
-      // Map back into original domain [-pi, pi] if necessary
+      // Define sphi_lb from phi coordinates of lepton and b-quark
+      auto sphi_lb = lepTop_lep.Phi() + hadTop_b.Phi();
       if(sphi_lb > pie) sphi_lb = sphi_lb - 2.*pie;
       if(sphi_lb < -1.*pie) sphi_lb = sphi_lb + 2.*pie;
       event.set(h_sphi_lb, sphi_lb);
-
-      dphi_lb = lepTop_lep.Phi() - hadTop_b.Phi();
-      // Map back into original domain [-pi, pi] if necessary
+      // Define dphi_lb from phi coordinates of lepton and b-quark
+      auto dphi_lb = lepTop_lep.Phi() - hadTop_b.Phi();
       if(dphi_lb > pie) dphi_lb = dphi_lb - 2.*pie;
       if(dphi_lb < -1.*pie) dphi_lb = dphi_lb + 2.*pie;
       event.set(h_dphi_lb, dphi_lb);
+
+      // Plot dphi and sphi for high-pt ranges
+      if(Gen_HadTop.pt() > pt_hadTop_thresh){
+        event.set(h_sphi_lq_high, sphi_lq);
+        event.set(h_dphi_lq_high, dphi_lq);
+        event.set(h_sphi_lb_high, sphi_lb);
+        event.set(h_dphi_lb_high, dphi_lb);
+      }
+      // Plot dphi_lq and sphi_lq for low-pt ranges
+      if(Gen_HadTop.pt() < pt_hadTop_thresh){
+        event.set(h_sphi_lq_low, sphi_lq);
+        event.set(h_dphi_lq_low, dphi_lq);
+        event.set(h_sphi_lb_low, sphi_lb);
+        event.set(h_dphi_lb_low, dphi_lb);
+      }
+
+      // Plot dphi and sphi for various ranges of ttbar mass
+      // 0 < Mass1 < 500
+      if(ttbar.M() < 500.){
+        event.set(h_sphi_lq_Mass1, sphi_lq);
+        event.set(h_dphi_lq_Mass1, dphi_lq);
+        event.set(h_sphi_lb_Mass1, sphi_lb);
+        event.set(h_dphi_lb_Mass1, dphi_lb);
+      }
+      // 500 < Mass2 < 750
+      if(ttbar.M() > 500. &&  ttbar.M() < 750.){
+        event.set(h_sphi_lq_Mass2, sphi_lq);
+        event.set(h_dphi_lq_Mass2, dphi_lq);
+        event.set(h_sphi_lb_Mass2, sphi_lb);
+        event.set(h_dphi_lb_Mass2, dphi_lb);
+      }
+      // 750 < Mass3 < 1000
+      if(ttbar.M() > 750. &&  ttbar.M() < 1000.){
+        event.set(h_sphi_lq_Mass3, sphi_lq);
+        event.set(h_dphi_lq_Mass3, dphi_lq);
+        event.set(h_sphi_lb_Mass3, sphi_lb);
+        event.set(h_dphi_lb_Mass3, dphi_lb);
+      }
+      // 1000 < Mass4 < 1500
+      if(ttbar.M() > 1000. && ttbar.M() < 1500.){
+        event.set(h_sphi_lq_Mass4, sphi_lq);
+        event.set(h_dphi_lq_Mass4, dphi_lq);
+        event.set(h_sphi_lb_Mass4, sphi_lb);
+        event.set(h_dphi_lb_Mass4, dphi_lb);
+      }
+      // Mass5 > 1500
+      if(ttbar.M() > 1500.){
+        event.set(h_sphi_lq_Mass5, sphi_lq);
+        event.set(h_dphi_lq_Mass5, dphi_lq);
+        event.set(h_sphi_lb_Mass5, sphi_lb);
+        event.set(h_dphi_lb_Mass5, dphi_lb);
+      }
+
+      // Plot dphi and sphi for various ranges of longitudinal boost of ttbar system
+      // 0 < boost1 < 0.3
+      if(boost < 0.3){
+        event.set(h_sphi_lq_boost1, sphi_lq);
+        event.set(h_dphi_lq_boost1, dphi_lq);
+        event.set(h_sphi_lb_boost1, sphi_lb);
+        event.set(h_dphi_lb_boost1, dphi_lb);
+      }
+      // 0.3 < boost2 < 0.6
+      if(boost > 0.3 &&  boost < 0.6){
+        event.set(h_sphi_lq_boost2, sphi_lq);
+        event.set(h_dphi_lq_boost2, dphi_lq);
+        event.set(h_sphi_lb_boost2, sphi_lb);
+        event.set(h_dphi_lb_boost2, dphi_lb);
+      }
+      // 0.6 < boost3 < 0.8
+      if(boost > 0.6 &&  boost < 0.8){
+        event.set(h_sphi_lq_boost3, sphi_lq);
+        event.set(h_dphi_lq_boost3, dphi_lq);
+        event.set(h_sphi_lb_boost3, sphi_lb);
+        event.set(h_dphi_lb_boost3, dphi_lb);
+      }
+      // 0.8 < boost4 < 1.0
+      if(boost > 0.8 &&  boost < 1.0){
+        event.set(h_sphi_lq_boost4, sphi_lq);
+        event.set(h_dphi_lq_boost4, dphi_lq);
+        event.set(h_sphi_lb_boost4, sphi_lb);
+        event.set(h_dphi_lb_boost4, dphi_lb);
+      }
     }
 
     // Negative lepton means PosTop has hadronic decay
     if(ttbargen.ChargedLepton().charge() < 0){
-      sphi_lq =  hadTop_qlow.Phi() + lepTop_lep.Phi();
-      // Map back into original domain [-pi, pi] if necessary
+      // Define sphi_lq from phi coordinates of lepton and qlow
+      auto sphi_lq =  hadTop_qlow.Phi() + lepTop_lep.Phi();
       if(sphi_lq > pie) sphi_lq = sphi_lq - 2.*pie;
       if(sphi_lq < -1.*pie) sphi_lq = sphi_lq + 2.*pie;
       event.set(h_sphi_lq, sphi_lq);
-
-      dphi_lq =  hadTop_qlow.Phi() - lepTop_lep.Phi();
-      // Map back into original domain [-pi, pi] if necessary
+      // Define dphi_lq from phi coordinates of lepton and qlow
+      auto dphi_lq =  hadTop_qlow.Phi() - lepTop_lep.Phi();
       if(dphi_lq > pie) dphi_lq = dphi_lq - 2.*pie;
       if(dphi_lq < -1.*pie) dphi_lq = dphi_lq + 2.*pie;
       event.set(h_dphi_lq, dphi_lq);
 
-      sphi_lb =  hadTop_b.Phi() + lepTop_lep.Phi();
-      // Map back into original domain [-pi, pi] if necessary
+      // Define sphi_lb from phi coordinates of lepton and b-quark
+      auto sphi_lb =  hadTop_b.Phi() + lepTop_lep.Phi();
       if(sphi_lb > pie) sphi_lb = sphi_lb - 2.*pie;
       if(sphi_lb < -1.*pie) sphi_lb = sphi_lb + 2.*pie;
       event.set(h_sphi_lb, sphi_lb);
-
-      dphi_lb =  hadTop_b.Phi() - lepTop_lep.Phi();
-      // Map back into original domain [-pi, pi] if necessary
+      // Define dphi_lb from phi coordinates of lepton and b-quark
+      auto dphi_lb =  hadTop_b.Phi() - lepTop_lep.Phi();
       if(dphi_lb > pie) dphi_lb = dphi_lb - 2.*pie;
       if(dphi_lb < -1.*pie) dphi_lb = dphi_lb + 2.*pie;
       event.set(h_dphi_lb, dphi_lb);
-    }
+
+      // Plot dphi and sphi for high-pt ranges
+      if(Gen_HadTop.pt() > pt_hadTop_thresh){
+        event.set(h_sphi_lq_high, sphi_lq);
+        event.set(h_dphi_lq_high, dphi_lq);
+        event.set(h_sphi_lb_high, sphi_lb);
+        event.set(h_dphi_lb_high, dphi_lb);
+      }
+      // Plot dphi_lq and sphi_lq for low-pt ranges
+      if(Gen_HadTop.pt() < pt_hadTop_thresh){
+        event.set(h_sphi_lq_low, sphi_lq);
+        event.set(h_dphi_lq_low, dphi_lq);
+        event.set(h_sphi_lb_low, sphi_lb);
+        event.set(h_dphi_lb_low, dphi_lb);
+      }
 
 
-    // Plot dphi and sphi for high-pt ranges
-    if(Gen_HadTop.pt() > pt_hadTop_thresh){
-      event.set(h_sphi_lq_high, sphi_lq);
-      event.set(h_dphi_lq_high, dphi_lq);
-      event.set(h_sphi_lb_high, sphi_lb);
-      event.set(h_dphi_lb_high, dphi_lb);
-    }
-    // Plot dphi_lq and sphi_lq for low-pt ranges
-    if(Gen_HadTop.pt() < pt_hadTop_thresh){
-      event.set(h_sphi_lq_low, sphi_lq);
-      event.set(h_dphi_lq_low, dphi_lq);
-      event.set(h_sphi_lb_low, sphi_lb);
-      event.set(h_dphi_lb_low, dphi_lb);
-    }
+      // Plot dphi and sphi for various ranges of ttbar mass
+      // 0 < Mass1 < 500
+      if(ttbar.M() < 500.){
+        event.set(h_sphi_lq_Mass1, sphi_lq);
+        event.set(h_dphi_lq_Mass1, dphi_lq);
+        event.set(h_sphi_lb_Mass1, sphi_lb);
+        event.set(h_dphi_lb_Mass1, dphi_lb);
+      }
+      // 500 < Mass2 < 750
+      if(ttbar.M() > 500. &&  ttbar.M() < 750.){
+        event.set(h_sphi_lq_Mass2, sphi_lq);
+        event.set(h_dphi_lq_Mass2, dphi_lq);
+        event.set(h_sphi_lb_Mass2, sphi_lb);
+        event.set(h_dphi_lb_Mass2, dphi_lb);
+      }
+      // 750 < Mass3 < 1000
+      if(ttbar.M() > 750. &&  ttbar.M() < 1000.){
+        event.set(h_sphi_lq_Mass3, sphi_lq);
+        event.set(h_dphi_lq_Mass3, dphi_lq);
+        event.set(h_sphi_lb_Mass3, sphi_lb);
+        event.set(h_dphi_lb_Mass3, dphi_lb);
+      }
+      // 1000 < Mass4 < 1500
+      if(ttbar.M() > 1000. && ttbar.M() < 1500.){
+        event.set(h_sphi_lq_Mass4, sphi_lq);
+        event.set(h_dphi_lq_Mass4, dphi_lq);
+        event.set(h_sphi_lb_Mass4, sphi_lb);
+        event.set(h_dphi_lb_Mass4, dphi_lb);
+      }
+      // Mass5 > 1500
+      if(ttbar.M() > 1500.){
+        event.set(h_sphi_lq_Mass5, sphi_lq);
+        event.set(h_dphi_lq_Mass5, dphi_lq);
+        event.set(h_sphi_lb_Mass5, sphi_lb);
+        event.set(h_dphi_lb_Mass5, dphi_lb);
+      }
 
 
-    // Plot dphi and sphi for various ranges of ttbar mass
-    // 0 < Mass1 < 500
-    if(ttbar.M() < 500.){
-      event.set(h_sphi_lq_Mass1, sphi_lq);
-      event.set(h_dphi_lq_Mass1, dphi_lq);
-      event.set(h_sphi_lb_Mass1, sphi_lb);
-      event.set(h_dphi_lb_Mass1, dphi_lb);
-    }
-    // 500 < Mass2 < 750
-    if(ttbar.M() > 500. &&  ttbar.M() < 750.){
-      event.set(h_sphi_lq_Mass2, sphi_lq);
-      event.set(h_dphi_lq_Mass2, dphi_lq);
-      event.set(h_sphi_lb_Mass2, sphi_lb);
-      event.set(h_dphi_lb_Mass2, dphi_lb);
-    }
-    // 750 < Mass3 < 1000
-    if(ttbar.M() > 750. &&  ttbar.M() < 1000.){
-      event.set(h_sphi_lq_Mass3, sphi_lq);
-      event.set(h_dphi_lq_Mass3, dphi_lq);
-      event.set(h_sphi_lb_Mass3, sphi_lb);
-      event.set(h_dphi_lb_Mass3, dphi_lb);
-    }
-    // 1000 < Mass4 < 1500
-    if(ttbar.M() > 1000. && ttbar.M() < 1500.){
-      event.set(h_sphi_lq_Mass4, sphi_lq);
-      event.set(h_dphi_lq_Mass4, dphi_lq);
-      event.set(h_sphi_lb_Mass4, sphi_lb);
-      event.set(h_dphi_lb_Mass4, dphi_lb);
-    }
-    // Mass5 > 1500
-    if(ttbar.M() > 1500.){
-      event.set(h_sphi_lq_Mass5, sphi_lq);
-      event.set(h_dphi_lq_Mass5, dphi_lq);
-      event.set(h_sphi_lb_Mass5, sphi_lb);
-      event.set(h_dphi_lb_Mass5, dphi_lb);
+      // Plot dphi and sphi for various ranges of longitudinal boost of ttbar system
+      // 0 < boost1 < 0.3
+      if(boost < 0.3){
+        event.set(h_sphi_lq_boost1, sphi_lq);
+        event.set(h_dphi_lq_boost1, dphi_lq);
+        event.set(h_sphi_lb_boost1, sphi_lb);
+        event.set(h_dphi_lb_boost1, dphi_lb);
+      }
+      // 0.3 < boost2 < 0.6
+      if(boost > 0.3 &&  boost < 0.6){
+        event.set(h_sphi_lq_boost2, sphi_lq);
+        event.set(h_dphi_lq_boost2, dphi_lq);
+        event.set(h_sphi_lb_boost2, sphi_lb);
+        event.set(h_dphi_lb_boost2, dphi_lb);
+      }
+      // 0.6 < boost3 < 0.8
+      if(boost > 0.6 &&  boost < 0.8){
+        event.set(h_sphi_lq_boost3, sphi_lq);
+        event.set(h_dphi_lq_boost3, dphi_lq);
+        event.set(h_sphi_lb_boost3, sphi_lb);
+        event.set(h_dphi_lb_boost3, dphi_lb);
+      }
+      // 0.8 < boost4 < 1.0
+      if(boost > 0.8 &&  boost < 1.0){
+        event.set(h_sphi_lq_boost4, sphi_lq);
+        event.set(h_dphi_lq_boost4, dphi_lq);
+        event.set(h_sphi_lb_boost4, sphi_lb);
+        event.set(h_dphi_lb_boost4, dphi_lb);
+      }  
     }
 
-
-    // Plot dphi and sphi for various ranges of longitudinal boost of ttbar system
-    // 0 < boost1 < 0.3
-    if(boost < 0.3){
-      event.set(h_sphi_lq_boost1, sphi_lq);
-      event.set(h_dphi_lq_boost1, dphi_lq);
-      event.set(h_sphi_lb_boost1, sphi_lb);
-      event.set(h_dphi_lb_boost1, dphi_lb);
-    }
-    // 0.3 < boost2 < 0.6
-    if(boost > 0.3 &&  boost < 0.6){
-      event.set(h_sphi_lq_boost2, sphi_lq);
-      event.set(h_dphi_lq_boost2, dphi_lq);
-      event.set(h_sphi_lb_boost2, sphi_lb);
-      event.set(h_dphi_lb_boost2, dphi_lb);
-    }
-    // 0.6 < boost3 < 0.8
-    if(boost > 0.6 &&  boost < 0.8){
-      event.set(h_sphi_lq_boost3, sphi_lq);
-      event.set(h_dphi_lq_boost3, dphi_lq);
-      event.set(h_sphi_lb_boost3, sphi_lb);
-      event.set(h_dphi_lb_boost3, dphi_lb);
-    }
-    // 0.8 < boost4 < 1.0
-    if(boost > 0.8 &&  boost < 1.0){
-      event.set(h_sphi_lq_boost4, sphi_lq);
-      event.set(h_dphi_lq_boost4, dphi_lq);
-      event.set(h_sphi_lb_boost4, sphi_lb);
-      event.set(h_dphi_lb_boost4, dphi_lb);
-    }
   }
 
   return true;

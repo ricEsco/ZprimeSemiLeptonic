@@ -25,8 +25,8 @@ if channel=="ele":
     _fileDir = "/nfs/dust/cms/group/zprime-uhh//"
 else:
     _channelText = "#mu+jets"
-    plotDirectory = "/nfs/dust/cms/user/ricardo/SpinCorrAnalysis_Gen/plots/updatedBoostProcedure/UL18/fullGenSample"
-    _fileDir =      "/nfs/dust/cms/user/ricardo/SpinCorrAnalysis_Gen/updatedBoostProcedure/muon/workdir_SpinCorr_Gen_UL18_muon"
+    plotDirectory = "/nfs/dust/cms/user/ricardo/SpinCorrAnalysis_Gen/plots/updatedBoostProcedure/UL18/genFit/optimize/nonNormalized"
+    _fileDir =      "/nfs/dust/cms/user/ricardo/SpinCorrAnalysis_Gen/updatedBoostProcedure/optimize/muon/workdir_SpinCorr_Gen_UL18_muon"
 
 print "channel is ", channel
 print "The input root files will come from", _fileDir
@@ -79,11 +79,13 @@ else:
 
 
 ### The sample_names array has filenames of samples that will contribute to each plot
-sample_names = ["TTToSemiLeptonic", "TTToSemiLeptonic_2", "TTToSemiLeptonic_3", "TTToSemiLeptonic_4", "TTToSemiLeptonic_5", "TTToSemiLeptonic_6", "TTToSemiLeptonic_7", "TTToSemiLeptonic_8"]
+sample_names = ["TTToSemiLeptonic_UL18_0"]
+# sample_names = ["TTToSemiLeptonic", "TTToSemiLeptonic_2", "TTToSemiLeptonic_3", "TTToSemiLeptonic_4", "TTToSemiLeptonic_5", "TTToSemiLeptonic_6", "TTToSemiLeptonic_7", "TTToSemiLeptonic_8"]
 
 
 ### The stackList dictionary maps the list of samples to their color
-stackList = {"TTToSemiLeptonic":[kRed], "TTToSemiLeptonic_2":[kRed], "TTToSemiLeptonic_3":[kRed], "TTToSemiLeptonic_4":[kRed], "TTToSemiLeptonic_5":[kRed], "TTToSemiLeptonic_6":[kRed], "TTToSemiLeptonic_7":[kRed], "TTToSemiLeptonic_8":[kRed]}
+stackList = {"TTToSemiLeptonic":[kRed]}
+# stackList = {"TTToSemiLeptonic":[kRed], "TTToSemiLeptonic_2":[kRed], "TTToSemiLeptonic_3":[kRed], "TTToSemiLeptonic_4":[kRed], "TTToSemiLeptonic_5":[kRed], "TTToSemiLeptonic_6":[kRed], "TTToSemiLeptonic_7":[kRed], "TTToSemiLeptonic_8":[kRed]}
 
 ### end User input section i.e. modify each time new set of plots are being generated ------------------------------------------------------------------------------------
 
@@ -154,80 +156,111 @@ tree_MC={}
 hist={}
 _file={}
 stack={}
-legendR={}
+# legendR={}
 
 
 ### Initialize ROOT histogram stuff -I don't actually know what's happening here, see docs and cross your fingers
 for histName in histograms:
     tree_MC[histName]={}
     hist[histName]={}
-    stack[histName] = THStack("hs","stack")
-    ### Legend info:
-    legendR[histName] = TLegend(.59, .80, .89, .90)
-    legendR[histName].SetNColumns(1)
-    legendR[histName].SetBorderSize(0)
-    legendR[histName].SetFillColor(0)
+    # stack[histName] = THStack("hs","stack")
+    ## Legend info:
+    # legendR[histName] = TLegend(.59, .80, .89, .90)
+    # legendR[histName].SetNColumns(1)
+    # legendR[histName].SetBorderSize(0)
+    # legendR[histName].SetFillColor(0)
 pad1.cd()
+gStyle.SetOptFit(1011) #parameters:(probability,chi2/ndf,errors,name/value of parameters)
 
-### We loop through each histogram and fill it with the different samples
+### We loop through each histogram 
 for histName in histograms:
+    # Define the fit function
+    fitFn = TF1("fitFn","1+[0]*cos((x-[1]))", -np.pi, np.pi)
+    fitFn.SetParNames("Amplitude", "Phase")
+    fitFn.SetLineColor(kBlue)
+    if 'lq' in histograms[histName][0]:
+         fitFn.SetParameters(0.5, 0)
+         fitFn.SetParLimits(0, 0, 1)
+    if 'lb' in histograms[histName][0]:
+        fitFn.SetParameters(-0.5, 0)
+        fitFn.SetParLimits(0, -1, 0)
+    fitFn.SetParLimits(1, -.5, .5)
     print "--- Working on the", histName, "histogram ---"
+    ### Now loop through each file
     for sample in sample_names:
         #print "sample is", sample
         _file[sample] = TFile("%s/uhh2.AnalysisModuleRunner.MC.%s.root"%(_fileDir,sample),"read")
         tree_MC[histName][sample]=_file[sample].Get("AnalysisTree")
         tree_MC[histName][sample].Draw("%s>>h_%s_%s(%i,%f,%f)"%(histName,histName,sample,histograms[histName][2],histograms[histName][3][0],histograms[histName][3][1]))
+
         hist[histName][sample] = tree_MC[histName][sample].GetHistogram()
-        hist[histName][sample].SetLineColor(0)         # making the first histogram invisible
-        hist[histName][sample].SetMarkerColor(kWhite)  # making the first histogram invisible
-        if (sample=="TTToSemiLeptonic_8"):
-            hist[histName][sample].SetLineColor(kRed)
-            hist[histName][sample].SetMarkerColor(kBlack)
-            hist[histName][sample].SetMarkerStyle(1)
-            hist[histName][sample].SetLineWidth(2)
-            hist[histName][sample].SetYTitle(histograms[histName][1])
-            legendR[histName].AddEntry(hist[histName][sample],"UL 18 TTbar-semi",'le')
-            legendR[histName].SetTextSize(0.04)
-            print "Filling with", sample
-            stack[histName].Add(hist[histName][sample])
-            continue
+        hist[histName][sample].SetLineColor(kRed)
+        hist[histName][sample].SetMarkerColor(kBlack)
+        hist[histName][sample].SetMarkerStyle(1)
+        hist[histName][sample].SetLineWidth(2)
         hist[histName][sample].SetYTitle(histograms[histName][1])
-        print "Filling with", sample
-        stack[histName].Add(hist[histName][sample])   
-    #stack[histName].Draw("e") 
+
+        # Setting the range of the x-axis
+        hist[histName][sample].GetXaxis().SetRangeUser(-np.pi, np.pi)
+        # Normalize the histogram
+        # norm = (hist[histName][sample].GetBinContent(hist[histName][sample].GetMaximumBin())+hist[histName][sample].GetBinContent(hist[histName][sample].GetMinimumBin()))/2
+        # print norm
+        # hist[histName][sample].Scale(1/norm)
+        
+
+        # Fit the histogram
+        hist[histName][sample].Fit(fitFn, "R")
+
+        # legendR[histName].AddEntry(hist[histName][sample],"UL 18 TTbar-semi",'le')
+        # legendR[histName].SetTextSize(0.04)
+
+        # print "Filling with", sample
+        # stack[histName].Add(hist[histName][sample])
 
     # Set vertical-axis limits
-    maxVal = stack[histName].GetMaximum()
+    # maxVal = stack[histName].GetMaximum()
+    maxVal = hist[histName][sample].GetMaximum()
     # minVal = max(stack[histName].GetStack()[0].GetMinimum(), 1)
     minVal = 1
     if Log:
         stack[histName].SetMaximum(10**(1.5*log10(maxVal) - 0.5*log10(minVal)))
         stack[histName].SetMinimum(minVal)
     else:
-        stack[histName].SetMaximum(1.5*maxVal)
-        stack[histName].SetMinimum(minVal)
+        # stack[histName].SetMaximum(1.5*maxVal)
+        hist[histName][sample].SetMaximum(1.5*maxVal)
+        # hist[histName][sample].SetMaximum(1.2)
+        # stack[histName].SetMinimum(minVal)
+        hist[histName][sample].SetMinimum(minVal)
+        # hist[histName][sample].SetMinimum(0.8)
     
     pad1.Draw()
-    pad1.SetLogy(Log)
     
-    y2 = pad1.GetY2()
-    
-    stack[histName].Draw("e")
-    stack[histName].GetXaxis().SetTitle(histograms[histName][0])
-    stack[histName].SetTitle('')
-    stack[histName].GetXaxis().SetLabelSize(0.06)
-    stack[histName].GetYaxis().SetLabelSize(gStyle.GetLabelSize()/(1.-padRatio+padOverlap))
-    stack[histName].GetYaxis().SetTitleSize(gStyle.GetTitleSize()/(1.-padRatio+padOverlap))
-    stack[histName].GetYaxis().SetTitleOffset(gStyle.GetTitleYOffset()*(1.-padRatio+padOverlap))
-    stack[histName].GetYaxis().SetTitle("Events")
+    # stack[histName].Draw("e")
+    # stack[histName].GetXaxis().SetTitle(histograms[histName][0])
+    # stack[histName].SetTitle('')
+    # stack[histName].GetXaxis().SetLabelSize(0.06)
+    # stack[histName].GetYaxis().SetLabelSize(gStyle.GetLabelSize()/(1.-padRatio+padOverlap))
+    # stack[histName].GetYaxis().SetTitleSize(gStyle.GetTitleSize()/(1.-padRatio+padOverlap))
+    # stack[histName].GetYaxis().SetTitleOffset(gStyle.GetTitleYOffset()*(1.-padRatio+padOverlap))
+    # stack[histName].GetYaxis().SetTitle("Events")
+
+    hist[histName][sample].Draw("e")
+    hist[histName][sample].GetXaxis().SetTitle(histograms[histName][0])
+    hist[histName][sample].SetTitle('')
+    hist[histName][sample].GetXaxis().SetLabelSize(0.06)
+    hist[histName][sample].GetYaxis().SetLabelSize(gStyle.GetLabelSize()/(1.-padRatio+padOverlap))
+    hist[histName][sample].GetYaxis().SetTitleSize(gStyle.GetTitleSize()/(1.-padRatio+padOverlap))
+    hist[histName][sample].GetYaxis().SetTitleOffset(gStyle.GetTitleYOffset()*(1.-padRatio+padOverlap))
+    hist[histName][sample].GetYaxis().SetTitle("Events")
 
     CMS_lumi.CMS_lumi(pad1, 18, 11) # parameters are: (pad, Year, iPosX, extraLumiText = "") <----------- DONT FORGET TO CHANGE THE YEAR TO GET THE RIGHT LUMI
-    legendR[histName].Draw()
+
+    # legendR[histName].Draw()
     pad1.Update()
     if Log:
         canvas.SaveAs("%s/%s_log.png"%(plotDirectory,histName))
     else:
-        canvas.SaveAs("%s/%s.png"%(plotDirectory,histName))
+        canvas.SaveAs("%s/%s_Fit.png"%(plotDirectory,histName))
     print "\n"
 
 print "Congratulations, you've successfully generated some Plots."
