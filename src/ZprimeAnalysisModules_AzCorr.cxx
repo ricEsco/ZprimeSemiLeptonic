@@ -16,7 +16,6 @@
 #include <UHH2/common/include/ElectronIds.h>
 #include <UHH2/common/include/JetIds.h>
 #include <UHH2/common/include/TopJetIds.h>
-#include <UHH2/common/include/TTbarGen.h>
 #include <UHH2/common/include/Utils.h>
 #include <UHH2/common/include/AdditionalSelections.h>
 #include <UHH2/common/include/LuminosityHists.h>
@@ -136,6 +135,10 @@ protected:
   uhh2::Event::Handle<ZprimeCandidate*> h_BestZprimeCandidateChi2;
 
   // AzCorr variables
+
+  std::unique_ptr<TTbarGenProducer> ttgenprod;
+  uhh2::Event::Handle<TTbarGen> h_ttbargen;
+  
   uhh2::Event::Handle< std::vector<Jet> > h_CHSjets_matched;  // Collection of CHS matched jets
   uhh2::Event::Handle< std::vector<TopJet> > h_DeepAK8TopTags;  // Collection of DeepAK8TopTagged jets
   
@@ -246,6 +249,11 @@ void ZprimeAnalysisModule_AzCorr::fill_histograms(uhh2::Event& event, string tag
 ZprimeAnalysisModule_AzCorr::ZprimeAnalysisModule_AzCorr(uhh2::Context& ctx){
 
   debug = false; // false/true
+
+  ttgenprod.reset(new TTbarGenProducer(ctx));
+
+  // Access to gen-level particles
+  h_ttbargen = ctx.get_handle<TTbarGen>("ttbargen");
 
   for(auto & kv : ctx.get_all()){
     cout << " " << kv.first << " = " << kv.second << endl;
@@ -1162,7 +1170,13 @@ bool ZprimeAnalysisModule_AzCorr::process(uhh2::Event& event){
   event.set(h_NPV, event.pvs->size());
   event.set(h_MET, event.met->pt());
 
-  // Everything below this line is for the Azimuthal (Spin) Correlation studies -----------------------------------------------
+  // Everything below this line is for the Azimuthal Correlation studies -----------------------------------------------
+
+  // fill ttbargen information
+  ttgenprod->process(event);
+
+  // Variable to access gen-particles
+  TTbarGen ttbargen = event.get(h_ttbargen);
 
   // Define bool that tells me if zprime was reconstructed using Chi2
   bool is_zprime_reconstructed_chi2 = event.get(h_is_zprime_reconstructed_chi2);
@@ -1229,299 +1243,299 @@ bool ZprimeAnalysisModule_AzCorr::process(uhh2::Event& event){
       }
     }
 
-    // Cut on bscore_max >= btag_WP
-    if(bscore_max >= btag_medWP){
-      event.set(h_bscore_max, bscore_max); // Plot max bscores
+    // // Cut on bscore_max >= btag_WP
+    // if(bscore_max >= btag_medWP){
+    //   event.set(h_bscore_max, bscore_max); // Plot max bscores
 
-      // // Define 4vectors of hadronic b-jet and lepton
-      // Hadronic-b 4vector 
-      TLorentzVector had_top_b(0, 0, 0, 0);
-      // Resolved topology
-      if(!is_toptag_reconstruction){
-        for(unsigned int i=0; i< BestZprimeCandidate->jets_hadronic().size(); i++){
-          float bscore = jets_hadronic_bscores.at(i);
-          if(bscore == bscore_max) had_top_b.SetPtEtaPhiE(BestZprimeCandidate->jets_hadronic().at(i).pt(), 
-                                                          BestZprimeCandidate->jets_hadronic().at(i).eta(), 
-                                                          BestZprimeCandidate->jets_hadronic().at(i).phi(), 
-                                                          BestZprimeCandidate->jets_hadronic().at(i).energy());
-        }
-      }
-      // Merged topology
-      if(is_toptag_reconstruction){
-        for(unsigned int j=0; j < BestZprimeCandidate->tophad_topjet_ptr()->subjets().size(); j++){
-          //float bscore = BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
-          float bscore = BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).btag_DeepJet();
-          if(bscore == bscore_max) had_top_b.SetPtEtaPhiE(BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).pt(), 
-                                                          BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).eta(), 
-                                                          BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).phi(), 
-                                                          BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).energy());
-        }
-      }
+    //   // // Define 4vectors of hadronic b-jet and lepton
+    //   // Hadronic-b 4vector 
+    //   TLorentzVector had_top_b(0, 0, 0, 0);
+    //   // Resolved topology
+    //   if(!is_toptag_reconstruction){
+    //     for(unsigned int i=0; i< BestZprimeCandidate->jets_hadronic().size(); i++){
+    //       float bscore = jets_hadronic_bscores.at(i);
+    //       if(bscore == bscore_max) had_top_b.SetPtEtaPhiE(BestZprimeCandidate->jets_hadronic().at(i).pt(), 
+    //                                                       BestZprimeCandidate->jets_hadronic().at(i).eta(), 
+    //                                                       BestZprimeCandidate->jets_hadronic().at(i).phi(), 
+    //                                                       BestZprimeCandidate->jets_hadronic().at(i).energy());
+    //     }
+    //   }
+    //   // Merged topology
+    //   if(is_toptag_reconstruction){
+    //     for(unsigned int j=0; j < BestZprimeCandidate->tophad_topjet_ptr()->subjets().size(); j++){
+    //       //float bscore = BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
+    //       float bscore = BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).btag_DeepJet();
+    //       if(bscore == bscore_max) had_top_b.SetPtEtaPhiE(BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).pt(), 
+    //                                                       BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).eta(), 
+    //                                                       BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).phi(), 
+    //                                                       BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).energy());
+    //     }
+    //   }
 
-      // Lepton 4-vector
-      TLorentzVector lep_top_lep(0, 0, 0, 0);
-      LorentzVector lep = BestZprimeCandidate->lepton().v4();
-      lep_top_lep.SetPtEtaPhiE(lep.pt(), lep.eta(), lep.phi(), lep.E());
+    //   // Lepton 4-vector
+    //   TLorentzVector lep_top_lep(0, 0, 0, 0);
+    //   LorentzVector lep = BestZprimeCandidate->lepton().v4();
+    //   lep_top_lep.SetPtEtaPhiE(lep.pt(), lep.eta(), lep.phi(), lep.E());
 
-      // Plot phi-coordinates of bjet and lep in LAB-FRAME
-      float phi_b_LabFrame = had_top_b.Phi();
-      float phi_lep_LabFrame = lep_top_lep.Phi();
-      event.set(h_phi_b_LabFrame, phi_b_LabFrame);
-      event.set(h_phi_lep_LabFrame, phi_lep_LabFrame);
+    //   // Plot phi-coordinates of bjet and lep in LAB-FRAME
+    //   float phi_b_LabFrame = had_top_b.Phi();
+    //   float phi_lep_LabFrame = lep_top_lep.Phi();
+    //   event.set(h_phi_b_LabFrame, phi_b_LabFrame);
+    //   event.set(h_phi_lep_LabFrame, phi_lep_LabFrame);
 
-      //---------------------------------------------------------------- Boost lepton_v4, hadronic-b_v4, and +2/3 top 3-vector into ttbar rest-frame ----------------------------------------------------------------//
-      if(debug) cout<<" Start Boosting"<<endl;
-      // Positive Top vectors
-      TLorentzVector PosTop(0, 0, 0, 0);   // Need a TLorentzVector version of PosTop to perform boost
-      LorentzVector PosTop_LV;             // Need a LorentzVector version to perform spatial rotation
-      LorentzVector BoostedPosTop_LV;      // Intermediate step to construct 3vector
-      TVector3 PosTop_v3;                  // Need a 3vector version to convert PxPyPz coordinates to cartesian for rotation
-      LorentzVector TwiceBoostedPosTop_LV; // Intermediate step to construct 3vector
-      TVector3 TwiceBoostedPosTop_v3;      // Cross-check if Pos- and Neg- Tops are at rest after boost 
-      // Negative Top vectors
-      TLorentzVector NegTop(0, 0, 0, 0);    // Cross-check if Pos- and Neg- Tops are back to back after first boost
-      LorentzVector NegTop_LV;              // Cross-check if Pos- and Neg- Tops are back to back after first boost
-      LorentzVector BoostedNegTop_LV;       // Intermediate step to construct 3vector
-      TVector3 NegTop_v3;                   // Cross-check if Pos- and Neg- Tops are back to back after first boost
-      LorentzVector TwiceBoostedNegTop_LV;  // Intermediate step to construct 3vector
-      TVector3 TwiceBoostedNegTop_v3;       // Cross-check if Pos- and Neg- Tops are at rest after boost
+    //   //---------------------------------------------------------------- Boost lepton_v4, hadronic-b_v4, and +2/3 top 3-vector into ttbar rest-frame ----------------------------------------------------------------//
+    //   if(debug) cout<<" Start Boosting"<<endl;
+    //   // Positive Top vectors
+    //   TLorentzVector PosTop(0, 0, 0, 0);   // Need a TLorentzVector version of PosTop to perform boost
+    //   LorentzVector PosTop_LV;             // Need a LorentzVector version to perform spatial rotation
+    //   LorentzVector BoostedPosTop_LV;      // Intermediate step to construct 3vector
+    //   TVector3 PosTop_v3;                  // Need a 3vector version to convert PxPyPz coordinates to cartesian for rotation
+    //   LorentzVector TwiceBoostedPosTop_LV; // Intermediate step to construct 3vector
+    //   TVector3 TwiceBoostedPosTop_v3;      // Cross-check if Pos- and Neg- Tops are at rest after boost 
+    //   // Negative Top vectors
+    //   TLorentzVector NegTop(0, 0, 0, 0);    // Cross-check if Pos- and Neg- Tops are back to back after first boost
+    //   LorentzVector NegTop_LV;              // Cross-check if Pos- and Neg- Tops are back to back after first boost
+    //   LorentzVector BoostedNegTop_LV;       // Intermediate step to construct 3vector
+    //   TVector3 NegTop_v3;                   // Cross-check if Pos- and Neg- Tops are back to back after first boost
+    //   LorentzVector TwiceBoostedNegTop_LV;  // Intermediate step to construct 3vector
+    //   TVector3 TwiceBoostedNegTop_v3;       // Cross-check if Pos- and Neg- Tops are at rest after boost
 
-      // Decay products get boosted in opposite directions depending on their mother top
-      // POSITIVE LEPTON CONFIGURATION
-      if(BestZprimeCandidate->lepton().charge() > 0){  
-        PosTop_LV = BestZprimeCandidate->top_leptonic_v4();
-        PosTop.SetPtEtaPhiE(BestZprimeCandidate->top_leptonic_v4().pt(), BestZprimeCandidate->top_leptonic_v4().eta(), BestZprimeCandidate->top_leptonic_v4().phi(), BestZprimeCandidate->top_leptonic_v4().energy());
-        NegTop_LV = BestZprimeCandidate->top_hadronic_v4();
-        NegTop.SetPtEtaPhiE(BestZprimeCandidate->top_hadronic_v4().pt(), BestZprimeCandidate->top_hadronic_v4().eta(), BestZprimeCandidate->top_hadronic_v4().phi(), BestZprimeCandidate->top_hadronic_v4().energy());
+    //   // Decay products get boosted in opposite directions depending on their mother top
+    //   // POSITIVE LEPTON CONFIGURATION
+    //   if(BestZprimeCandidate->lepton().charge() > 0){  
+    //     PosTop_LV = BestZprimeCandidate->top_leptonic_v4();
+    //     PosTop.SetPtEtaPhiE(BestZprimeCandidate->top_leptonic_v4().pt(), BestZprimeCandidate->top_leptonic_v4().eta(), BestZprimeCandidate->top_leptonic_v4().phi(), BestZprimeCandidate->top_leptonic_v4().energy());
+    //     NegTop_LV = BestZprimeCandidate->top_hadronic_v4();
+    //     NegTop.SetPtEtaPhiE(BestZprimeCandidate->top_hadronic_v4().pt(), BestZprimeCandidate->top_hadronic_v4().eta(), BestZprimeCandidate->top_hadronic_v4().phi(), BestZprimeCandidate->top_hadronic_v4().energy());
 
-        // 4vectors to represent ttbar system
-        LorentzVector lep_top = BestZprimeCandidate->top_leptonic_v4();
-        LorentzVector had_top = BestZprimeCandidate->top_hadronic_v4();
-        TLorentzVector ttbar(0, 0, 0, 0);
-        ttbar.SetPtEtaPhiE((had_top+lep_top).pt(), (had_top+lep_top).eta(), (had_top+lep_top).phi(), (had_top+lep_top).E());
+    //     // 4vectors to represent ttbar system
+    //     LorentzVector lep_top = BestZprimeCandidate->top_leptonic_v4();
+    //     LorentzVector had_top = BestZprimeCandidate->top_hadronic_v4();
+    //     TLorentzVector ttbar(0, 0, 0, 0);
+    //     ttbar.SetPtEtaPhiE((had_top+lep_top).pt(), (had_top+lep_top).eta(), (had_top+lep_top).phi(), (had_top+lep_top).E());
         
-        // Boost into ttbar Center of Momentum configuration 
-        lep_top_lep.Boost(-ttbar.BoostVector());
-        had_top_b.Boost(-ttbar.BoostVector());
-        PosTop.Boost(-ttbar.BoostVector());
-        NegTop.Boost(-ttbar.BoostVector());
+    //     // Boost into ttbar Center of Momentum configuration 
+    //     lep_top_lep.Boost(-ttbar.BoostVector());
+    //     had_top_b.Boost(-ttbar.BoostVector());
+    //     PosTop.Boost(-ttbar.BoostVector());
+    //     NegTop.Boost(-ttbar.BoostVector());
 
-        // Plot phi-coordinates of bjet and lep in CoM frame
-        float phi_b_CoMFrame = had_top_b.Phi();
-        float phi_lep_CoMFrame = lep_top_lep.Phi();
-        event.set(h_phi_b_CoMFrame, phi_b_CoMFrame);
-        event.set(h_phi_lep_CoMFrame, phi_lep_CoMFrame);
+    //     // Plot phi-coordinates of bjet and lep in CoM frame
+    //     float phi_b_CoMFrame = had_top_b.Phi();
+    //     float phi_lep_CoMFrame = lep_top_lep.Phi();
+    //     event.set(h_phi_b_CoMFrame, phi_b_CoMFrame);
+    //     event.set(h_phi_lep_CoMFrame, phi_lep_CoMFrame);
 
-        // Get spatial part of PosTop in cartesian coordinates
-        BoostedPosTop_LV.SetPt(PosTop.Pt());
-        BoostedPosTop_LV.SetEta(PosTop.Eta());
-        BoostedPosTop_LV.SetPhi(PosTop.Phi()); 
-        BoostedPosTop_LV.SetE(PosTop.E());
-        PosTop_v3 = toVector(toXYZ(BoostedPosTop_LV));  // USE THIS VECTOR FOR ROTATION THAT FOLLOWS SECOND BOOST
-        // Get spatial part of NegTop in cartesian coordinates
-        BoostedNegTop_LV.SetPt(NegTop.Pt());
-        BoostedNegTop_LV.SetEta(NegTop.Eta());
-        BoostedNegTop_LV.SetPhi(NegTop.Phi()); 
-        BoostedNegTop_LV.SetE(NegTop.E());
-        NegTop_v3 = toVector(toXYZ(BoostedNegTop_LV));
+    //     // Get spatial part of PosTop in cartesian coordinates
+    //     BoostedPosTop_LV.SetPt(PosTop.Pt());
+    //     BoostedPosTop_LV.SetEta(PosTop.Eta());
+    //     BoostedPosTop_LV.SetPhi(PosTop.Phi()); 
+    //     BoostedPosTop_LV.SetE(PosTop.E());
+    //     PosTop_v3 = toVector(toXYZ(BoostedPosTop_LV));  // USE THIS VECTOR FOR ROTATION THAT FOLLOWS SECOND BOOST
+    //     // Get spatial part of NegTop in cartesian coordinates
+    //     BoostedNegTop_LV.SetPt(NegTop.Pt());
+    //     BoostedNegTop_LV.SetEta(NegTop.Eta());
+    //     BoostedNegTop_LV.SetPhi(NegTop.Phi()); 
+    //     BoostedNegTop_LV.SetE(NegTop.E());
+    //     NegTop_v3 = toVector(toXYZ(BoostedNegTop_LV));
 
-        // Cross-check back-to-back configuration of ttbar system
-        // float back2back = PosTop_v3.Angle(NegTop_v3);
+    //     // Cross-check back-to-back configuration of ttbar system
+    //     // float back2back = PosTop_v3.Angle(NegTop_v3);
 
-        // Now we boost the top's to rest individually, bringing their children with them
-        lep_top_lep.Boost(-PosTop.BoostVector()); // Positive charged lepton has Positive Top mother
-        had_top_b.Boost(-NegTop.BoostVector()); // Positive charged lepton means b-jet has Negative Top mother
-        PosTop.Boost(-PosTop.BoostVector());  // Okay to boost to rest since 3vector version is used for rotation
-        NegTop.Boost(-NegTop.BoostVector());  // Boost just to cross-check tops are really at rest
+    //     // Now we boost the top's to rest individually, bringing their children with them
+    //     lep_top_lep.Boost(-PosTop.BoostVector()); // Positive charged lepton has Positive Top mother
+    //     had_top_b.Boost(-NegTop.BoostVector()); // Positive charged lepton means b-jet has Negative Top mother
+    //     PosTop.Boost(-PosTop.BoostVector());  // Okay to boost to rest since 3vector version is used for rotation
+    //     NegTop.Boost(-NegTop.BoostVector());  // Boost just to cross-check tops are really at rest
 
-        // Plot phi-coordinates of bjet and lep in top's rest-frame
-        float phi_b_topRestFrame = had_top_b.Phi();
-        float phi_lep_topRestFrame = lep_top_lep.Phi();
-        event.set(h_phi_b_topRestFrame, phi_b_topRestFrame);
-        event.set(h_phi_lep_topRestFrame, phi_lep_topRestFrame);
+    //     // Plot phi-coordinates of bjet and lep in top's rest-frame
+    //     float phi_b_topRestFrame = had_top_b.Phi();
+    //     float phi_lep_topRestFrame = lep_top_lep.Phi();
+    //     event.set(h_phi_b_topRestFrame, phi_b_topRestFrame);
+    //     event.set(h_phi_lep_topRestFrame, phi_lep_topRestFrame);
 
-        // Get spatial part of twice boosted PosTop in cartesian coordinates to cross-check boost
-        TwiceBoostedPosTop_LV.SetPt(PosTop.Pt());
-        TwiceBoostedPosTop_LV.SetEta(PosTop.Eta());
-        TwiceBoostedPosTop_LV.SetPhi(PosTop.Phi()); 
-        TwiceBoostedPosTop_LV.SetE(PosTop.E());
-        TwiceBoostedPosTop_v3 = toVector(toXYZ(TwiceBoostedPosTop_LV));
-        // Get spatial part of twice boosted NegTop in cartesian coordinates to cross-check boost
-        TwiceBoostedNegTop_LV.SetPt(NegTop.Pt());
-        TwiceBoostedNegTop_LV.SetEta(NegTop.Eta());
-        TwiceBoostedNegTop_LV.SetPhi(NegTop.Phi()); 
-        TwiceBoostedNegTop_LV.SetE(NegTop.E());
-        TwiceBoostedNegTop_v3 = toVector(toXYZ(TwiceBoostedNegTop_LV));
-      }
+    //     // Get spatial part of twice boosted PosTop in cartesian coordinates to cross-check boost
+    //     TwiceBoostedPosTop_LV.SetPt(PosTop.Pt());
+    //     TwiceBoostedPosTop_LV.SetEta(PosTop.Eta());
+    //     TwiceBoostedPosTop_LV.SetPhi(PosTop.Phi()); 
+    //     TwiceBoostedPosTop_LV.SetE(PosTop.E());
+    //     TwiceBoostedPosTop_v3 = toVector(toXYZ(TwiceBoostedPosTop_LV));
+    //     // Get spatial part of twice boosted NegTop in cartesian coordinates to cross-check boost
+    //     TwiceBoostedNegTop_LV.SetPt(NegTop.Pt());
+    //     TwiceBoostedNegTop_LV.SetEta(NegTop.Eta());
+    //     TwiceBoostedNegTop_LV.SetPhi(NegTop.Phi()); 
+    //     TwiceBoostedNegTop_LV.SetE(NegTop.E());
+    //     TwiceBoostedNegTop_v3 = toVector(toXYZ(TwiceBoostedNegTop_LV));
+    //   }
       
-      // NEGATIVE LEPTON CONFIGURATION
-      if(BestZprimeCandidate->lepton().charge() < 0){  
-        PosTop_LV = BestZprimeCandidate->top_hadronic_v4();
-        PosTop.SetPtEtaPhiE(BestZprimeCandidate->top_hadronic_v4().pt(), BestZprimeCandidate->top_hadronic_v4().eta(), BestZprimeCandidate->top_hadronic_v4().phi(), BestZprimeCandidate->top_hadronic_v4().energy());
-        NegTop_LV = BestZprimeCandidate->top_leptonic_v4();
-        NegTop.SetPtEtaPhiE(BestZprimeCandidate->top_leptonic_v4().pt(), BestZprimeCandidate->top_leptonic_v4().eta(), BestZprimeCandidate->top_leptonic_v4().phi(), BestZprimeCandidate->top_leptonic_v4().energy());
+    //   // NEGATIVE LEPTON CONFIGURATION
+    //   if(BestZprimeCandidate->lepton().charge() < 0){  
+    //     PosTop_LV = BestZprimeCandidate->top_hadronic_v4();
+    //     PosTop.SetPtEtaPhiE(BestZprimeCandidate->top_hadronic_v4().pt(), BestZprimeCandidate->top_hadronic_v4().eta(), BestZprimeCandidate->top_hadronic_v4().phi(), BestZprimeCandidate->top_hadronic_v4().energy());
+    //     NegTop_LV = BestZprimeCandidate->top_leptonic_v4();
+    //     NegTop.SetPtEtaPhiE(BestZprimeCandidate->top_leptonic_v4().pt(), BestZprimeCandidate->top_leptonic_v4().eta(), BestZprimeCandidate->top_leptonic_v4().phi(), BestZprimeCandidate->top_leptonic_v4().energy());
 
-        // 4vectors to represent ttbar system
-        LorentzVector lep_top = BestZprimeCandidate->top_leptonic_v4();
-        LorentzVector had_top = BestZprimeCandidate->top_hadronic_v4();
-        TLorentzVector ttbar(0, 0, 0, 0);
-        ttbar.SetPtEtaPhiE((had_top+lep_top).pt(), (had_top+lep_top).eta(), (had_top+lep_top).phi(), (had_top+lep_top).E());
+    //     // 4vectors to represent ttbar system
+    //     LorentzVector lep_top = BestZprimeCandidate->top_leptonic_v4();
+    //     LorentzVector had_top = BestZprimeCandidate->top_hadronic_v4();
+    //     TLorentzVector ttbar(0, 0, 0, 0);
+    //     ttbar.SetPtEtaPhiE((had_top+lep_top).pt(), (had_top+lep_top).eta(), (had_top+lep_top).phi(), (had_top+lep_top).E());
         
-        // Boost into ttbar Center of Momentum configuration 
-        lep_top_lep.Boost(-ttbar.BoostVector());
-        had_top_b.Boost(-ttbar.BoostVector());
-        PosTop.Boost(-ttbar.BoostVector());
-        NegTop.Boost(-ttbar.BoostVector());
+    //     // Boost into ttbar Center of Momentum configuration 
+    //     lep_top_lep.Boost(-ttbar.BoostVector());
+    //     had_top_b.Boost(-ttbar.BoostVector());
+    //     PosTop.Boost(-ttbar.BoostVector());
+    //     NegTop.Boost(-ttbar.BoostVector());
 
-        // Plot phi-coordinates of bjet and lep in CoM frame
-        float phi_b_CoMFrame = had_top_b.Phi();
-        float phi_lep_CoMFrame = lep_top_lep.Phi();
-        event.set(h_phi_b_CoMFrame, phi_b_CoMFrame);
-        event.set(h_phi_lep_CoMFrame, phi_lep_CoMFrame);
+    //     // Plot phi-coordinates of bjet and lep in CoM frame
+    //     float phi_b_CoMFrame = had_top_b.Phi();
+    //     float phi_lep_CoMFrame = lep_top_lep.Phi();
+    //     event.set(h_phi_b_CoMFrame, phi_b_CoMFrame);
+    //     event.set(h_phi_lep_CoMFrame, phi_lep_CoMFrame);
 
-        // Get spatial part of PosTop in cartesian coordinates
-        BoostedPosTop_LV.SetPt(PosTop.Pt());
-        BoostedPosTop_LV.SetEta(PosTop.Eta());
-        BoostedPosTop_LV.SetPhi(PosTop.Phi()); 
-        BoostedPosTop_LV.SetE(PosTop.E());
-        PosTop_v3 = toVector(toXYZ(BoostedPosTop_LV));  // USE THIS VECTOR FOR ROTATION THAT FOLLOWS SECOND BOOST
-        // Get spatial part of NegTop in cartesian coordinates
-        BoostedNegTop_LV.SetPt(NegTop.Pt());
-        BoostedNegTop_LV.SetEta(NegTop.Eta());
-        BoostedNegTop_LV.SetPhi(NegTop.Phi()); 
-        BoostedNegTop_LV.SetE(NegTop.E());
-        NegTop_v3 = toVector(toXYZ(BoostedNegTop_LV));
+    //     // Get spatial part of PosTop in cartesian coordinates
+    //     BoostedPosTop_LV.SetPt(PosTop.Pt());
+    //     BoostedPosTop_LV.SetEta(PosTop.Eta());
+    //     BoostedPosTop_LV.SetPhi(PosTop.Phi()); 
+    //     BoostedPosTop_LV.SetE(PosTop.E());
+    //     PosTop_v3 = toVector(toXYZ(BoostedPosTop_LV));  // USE THIS VECTOR FOR ROTATION THAT FOLLOWS SECOND BOOST
+    //     // Get spatial part of NegTop in cartesian coordinates
+    //     BoostedNegTop_LV.SetPt(NegTop.Pt());
+    //     BoostedNegTop_LV.SetEta(NegTop.Eta());
+    //     BoostedNegTop_LV.SetPhi(NegTop.Phi()); 
+    //     BoostedNegTop_LV.SetE(NegTop.E());
+    //     NegTop_v3 = toVector(toXYZ(BoostedNegTop_LV));
 
-        // Cross-check back-to-back configuration of ttbar system
-        //float back2back = PosTop_v3.Angle(NegTop_v3);
+    //     // Cross-check back-to-back configuration of ttbar system
+    //     //float back2back = PosTop_v3.Angle(NegTop_v3);
 
-        // Now we boost the top's to rest individually, bringing their children with them
-        lep_top_lep.Boost(-NegTop.BoostVector()); // Negative charged lepton has Negative Top mother
-        had_top_b.Boost(-PosTop.BoostVector()); // Negative charged lepton means b-jet has Positive Top mother
-        NegTop.Boost(-NegTop.BoostVector());  // Boost just to cross-check tops are really at rest
-        PosTop.Boost(-PosTop.BoostVector());  // Okay to boost to rest since 3vector version is used for rotation
+    //     // Now we boost the top's to rest individually, bringing their children with them
+    //     lep_top_lep.Boost(-NegTop.BoostVector()); // Negative charged lepton has Negative Top mother
+    //     had_top_b.Boost(-PosTop.BoostVector()); // Negative charged lepton means b-jet has Positive Top mother
+    //     NegTop.Boost(-NegTop.BoostVector());  // Boost just to cross-check tops are really at rest
+    //     PosTop.Boost(-PosTop.BoostVector());  // Okay to boost to rest since 3vector version is used for rotation
 
-        // Plot phi-coordinates of bjet and lep in top's rest-frame
-        event.set(h_phi_b_topRestFrame, had_top_b.Phi());
-        event.set(h_phi_lep_topRestFrame, lep_top_lep.Phi());
+    //     // Plot phi-coordinates of bjet and lep in top's rest-frame
+    //     event.set(h_phi_b_topRestFrame, had_top_b.Phi());
+    //     event.set(h_phi_lep_topRestFrame, lep_top_lep.Phi());
 
-        // Get spatial part of PosTop in cartesian coordinates
-        TwiceBoostedPosTop_LV.SetPt(PosTop.Pt());
-        TwiceBoostedPosTop_LV.SetEta(PosTop.Eta());
-        TwiceBoostedPosTop_LV.SetPhi(PosTop.Phi()); 
-        TwiceBoostedPosTop_LV.SetE(PosTop.E());
-        TwiceBoostedPosTop_v3 = toVector(toXYZ(TwiceBoostedPosTop_LV));
-        // Get spatial part of twice boosted NegTop in cartesian coordinates to cross-check boost
-        TwiceBoostedNegTop_LV.SetPt(NegTop.Pt());
-        TwiceBoostedNegTop_LV.SetEta(NegTop.Eta());
-        TwiceBoostedNegTop_LV.SetPhi(NegTop.Phi()); 
-        TwiceBoostedNegTop_LV.SetE(NegTop.E());
-        TwiceBoostedNegTop_v3 = toVector(toXYZ(TwiceBoostedNegTop_LV));
-      }
-      //---------------------------------------------------------------- Boost lepton_v4, hadronic-b_v4, and +2/3 top 3-vector into ttbar rest-frame ----------------------------------------------------------------//
+    //     // Get spatial part of PosTop in cartesian coordinates
+    //     TwiceBoostedPosTop_LV.SetPt(PosTop.Pt());
+    //     TwiceBoostedPosTop_LV.SetEta(PosTop.Eta());
+    //     TwiceBoostedPosTop_LV.SetPhi(PosTop.Phi()); 
+    //     TwiceBoostedPosTop_LV.SetE(PosTop.E());
+    //     TwiceBoostedPosTop_v3 = toVector(toXYZ(TwiceBoostedPosTop_LV));
+    //     // Get spatial part of twice boosted NegTop in cartesian coordinates to cross-check boost
+    //     TwiceBoostedNegTop_LV.SetPt(NegTop.Pt());
+    //     TwiceBoostedNegTop_LV.SetEta(NegTop.Eta());
+    //     TwiceBoostedNegTop_LV.SetPhi(NegTop.Phi()); 
+    //     TwiceBoostedNegTop_LV.SetE(NegTop.E());
+    //     TwiceBoostedNegTop_v3 = toVector(toXYZ(TwiceBoostedNegTop_LV));
+    //   }
+    //   //---------------------------------------------------------------- Boost lepton_v4, hadronic-b_v4, and +2/3 top 3-vector into ttbar rest-frame ----------------------------------------------------------------//
 
-      //---------------- Rotate vectors such that +2/3 top 3vector --> +z-axis ----------------//
-      if(debug) cout<<"  Start Rotating"<<endl;
-      // Find rotation vector using built-in crossproduct method
-      TVector3 Rotation_v3;
-      TVector3 PosZaxis(0, 0, 1);
-      Rotation_v3 = PosTop_v3.Cross(PosZaxis);
+    //   //---------------- Rotate vectors such that +2/3 top 3vector --> +z-axis ----------------//
+    //   if(debug) cout<<"  Start Rotating"<<endl;
+    //   // Find rotation vector using built-in crossproduct method
+    //   TVector3 Rotation_v3;
+    //   TVector3 PosZaxis(0, 0, 1);
+    //   Rotation_v3 = PosTop_v3.Cross(PosZaxis);
 
-      // Find angle between PosTop and +z-axis
-      float angle = PosTop_v3.Angle(PosZaxis);
+    //   // Find angle between PosTop and +z-axis
+    //   float angle = PosTop_v3.Angle(PosZaxis);
 
-      // Rotate lepton and b vectors
-      lep_top_lep.Rotate(angle, Rotation_v3);
-      had_top_b.Rotate(angle, Rotation_v3);
-      PosTop.Rotate(angle, Rotation_v3);
-      NegTop.Rotate(angle, Rotation_v3);
-      TwiceBoostedPosTop_v3.Rotate(angle, Rotation_v3);
-      TwiceBoostedNegTop_v3.Rotate(angle, Rotation_v3);
-      //---------------- Rotate vectors such that +2/3 top 3vector --> +z-axis ----------------//
+    //   // Rotate lepton and b vectors
+    //   lep_top_lep.Rotate(angle, Rotation_v3);
+    //   had_top_b.Rotate(angle, Rotation_v3);
+    //   PosTop.Rotate(angle, Rotation_v3);
+    //   NegTop.Rotate(angle, Rotation_v3);
+    //   TwiceBoostedPosTop_v3.Rotate(angle, Rotation_v3);
+    //   TwiceBoostedNegTop_v3.Rotate(angle, Rotation_v3);
+    //   //---------------- Rotate vectors such that +2/3 top 3vector --> +z-axis ----------------//
       
-      if(debug) cout<<"   Finished results are:"<<endl;
-      // Define phi-coordinates from these twice boosted and once rotated 4vectors
-      float phi_lep = lep_top_lep.Phi();
-      event.set(h_phi_lep, phi_lep);
-      if(debug) cout<<"   phi_lep is: "<< phi_lep <<endl;
-      float phi_b = had_top_b.Phi();
-      event.set(h_phi_b, phi_b);
-      if(debug) cout<<"   phi_b is: "<< phi_b <<endl;
+    //   if(debug) cout<<"   Finished results are:"<<endl;
+    //   // Define phi-coordinates from these twice boosted and once rotated 4vectors
+    //   float phi_lep = lep_top_lep.Phi();
+    //   event.set(h_phi_lep, phi_lep);
+    //   if(debug) cout<<"   phi_lep is: "<< phi_lep <<endl;
+    //   float phi_b = had_top_b.Phi();
+    //   event.set(h_phi_b, phi_b);
+    //   if(debug) cout<<"   phi_b is: "<< phi_b <<endl;
 
-      // // Define sphi as sum and difference of phi's and plot (mixed charges)
-      // Also apply mapping to both to keep original domain of [-pi, pi]
-      float sphi = phi_lep + phi_b;
-      // Map back into original domain if necessary
-      if(sphi > TMath::Pi()) sphi = sphi - 2*TMath::Pi();
-      if(sphi < -TMath::Pi()) sphi = sphi + 2*TMath::Pi();
-      event.set(h_sphi, sphi);
-      if(debug) cout<<"    sphi is: "<< sphi <<endl;
-      float dphi = phi_lep - phi_b;
-      // Map back into original domain if necessary
-      if(dphi > TMath::Pi()) dphi = dphi - 2*TMath::Pi();
-      if(dphi < -TMath::Pi()) dphi = dphi + 2*TMath::Pi();
-      event.set(h_dphi, dphi);
-      if(debug) cout<<"    dphi is: "<< dphi <<endl;
+    //   // // Define sphi as sum and difference of phi's and plot (mixed charges)
+    //   // Also apply mapping to both to keep original domain of [-pi, pi]
+    //   float sphi = phi_lep + phi_b;
+    //   // Map back into original domain if necessary
+    //   if(sphi > TMath::Pi()) sphi = sphi - 2*TMath::Pi();
+    //   if(sphi < -TMath::Pi()) sphi = sphi + 2*TMath::Pi();
+    //   event.set(h_sphi, sphi);
+    //   if(debug) cout<<"    sphi is: "<< sphi <<endl;
+    //   float dphi = phi_lep - phi_b;
+    //   // Map back into original domain if necessary
+    //   if(dphi > TMath::Pi()) dphi = dphi - 2*TMath::Pi();
+    //   if(dphi < -TMath::Pi()) dphi = dphi + 2*TMath::Pi();
+    //   event.set(h_dphi, dphi);
+    //   if(debug) cout<<"    dphi is: "<< dphi <<endl;
 
-      // Plot dphi and sphi for high-pt ranges
-      if(pt_hadTop > pt_hadTop_thresh){
-        event.set(h_phi_lep_high, phi_lep);
-        event.set(h_phi_b_high, phi_b);
-        event.set(h_sphi_high, sphi);
-        event.set(h_dphi_high, dphi);
-      }
-      // Plot dphi and sphi for low-pt ranges
-      if(pt_hadTop < pt_hadTop_thresh){
-        event.set(h_phi_lep_low, phi_lep);
-        event.set(h_phi_b_low, phi_b);
-        event.set(h_sphi_low, sphi);
-        event.set(h_dphi_low, dphi);
-      }
+    //   // Plot dphi and sphi for high-pt ranges
+    //   if(pt_hadTop > pt_hadTop_thresh){
+    //     event.set(h_phi_lep_high, phi_lep);
+    //     event.set(h_phi_b_high, phi_b);
+    //     event.set(h_sphi_high, sphi);
+    //     event.set(h_dphi_high, dphi);
+    //   }
+    //   // Plot dphi and sphi for low-pt ranges
+    //   if(pt_hadTop < pt_hadTop_thresh){
+    //     event.set(h_phi_lep_low, phi_lep);
+    //     event.set(h_phi_b_low, phi_b);
+    //     event.set(h_sphi_low, sphi);
+    //     event.set(h_dphi_low, dphi);
+    //   }
 
-      // Positively charged leptons
-      if(BestZprimeCandidate->lepton().charge() > 0){
-        // Plot phi for positive leptons
-        event.set(h_phi_lepPlus, phi_lep);
-        // sphi_plus  is defined as (lep + had) for positive leptons
-        float sphi_plus = phi_lep + phi_b;
-        // Map back into original domain if necessary
-        if(sphi_plus > TMath::Pi()) sphi_plus = sphi_plus - 2*TMath::Pi();
-        if(sphi_plus < -TMath::Pi()) sphi_plus = sphi_plus + 2*TMath::Pi();
-        event.set(h_sphi_plus, sphi_plus);
-        if(pt_hadTop > pt_hadTop_thresh){event.set(h_sphi_plus_high, sphi_plus);}
-        if(pt_hadTop < pt_hadTop_thresh){event.set(h_sphi_plus_low, sphi_plus);}
-        // dphi_plus is defined as (lep - had) for positive leptons
-        float dphi_plus = phi_lep - phi_b;
-        // Map back into original domain if necessary
-        if(dphi_plus > TMath::Pi()) dphi_plus = dphi_plus - 2*TMath::Pi();
-        if(dphi_plus < -TMath::Pi()) dphi_plus = dphi_plus + 2*TMath::Pi();
-        event.set(h_dphi_plus, dphi_plus);         
-        if(pt_hadTop > pt_hadTop_thresh){event.set(h_dphi_plus_high, dphi_plus);}     
-        if(pt_hadTop < pt_hadTop_thresh){event.set(h_dphi_plus_low, dphi_plus);}
-      }
+    //   // Positively charged leptons
+    //   if(BestZprimeCandidate->lepton().charge() > 0){
+    //     // Plot phi for positive leptons
+    //     event.set(h_phi_lepPlus, phi_lep);
+    //     // sphi_plus  is defined as (lep + had) for positive leptons
+    //     float sphi_plus = phi_lep + phi_b;
+    //     // Map back into original domain if necessary
+    //     if(sphi_plus > TMath::Pi()) sphi_plus = sphi_plus - 2*TMath::Pi();
+    //     if(sphi_plus < -TMath::Pi()) sphi_plus = sphi_plus + 2*TMath::Pi();
+    //     event.set(h_sphi_plus, sphi_plus);
+    //     if(pt_hadTop > pt_hadTop_thresh){event.set(h_sphi_plus_high, sphi_plus);}
+    //     if(pt_hadTop < pt_hadTop_thresh){event.set(h_sphi_plus_low, sphi_plus);}
+    //     // dphi_plus is defined as (lep - had) for positive leptons
+    //     float dphi_plus = phi_lep - phi_b;
+    //     // Map back into original domain if necessary
+    //     if(dphi_plus > TMath::Pi()) dphi_plus = dphi_plus - 2*TMath::Pi();
+    //     if(dphi_plus < -TMath::Pi()) dphi_plus = dphi_plus + 2*TMath::Pi();
+    //     event.set(h_dphi_plus, dphi_plus);         
+    //     if(pt_hadTop > pt_hadTop_thresh){event.set(h_dphi_plus_high, dphi_plus);}     
+    //     if(pt_hadTop < pt_hadTop_thresh){event.set(h_dphi_plus_low, dphi_plus);}
+    //   }
 
-      //Negatively charged leptons
-      if(BestZprimeCandidate->lepton().charge() < 0){
-        // Plot phi for negative leptons
-        event.set(h_phi_lepMinus, phi_lep);
-        // sphi_minus is defined as (had + lep) for negative leptons
-        float sphi_minus = phi_b + phi_lep;
-        // Map back into original domain if necessary
-        if(sphi_minus > TMath::Pi()) sphi_minus = sphi_minus - 2*TMath::Pi();
-        if(sphi_minus < -TMath::Pi()) sphi_minus = sphi_minus + 2*TMath::Pi();
-        event.set(h_sphi_minus, sphi_minus);         
-        if(pt_hadTop > pt_hadTop_thresh){event.set(h_sphi_minus_high, sphi_minus);}     
-        if(pt_hadTop < pt_hadTop_thresh){event.set(h_sphi_minus_low, sphi_minus);}
-        // dphi_minus is defined as (had - lep) for negative leptons
-        float dphi_minus = phi_b - phi_lep;
-        // Map back into original domain if necessary
-        if(dphi_minus > TMath::Pi()) dphi_minus = dphi_minus - 2*TMath::Pi();
-        if(dphi_minus < -TMath::Pi()) dphi_minus = dphi_minus + 2*TMath::Pi();
-        event.set(h_dphi_minus, dphi_minus);         
-        if(pt_hadTop > pt_hadTop_thresh){event.set(h_dphi_minus_high, dphi_minus);}
-        if(pt_hadTop < pt_hadTop_thresh){event.set(h_dphi_minus_low, dphi_minus);}
-      }
-    }
+    //   //Negatively charged leptons
+    //   if(BestZprimeCandidate->lepton().charge() < 0){
+    //     // Plot phi for negative leptons
+    //     event.set(h_phi_lepMinus, phi_lep);
+    //     // sphi_minus is defined as (had + lep) for negative leptons
+    //     float sphi_minus = phi_b + phi_lep;
+    //     // Map back into original domain if necessary
+    //     if(sphi_minus > TMath::Pi()) sphi_minus = sphi_minus - 2*TMath::Pi();
+    //     if(sphi_minus < -TMath::Pi()) sphi_minus = sphi_minus + 2*TMath::Pi();
+    //     event.set(h_sphi_minus, sphi_minus);         
+    //     if(pt_hadTop > pt_hadTop_thresh){event.set(h_sphi_minus_high, sphi_minus);}     
+    //     if(pt_hadTop < pt_hadTop_thresh){event.set(h_sphi_minus_low, sphi_minus);}
+    //     // dphi_minus is defined as (had - lep) for negative leptons
+    //     float dphi_minus = phi_b - phi_lep;
+    //     // Map back into original domain if necessary
+    //     if(dphi_minus > TMath::Pi()) dphi_minus = dphi_minus - 2*TMath::Pi();
+    //     if(dphi_minus < -TMath::Pi()) dphi_minus = dphi_minus + 2*TMath::Pi();
+    //     event.set(h_dphi_minus, dphi_minus);         
+    //     if(pt_hadTop > pt_hadTop_thresh){event.set(h_dphi_minus_high, dphi_minus);}
+    //     if(pt_hadTop < pt_hadTop_thresh){event.set(h_dphi_minus_low, dphi_minus);}
+    //   }
+    // }
   }
 
   return true;

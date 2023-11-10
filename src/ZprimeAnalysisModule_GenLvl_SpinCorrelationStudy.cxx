@@ -430,21 +430,6 @@ bool ZprimeAnalysisModule_GenLvl_SpinCorrelationStudy::process(uhh2::Event& even
     }
     //--------------------------- Boost into ttbar rest-frame ---------------------------//
 
-    //--------------------------- extra rotation: z -> y ---------------------------//
-
-    // Rotate tops and decay products about x-zxis
-    lepTop_lep.RotateX(-1.*TMath::Pi());
-    hadTop_b.RotateX(-1.*TMath::Pi());
-    hadTop_q1.RotateX(-1.*TMath::Pi());
-    hadTop_q2.RotateX(-1.*TMath::Pi());
-    PosTop.RotateX(-1.*TMath::Pi());
-    NegTop.RotateX(-1.*TMath::Pi());
-
-    //--------------------------- extra rotation: z -> y ---------------------------//
-
-
-
-
     // Define least-energetic W-quark
     TLorentzVector hadTop_qlow;
 
