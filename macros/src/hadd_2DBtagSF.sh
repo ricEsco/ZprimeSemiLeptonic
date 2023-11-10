@@ -1,6 +1,6 @@
 #!/bin/bash
 
-year="UL17" # UL16preVFP UL16postVFP UL17 UL18
+year="UL18" # UL16preVFP UL16postVFP UL17 UL18
 channel="muon" # electron muon
 input_dir="/nfs/dust/cms/group/zprime-uhh/Analysis_${year}_2DBtagSF/${channel}/workdir_Analysis_${year}_${channel}_2DBtagSF/"
 output_dir="/nfs/dust/cms/group/zprime-uhh/Analysis_${year}_2DBtagSF/${channel}/"
@@ -202,3 +202,15 @@ hadd -T ${output_dir}uhh2.AnalysisModuleRunner.MC.ZPrimeToTT_M6000_W60.root ${in
 hadd -T ${output_dir}uhh2.AnalysisModuleRunner.MC.ZPrimeToTT_M7000_W70.root ${input_dir}uhh2.AnalysisModuleRunner.MC.ZPrimeToTT_M7000_W70_*.root
 hadd -T ${output_dir}uhh2.AnalysisModuleRunner.MC.ZPrimeToTT_M8000_W80.root ${input_dir}uhh2.AnalysisModuleRunner.MC.ZPrimeToTT_M8000_W80_*.root
 hadd -T ${output_dir}uhh2.AnalysisModuleRunner.MC.ZPrimeToTT_M9000_W90.root ${input_dir}uhh2.AnalysisModuleRunner.MC.ZPrimeToTT_M9000_W90_*.root
+hadd -T ${output_dir}uhh2.AnalysisModuleRunner.MC.ZprimeDMToTTbarResoIncl_MZp1000_Mchi10_V1.root ${input_dir}uhh2.AnalysisModuleRunner.MC.ZprimeDMToTTbarResoIncl_MZp1000_Mchi10_V1_*.root
+hadd -T ${output_dir}uhh2.AnalysisModuleRunner.MC.ZprimeDMToTTbarResoIncl_MZp1500_Mchi10_V1.root ${input_dir}uhh2.AnalysisModuleRunner.MC.ZprimeDMToTTbarResoIncl_MZp1500_Mchi10_V1_*.root
+hadd -T ${output_dir}uhh2.AnalysisModuleRunner.MC.ZprimeDMToTTbarResoIncl_MZp2000_Mchi10_V1.root ${input_dir}uhh2.AnalysisModuleRunner.MC.ZprimeDMToTTbarResoIncl_MZp2000_Mchi10_V1_*.root
+hadd -T ${output_dir}uhh2.AnalysisModuleRunner.MC.ZprimeDMToTTbarResoIncl_MZp2500_Mchi10_V1.root ${input_dir}uhh2.AnalysisModuleRunner.MC.ZprimeDMToTTbarResoIncl_MZp2500_Mchi10_V1_*.root
+hadd -T ${output_dir}uhh2.AnalysisModuleRunner.MC.ZprimeDMToTTbarResoIncl_MZp3000_Mchi10_V1.root ${input_dir}uhh2.AnalysisModuleRunner.MC.ZprimeDMToTTbarResoIncl_MZp3000_Mchi10_V1_*.root
+hadd -T ${output_dir}uhh2.AnalysisModuleRunner.MC.ZprimeDMToTTbarResoIncl_MZp3500_Mchi10_V1.root ${input_dir}uhh2.AnalysisModuleRunner.MC.ZprimeDMToTTbarResoIncl_MZp3500_Mchi10_V1_*.root
+hadd -T ${output_dir}uhh2.AnalysisModuleRunner.MC.ZprimeDMToTTbarResoIncl_MZp4000_Mchi10_V1.root ${input_dir}uhh2.AnalysisModuleRunner.MC.ZprimeDMToTTbarResoIncl_MZp4000_Mchi10_V1_*.root
+hadd -T ${output_dir}uhh2.AnalysisModuleRunner.MC.ZprimeDMToTTbarResoIncl_MZp4500_Mchi10_V1.root ${input_dir}uhh2.AnalysisModuleRunner.MC.ZprimeDMToTTbarResoIncl_MZp4500_Mchi10_V1_*.root
+hadd -T ${output_dir}uhh2.AnalysisModuleRunner.MC.ZprimeDMToTTbarResoIncl_MZp5000_Mchi10_V1.root ${input_dir}uhh2.AnalysisModuleRunner.MC.ZprimeDMToTTbarResoIncl_MZp5000_Mchi10_V1_*.root
+hadd -T ${output_dir}uhh2.AnalysisModuleRunner.MC.ZprimeDMToTTbarResoIncl_MZp2500_Mchi1000_A1.root ${input_dir}uhh2.AnalysisModuleRunner.MC.ZprimeDMToTTbarResoIncl_MZp2500_Mchi1000_A1_*.root
+hadd -T ${output_dir}uhh2.AnalysisModuleRunner.MC.ZprimeDMToTTbarResoIncl_MZp2500_Mchi1000_V1.root ${input_dir}uhh2.AnalysisModuleRunner.MC.ZprimeDMToTTbarResoIncl_MZp2500_Mchi1000_V1_*.root
+hadd -T ${output_dir}uhh2.AnalysisModuleRunner.MC.ZprimeDMToTTbarResoIncl_MZp2500_Mchi10_A1.root ${input_dir}uhh2.AnalysisModuleRunner.MC.ZprimeDMToTTbarResoIncl_MZp2500_Mchi10_A1_*.root

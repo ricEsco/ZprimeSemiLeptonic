@@ -11,14 +11,14 @@ TString input_base_dir = "/nfs/dust/cms/group/zprime-uhh/";
 vector<TString> v_years = {
   // "UL16preVFP",
   // "UL16postVFP",
-  "UL17",
-  // "UL18"
+  // "UL17",
+  "UL18"
 };
 
 // channels
 vector<TString> v_channels = {
   "electron",
-  "muon"
+  // "muon"
 };
 
 // samples
@@ -218,6 +218,18 @@ vector<TString> v_samples = {
   // "ZPrimeToTT_M7000_W70",
   // "ZPrimeToTT_M8000_W80",
   // "ZPrimeToTT_M9000_W90",
+  // "ZprimeDMToTTbarResoIncl_MZp1000_Mchi10_V1",
+  // "ZprimeDMToTTbarResoIncl_MZp1500_Mchi10_V1",
+  // "ZprimeDMToTTbarResoIncl_MZp2000_Mchi10_V1",
+  // "ZprimeDMToTTbarResoIncl_MZp2500_Mchi10_V1",
+  // "ZprimeDMToTTbarResoIncl_MZp3000_Mchi10_V1",
+  // "ZprimeDMToTTbarResoIncl_MZp3500_Mchi10_V1",
+  // "ZprimeDMToTTbarResoIncl_MZp4000_Mchi10_V1",
+  // "ZprimeDMToTTbarResoIncl_MZp4500_Mchi10_V1",
+  // "ZprimeDMToTTbarResoIncl_MZp5000_Mchi10_V1",
+  // "ZprimeDMToTTbarResoIncl_MZp2500_Mchi1000_A1",
+  // "ZprimeDMToTTbarResoIncl_MZp2500_Mchi1000_V1",
+  // "ZprimeDMToTTbarResoIncl_MZp2500_Mchi10_A1",
 };
 
 // systematics
@@ -239,7 +251,7 @@ void prepare_combine_input(){
       cout << "channel: " << channel << endl;
 
       TFile *output_file;
-      output_file = new TFile(year + "_higher_cuts/" + channel + "/combine_input_" + analysis_step + ".root", "RECREATE");
+      output_file = new TFile(year + "/" + channel + "/combine_input_" + analysis_step + ".root", "RECREATE");
 
       for(unsigned int c=0; c<v_samples.size(); ++c){ // sample loop
         vector<TH1F*> v_hists;
@@ -254,7 +266,7 @@ void prepare_combine_input(){
         }
         else file_prefix += "MC.";
 
-        TFile *input_file = TFile::Open(input_base_dir + "/" + input_dir_prefix + year + "/met60_jet2pt40/" + channel + "/" + file_prefix + sample + ".root");
+        TFile *input_file = TFile::Open(input_base_dir + input_dir_prefix + year + "/" + channel + "/" + file_prefix + sample + ".root");
 
         vector<TH1F*> v_nominal;
         vector<TH1F*> v_murmuf_upup, v_murmuf_upnone, v_murmuf_noneup, v_murmuf_nonedown, v_murmuf_downnone, v_murmuf_downdown;
@@ -398,7 +410,7 @@ void prepare_combine_input(){
         }
         else{
           // get hists for normalization from presel files
-          TFile *presel_file = TFile::Open(input_base_dir + "/Presel_" + year + "/" + file_prefix + sample + ".root");
+          TFile *presel_file = TFile::Open(input_base_dir + "Presel_" + year + "/" + file_prefix + sample + ".root");
           TH1F *nominal = (TH1F*) presel_file->Get("Input_General/sum_event_weights");
           TH1F *upup = (TH1F*) presel_file->Get("Input_General/sum_event_weights_mcscale_upup");
           TH1F *upnone = (TH1F*) presel_file->Get("Input_General/sum_event_weights_mcscale_upnone");
@@ -465,7 +477,7 @@ void prepare_combine_input(){
           }
         }
         else{
-          TFile *presel_file = TFile::Open(input_base_dir + "/Presel_" + year + "/" + file_prefix + sample + ".root");
+          TFile *presel_file = TFile::Open(input_base_dir + "Presel_" + year + "/" + file_prefix + sample + ".root");
           TH1F *nominal = (TH1F*) presel_file->Get("Input_General/sum_event_weights");
           vector<double> v_pdf_norm;
           for(unsigned int i=1; i<101; ++i){
@@ -502,14 +514,14 @@ void prepare_combine_input(){
 
         if(!is_data && analysis_step == "after_baseline_selection"){ // JEC + JER files exist for MC only
           // JEC
-          TFile *input_file_jec_up = TFile::Open(input_base_dir + "/" + input_dir_prefix + year + "/JEC_up/" + channel + "/" + file_prefix + sample + ".root");
+          TFile *input_file_jec_up = TFile::Open(input_base_dir + input_dir_prefix + year + "/JEC_up/" + channel + "/" + file_prefix + sample + ".root");
           TObject *dir_jec_up;
           TKey *dir_key_jec_up;
           TIter next_dir_jec_up(input_file_jec_up->GetListOfKeys());
           while((dir_key_jec_up = (TKey *) next_dir_jec_up())){ // root subdir loop
             dir_jec_up = input_file_jec_up->Get(dir_key_jec_up->GetName());
             TString dir_name_jec_up = dir_jec_up->GetName();
-            if(dir_name_jec_up == "nominal"){
+            if(dir_name_jec_up == "NNInputsBeforeReweight_General"){
               input_file_jec_up->cd(dir_name_jec_up);
               TH1F *hist_jec_up;
               TKey *hist_key_jec_up;
@@ -522,14 +534,14 @@ void prepare_combine_input(){
               }
             }
           }
-          TFile *input_file_jec_down = TFile::Open(input_base_dir + "/" + input_dir_prefix + year + "/JEC_down/" + channel + "/" + file_prefix + sample + ".root");
+          TFile *input_file_jec_down = TFile::Open(input_base_dir + input_dir_prefix + year + "/JEC_down/" + channel + "/" + file_prefix + sample + ".root");
           TObject *dir_jec_down;
           TKey *dir_key_jec_down;
           TIter next_dir_jec_down(input_file_jec_down->GetListOfKeys());
           while((dir_key_jec_down = (TKey *) next_dir_jec_down())){ // root subdir loop
             dir_jec_down = input_file_jec_down->Get(dir_key_jec_down->GetName());
             TString dir_name_jec_down = dir_jec_down->GetName();
-            if(dir_name_jec_down == "nominal"){
+            if(dir_name_jec_down == "NNInputsBeforeReweight_General"){
               input_file_jec_down->cd(dir_name_jec_down);
               TH1F *hist_jec_down;
               TKey *hist_key_jec_down;
@@ -543,14 +555,14 @@ void prepare_combine_input(){
             }
           }
           // JER
-          TFile *input_file_jer_up = TFile::Open(input_base_dir + "/" + input_dir_prefix + year + "/JER_up/" + channel + "/" + file_prefix + sample + ".root");
+          TFile *input_file_jer_up = TFile::Open(input_base_dir + input_dir_prefix + year + "/JER_up/" + channel + "/" + file_prefix + sample + ".root");
           TObject *dir_jer_up;
           TKey *dir_key_jer_up;
           TIter next_dir_jer_up(input_file_jer_up->GetListOfKeys());
           while((dir_key_jer_up = (TKey *) next_dir_jer_up())){ // root subdir loop
             dir_jer_up = input_file_jer_up->Get(dir_key_jer_up->GetName());
             TString dir_name_jer_up = dir_jer_up->GetName();
-            if(dir_name_jer_up == "nominal"){
+            if(dir_name_jer_up == "NNInputsBeforeReweight_General"){
               input_file_jer_up->cd(dir_name_jer_up);
               TH1F *hist_jer_up;
               TKey *hist_key_jer_up;
@@ -563,14 +575,14 @@ void prepare_combine_input(){
               }
             }
           }
-          TFile *input_file_jer_down = TFile::Open(input_base_dir + "/" + input_dir_prefix + year + "/JER_down/" + channel + "/" + file_prefix + sample + ".root");
+          TFile *input_file_jer_down = TFile::Open(input_base_dir + input_dir_prefix + year + "/JER_down/" + channel + "/" + file_prefix + sample + ".root");
           TObject *dir_jer_down;
           TKey *dir_key_jer_down;
           TIter next_dir_jer_down(input_file_jer_down->GetListOfKeys());
           while((dir_key_jer_down = (TKey *) next_dir_jer_down())){ // root subdir loop
             dir_jer_down = input_file_jer_down->Get(dir_key_jer_down->GetName());
             TString dir_name_jer_down = dir_jer_down->GetName();
-            if(dir_name_jer_down == "nominal"){
+            if(dir_name_jer_down == "NNInputsBeforeReweight_General"){
               input_file_jer_down->cd(dir_name_jer_down);
               TH1F *hist_jer_down;
               TKey *hist_key_jer_down;
