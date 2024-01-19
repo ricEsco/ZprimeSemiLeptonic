@@ -45,7 +45,6 @@
 #include <UHH2/ZprimeSemiLeptonic/include/TopTagScaleFactor.h>
 #include <UHH2/ZprimeSemiLeptonic/include/TopMistagScaleFactor.h>
 
-#include <UHH2/common/include/TTbarGen.h>
 #include <UHH2/common/include/TTbarReconstruction.h>
 #include <UHH2/common/include/ReconstructionHypothesisDiscriminators.h>
 
@@ -136,6 +135,116 @@ protected:
   Event::Handle<float> h_Mttbar;
 
   uhh2::Event::Handle<ZprimeCandidate*> h_BestZprimeCandidateChi2;
+  uhh2::Event::Handle<ZprimeCandidate*> h_BestZprimeCandidateCorrectMatch;
+
+  // Reconstruction Optimization variables
+  uhh2::Event::Handle<TTbarGen> h_ttbargen;
+  std::unique_ptr<TTbarGenProducer> ttgenprod;
+
+  uhh2::Event::Handle< std::vector<Jet> > h_CHSjets_matched;  // Collection of CHS matched jets
+  uhh2::Event::Handle< std::vector<TopJet> > h_DeepAK8TopTags;  // Collection of DeepAK8TopTagged jets
+
+  Event::Handle<float> h_res_jet_bscore;
+  Event::Handle<float> h_mer_subjet_bscore;
+
+  Event::Handle<float> h_bscore_max;
+
+  Event::Handle<float> h_BestChi2;                            // Total Chi2 of "best" ttbar candidate
+  Event::Handle<float> h_BestChi2_resolved;
+  Event::Handle<float> h_BestChi2_merged;
+
+  Event::Handle<float> h_BestChi2_passedMatching;             // Total Chi2 of "best" ttbar candidate that also passed matching requirements
+  Event::Handle<float> h_BestChi2_passedMatching_resolved;
+  Event::Handle<float> h_BestChi2_passedMatching_merged;
+
+  Event::Handle<float> h_BestChi2_failedMatching;             // Total Chi2 of "best" ttbar candidate that did NOT matching requirements
+  Event::Handle<float> h_BestChi2_failedMatching_resolved;
+  Event::Handle<float> h_BestChi2_failedMatching_merged;
+
+  Event::Handle<float> h_BestChi2hadronicleg;                 // Chi2 of hadronic leg of "best" ttbar candidate
+  Event::Handle<float> h_BestChi2hadronicleg_resolved;
+  Event::Handle<float> h_BestChi2hadronicleg_merged;
+
+  Event::Handle<float> h_BestChi2hadronicleg_passedMatching;  // Chi2 of hadronic leg of "best" ttbar candidate that also passed matching requirements
+  Event::Handle<float> h_BestChi2hadronicleg_passedMatching_resolved;
+  Event::Handle<float> h_BestChi2hadronicleg_passedMatching_merged;
+
+  Event::Handle<float> h_BestChi2hadronicleg_failedMatching;  // Chi2 of hadronic leg of "best" ttbar candidate that did NOT pass matching requirements
+  Event::Handle<float> h_BestChi2hadronicleg_failedMatching_resolved;
+  Event::Handle<float> h_BestChi2hadronicleg_failedMatching_merged;
+
+  Event::Handle<float> h_BestChi2leptonicleg;                 // Chi2 of leptonic leg of "best" ttbar candidate
+  Event::Handle<float> h_BestChi2leptonicleg_resolved;
+  Event::Handle<float> h_BestChi2leptonicleg_merged;
+
+  Event::Handle<float> h_BestChi2leptonicleg_passedMatching;  // Chi2 of leptonic leg of "best" ttbar candidate that also passed matching requirements
+  Event::Handle<float> h_BestChi2leptonicleg_passedMatching_resolved;
+  Event::Handle<float> h_BestChi2leptonicleg_passedMatching_merged;
+
+  Event::Handle<float> h_BestChi2leptonicleg_failedMatching;  // Chi2 of leptonic leg of "best" ttbar candidate that did NOT pass matching requirements
+  Event::Handle<float> h_BestChi2leptonicleg_failedMatching_resolved;
+  Event::Handle<float> h_BestChi2leptonicleg_failedMatching_merged;
+
+  Event::Handle<float> h_DrHadB;                           // DeltaR between hadronic b's (gen vs reco)
+  Event::Handle<float> h_DrHadB_resolved;
+  Event::Handle<float> h_DrHadB_merged;
+
+  Event::Handle<float> h_DrHadB_passedChi2cut;             // DeltaR between hadronic b's (gen vs reco) that ALSO passed matching requirements
+  Event::Handle<float> h_DrHadB_passedChi2cut_resolved;
+  Event::Handle<float> h_DrHadB_passedChi2cut_merged;
+
+  Event::Handle<float> h_DrHadB_failedChi2cut;             // DeltaR between hadronic b's (gen vs reco) that did NOT pass matching requirements
+  Event::Handle<float> h_DrHadB_failedChi2cut_resolved;
+  Event::Handle<float> h_DrHadB_failedChi2cut_merged;
+
+  Event::Handle<float> h_DrLep;                          // DeltaR between leptons (gen vs reco)
+  Event::Handle<float> h_DrLep_resolved;
+  Event::Handle<float> h_DrLep_merged;
+
+  Event::Handle<float> h_DrLep_passedChi2cut;            // DeltaR between leptons (gen vs reco) that ALSO passed matching requirements
+  Event::Handle<float> h_DrLep_passedChi2cut_resolved;
+  Event::Handle<float> h_DrLep_passedChi2cut_merged;
+
+  Event::Handle<float> h_DrLep_failedChi2cut;            // DeltaR between leptons (gen vs reco) that did NOT pass matching requirements
+  Event::Handle<float> h_DrLep_failedChi2cut_resolved;
+  Event::Handle<float> h_DrLep_failedChi2cut_merged;
+
+  Event::Handle<float> h_correctDr;                          // correct_dr of matcehd ttbar candidates
+  Event::Handle<float> h_correctDr_resolved;
+  Event::Handle<float> h_correctDr_merged;
+
+  Event::Handle<float> h_correctDr_passedChi2cut;            // correct_dr of ttbar candidates that ALSO passed matching requirements
+  Event::Handle<float> h_correctDr_passedChi2cut_resolved;
+  Event::Handle<float> h_correctDr_passedChi2cut_merged;
+
+  Event::Handle<float> h_correctDr_failedChi2cut;            // correct_dr of ttbar candidates that did NOT pass matching requirements
+  Event::Handle<float> h_correctDr_failedChi2cut_resolved;
+  Event::Handle<float> h_correctDr_failedChi2cut_merged;
+
+  Event::Handle<float> h_DrHadB_matchable;                           // DeltaR between hadronic b's (gen vs reco) that are matchable
+  Event::Handle<float> h_DrHadB_matchable_resolved;
+  Event::Handle<float> h_DrHadB_matchable_merged;
+
+  Event::Handle<float> h_DrHadB_matchable_passedChi2cut;             // DeltaR between hadronic b's (gen vs reco) that are matchable ALSO passed matching requirements
+  Event::Handle<float> h_DrHadB_matchable_passedChi2cut_resolved;
+  Event::Handle<float> h_DrHadB_matchable_passedChi2cut_merged;
+
+  Event::Handle<float> h_DrHadB_matchable_failedChi2cut;             // DeltaR between hadronic b's (gen vs reco) that are matchable did NOT pass matching requirements
+  Event::Handle<float> h_DrHadB_matchable_failedChi2cut_resolved;
+  Event::Handle<float> h_DrHadB_matchable_failedChi2cut_merged;
+
+  Event::Handle<float> h_DrLep_matchable;                          // DeltaR between leptons (gen vs reco) are matchable
+  Event::Handle<float> h_DrLep_matchable_resolved;
+  Event::Handle<float> h_DrLep_matchable_merged;
+
+  Event::Handle<float> h_DrLep_matchable_passedChi2cut;            // DeltaR between leptons (gen vs reco) that are matchable ALSO passed matching requirements
+  Event::Handle<float> h_DrLep_matchable_passedChi2cut_resolved;
+  Event::Handle<float> h_DrLep_matchable_passedChi2cut_merged;
+
+  Event::Handle<float> h_DrLep_matchable_failedChi2cut;            // DeltaR between leptons (gen vs reco) that are matchable did NOT pass matching requirements
+  Event::Handle<float> h_DrLep_matchable_failedChi2cut_resolved;
+  Event::Handle<float> h_DrLep_matchable_failedChi2cut_merged;
+
 
   // Lumi hists
   std::unique_ptr<Hists> lumihists_Weights_Init, lumihists_Weights_PU, lumihists_Weights_Lumi, lumihists_Weights_TopPt, lumihists_Weights_MCScale, lumihists_Weights_PS, lumihists_Muon1_LowPt, lumihists_Muon1_HighPt, lumihists_Ele1_LowPt, lumihists_Ele1_HighPt, lumihists_TriggerMuon, lumihists_TriggerEle, lumihists_TwoDCut_Muon, lumihists_TwoDCut_Ele, lumihists_Jet1, lumihists_Jet2, lumihists_MET, lumihists_HTlep, lumihists_Chi2;
@@ -406,11 +515,13 @@ ZprimeAnalysisModule::ZprimeAnalysisModule(uhh2::Context& ctx){
   CandidateBuilder.reset(new ZprimeCandidateBuilder(ctx, mode));
 
   // Zprime discriminators
+  if(isMC) ttgenprod.reset(new TTbarGenProducer(ctx));
   Chi2DiscriminatorZprime.reset(new ZprimeChi2Discriminator(ctx));
   h_is_zprime_reconstructed_chi2 = ctx.get_handle<bool>("is_zprime_reconstructed_chi2");
   CorrectMatchDiscriminatorZprime.reset(new ZprimeCorrectMatchDiscriminator(ctx));
   h_is_zprime_reconstructed_correctmatch = ctx.get_handle<bool>("is_zprime_reconstructed_correctmatch");
   h_BestZprimeCandidateChi2 = ctx.get_handle<ZprimeCandidate*>("ZprimeCandidateBestChi2");
+  h_BestZprimeCandidateCorrectMatch = ctx.get_handle<ZprimeCandidate*>("ZprimeCandidateBestCorrectMatch");
   h_chi2 = ctx.declare_event_output<float> ("rec_chi2");
   h_MET = ctx.declare_event_output<float> ("met_pt");
   h_Mttbar = ctx.declare_event_output<float> ("Mttbar");
@@ -420,6 +531,114 @@ ZprimeAnalysisModule::ZprimeAnalysisModule(uhh2::Context& ctx){
   h_ak4jet1_eta = ctx.declare_event_output<float> ("ak4jet1_eta");
   h_ak8jet1_pt = ctx.declare_event_output<float> ("ak8jet1_pt");
   h_ak8jet1_eta = ctx.declare_event_output<float> ("ak8jet1_eta");
+
+  // Reconstruction Optimization variables
+  h_ttbargen = ctx.get_handle<TTbarGen>("ttbargen");                         // Access to gen-level particles
+
+  h_CHSjets_matched = ctx.get_handle<std::vector<Jet>>("CHS_matched");       // Collection of CHS matched jets
+  h_DeepAK8TopTags = ctx.get_handle< std::vector<TopJet>>("DeepAK8TopTags"); // Collection of DeepAK8TopTagged jets
+
+  h_res_jet_bscore = ctx.declare_event_output<float> ("res_jet_bscore");
+  h_mer_subjet_bscore = ctx.declare_event_output<float> ("mer_subjet_bscore");
+
+  h_bscore_max = ctx.declare_event_output<float> ("bscore_max");
+
+  h_BestChi2 = ctx.declare_event_output<float> ("BestChi2");                               // Total Chi2 of "best" ttbar candidate
+  h_BestChi2_resolved = ctx.declare_event_output<float> ("BestChi2_resolved");
+  h_BestChi2_merged = ctx.declare_event_output<float> ("BestChi2_merged");
+
+  h_BestChi2_passedMatching = ctx.declare_event_output<float> ("BestChi2_passedMatching"); // Total Chi2 of "best" ttbar candidate that ALSO passed matching requirements
+  h_BestChi2_passedMatching_resolved = ctx.declare_event_output<float> ("BestChi2_passedMatching_resolved");
+  h_BestChi2_passedMatching_merged = ctx.declare_event_output<float> ("BestChi2_passedMatching_merged");
+
+  h_BestChi2_failedMatching = ctx.declare_event_output<float> ("BestChi2_failedMatching"); // Total Chi2 of "best" ttbar candidate that did NOT pass matching requirements
+  h_BestChi2_failedMatching_resolved = ctx.declare_event_output<float> ("BestChi2_failedMatching_resolved");
+  h_BestChi2_failedMatching_merged = ctx.declare_event_output<float> ("BestChi2_failedMatching_merged");
+
+  h_BestChi2hadronicleg = ctx.declare_event_output<float> ("BestChi2hadronicleg");                               // Chi2 of hadronic leg of "best" ttbar candidate
+  h_BestChi2hadronicleg_resolved = ctx.declare_event_output<float> ("BestChi2hadronicleg_resolved");
+  h_BestChi2hadronicleg_merged = ctx.declare_event_output<float> ("BestChi2hadronicleg_merged");
+
+  h_BestChi2hadronicleg_passedMatching = ctx.declare_event_output<float> ("BestChi2hadronicleg_passedMatching"); // Chi2 of hadronic leg of "best" ttbar candidate that ALSO passed matching requirements
+  h_BestChi2hadronicleg_passedMatching_resolved = ctx.declare_event_output<float> ("BestChi2hadronicleg_passedMatching_resolved");
+  h_BestChi2hadronicleg_passedMatching_merged = ctx.declare_event_output<float> ("BestChi2hadronicleg_passedMatching_merged");
+
+  h_BestChi2hadronicleg_failedMatching = ctx.declare_event_output<float> ("BestChi2hadronicleg_failedMatching"); // Chi2 of hadronic leg of "best" ttbar candidate that did NOT pass matching requirements
+  h_BestChi2hadronicleg_failedMatching_resolved = ctx.declare_event_output<float> ("BestChi2hadronicleg_failedMatching_resolved");
+  h_BestChi2hadronicleg_failedMatching_merged = ctx.declare_event_output<float> ("BestChi2hadronicleg_failedMatching_merged");
+
+  h_BestChi2leptonicleg = ctx.declare_event_output<float> ("BestChi2leptonicleg");                              // Chi2 of leptonic leg of "best" ttbar candidate
+  h_BestChi2leptonicleg_resolved = ctx.declare_event_output<float> ("BestChi2leptonicleg_resolved");
+  h_BestChi2leptonicleg_merged = ctx.declare_event_output<float> ("BestChi2leptonicleg_merged");
+
+  h_BestChi2leptonicleg_passedMatching = ctx.declare_event_output<float> ("BestChi2leptonicleg_passedMatching"); // Chi2 of leptonic leg of "best" ttbar candidate that ALSO passed matching requirements
+  h_BestChi2leptonicleg_passedMatching_resolved = ctx.declare_event_output<float> ("BestChi2leptonicleg_passedMatching_resolved");
+  h_BestChi2leptonicleg_passedMatching_merged = ctx.declare_event_output<float> ("BestChi2leptonicleg_passedMatching_merged");
+
+  h_BestChi2leptonicleg_failedMatching = ctx.declare_event_output<float> ("BestChi2leptonicleg_failedMatching"); // Chi2 of leptonic leg of "best" ttbar candidate that did NOT pass matching requirements
+  h_BestChi2leptonicleg_failedMatching_resolved = ctx.declare_event_output<float> ("BestChi2leptonicleg_failedMatching_resolved");
+  h_BestChi2leptonicleg_failedMatching_merged = ctx.declare_event_output<float> ("BestChi2leptonicleg_failedMatching_merged");
+
+  h_DrHadB = ctx.declare_event_output<float> ("DrHadB");                              // DeltaR between hadronic b's (gen vs reco)
+  h_DrHadB_resolved = ctx.declare_event_output<float> ("DrHadB_resolved");
+  h_DrHadB_merged = ctx.declare_event_output<float> ("DrHadB_merged");
+
+  h_DrHadB_passedChi2cut = ctx.declare_event_output<float> ("DrHadB_passedChi2cut");  // DeltaR between hadronic b's (gen vs reco) that ALSO passed the chi2 cut
+  h_DrHadB_passedChi2cut_resolved = ctx.declare_event_output<float> ("DrHadB_passedChi2cut_resolved");
+  h_DrHadB_passedChi2cut_merged = ctx.declare_event_output<float> ("DrHadB_passedChi2cut_merged");
+
+  h_DrHadB_failedChi2cut = ctx.declare_event_output<float> ("DrHadB_failedChi2cut");  // DeltaR between hadronic b's (gen vs reco) that did NOT pass the chi2 cut
+  h_DrHadB_failedChi2cut_resolved = ctx.declare_event_output<float> ("DrHadB_failedChi2cut_resolved");
+  h_DrHadB_failedChi2cut_merged = ctx.declare_event_output<float> ("DrHadB_failedChi2cut_merged");
+
+  h_DrLep = ctx.declare_event_output<float> ("DrLep");                             // DeltaR between lepton's (gen vs reco)
+  h_DrLep_resolved = ctx.declare_event_output<float> ("DrLep_resolved");
+  h_DrLep_merged = ctx.declare_event_output<float> ("DrLep_merged");
+
+  h_DrLep_passedChi2cut = ctx.declare_event_output<float> ("DrLep_passedChi2cut"); // DeltaR between lepton's (gen vs reco) that ALSO passed the chi2 cut
+  h_DrLep_passedChi2cut_resolved = ctx.declare_event_output<float> ("DrLep_passedChi2cut_resolved");
+  h_DrLep_passedChi2cut_merged = ctx.declare_event_output<float> ("DrLep_passedChi2cut_merged");
+
+  h_DrLep_failedChi2cut = ctx.declare_event_output<float> ("DrLep_failedChi2cut"); // DeltaR between lepton's (gen vs reco) that did NOT pass the chi2 cut
+  h_DrLep_failedChi2cut_resolved = ctx.declare_event_output<float> ("DrLep_failedChi2cut_resolved");
+  h_DrLep_failedChi2cut_merged = ctx.declare_event_output<float> ("DrLep_failedChi2cut_merged");
+
+  h_correctDr = ctx.declare_event_output<float> ("correctDr");                             // correct_dr of ttbar candidates that pass matching requirements
+  h_correctDr_resolved = ctx.declare_event_output<float> ("correctDr_resolved");
+  h_correctDr_merged = ctx.declare_event_output<float> ("correctDr_merged");
+
+  h_correctDr_passedChi2cut = ctx.declare_event_output<float> ("correctDr_passedChi2cut"); // correct_dr of ttbar candidates that ALSO passed the chi2 cut
+  h_correctDr_passedChi2cut_resolved = ctx.declare_event_output<float> ("correctDr_passedChi2cut_resolved");
+  h_correctDr_passedChi2cut_merged = ctx.declare_event_output<float> ("correctDr_passedChi2cut_merged");
+
+  h_correctDr_failedChi2cut = ctx.declare_event_output<float> ("correctDr_failedChi2cut"); // correct_dr of ttbar candidates that did NOT pass the chi2 cut
+  h_correctDr_failedChi2cut_resolved = ctx.declare_event_output<float> ("correctDr_failedChi2cut_resolved");
+  h_correctDr_failedChi2cut_merged = ctx.declare_event_output<float> ("correctDr_failedChi2cut_merged");
+
+  h_DrHadB_matchable = ctx.declare_event_output<float> ("DrHadB_matchable");                             // DeltaR between hadronic b's (gen vs reco) that are matchable
+  h_DrHadB_matchable_resolved = ctx.declare_event_output<float> ("DrHadB_matchable_resolved");
+  h_DrHadB_matchable_merged = ctx.declare_event_output<float> ("DrHadB_matchable_merged");
+
+  h_DrHadB_matchable_passedChi2cut = ctx.declare_event_output<float> ("DrHadB_matchable_passedChi2cut"); // DeltaR between hadronic b's (gen vs reco) that are matchable ALSO passed the chi2 cut
+  h_DrHadB_matchable_passedChi2cut_resolved = ctx.declare_event_output<float> ("DrHadB_matchable_passedChi2cut_resolved");
+  h_DrHadB_matchable_passedChi2cut_merged = ctx.declare_event_output<float> ("DrHadB_matchable_passedChi2cut_merged");
+
+  h_DrHadB_matchable_failedChi2cut = ctx.declare_event_output<float> ("DrHadB_matchable_failedChi2cut"); // DeltaR between hadronic b's (gen vs reco) that are matchable did NOT pass the chi2 cut
+  h_DrHadB_matchable_failedChi2cut_resolved = ctx.declare_event_output<float> ("DrHadB_matchable_failedChi2cut_resolved");
+  h_DrHadB_matchable_failedChi2cut_merged = ctx.declare_event_output<float> ("DrHadB_matchable_failedChi2cut_merged");
+
+  h_DrLep_matchable = ctx.declare_event_output<float> ("DrLep_matchable");                             // DeltaR between lepton's (gen vs reco) are matchable
+  h_DrLep_matchable_resolved = ctx.declare_event_output<float> ("DrLep_matchable_resolved");
+  h_DrLep_matchable_merged = ctx.declare_event_output<float> ("DrLep_matchable_merged");
+
+  h_DrLep_matchable_passedChi2cut = ctx.declare_event_output<float> ("DrLep_matchable_passedChi2cut"); // DeltaR between lepton's (gen vs reco) that are matchable ALSO passed the chi2 cut
+  h_DrLep_matchable_passedChi2cut_resolved = ctx.declare_event_output<float> ("DrLep_matchable_passedChi2cut_resolved");
+  h_DrLep_matchable_passedChi2cut_merged = ctx.declare_event_output<float> ("DrLep_matchable_passedChi2cut_merged");
+
+  h_DrLep_matchable_failedChi2cut = ctx.declare_event_output<float> ("DrLep_matchable_failedChi2cut");  // DeltaR between lepton's (gen vs reco) that are matchable did NOT pass the chi2 cut
+  h_DrLep_matchable_failedChi2cut_resolved = ctx.declare_event_output<float> ("DrLep_matchable_failedChi2cut_resolved");
+  h_DrLep_matchable_failedChi2cut_merged = ctx.declare_event_output<float> ("DrLep_matchable_failedChi2cut_merged");
+
 
   h_NPV = ctx.declare_event_output<int> ("NPV");
   h_weight = ctx.declare_event_output<float> ("weight");
@@ -511,6 +730,108 @@ bool ZprimeAnalysisModule::process(uhh2::Event& event){
   event.set(h_NPV,-100);
   event.set(h_weight,-100);
 
+  event.set(h_res_jet_bscore, -10);
+  event.set(h_mer_subjet_bscore, -10);
+
+  event.set(h_bscore_max, -10);
+
+  // Chi2 values are between 0 and ~10,000
+  event.set(h_BestChi2, -10);
+  event.set(h_BestChi2_resolved, -10);
+  event.set(h_BestChi2_merged, -10);
+
+  event.set(h_BestChi2_passedMatching, -10);
+  event.set(h_BestChi2_passedMatching_resolved, -10);
+  event.set(h_BestChi2_passedMatching_merged, -10);
+
+  event.set(h_BestChi2_failedMatching, -10);
+  event.set(h_BestChi2_failedMatching_resolved, -10);
+  event.set(h_BestChi2_failedMatching_merged, -10);
+
+  event.set(h_BestChi2hadronicleg, -10);
+  event.set(h_BestChi2hadronicleg_resolved, -10);
+  event.set(h_BestChi2hadronicleg_merged, -10);
+
+  event.set(h_BestChi2hadronicleg_passedMatching, -10);
+  event.set(h_BestChi2hadronicleg_passedMatching_resolved, -10);
+  event.set(h_BestChi2hadronicleg_passedMatching_merged, -10);
+
+  event.set(h_BestChi2hadronicleg_failedMatching, -10);
+  event.set(h_BestChi2hadronicleg_failedMatching_resolved, -10);
+  event.set(h_BestChi2hadronicleg_failedMatching_merged, -10);
+
+  event.set(h_BestChi2leptonicleg, -10);
+  event.set(h_BestChi2leptonicleg_resolved, -10);
+  event.set(h_BestChi2leptonicleg_merged, -10);
+
+  event.set(h_BestChi2leptonicleg_passedMatching, -10);
+  event.set(h_BestChi2leptonicleg_passedMatching_resolved, -10);
+  event.set(h_BestChi2leptonicleg_passedMatching_merged, -10);
+
+  event.set(h_BestChi2leptonicleg_failedMatching, -10);
+  event.set(h_BestChi2leptonicleg_failedMatching_resolved, -10);
+  event.set(h_BestChi2leptonicleg_failedMatching_merged, -10);
+
+  event.set(h_DrHadB, -10);
+  event.set(h_DrHadB_resolved, -10);
+  event.set(h_DrHadB_merged, -10);
+
+  event.set(h_DrHadB_passedChi2cut, -10);
+  event.set(h_DrHadB_passedChi2cut_resolved, -10);
+  event.set(h_DrHadB_passedChi2cut_merged, -10);
+
+  event.set(h_DrHadB_failedChi2cut, -10);
+  event.set(h_DrHadB_failedChi2cut_resolved, -10);
+  event.set(h_DrHadB_failedChi2cut_merged, -10);
+
+  event.set(h_DrLep, -10);
+  event.set(h_DrLep_resolved, -10);
+  event.set(h_DrLep_merged, -10);
+
+  event.set(h_DrLep_passedChi2cut, -10);
+  event.set(h_DrLep_passedChi2cut_resolved, -10);
+  event.set(h_DrLep_passedChi2cut_merged, -10);
+
+  event.set(h_DrLep_failedChi2cut, -10);
+  event.set(h_DrLep_failedChi2cut_resolved, -10);
+  event.set(h_DrLep_failedChi2cut_merged, -10);
+
+  // Require to pass CorrectMatch selection
+  event.set(h_correctDr, -10);
+  event.set(h_correctDr_resolved, -10);
+  event.set(h_correctDr_merged, -10);
+
+  event.set(h_correctDr_passedChi2cut, -10);
+  event.set(h_correctDr_passedChi2cut_resolved, -10);
+  event.set(h_correctDr_passedChi2cut_merged, -10);
+
+  event.set(h_correctDr_failedChi2cut, -10);
+  event.set(h_correctDr_failedChi2cut_resolved, -10);
+  event.set(h_correctDr_failedChi2cut_merged, -10);
+
+  event.set(h_DrHadB_matchable, -10);
+  event.set(h_DrHadB_matchable_resolved, -10);
+  event.set(h_DrHadB_matchable_merged, -10);
+
+  event.set(h_DrHadB_matchable_passedChi2cut, -10);
+  event.set(h_DrHadB_matchable_passedChi2cut_resolved, -10);
+  event.set(h_DrHadB_matchable_passedChi2cut_merged, -10);
+
+  event.set(h_DrHadB_matchable_failedChi2cut, -10);
+  event.set(h_DrHadB_matchable_failedChi2cut_resolved, -10);
+  event.set(h_DrHadB_matchable_failedChi2cut_merged, -10);
+
+  event.set(h_DrLep_matchable, -10);
+  event.set(h_DrLep_matchable_resolved, -10);
+  event.set(h_DrLep_matchable_merged, -10);
+
+  event.set(h_DrLep_matchable_passedChi2cut, -10);
+  event.set(h_DrLep_matchable_passedChi2cut_resolved, -10);
+  event.set(h_DrLep_matchable_passedChi2cut_merged, -10);
+
+  event.set(h_DrLep_matchable_failedChi2cut, -10);
+  event.set(h_DrLep_matchable_failedChi2cut_resolved, -10);
+  event.set(h_DrLep_matchable_failedChi2cut_merged, -10);
 
   if(!event.isRealData){
     if(!SignSplit->passes(event)) return false;
@@ -998,6 +1319,353 @@ bool ZprimeAnalysisModule::process(uhh2::Event& event){
 
   // histograms for systematics
   // if(!isEleTriggerMeasurement) SystematicsModule->process(event);
+
+
+  // Begin Reconstruction Efficiency Study ------------------------------------------------------------------------------------------------------
+
+  // Variable to access gen-ttbar
+  TTbarGen ttbargen = event.get(h_ttbargen);
+
+  // Check if ttbar decayed semileptonically
+  if(ttbargen.DecayChannel() == TTbarGen::e_muhad || ttbargen.DecayChannel() == TTbarGen::e_ehad){
+  
+    // Tells me that ttbar was reconstructed using Chi2DiscriminatorZprime
+    bool is_zprime_reconstructed_chi2 = event.get(h_is_zprime_reconstructed_chi2);
+
+    // Tells me that ttbar was reconstructed using CorrectMatchDiscriminatorZprime
+    bool is_zprime_reconstructed_correctmatch = event.get(h_is_zprime_reconstructed_correctmatch);
+
+    // Best Chi2 Candidate variables
+    ZprimeCandidate* BestCandidate_chi2 = event.get(h_BestZprimeCandidateChi2);     // best ttbar candidate based on Chi2
+    float bestChi2hadronicleg = BestCandidate_chi2->discriminator("chi2_hadronic"); // = pow((mhad - mtophad_) / sigmatophad_,2)
+    float bestChi2leptonicleg = BestCandidate_chi2->discriminator("chi2_leptonic"); // = pow((mlep - mtoplep_) / sigmatoplep_,2)
+    float bestChi2 =            BestCandidate_chi2->discriminator("chi2_total");    // = chi2_hadronic + chi2_leptonic
+
+    // Variables for identifying btagged hadronic jet
+    vector <Jet> AK4CHSjets_matched = event.get(h_CHSjets_matched);                 // AK4Puppijets that have been matched to CHSjets
+    vector <float> jets_hadronic_bscores;                                           // bScores-vector for resolved hadronic jets
+    float btag_medWP = 0.2783;    // medium WP for UL18
+    // float btag_medWP = 0.3040; // medium WP for UL17
+
+    // DeltaR between gen- and reco-level decay products
+    float DrHadB, DrLep;
+
+
+    // Begin Chi2 section --- 
+    if(is_zprime_reconstructed_chi2){ // Events whose besCandidates were assigned a Chi2 value by Chi2DiscriminatorZprime
+
+      bool is_toptag_reconstruction = BestCandidate_chi2->is_toptag_reconstruction();  // Reconstruction process id: to distinguish toplogy of ttbar reconstruction (0=resolved or 1=merged)
+
+      // Variables for identifying btagged hadronic jet
+      vector<Particle> jets_had_resolved = BestCandidate_chi2->jets_hadronic();        // vector of resolved hadronic jets
+
+      // Define 4vector of hadronic b-jet
+      LorentzVector HadTop_b;
+
+      // Extract Hadronic bjet ------------------------------------------------------------------------------
+      float bscore_max = -2;
+
+      // Extract highest bscore of Resolved jets
+      if(!is_toptag_reconstruction){
+        // Loop over resolved hadronic jets to find their bscore via CHS jets
+        for(unsigned int i=0; i<jets_had_resolved.size(); i++){
+          double deltaR_min = 99;
+          // Match resolved hadronic jets to CHS jets (which have bscores)
+          for(unsigned int j=0; j<AK4CHSjets_matched.size(); j++){
+            double deltaR_CHS = deltaR(jets_had_resolved.at(i), AK4CHSjets_matched.at(j));
+            if(deltaR_CHS < deltaR_min) deltaR_min = deltaR_CHS;}
+          // Build bScore-vector for resolved hadronic jets whose bscore will correspond by index
+          for(unsigned int k=0; k<AK4CHSjets_matched.size(); k++){
+            if(deltaR(jets_had_resolved.at(i), AK4CHSjets_matched.at(k)) == deltaR_min) 
+            jets_hadronic_bscores.emplace_back(AK4CHSjets_matched.at(k).btag_DeepJet());}
+        }
+        // Loop over bScores-vector to extract highest bscore
+        for(unsigned int i=0; i<jets_hadronic_bscores.size(); i++){
+          float bscore = jets_hadronic_bscores.at(i);
+          if(bscore > bscore_max) bscore_max = bscore;
+        }
+        // Plot all bscores of resolved top's jets
+        for(unsigned int j=0; j<jets_hadronic_bscores.size(); j++){
+          float res_jet_bscore = jets_hadronic_bscores.at(j);
+          event.set(h_res_jet_bscore, res_jet_bscore);
+        }
+      }
+
+      // Extract highest bscore of Merged jet
+      if(is_toptag_reconstruction){
+        // Loop over hadronic top's subjets to extract highest bscore
+        for(unsigned int i=0; i < BestCandidate_chi2->tophad_topjet_ptr()->subjets().size(); i++){
+          float bscore = BestCandidate_chi2->tophad_topjet_ptr()->subjets().at(i).btag_DeepJet();
+          if(bscore > bscore_max) bscore_max = bscore;
+        }
+        // Plot all bscores of merged top's subjets
+        for(unsigned int j=0; j < BestCandidate_chi2->tophad_topjet_ptr()->subjets().size(); j++){
+          float mer_subjet_bscore = BestCandidate_chi2->tophad_topjet_ptr()->subjets().at(j).btag_DeepJet();
+          event.set(h_mer_subjet_bscore, mer_subjet_bscore);
+        }
+      }
+
+      // Cut on bscore_max >= btag_WP
+      if(bscore_max >= btag_medWP){
+        event.set(h_bscore_max, bscore_max); // Plot max bscores
+
+        // Assign Hadronic bjet in Resolved topology
+        if(!is_toptag_reconstruction){
+          for(unsigned int i=0; i< jets_had_resolved.size(); i++){
+            float bscore = jets_hadronic_bscores.at(i);
+            if(bscore == bscore_max) HadTop_b = jets_had_resolved.at(i).v4();
+          }
+        }
+        // Assign Hadronic bjet in Merged topology
+        if(is_toptag_reconstruction){
+          for(unsigned int j=0; j < BestCandidate_chi2->tophad_topjet_ptr()->subjets().size(); j++){
+            float bscore = BestCandidate_chi2->tophad_topjet_ptr()->subjets().at(j).btag_DeepJet();
+            if(bscore == bscore_max) HadTop_b = BestCandidate_chi2->tophad_topjet_ptr()->subjets().at(j).v4();
+          }
+        }
+      }
+      // Hadronic bjet Extracted ------------------------------------------------------------------------------
+      DrHadB = deltaR(ttbargen.BHad().v4(), HadTop_b);
+
+      // Define 4vector of lepton
+      LorentzVector LepTop_lepton = BestCandidate_chi2->lepton().v4();
+      DrLep = deltaR(ttbargen.ChargedLepton().v4(), LepTop_lepton);
+
+
+      if(bestChi2 != -10){
+        // Fill Chi2 for
+        event.set(h_BestChi2, bestChi2);   // all ttbar
+        event.set(h_BestChi2hadronicleg, bestChi2hadronicleg);
+        event.set(h_BestChi2leptonicleg, bestChi2leptonicleg);
+        if(!is_toptag_reconstruction){   // resolved ttbar
+          event.set(h_BestChi2_resolved, bestChi2); 
+          event.set(h_BestChi2hadronicleg_resolved, bestChi2hadronicleg);
+          event.set(h_BestChi2leptonicleg_resolved, bestChi2leptonicleg);
+        }
+        if(is_toptag_reconstruction){   // merged ttbar
+          event.set(h_BestChi2_merged, bestChi2);   
+          event.set(h_BestChi2hadronicleg_merged, bestChi2hadronicleg);
+          event.set(h_BestChi2leptonicleg_merged, bestChi2leptonicleg);
+        }
+
+        if(is_zprime_reconstructed_correctmatch){ // Events that ALSO passed the matching requirements
+
+          // Fill Chi2 for
+          event.set(h_BestChi2_passedMatching, bestChi2);   // all ttbar
+          event.set(h_BestChi2hadronicleg_passedMatching, bestChi2hadronicleg);
+          event.set(h_BestChi2leptonicleg_passedMatching, bestChi2leptonicleg);
+          if(!is_toptag_reconstruction){   // resolved ttbar
+            event.set(h_BestChi2_passedMatching_resolved, bestChi2); 
+            event.set(h_BestChi2hadronicleg_passedMatching_resolved, bestChi2hadronicleg);
+            event.set(h_BestChi2leptonicleg_passedMatching_resolved, bestChi2leptonicleg);
+          }
+          if(is_toptag_reconstruction){   // merged ttbar
+            event.set(h_BestChi2_passedMatching_merged, bestChi2);   
+            event.set(h_BestChi2hadronicleg_passedMatching_merged, bestChi2hadronicleg);
+            event.set(h_BestChi2leptonicleg_passedMatching_merged, bestChi2leptonicleg);
+          }
+        }
+        else{ // Events that did NOT pass the matching requirements
+          event.set(h_BestChi2_failedMatching, bestChi2);   // all ttbar
+          event.set(h_BestChi2hadronicleg_failedMatching, bestChi2hadronicleg);
+          event.set(h_BestChi2leptonicleg_failedMatching, bestChi2leptonicleg);
+          if(!is_toptag_reconstruction){   // resolved ttbar
+            event.set(h_BestChi2_failedMatching_resolved, bestChi2); 
+            event.set(h_BestChi2hadronicleg_failedMatching_resolved, bestChi2hadronicleg);
+            event.set(h_BestChi2leptonicleg_failedMatching_resolved, bestChi2leptonicleg);
+          }
+          if(is_toptag_reconstruction){   // merged ttbar
+            event.set(h_BestChi2_failedMatching_merged, bestChi2);   
+            event.set(h_BestChi2hadronicleg_failedMatching_merged, bestChi2hadronicleg);
+            event.set(h_BestChi2leptonicleg_failedMatching_merged, bestChi2leptonicleg);
+          }
+        }
+        
+      }
+
+      // Fill DeltaR for
+      if(DrHadB != -10){
+        event.set(h_DrHadB, DrHadB);   // all hadronic b-quarks
+        if(!is_toptag_reconstruction) event.set(h_DrHadB_resolved, DrHadB);   // resolved hadronic b-quarks
+        if(is_toptag_reconstruction) event.set(h_DrHadB_merged, DrHadB);   // merged hadronic b-quarks
+
+        if(bestChi2 != -10 && bestChi2 < 30){ // Events that ALSO passed the chi2 cut
+          event.set(h_DrHadB_passedChi2cut, DrHadB); // all hadronic b-quarks
+          if(!is_toptag_reconstruction) event.set(h_DrHadB_passedChi2cut_resolved, DrHadB); // resolved hadronic b-quarks
+          if(is_toptag_reconstruction) event.set(h_DrHadB_passedChi2cut_merged, DrHadB); // merged hadronic b-quarks
+        }
+        if(bestChi2 != -10 && bestChi2 >= 30){ // Events that did NOT pass the chi2 cut
+          event.set(h_DrHadB_failedChi2cut, DrHadB); // all hadronic b-quarks
+          if(!is_toptag_reconstruction) event.set(h_DrHadB_failedChi2cut_resolved, DrHadB); // resolved hadronic b-quarks
+          if(is_toptag_reconstruction) event.set(h_DrHadB_failedChi2cut_merged, DrHadB); // merged hadronic b-quarks
+        }
+      }
+
+      if(DrLep != -10){ 
+        event.set(h_DrLep, DrLep);   // all leptons
+        if(!is_toptag_reconstruction) event.set(h_DrLep_resolved, DrLep);   // resolved leptons
+        if(is_toptag_reconstruction) event.set(h_DrLep_merged, DrLep);   // merged leptons
+
+        if(is_zprime_reconstructed_chi2 && bestChi2 != -10 && bestChi2 < 30){ // Events that ALSO passed the chi2 cut
+          event.set(h_DrLep_passedChi2cut, DrLep); // all leptons
+          if(!is_toptag_reconstruction) event.set(h_DrLep_passedChi2cut_resolved, DrLep); // resolved leptons
+          if(is_toptag_reconstruction) event.set(h_DrLep_passedChi2cut_merged, DrLep); // merged leptons
+        }
+        if(is_zprime_reconstructed_chi2 && bestChi2 != -10 && bestChi2 >= 30){ // Events that did NOT pass the chi2 cut
+          event.set(h_DrLep_failedChi2cut, DrLep); // all hadronic b-quarks
+          if(!is_toptag_reconstruction) event.set(h_DrLep_failedChi2cut_resolved, DrLep); // resolved leptons
+          if(is_toptag_reconstruction) event.set(h_DrLep_failedChi2cut_merged, DrLep); // merged leptons
+        }
+      }
+
+    }
+    // End Chi2 section ---
+
+
+
+    // Begin CorrectMatch section ---
+    if(is_zprime_reconstructed_correctmatch){ // Events whose besCandidates passed matching requirements and were assigned a correct_dr value by CorrectMatchDiscriminatorZprime
+
+      // Best CorrectMatch Candidate variables
+      ZprimeCandidate* BestCandidate_correctMatch = event.get(h_BestZprimeCandidateCorrectMatch);   // best ttbar candidate based on Matching parameter dr
+      float correct_dr = BestCandidate_correctMatch->discriminator("correct_match");                // = min(sum(dr)) between all pairs of gen-lvl decay products and corresponding reco-lvl objects
+
+      // Variables for identifying btagged hadronic jet
+      vector<Particle> jets_had_resolved = BestCandidate_correctMatch->jets_hadronic();             // vector of resolved hadronic jets
+      bool is_toptag_reconstruction = BestCandidate_correctMatch->is_toptag_reconstruction();       // Reconstruction process id: to distinguish toplogy of ttbar reconstruction (0=resolved or 1=merged)
+
+      // Define 4vector of hadronic b-jet
+      LorentzVector HadTop_b;
+
+      // Extract Hadronic bjet ------------------------------------------------------------------------------
+      float bscore_max = -2;
+
+      // Extract highest bscore of Resolved jets
+      if(!is_toptag_reconstruction){
+        // Loop over resolved hadronic jets to find their bscore via CHS jets
+        for(unsigned int i=0; i<jets_had_resolved.size(); i++){
+          double deltaR_min = 99;
+          // Match resolved hadronic jets to CHS jets (which have bscores)
+          for(unsigned int j=0; j<AK4CHSjets_matched.size(); j++){
+            double deltaR_CHS = deltaR(jets_had_resolved.at(i), AK4CHSjets_matched.at(j));
+            if(deltaR_CHS < deltaR_min) deltaR_min = deltaR_CHS;}
+          // Build bScore-vector for resolved hadronic jets whose bscore will correspond by index
+          for(unsigned int k=0; k<AK4CHSjets_matched.size(); k++){
+            if(deltaR(jets_had_resolved.at(i), AK4CHSjets_matched.at(k)) == deltaR_min) 
+            jets_hadronic_bscores.emplace_back(AK4CHSjets_matched.at(k).btag_DeepJet());}
+        }
+        // Loop over bScores-vector to extract highest bscore
+        for(unsigned int i=0; i<jets_hadronic_bscores.size(); i++){
+          float bscore = jets_hadronic_bscores.at(i);
+          if(bscore > bscore_max) bscore_max = bscore;
+        }
+        // Plot all bscores of resolved top's jets
+        for(unsigned int j=0; j<jets_hadronic_bscores.size(); j++){
+          float res_jet_bscore = jets_hadronic_bscores.at(j);
+          event.set(h_res_jet_bscore, res_jet_bscore);
+        }
+      }
+
+      // Extract highest bscore of Merged jet
+      if(is_toptag_reconstruction){
+        // Loop over hadronic top's subjets to extract highest bscore
+        for(unsigned int i=0; i < BestCandidate_correctMatch->tophad_topjet_ptr()->subjets().size(); i++){
+          float bscore = BestCandidate_correctMatch->tophad_topjet_ptr()->subjets().at(i).btag_DeepJet();
+          if(bscore > bscore_max) bscore_max = bscore;
+        }
+        // Plot all bscores of merged top's subjets
+        for(unsigned int j=0; j < BestCandidate_correctMatch->tophad_topjet_ptr()->subjets().size(); j++){
+          float mer_subjet_bscore = BestCandidate_correctMatch->tophad_topjet_ptr()->subjets().at(j).btag_DeepJet();
+          event.set(h_mer_subjet_bscore, mer_subjet_bscore);
+        }
+      }
+
+      // Cut on bscore_max >= btag_WP
+      if(bscore_max >= btag_medWP){
+        event.set(h_bscore_max, bscore_max); // Plot max bscores
+
+        // Assign Hadronic bjet in Resolved topology
+        if(!is_toptag_reconstruction){
+          for(unsigned int i=0; i< jets_had_resolved.size(); i++){
+            float bscore = jets_hadronic_bscores.at(i);
+            if(bscore == bscore_max) HadTop_b = jets_had_resolved.at(i).v4();
+          }
+        }
+        // Assign Hadronic bjet in Merged topology
+        if(is_toptag_reconstruction){
+          for(unsigned int j=0; j < BestCandidate_correctMatch->tophad_topjet_ptr()->subjets().size(); j++){
+            float bscore = BestCandidate_correctMatch->tophad_topjet_ptr()->subjets().at(j).btag_DeepJet();
+            if(bscore == bscore_max) HadTop_b = BestCandidate_correctMatch->tophad_topjet_ptr()->subjets().at(j).v4();
+          }
+        }
+      }
+      // Hadronic bjet Extracted ------------------------------------------------------------------------------
+      DrHadB = deltaR(ttbargen.BHad().v4(), HadTop_b);
+
+      // Define 4vector of lepton
+      LorentzVector LepTop_lepton = BestCandidate_correctMatch->lepton().v4();
+      DrLep = deltaR(ttbargen.ChargedLepton().v4(), LepTop_lepton);
+
+
+      if(correct_dr != -10 && correct_dr != 9999999){
+
+        // Fill correct_dr for
+        event.set(h_correctDr, correct_dr); // all ttbar
+        if(!is_toptag_reconstruction) event.set(h_correctDr_resolved, correct_dr); // resolved ttbar
+        if(is_toptag_reconstruction) event.set(h_correctDr_merged, correct_dr); // merged ttbar
+
+        if(is_zprime_reconstructed_chi2 && bestChi2 != -10 && bestChi2 < 30){ // Events that ALSO passed the chi2 cut
+          event.set(h_correctDr_passedChi2cut, correct_dr); // all ttbar
+          if(!is_toptag_reconstruction) event.set(h_correctDr_passedChi2cut_resolved, correct_dr); // resolved ttbar
+          if(is_toptag_reconstruction) event.set(h_correctDr_passedChi2cut_merged, correct_dr); // merged ttbar
+        }
+        if(is_zprime_reconstructed_chi2 && bestChi2 != -10 && bestChi2 >= 30){ // Events that failed the chi2 cut
+          event.set(h_correctDr_failedChi2cut, correct_dr); // all ttbar
+          if(!is_toptag_reconstruction) event.set(h_correctDr_failedChi2cut_resolved, correct_dr); // resolved ttbar
+          if(is_toptag_reconstruction) event.set(h_correctDr_failedChi2cut_merged, correct_dr); // merged ttbar
+        }
+
+      }
+
+      // Fill DeltaR for
+      if(DrHadB != -10){
+        event.set(h_DrHadB_matchable, DrHadB);   // all hadronic b-quarks
+        if(!is_toptag_reconstruction) event.set(h_DrHadB_matchable_resolved, DrHadB);   // resolved hadronic b-quarks
+        if(is_toptag_reconstruction) event.set(h_DrHadB_matchable_merged, DrHadB);   // merged hadronic b-quarks
+
+        if(is_zprime_reconstructed_chi2 && bestChi2 != -10 && bestChi2 < 30){ // Events that ALSO passed the chi2 cut
+          event.set(h_DrHadB_matchable_passedChi2cut, DrHadB); // all hadronic b-quarks
+          if(!is_toptag_reconstruction) event.set(h_DrHadB_matchable_passedChi2cut_resolved, DrHadB); // resolved hadronic b-quarks
+          if(is_toptag_reconstruction) event.set(h_DrHadB_matchable_passedChi2cut_merged, DrHadB); // merged hadronic b-quarks
+        }
+        if(is_zprime_reconstructed_chi2 && bestChi2 != -10 && bestChi2 >= 30){ // Events that did NOT pass the chi2 cut
+          event.set(h_DrHadB_matchable_failedChi2cut, DrHadB); // all hadronic b-quarks
+          if(!is_toptag_reconstruction) event.set(h_DrHadB_matchable_failedChi2cut_resolved, DrHadB); // resolved hadronic b-quarks
+          if(is_toptag_reconstruction) event.set(h_DrHadB_matchable_failedChi2cut_merged, DrHadB); // merged hadronic b-quarks
+        }
+      }
+
+      if(DrLep != -10){ 
+        event.set(h_DrLep_matchable, DrLep);   // all leptons
+        if(!is_toptag_reconstruction) event.set(h_DrLep_matchable_resolved, DrLep);   // resolved leptons
+        if(is_toptag_reconstruction) event.set(h_DrLep_matchable_merged, DrLep);   // merged leptons
+
+        if(is_zprime_reconstructed_chi2 && bestChi2 != -10 && bestChi2 < 30){ // Events that ALSO passed the chi2 cut
+          event.set(h_DrLep_matchable_passedChi2cut, DrLep); // all leptons
+          if(!is_toptag_reconstruction) event.set(h_DrLep_matchable_passedChi2cut_resolved, DrLep); // resolved leptons
+          if(is_toptag_reconstruction) event.set(h_DrLep_matchable_passedChi2cut_merged, DrLep); // merged leptons
+        }
+        if(is_zprime_reconstructed_chi2 && bestChi2 != -10 && bestChi2 >= 30){ // Events that did NOT pass the chi2 cut
+          event.set(h_DrLep_matchable_failedChi2cut, DrLep); // all hadronic b-quarks
+          if(!is_toptag_reconstruction) event.set(h_DrLep_matchable_failedChi2cut_resolved, DrLep); // resolved leptons
+          if(is_toptag_reconstruction) event.set(h_DrLep_matchable_failedChi2cut_merged, DrLep); // merged leptons
+        }
+      }
+
+    }
+    // End CorrectMatch section ---
+
+  }
 
   return true;
 }
