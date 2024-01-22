@@ -146,8 +146,11 @@ protected:
 
   Event::Handle<float> h_res_jet_bscore;
   Event::Handle<float> h_mer_subjet_bscore;
-
   Event::Handle<float> h_bscore_max;
+
+  Event::Handle<float> h_res_jet_bscore_matchable;
+  Event::Handle<float> h_mer_subjet_bscore_matchable;
+  Event::Handle<float> h_bscore_max_matchable;
 
   Event::Handle<float> h_BestChi2;                            // Total Chi2 of "best" ttbar candidate
   Event::Handle<float> h_BestChi2_resolved;
@@ -540,8 +543,11 @@ ZprimeAnalysisModule::ZprimeAnalysisModule(uhh2::Context& ctx){
 
   h_res_jet_bscore = ctx.declare_event_output<float> ("res_jet_bscore");
   h_mer_subjet_bscore = ctx.declare_event_output<float> ("mer_subjet_bscore");
-
   h_bscore_max = ctx.declare_event_output<float> ("bscore_max");
+
+  h_res_jet_bscore_matchable = ctx.declare_event_output<float> ("res_jet_bscore_matchable");
+  h_mer_subjet_bscore_matchable = ctx.declare_event_output<float> ("mer_subjet_bscore_matchable");
+  h_bscore_max_matchable = ctx.declare_event_output<float> ("bscore_max_matchable");
 
   h_BestChi2 = ctx.declare_event_output<float> ("BestChi2");                               // Total Chi2 of "best" ttbar candidate
   h_BestChi2_resolved = ctx.declare_event_output<float> ("BestChi2_resolved");
@@ -732,8 +738,11 @@ bool ZprimeAnalysisModule::process(uhh2::Event& event){
 
   event.set(h_res_jet_bscore, -10);
   event.set(h_mer_subjet_bscore, -10);
-
   event.set(h_bscore_max, -10);
+
+  event.set(h_res_jet_bscore_matchable, -10);
+  event.set(h_mer_subjet_bscore_matchable, -10);
+  event.set(h_bscore_max_matchable, -10);
 
   // Chi2 values are between 0 and ~10,000
   event.set(h_BestChi2, -10);
@@ -1562,7 +1571,7 @@ bool ZprimeAnalysisModule::process(uhh2::Event& event){
         // Plot all bscores of resolved top's jets
         for(unsigned int j=0; j<jets_hadronic_bscores.size(); j++){
           float res_jet_bscore = jets_hadronic_bscores.at(j);
-          event.set(h_res_jet_bscore, res_jet_bscore);
+          event.set(h_res_jet_bscore_matchable, res_jet_bscore);
         }
       }
 
@@ -1576,13 +1585,13 @@ bool ZprimeAnalysisModule::process(uhh2::Event& event){
         // Plot all bscores of merged top's subjets
         for(unsigned int j=0; j < BestCandidate_correctMatch->tophad_topjet_ptr()->subjets().size(); j++){
           float mer_subjet_bscore = BestCandidate_correctMatch->tophad_topjet_ptr()->subjets().at(j).btag_DeepJet();
-          event.set(h_mer_subjet_bscore, mer_subjet_bscore);
+          event.set(h_mer_subjet_bscore_matchable, mer_subjet_bscore);
         }
       }
 
       // Cut on bscore_max >= btag_WP
       if(bscore_max >= btag_medWP){
-        event.set(h_bscore_max, bscore_max); // Plot max bscores
+        event.set(h_bscore_max_matchable, bscore_max); // Plot max bscores
 
         // Assign Hadronic bjet in Resolved topology
         if(!is_toptag_reconstruction){
