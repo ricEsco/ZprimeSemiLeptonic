@@ -385,7 +385,6 @@ bool ZprimeCorrectMatchDiscriminator::process(uhh2::Event& event){
   ZprimeCandidate* bestCand = &candidates.at(0);
   TTbarGen ttbargen = event.get(h_ttbargen_);
   for(unsigned int i=0; i<candidates.size(); i++){
-
     bool is_toptag_reconstruction = candidates.at(i).is_toptag_reconstruction();
 
     // Gen-Lvl ttbar has to decay semileptonically
@@ -409,9 +408,18 @@ bool ZprimeCorrectMatchDiscriminator::process(uhh2::Event& event){
       // cout << "Not right amount of hadronic jets" << endl;
       continue;
     }
+
     float correct_dr = 0.;
     int idx;
     float dr;
+
+    // Adding discriminators for each decay particle
+    float dr_Lep_b = 0.;
+    float dr_Had_b = 0.;
+    float dr_Had_q1 = 0.;
+    float dr_Had_q2 = 0.;
+    float dr_Lep_nu = 0.;
+    float dr_Lep_l = 0.;
 
     // Match leptonic b-quark
     dr = match_dr(ttbargen.BLep(), jets_lep, idx);
@@ -421,6 +429,8 @@ bool ZprimeCorrectMatchDiscriminator::process(uhh2::Event& event){
       continue;
     }
     correct_dr += dr;
+    dr_Lep_b = match_dr(ttbargen.BLep(), jets_lep, idx);
+    candidates.at(i).set_discriminators("dr_Lep_b", dr_Lep_b);
 
     if(!is_toptag_reconstruction){
 
@@ -435,6 +445,8 @@ bool ZprimeCorrectMatchDiscriminator::process(uhh2::Event& event){
       }
       correct_dr += dr;
       if(idx >= 0) n_matched++;
+      dr_Had_b = match_dr(ttbargen.BHad(), jets_had, idx);
+      candidates.at(i).set_discriminators("dr_Had_b", dr_Had_b);
 
       //match quarks from W decays to jets
       // First
@@ -446,6 +458,8 @@ bool ZprimeCorrectMatchDiscriminator::process(uhh2::Event& event){
       }
       correct_dr += dr;
       if(idx >= 0) n_matched++;
+      dr_Had_q1 = match_dr(ttbargen.Q1(), jets_had, idx);
+      candidates.at(i).set_discriminators("dr_Had_q1", dr_Had_q1);
 
       // Second
       dr = match_dr(ttbargen.Q2(), jets_had, idx);
@@ -456,6 +470,8 @@ bool ZprimeCorrectMatchDiscriminator::process(uhh2::Event& event){
       }
       correct_dr += dr;
       if(idx >= 0) n_matched++;
+      dr_Had_q2 = match_dr(ttbargen.Q2(), jets_had, idx);
+      candidates.at(i).set_discriminators("dr_Had_q2", dr_Had_q2);
 
       if(n_matched != jets_had.size()){
         candidates.at(i).set_discriminators("correct_match", 9999999);
@@ -474,6 +490,8 @@ bool ZprimeCorrectMatchDiscriminator::process(uhh2::Event& event){
         continue;
       }
       correct_dr += dr;
+      dr_Had_b = deltaR(ttbargen.BHad(), *topjet);
+      candidates.at(i).set_discriminators("dr_Had_b", dr_Had_b);
 
       //match quarks from W decays to jets
       // First
@@ -484,6 +502,8 @@ bool ZprimeCorrectMatchDiscriminator::process(uhh2::Event& event){
         continue;
       }
       correct_dr += dr;
+      dr_Had_q1 = deltaR(ttbargen.Q1(), *topjet);
+      candidates.at(i).set_discriminators("dr_Had_q1", dr_Had_q1);
 
       // Second
       dr = deltaR(ttbargen.Q2(), *topjet);
@@ -493,6 +513,8 @@ bool ZprimeCorrectMatchDiscriminator::process(uhh2::Event& event){
         continue;
       }
       correct_dr += dr;
+      dr_Had_q2 = deltaR(ttbargen.Q2(), *topjet);
+      candidates.at(i).set_discriminators("dr_Had_q2", dr_Had_q2);
     }
 
     // Neutrino
@@ -503,6 +525,8 @@ bool ZprimeCorrectMatchDiscriminator::process(uhh2::Event& event){
       continue;
     }
     correct_dr += dr;
+    dr_Lep_nu = deltaPhi(ttbargen.Neutrino(), candidates.at(i).neutrino_v4());
+    candidates.at(i).set_discriminators("dr_Lep_nu", dr_Lep_nu);
 
     // Lepton
     dr = deltaR(ttbargen.ChargedLepton(), candidates.at(i).lepton());
@@ -511,6 +535,8 @@ bool ZprimeCorrectMatchDiscriminator::process(uhh2::Event& event){
       continue;
     }
     correct_dr += dr;
+    dr_Lep_l = deltaR(ttbargen.ChargedLepton(), candidates.at(i).lepton());
+    candidates.at(i).set_discriminators("dr_Lep_l", dr_Lep_l);
 
     //cout << "dr = " << correct_dr << endl;
     candidates.at(i).set_discriminators("correct_match", correct_dr);
