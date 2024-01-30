@@ -168,6 +168,30 @@ protected:
   Event::Handle<unsigned int> h_Njets_chi2_lep_resolved;
   Event::Handle<unsigned int> h_Njets_chi2_lep_merged;
 
+  Event::Handle<unsigned int> h_Njets_chi2_passedChi2cut;    // Number of jets used in Chi2 reconstruction that ALSO passed Chi2cut
+  Event::Handle<unsigned int> h_Njets_chi2_passedChi2cut_resolved;
+  Event::Handle<unsigned int> h_Njets_chi2_passedChi2cut_merged;
+
+  Event::Handle<unsigned int> h_Njets_chi2_had_passedChi2cut;    // Number of hadronic-jets used in Chi2 reconstruction that ALSO passed Chi2cut
+  Event::Handle<unsigned int> h_Njets_chi2_had_passedChi2cut_resolved;
+  Event::Handle<unsigned int> h_Njets_chi2_had_passedChi2cut_merged;
+
+  Event::Handle<unsigned int> h_Njets_chi2_lep_passedChi2cut;    // Number of leptonic-jets used in Chi2 reconstruction that ALSO passed Chi2cut
+  Event::Handle<unsigned int> h_Njets_chi2_lep_passedChi2cut_resolved;
+  Event::Handle<unsigned int> h_Njets_chi2_lep_passedChi2cut_merged;
+
+  Event::Handle<unsigned int> h_Njets_chi2_failedChi2cut;    // Number of jets used in Chi2 reconstruction that did NOT pass Chi2cut
+  Event::Handle<unsigned int> h_Njets_chi2_failedChi2cut_resolved;
+  Event::Handle<unsigned int> h_Njets_chi2_failedChi2cut_merged;
+
+  Event::Handle<unsigned int> h_Njets_chi2_had_failedChi2cut;    // Number of hadronic-jets used in Chi2 reconstruction that did NOT pass Chi2cut
+  Event::Handle<unsigned int> h_Njets_chi2_had_failedChi2cut_resolved;
+  Event::Handle<unsigned int> h_Njets_chi2_had_failedChi2cut_merged;
+
+  Event::Handle<unsigned int> h_Njets_chi2_lep_failedChi2cut;    // Number of leptonic-jets used in Chi2 reconstruction that did NOT pass Chi2cut
+  Event::Handle<unsigned int> h_Njets_chi2_lep_failedChi2cut_resolved;
+  Event::Handle<unsigned int> h_Njets_chi2_lep_failedChi2cut_merged;
+
   Event::Handle<float> h_BestChi2_passedMatching;             // Total Chi2 of "best" ttbar candidate that also passed matching requirements
   Event::Handle<float> h_BestChi2_passedMatching_resolved;
   Event::Handle<float> h_BestChi2_passedMatching_merged;
@@ -661,6 +685,30 @@ ZprimeAnalysisModule::ZprimeAnalysisModule(uhh2::Context& ctx){
   h_Njets_chi2_lep_resolved = ctx.declare_event_output<unsigned int> ("Njets_chi2_lep_resolved");
   h_Njets_chi2_lep_merged = ctx.declare_event_output<unsigned int> ("Njets_chi2_lep_merged");
 
+  h_Njets_chi2_passedChi2cut = ctx.declare_event_output<unsigned int> ("Njets_chi2_passedChi2cut"); // Number of jets of "bestChi2" ttbar candidate that ALSO passed Chi2cut
+  h_Njets_chi2_passedChi2cut_resolved = ctx.declare_event_output<unsigned int> ("Njets_chi2_passedChi2cut_resolved");
+  h_Njets_chi2_passedChi2cut_merged = ctx.declare_event_output<unsigned int> ("Njets_chi2_passedChi2cut_merged");
+
+  h_Njets_chi2_had_passedChi2cut = ctx.declare_event_output<unsigned int> ("Njets_chi2_had_passedChi2cut"); // Number of jets of hadronic leg of "bestChi2" ttbar candidate that ALSO passed Chi2cut
+  h_Njets_chi2_had_passedChi2cut_resolved = ctx.declare_event_output<unsigned int> ("Njets_chi2_had_passedChi2cut_resolved");
+  h_Njets_chi2_had_passedChi2cut_merged = ctx.declare_event_output<unsigned int> ("Njets_chi2_had_passedChi2cut_merged");
+
+  h_Njets_chi2_lep_passedChi2cut = ctx.declare_event_output<unsigned int> ("Njets_chi2_lep_passedChi2cut"); // Number of jets of leptonic leg of "bestChi2" ttbar candidate that ALSO passed Chi2cut
+  h_Njets_chi2_lep_passedChi2cut_resolved = ctx.declare_event_output<unsigned int> ("Njets_chi2_lep_passedChi2cut_resolved");
+  h_Njets_chi2_lep_passedChi2cut_merged = ctx.declare_event_output<unsigned int> ("Njets_chi2_lep_passedChi2cut_merged");
+
+  h_Njets_chi2_failedChi2cut = ctx.declare_event_output<unsigned int> ("Njets_chi2_failedChi2cut"); // Number of jets of "bestChi2" ttbar candidate that did NOT pass Chi2cut
+  h_Njets_chi2_failedChi2cut_resolved = ctx.declare_event_output<unsigned int> ("Njets_chi2_failedChi2cut_resolved");
+  h_Njets_chi2_failedChi2cut_merged = ctx.declare_event_output<unsigned int> ("Njets_chi2_failedChi2cut_merged");
+
+  h_Njets_chi2_had_failedChi2cut = ctx.declare_event_output<unsigned int> ("Njets_chi2_had_failedChi2cut"); // Number of jets of hadronic leg of "bestChi2" ttbar candidate that did NOT pass Chi2cut
+  h_Njets_chi2_had_failedChi2cut_resolved = ctx.declare_event_output<unsigned int> ("Njets_chi2_had_failedChi2cut_resolved");
+  h_Njets_chi2_had_failedChi2cut_merged = ctx.declare_event_output<unsigned int> ("Njets_chi2_had_failedChi2cut_merged");
+
+  h_Njets_chi2_lep_failedChi2cut = ctx.declare_event_output<unsigned int> ("Njets_chi2_lep_failedChi2cut"); // Number of jets of leptonic leg of "bestChi2" ttbar candidate that did NOT pass Chi2cut
+  h_Njets_chi2_lep_failedChi2cut_resolved = ctx.declare_event_output<unsigned int> ("Njets_chi2_lep_failedChi2cut_resolved");
+  h_Njets_chi2_lep_failedChi2cut_merged = ctx.declare_event_output<unsigned int> ("Njets_chi2_lep_failedChi2cut_merged");
+
   h_BestChi2_passedMatching = ctx.declare_event_output<float> ("BestChi2_passedMatching"); // Total Chi2 of "best" ttbar candidate that ALSO passed matching requirements
   h_BestChi2_passedMatching_resolved = ctx.declare_event_output<float> ("BestChi2_passedMatching_resolved");
   h_BestChi2_passedMatching_merged = ctx.declare_event_output<float> ("BestChi2_passedMatching_merged");
@@ -952,6 +1000,30 @@ bool ZprimeAnalysisModule::process(uhh2::Event& event){
   event.set(h_Njets_chi2_lep, -10);
   event.set(h_Njets_chi2_lep_resolved, -10);
   event.set(h_Njets_chi2_lep_merged, -10);
+
+  event.set(h_Njets_chi2_passedChi2cut, -10);
+  event.set(h_Njets_chi2_passedChi2cut_resolved, -10);
+  event.set(h_Njets_chi2_passedChi2cut_merged, -10);
+
+  event.set(h_Njets_chi2_had_passedChi2cut, -10);
+  event.set(h_Njets_chi2_had_passedChi2cut_resolved, -10);
+  event.set(h_Njets_chi2_had_passedChi2cut_merged, -10);
+
+  event.set(h_Njets_chi2_lep_passedChi2cut, -10);
+  event.set(h_Njets_chi2_lep_passedChi2cut_resolved, -10);
+  event.set(h_Njets_chi2_lep_passedChi2cut_merged, -10);
+
+  event.set(h_Njets_chi2_failedChi2cut, -10);
+  event.set(h_Njets_chi2_failedChi2cut_resolved, -10);
+  event.set(h_Njets_chi2_failedChi2cut_merged, -10);
+
+  event.set(h_Njets_chi2_had_failedChi2cut, -10);
+  event.set(h_Njets_chi2_had_failedChi2cut_resolved, -10);
+  event.set(h_Njets_chi2_had_failedChi2cut_merged, -10);
+
+  event.set(h_Njets_chi2_lep_failedChi2cut, -10);
+  event.set(h_Njets_chi2_lep_failedChi2cut_resolved, -10);
+  event.set(h_Njets_chi2_lep_failedChi2cut_merged, -10);
 
   event.set(h_BestChi2_passedMatching, -10);
   event.set(h_BestChi2_passedMatching_resolved, -10);
@@ -1758,6 +1830,44 @@ bool ZprimeAnalysisModule::process(uhh2::Event& event){
           event.set(h_Njets_chi2_merged, Njets_chi2);
           event.set(h_Njets_chi2_had_merged, Njets_chi2_had);
           event.set(h_Njets_chi2_lep_merged, Njets_chi2_lep);
+        }
+
+        if(bestChi2 < 30){
+          // Fill Njets for
+          event.set(h_Njets_chi2_passedChi2cut, Njets_chi2);   // all ttbar
+          event.set(h_Njets_chi2_had_passedChi2cut, Njets_chi2_had);
+          event.set(h_Njets_chi2_lep_passedChi2cut, Njets_chi2_lep);
+
+          if(!is_toptag_reconstruction){   // resolved ttbar
+            event.set(h_Njets_chi2_passedChi2cut_resolved, Njets_chi2);
+            event.set(h_Njets_chi2_had_passedChi2cut_resolved, Njets_chi2_had);
+            event.set(h_Njets_chi2_lep_passedChi2cut_resolved, Njets_chi2_lep);
+          }
+
+          if(is_toptag_reconstruction){   // merged ttbar
+            event.set(h_Njets_chi2_passedChi2cut_merged, Njets_chi2);
+            event.set(h_Njets_chi2_had_passedChi2cut_merged, Njets_chi2_had);
+            event.set(h_Njets_chi2_lep_passedChi2cut_merged, Njets_chi2_lep);
+          }
+        }
+
+        if(bestChi2 >= 30){
+          // Fill Njets for
+          event.set(h_Njets_chi2_failedChi2cut, Njets_chi2);   // all ttbar
+          event.set(h_Njets_chi2_had_failedChi2cut, Njets_chi2_had);
+          event.set(h_Njets_chi2_lep_failedChi2cut, Njets_chi2_lep);
+
+          if(!is_toptag_reconstruction){   // resolved ttbar
+            event.set(h_Njets_chi2_failedChi2cut_resolved, Njets_chi2);
+            event.set(h_Njets_chi2_had_failedChi2cut_resolved, Njets_chi2_had);
+            event.set(h_Njets_chi2_lep_failedChi2cut_resolved, Njets_chi2_lep);
+          }
+
+          if(is_toptag_reconstruction){   // merged ttbar
+            event.set(h_Njets_chi2_failedChi2cut_merged, Njets_chi2);
+            event.set(h_Njets_chi2_had_failedChi2cut_merged, Njets_chi2_had);
+            event.set(h_Njets_chi2_lep_failedChi2cut_merged, Njets_chi2_lep);
+          }
         }
         
 

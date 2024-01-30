@@ -33,73 +33,97 @@ hists = {   # "res_jet_bscore"                              : ["AK4 b-score (res
             # "BestChi2_resolved"                           : ["#chi^{2} (resolved)",                                             50, [ 0, 100]],
             # "BestChi2_merged"                             : ["#chi^{2} (merged)",                                               50, [ 0, 100]],
     
-            "Njets_chi2"                                  : ["N_{jets} of Best #Chi^{2} Candidate",                             10, [ 0,  10]],
-            "Njets_chi2_resolved"                         : ["N_{jets} of Best #Chi^{2} Candidate (resolved)",                  10, [ 0,  10]],
-            "Njets_chi2_merged"                           : ["N_{jets} of Best #Chi^{2} Candidate (merged)",                    10, [ 0,  10]],
+            # "Njets_chi2"                                  : ["N_{jets} of Best #Chi^{2} Candidate",                             10, [ 0,  10]],
+            # "Njets_chi2_resolved"                         : ["N_{jets} of Best #Chi^{2} Candidate (resolved)",                  10, [ 0,  10]],
+            # "Njets_chi2_merged"                           : ["N_{jets} of Best #Chi^{2} Candidate (merged)",                    10, [ 0,  10]],
 
             # "BestChi2_passedMatching"                     : ["#chi^{2} passed matching",                                        50, [ 0, 100]],
             # "BestChi2_passedMatching_resolved"            : ["#chi^{2} passed matching (resolved)",                             50, [ 0, 100]],
             # "BestChi2_passedMatching_merged"              : ["#chi^{2} passed matching (merged)",                               50, [ 0, 100]],
 
-            "Njets_chi2_passedMatching"                   : ["N_{jets} of CorrectlyMatched Best #Chi^{2} Candidate",             10, [ 0,  10]],
-            "Njets_chi2_passedMatching_resolved"          : ["N_{jets} of CorrectlyMatched Best #Chi^{2} Candidate (resolved)",  10, [ 0,  10]],
-            "Njets_chi2_passedMatching_merged"            : ["N_{jets} of CorrectlyMatched Best #Chi^{2} Candidate (merged)",    10, [ 0,  10]],
+            # "Njets_chi2_passedChi2cut"                    : ["N_{jets} of Best #Chi^{2} Candidate passed #chi^{2} cut",             10, [ 0,  10]],
+            # "Njets_chi2_passedChi2cut_resolved"           : ["N_{jets} of Best #Chi^{2} Candidate passed #chi^{2} cut (resolved)",  10, [ 0,  10]],
+            # "Njets_chi2_passedChi2cut_merged"             : ["N_{jets} of Best #Chi^{2} Candidate passed #chi^{2} cut (merged)",    10, [ 0,  10]],
+
+            # "Njets_chi2_had_passedChi2cut"                : ["N_{jets} of Best #Chi^{2} Candidate's hadronic leg passed #chi^{2} cut",             10, [ 0,  10]],
+            # "Njets_chi2_had_passedChi2cut_resolved"       : ["N_{jets} of Best #Chi^{2} Candidate's hadronic leg passed #chi^{2} cut (resolved)",  10, [ 0,  10]],
+            # "Njets_chi2_had_passedChi2cut_merged"         : ["N_{jets} of Best #Chi^{2} Candidate's hadronic leg passed #chi^{2} cut (merged)",    10, [ 0,  10]],
+
+            # "Njets_chi2_lep_passedChi2cut"                : ["N_{jets} of Best #Chi^{2} Candidate's leptonic leg passed #chi^{2} cut",             10, [ 0,  10]],
+            # "Njets_chi2_lep_passedChi2cut_resolved"       : ["N_{jets} of Best #Chi^{2} Candidate's leptonic leg passed #chi^{2} cut (resolved)",  10, [ 0,  10]],
+            # "Njets_chi2_lep_passedChi2cut_merged"         : ["N_{jets} of Best #Chi^{2} Candidate's leptonic leg passed #chi^{2} cut (merged)",    10, [ 0,  10]],
+
+            # "Njets_chi2_failedChi2cut"                    : ["N_{jets} of Best #Chi^{2} Candidate failed #chi^{2} cut",             10, [ 0,  10]],
+            # "Njets_chi2_failedChi2cut_resolved"           : ["N_{jets} of Best #Chi^{2} Candidate failed #chi^{2} cut (resolved)",  10, [ 0,  10]],
+            # "Njets_chi2_failedChi2cut_merged"             : ["N_{jets} of Best #Chi^{2} Candidate failed #chi^{2} cut (merged)",    10, [ 0,  10]],
+
+            # "Njets_chi2_had_failedChi2cut"                : ["N_{jets} of Best #Chi^{2} Candidate's hadronic leg failed #chi^{2} cut",             10, [ 0,  10]],
+            # "Njets_chi2_had_failedChi2cut_resolved"       : ["N_{jets} of Best #Chi^{2} Candidate's hadronic leg failed #chi^{2} cut (resolved)",  10, [ 0,  10]],
+            # "Njets_chi2_had_failedChi2cut_merged"         : ["N_{jets} of Best #Chi^{2} Candidate's hadronic leg failed #chi^{2} cut (merged)",    10, [ 0,  10]],
+
+            # "Njets_chi2_lep_failedChi2cut"                : ["N_{jets} of Best #Chi^{2} Candidate's leptonic leg failed #chi^{2} cut",             10, [ 0,  10]],
+            # "Njets_chi2_lep_failedChi2cut_resolved"       : ["N_{jets} of Best #Chi^{2} Candidate's leptonic leg failed #chi^{2} cut (resolved)",  10, [ 0,  10]],
+            # "Njets_chi2_lep_failedChi2cut_merged"         : ["N_{jets} of Best #Chi^{2} Candidate's leptonic leg failed #chi^{2} cut (merged)",    10, [ 0,  10]],
+
+            # "Njets_chi2_passedMatching"                   : ["N_{jets} of CorrectlyMatched Best #Chi^{2} Candidate",             10, [ 0,  10]],
+            # "Njets_chi2_passedMatching_resolved"          : ["N_{jets} of CorrectlyMatched Best #Chi^{2} Candidate (resolved)",  10, [ 0,  10]],
+            # "Njets_chi2_passedMatching_merged"            : ["N_{jets} of CorrectlyMatched Best #Chi^{2} Candidate (merged)",    10, [ 0,  10]],
 
             # "BestChi2_failedMatching"                     : ["#chi^{2} failed matching",                                        50, [ 0, 100]],
             # "BestChi2_failedMatching_resolved"            : ["#chi^{2} failed matching (resolved)",                             50, [ 0, 100]],
             # "BestChi2_failedMatching_merged"              : ["#chi^{2} failed matching (merged)",                               50, [ 0, 100]],
 
-            "Njets_chi2_failedMatching"                   : ["N_{jets} of IncorrectlyMatched Best #Chi^{2} Candidate",             10, [ 0,  10]],
-            "Njets_chi2_failedMatching_resolved"          : ["N_{jets} of IncorrectlyMatched Best #Chi^{2} Candidate (resolved)",  10, [ 0,  10]],
-            "Njets_chi2_failedMatching_merged"            : ["N_{jets} of IncorrectlyMatched Best #Chi^{2} Candidate (merged)",    10, [ 0,  10]],
+            "Njets_chi2_failedMatching"                   : ["N_{jets} of NotMatched Best #Chi^{2} Candidate",             10, [ 0,  10]],
+            "Njets_chi2_failedMatching_resolved"          : ["N_{jets} of NotMatched Best #Chi^{2} Candidate (resolved)",  10, [ 0,  10]],
+            "Njets_chi2_failedMatching_merged"            : ["N_{jets} of NotMatched Best #Chi^{2} Candidate (merged)",    10, [ 0,  10]],
 
             # "BestChi2hadronicleg"                         : ["#chi^{2} of Hadronic leg",                                        50, [ 0, 100]],
             # "BestChi2hadronicleg_resolved"                : ["#chi^{2} of Hadronic leg (resolved)",                             50, [ 0, 100]],
             # "BestChi2hadronicleg_merged"                  : ["#chi^{2} of Hadronic leg (merged)",                               50, [ 0, 100]],
 
-            "Njets_chi2_had"                              : ["N_{jets} of Best #Chi^{2} Candidate's hadronic leg",              10, [ 0,  10]],
-            "Njets_chi2_had_resolved"                     : ["N_{jets} of Best #Chi^{2} Candidate's hadronic leg (resolved)",   10, [ 0,  10]],
-            "Njets_chi2_had_merged"                       : ["N_{jets} of Best #Chi^{2} Candidate's hadronic leg (merged)",     10, [ 0,  10]],
+            # "Njets_chi2_had"                              : ["N_{jets} of Best #Chi^{2} Candidate's hadronic leg",              10, [ 0,  10]],
+            # "Njets_chi2_had_resolved"                     : ["N_{jets} of Best #Chi^{2} Candidate's hadronic leg (resolved)",   10, [ 0,  10]],
+            # "Njets_chi2_had_merged"                       : ["N_{jets} of Best #Chi^{2} Candidate's hadronic leg (merged)",     10, [ 0,  10]],
 
             # "BestChi2hadronicleg_passedMatching"          : ["#chi^{2} of Hadronic leg passed matching",                        50, [ 0, 100]],
             # "BestChi2hadronicleg_passedMatching_resolved" : ["#chi^{2} of Hadronic leg passed matching (resolved)",             50, [ 0, 100]],
             # "BestChi2hadronicleg_passedMatching_merged"   : ["#chi^{2} of Hadronic leg passed matching (merged)",               50, [ 0, 100]],
 
-            "Njets_chi2_had_passedMatching"               : ["N_{jets} of CorrectlyMatched Best #Chi^{2} Candidate's hadronic leg",             10, [ 0,  10]],
-            "Njets_chi2_had_passedMatching_resolved"      : ["N_{jets} of CorrectlyMatched Best #Chi^{2} Candidate's hadronic leg (resolved)",  10, [ 0,  10]],
-            "Njets_chi2_had_passedMatching_merged"        : ["N_{jets} of CorrectlyMatched Best #Chi^{2} Candidate's hadronic leg (merged)",    10, [ 0,  10]],
+            # "Njets_chi2_had_passedMatching"               : ["N_{jets} of CorrectlyMatched Best #Chi^{2} Candidate's hadronic leg",             10, [ 0,  10]],
+            # "Njets_chi2_had_passedMatching_resolved"      : ["N_{jets} of CorrectlyMatched Best #Chi^{2} Candidate's hadronic leg (resolved)",  10, [ 0,  10]],
+            # "Njets_chi2_had_passedMatching_merged"        : ["N_{jets} of CorrectlyMatched Best #Chi^{2} Candidate's hadronic leg (merged)",    10, [ 0,  10]],
 
             # "BestChi2hadronicleg_failedMatching"          : ["#chi^{2} of Hadronic leg failed matching",                        50, [ 0, 100]],
             # "BestChi2hadronicleg_failedMatching_resolved" : ["#chi^{2} of Hadronic leg failed matching (resolved)",             50, [ 0, 100]],
             # "BestChi2hadronicleg_failedMatching_merged"   : ["#chi^{2} of Hadronic leg failed matching (merged)",               50, [ 0, 100]],
 
-            "Njets_chi2_had_failedMatching"               : ["N_{jets} of IncorrectlyMatched Best #Chi^{2} Candidate's hadronic leg",             10, [ 0,  10]],
-            "Njets_chi2_had_failedMatching_resolved"      : ["N_{jets} of IncorrectlyMatched Best #Chi^{2} Candidate's hadronic leg (resolved)",  10, [ 0,  10]],
-            "Njets_chi2_had_failedMatching_merged"        : ["N_{jets} of IncorrectlyMatched Best #Chi^{2} Candidate's hadronic leg (merged)",    10, [ 0,  10]],
+            "Njets_chi2_had_failedMatching"               : ["N_{jets} of NotMatched Best #Chi^{2} Candidate's hadronic leg",             10, [ 0,  10]],
+            "Njets_chi2_had_failedMatching_resolved"      : ["N_{jets} of NotMatched Best #Chi^{2} Candidate's hadronic leg (resolved)",  10, [ 0,  10]],
+            "Njets_chi2_had_failedMatching_merged"        : ["N_{jets} of NotMatched Best #Chi^{2} Candidate's hadronic leg (merged)",    10, [ 0,  10]],
 
             # "BestChi2leptonicleg"                         : ["#chi^{2} of Leptonic leg",                                        50, [ 0, 100]],
             # "BestChi2leptonicleg_resolved"                : ["#chi^{2} of Leptonic leg (resolved)",                             50, [ 0, 100]],
             # "BestChi2leptonicleg_merged"                  : ["#chi^{2} of Leptonic leg (merged)",                               50, [ 0, 100]],
 
-            "Njets_chi2_lep"                              : ["N_{jets} of Best #Chi^{2} Candidate's leptonic leg",              10, [ 0,  10]],
-            "Njets_chi2_lep_resolved"                     : ["N_{jets} of Best #Chi^{2} Candidate's leptonic leg (resolved)",   10, [ 0,  10]],
-            "Njets_chi2_lep_merged"                       : ["N_{jets} of Best #Chi^{2} Candidate's leptonic leg (merged)",     10, [ 0,  10]],
+            # "Njets_chi2_lep"                              : ["N_{jets} of Best #Chi^{2} Candidate's leptonic leg",              10, [ 0,  10]],
+            # "Njets_chi2_lep_resolved"                     : ["N_{jets} of Best #Chi^{2} Candidate's leptonic leg (resolved)",   10, [ 0,  10]],
+            # "Njets_chi2_lep_merged"                       : ["N_{jets} of Best #Chi^{2} Candidate's leptonic leg (merged)",     10, [ 0,  10]],
 
             # "BestChi2leptonicleg_passedMatching"          : ["#chi^{2} of Leptonic leg passed matching",                        50, [ 0, 100]],
             # "BestChi2leptonicleg_passedMatching_resolved" : ["#chi^{2} of Leptonic leg passed matching (resolved)",             50, [ 0, 100]],
             # "BestChi2leptonicleg_passedMatching_merged"   : ["#chi^{2} of Leptonic leg passed matching (merged)",               50, [ 0, 100]],
 
-            "Njets_chi2_lep_passedMatching"               : ["N_{jets} of CorrectlyMatched Best #Chi^{2} Candidate's leptonic leg",             10, [ 0,  10]],
-            "Njets_chi2_lep_passedMatching_resolved"      : ["N_{jets} of CorrectlyMatched Best #Chi^{2} Candidate's leptonic leg (resolved)",  10, [ 0,  10]],
-            "Njets_chi2_lep_passedMatching_merged"        : ["N_{jets} of CorrectlyMatched Best #Chi^{2} Candidate's leptonic leg (merged)",    10, [ 0,  10]],
+            # "Njets_chi2_lep_passedMatching"               : ["N_{jets} of CorrectlyMatched Best #Chi^{2} Candidate's leptonic leg",             10, [ 0,  10]],
+            # "Njets_chi2_lep_passedMatching_resolved"      : ["N_{jets} of CorrectlyMatched Best #Chi^{2} Candidate's leptonic leg (resolved)",  10, [ 0,  10]],
+            # "Njets_chi2_lep_passedMatching_merged"        : ["N_{jets} of CorrectlyMatched Best #Chi^{2} Candidate's leptonic leg (merged)",    10, [ 0,  10]],
 
             # "BestChi2leptonicleg_failedMatching"          : ["#chi^{2} of Leptonic leg failed matching",                        50, [ 0, 100]],
             # "BestChi2leptonicleg_failedMatching_resolved" : ["#chi^{2} of Leptonic leg failed matching (resolved)",             50, [ 0, 100]],
             # "BestChi2leptonicleg_failedMatching_merged"   : ["#chi^{2} of Leptonic leg failed matching (merged)",               50, [ 0, 100]],
 
-            "Njets_chi2_lep_failedMatching"               : ["N_{jets} of IncorrectlyMatched Best #Chi^{2} Candidate's leptonic leg",             10, [ 0,  10]],
-            "Njets_chi2_lep_failedMatching_resolved"      : ["N_{jets} of IncorrectlyMatched Best #Chi^{2} Candidate's leptonic leg (resolved)",  10, [ 0,  10]],
-            "Njets_chi2_lep_failedMatching_merged"        : ["N_{jets} of IncorrectlyMatched Best #Chi^{2} Candidate's leptonic leg (merged)",    10, [ 0,  10]],
+            "Njets_chi2_lep_failedMatching"               : ["N_{jets} of NotMatched Best #Chi^{2} Candidate's leptonic leg",             10, [ 0,  10]],
+            "Njets_chi2_lep_failedMatching_resolved"      : ["N_{jets} of NotMatched Best #Chi^{2} Candidate's leptonic leg (resolved)",  10, [ 0,  10]],
+            "Njets_chi2_lep_failedMatching_merged"        : ["N_{jets} of NotMatched Best #Chi^{2} Candidate's leptonic leg (merged)",    10, [ 0,  10]],
 
             # "DrHadB"                                      : ["#DeltaR of hadronic-b",                                           50, [ 0,  10]],
             # "DrHadB_resolved"                             : ["#DeltaR of hadronic-b (resolved)",                                50, [ 0,  10]],
