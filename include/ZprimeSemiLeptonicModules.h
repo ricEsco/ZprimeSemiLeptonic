@@ -65,6 +65,20 @@ private:
   uhh2::Event::Handle<ZprimeCandidate*> h_BestCandidate_;
   uhh2::Event::Handle<bool> h_is_zprime_reconstructed_;
 
+  uhh2::Event::Handle<unsigned int> h_CMfm_notSemilepGen_;
+  uhh2::Event::Handle<unsigned int> h_CMfm_not1LepJet_;
+  uhh2::Event::Handle<unsigned int> h_CMfm_notOkHadJetMult_;
+  uhh2::Event::Handle<unsigned int> h_CMfm_notMatchedLepB_;
+  uhh2::Event::Handle<unsigned int> h_CMfm_notMatchedHadB_Ak4_;
+  uhh2::Event::Handle<unsigned int> h_CMfm_notMatchedQ1_Ak4_;
+  uhh2::Event::Handle<unsigned int> h_CMfm_notMatchedQ2_Ak4_;
+  uhh2::Event::Handle<unsigned int> h_CMfm_not1to1MatchToJet_;
+  uhh2::Event::Handle<unsigned int> h_CMfm_notMatchedHadB_Ak8_;
+  uhh2::Event::Handle<unsigned int> h_CMfm_notMatchedQ1_Ak8_;
+  uhh2::Event::Handle<unsigned int> h_CMfm_notMatchedQ2_Ak8_;
+  uhh2::Event::Handle<unsigned int> h_CMfm_notMatchedNeutrino_;
+  uhh2::Event::Handle<unsigned int> h_CMfm_notMatchedLepton_;
+
   bool is_mc;
   std::unique_ptr<TTbarGenProducer> ttgenprod;
 

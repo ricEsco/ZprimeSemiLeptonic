@@ -141,6 +141,21 @@ protected:
   uhh2::Event::Handle<TTbarGen> h_ttbargen;
   std::unique_ptr<TTbarGenProducer> ttgenprod;
 
+  // Variables that identify failure modes of candidate that failed Matching
+  Event::Handle<unsigned int> h_CMfm_notSemilepGen;
+  Event::Handle<unsigned int> h_CMfm_not1LepJet;
+  Event::Handle<unsigned int> h_CMfm_notOkHadJetMult;
+  Event::Handle<unsigned int> h_CMfm_notMatchedLepB;
+  Event::Handle<unsigned int> h_CMfm_notMatchedHadB_Ak4;
+  Event::Handle<unsigned int> h_CMfm_notMatchedQ1_Ak4;
+  Event::Handle<unsigned int> h_CMfm_notMatchedQ2_Ak4;
+  Event::Handle<unsigned int> h_CMfm_not1to1MatchToJet;
+  Event::Handle<unsigned int> h_CMfm_notMatchedHadB_Ak8;
+  Event::Handle<unsigned int> h_CMfm_notMatchedQ1_Ak8;
+  Event::Handle<unsigned int> h_CMfm_notMatchedQ2_Ak8;
+  Event::Handle<unsigned int> h_CMfm_notMatchedNeutrino;
+  Event::Handle<unsigned int> h_CMfm_notMatchedLepton;
+
   uhh2::Event::Handle< std::vector<Jet> > h_CHSjets_matched;  // Collection of CHS matched jets
   uhh2::Event::Handle< std::vector<TopJet> > h_DeepAK8TopTags;  // Collection of DeepAK8TopTagged jets
 
@@ -661,6 +676,20 @@ ZprimeAnalysisModule::ZprimeAnalysisModule(uhh2::Context& ctx){
   h_CHSjets_matched = ctx.get_handle<std::vector<Jet>>("CHS_matched");       // Collection of CHS matched jets
   h_DeepAK8TopTags = ctx.get_handle< std::vector<TopJet>>("DeepAK8TopTags"); // Collection of DeepAK8TopTagged jets
 
+  h_CMfm_notSemilepGen = ctx.declare_event_output<unsigned int>("CMfm_notSemilepGen");
+  h_CMfm_not1LepJet = ctx.declare_event_output<unsigned int>("CMfm_not1LepJet");
+  h_CMfm_notOkHadJetMult = ctx.declare_event_output<unsigned int>("CMfm_notOkHadJetMult");
+  h_CMfm_notMatchedLepB = ctx.declare_event_output<unsigned int>("CMfm_notMatchedLepB");
+  h_CMfm_notMatchedHadB_Ak4 = ctx.declare_event_output<unsigned int>("CMfm_notMatchedHadB_Ak4");
+  h_CMfm_notMatchedQ1_Ak4 = ctx.declare_event_output<unsigned int>("CMfm_notMatchedQ1_Ak4");
+  h_CMfm_notMatchedQ2_Ak4 = ctx.declare_event_output<unsigned int>("CMfm_notMatchedQ2_Ak4");
+  h_CMfm_not1to1MatchToJet = ctx.declare_event_output<unsigned int>("CMfm_not1to1MatchToJet");
+  h_CMfm_notMatchedHadB_Ak8 = ctx.declare_event_output<unsigned int>("CMfm_notMatchedHadB_Ak8");
+  h_CMfm_notMatchedQ1_Ak8 = ctx.declare_event_output<unsigned int>("CMfm_notMatchedQ1_Ak8");
+  h_CMfm_notMatchedQ2_Ak8 = ctx.declare_event_output<unsigned int>("CMfm_notMatchedQ2_Ak8");
+  h_CMfm_notMatchedNeutrino = ctx.declare_event_output<unsigned int>("CMfm_notMatchedNeutrino");
+  h_CMfm_notMatchedLepton = ctx.declare_event_output<unsigned int>("CMfm_notMatchedLepton");
+
   h_res_jet_bscore = ctx.declare_event_output<float> ("res_jet_bscore");
   h_mer_subjet_bscore = ctx.declare_event_output<float> ("mer_subjet_bscore");
   h_bscore_max = ctx.declare_event_output<float> ("bscore_max");
@@ -975,6 +1004,20 @@ bool ZprimeAnalysisModule::process(uhh2::Event& event){
   event.set(h_ak8jet1_eta,-100);
   event.set(h_NPV,-100);
   event.set(h_weight,-100);
+
+  event.set(h_CMfm_notSemilepGen, -1);
+  event.set(h_CMfm_not1LepJet, -1);
+  event.set(h_CMfm_notOkHadJetMult, -1);
+  event.set(h_CMfm_notMatchedLepB, -1);
+  event.set(h_CMfm_notMatchedHadB_Ak4, -1);
+  event.set(h_CMfm_notMatchedQ1_Ak4, -1);
+  event.set(h_CMfm_notMatchedQ2_Ak4, -1);
+  event.set(h_CMfm_not1to1MatchToJet, -1);
+  event.set(h_CMfm_notMatchedHadB_Ak8, -1);
+  event.set(h_CMfm_notMatchedQ1_Ak8, -1);
+  event.set(h_CMfm_notMatchedQ2_Ak8, -1);
+  event.set(h_CMfm_notMatchedNeutrino, -1);
+  event.set(h_CMfm_notMatchedLepton, -1);
 
   event.set(h_res_jet_bscore, -10);
   event.set(h_mer_subjet_bscore, -10);
@@ -1692,6 +1735,35 @@ bool ZprimeAnalysisModule::process(uhh2::Event& event){
 
   // Begin Reconstruction Efficiency Study ------------------------------------------------------------------------------------------------------
 
+  // Variables that identify failure mode of candidates that failed Matching
+  unsigned int CMfm_notSemilepGen = event.get(h_CMfm_notSemilepGen);
+  unsigned int CMfm_not1LepJet = event.get(h_CMfm_not1LepJet);
+  unsigned int CMfm_notOkHadJetMult = event.get(h_CMfm_notOkHadJetMult);
+  unsigned int CMfm_notMatchedLepB = event.get(h_CMfm_notMatchedLepB);
+  unsigned int CMfm_notMatchedHadB_Ak4 = event.get(h_CMfm_notMatchedHadB_Ak4);
+  unsigned int CMfm_notMatchedQ1_Ak4 = event.get(h_CMfm_notMatchedQ1_Ak4);
+  unsigned int CMfm_notMatchedQ2_Ak4 = event.get(h_CMfm_notMatchedQ2_Ak4);
+  unsigned int CMfm_not1to1MatchToJet = event.get(h_CMfm_not1to1MatchToJet);
+  unsigned int CMfm_notMatchedHadB_Ak8 = event.get(h_CMfm_notMatchedHadB_Ak8);
+  unsigned int CMfm_notMatchedQ1_Ak8 = event.get(h_CMfm_notMatchedQ1_Ak8);
+  unsigned int CMfm_notMatchedQ2_Ak8 = event.get(h_CMfm_notMatchedQ2_Ak8);
+  unsigned int CMfm_notMatchedNeutrino = event.get(h_CMfm_notMatchedNeutrino);
+  unsigned int CMfm_notMatchedLepton = event.get(h_CMfm_notMatchedLepton);
+
+  event.set(h_CMfm_notSemilepGen, CMfm_notSemilepGen);
+  event.set(h_CMfm_not1LepJet, CMfm_not1LepJet);
+  event.set(h_CMfm_notOkHadJetMult, CMfm_notOkHadJetMult);
+  event.set(h_CMfm_notMatchedLepB, CMfm_notMatchedLepB);
+  event.set(h_CMfm_notMatchedHadB_Ak4, CMfm_notMatchedHadB_Ak4);
+  event.set(h_CMfm_notMatchedQ1_Ak4, CMfm_notMatchedQ1_Ak4);
+  event.set(h_CMfm_notMatchedQ2_Ak4, CMfm_notMatchedQ2_Ak4);
+  event.set(h_CMfm_not1to1MatchToJet, CMfm_not1to1MatchToJet);
+  event.set(h_CMfm_notMatchedHadB_Ak8, CMfm_notMatchedHadB_Ak8);
+  event.set(h_CMfm_notMatchedQ1_Ak8, CMfm_notMatchedQ1_Ak8);
+  event.set(h_CMfm_notMatchedQ2_Ak8, CMfm_notMatchedQ2_Ak8);
+  event.set(h_CMfm_notMatchedNeutrino, CMfm_notMatchedNeutrino);
+  event.set(h_CMfm_notMatchedLepton, CMfm_notMatchedLepton);
+
   // Variable to access gen-ttbar
   TTbarGen ttbargen = event.get(h_ttbargen);
 
@@ -1721,7 +1793,6 @@ bool ZprimeAnalysisModule::process(uhh2::Event& event){
 
     // DeltaR between gen- and reco-level decay products
     float DrHadB, DrLep;
-
 
     // Begin Chi2 section --- 
     if(is_zprime_reconstructed_chi2){ // Events whose besCandidates were assigned a Chi2 value by Chi2DiscriminatorZprime

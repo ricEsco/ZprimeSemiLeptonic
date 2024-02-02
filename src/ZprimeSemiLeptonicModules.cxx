@@ -359,6 +359,20 @@ ZprimeCorrectMatchDiscriminator::ZprimeCorrectMatchDiscriminator(uhh2::Context& 
   h_is_zprime_reconstructed_ = ctx.get_handle< bool >("is_zprime_reconstructed_correctmatch");
   h_BestCandidate_ = ctx.get_handle<ZprimeCandidate*>("ZprimeCandidateBestCorrectMatch");
 
+  h_CMfm_notSemilepGen_ = ctx.declare_event_output< unsigned int >("CMfm_notSemilepGen");
+  h_CMfm_not1LepJet_ = ctx.declare_event_output< unsigned int >("CMfm_not1LepJet");
+  h_CMfm_notOkHadJetMult_ = ctx.declare_event_output< unsigned int >("CMfm_notOkHadJetMult");
+  h_CMfm_notMatchedLepB_ = ctx.declare_event_output< unsigned int >("CMfm_notMatchedLepB");
+  h_CMfm_notMatchedHadB_Ak4_ = ctx.declare_event_output< unsigned int >("CMfm_notMatchedHadB_Ak4");
+  h_CMfm_notMatchedQ1_Ak4_ = ctx.declare_event_output< unsigned int >("CMfm_notMatchedQ1_Ak4");
+  h_CMfm_notMatchedQ2_Ak4_ = ctx.declare_event_output< unsigned int >("CMfm_notMatchedQ2_Ak4");
+  h_CMfm_not1to1MatchToJet_ = ctx.declare_event_output< unsigned int >("CMfm_not1to1MatchToJet");
+  h_CMfm_notMatchedHadB_Ak8_ = ctx.declare_event_output< unsigned int >("CMfm_notMatchedHadB_Ak8");
+  h_CMfm_notMatchedQ1_Ak8_ = ctx.declare_event_output< unsigned int >("CMfm_notMatchedQ1_Ak8");
+  h_CMfm_notMatchedQ2_Ak8_ = ctx.declare_event_output< unsigned int >("CMfm_notMatchedQ2_Ak8");
+  h_CMfm_notMatchedNeutrino_ = ctx.declare_event_output< unsigned int >("CMfm_notMatchedNeutrino");
+  h_CMfm_notMatchedLepton_ = ctx.declare_event_output< unsigned int >("CMfm_notMatchedLepton");
+
   is_mc = ctx.get("dataset_type") == "MC";
   if(is_mc) ttgenprod.reset(new TTbarGenProducer(ctx));
 }
@@ -384,12 +398,32 @@ bool ZprimeCorrectMatchDiscriminator::process(uhh2::Event& event){
   float dr_best = 99999999; // This number should be larger than the largest possible value from above, just so there is always a 'bestCand' set
   ZprimeCandidate* bestCand = &candidates.at(0);
   TTbarGen ttbargen = event.get(h_ttbargen_);
+
+  // Adding flags for each CorrectMatch failure mode
+  unsigned int CMfm_notSemilepGen = 0;
+  unsigned int CMfm_not1LepJet = 0;
+  unsigned int CMfm_notOkHadJetMult = 0;
+  unsigned int CMfm_notMatchedLepB = 0;
+
+  unsigned int CMfm_notMatchedHadB_Ak4 = 0;
+  unsigned int CMfm_notMatchedQ1_Ak4 = 0;
+  unsigned int CMfm_notMatchedQ2_Ak4 = 0;
+  unsigned int CMfm_not1to1MatchToJet = 0;
+
+  unsigned int CMfm_notMatchedHadB_Ak8 = 0;
+  unsigned int CMfm_notMatchedQ1_Ak8 = 0;
+  unsigned int CMfm_notMatchedQ2_Ak8 = 0;
+
+  unsigned int CMfm_notMatchedNeutrino = 0;
+  unsigned int CMfm_notMatchedLepton = 0;
+
   for(unsigned int i=0; i<candidates.size(); i++){
     bool is_toptag_reconstruction = candidates.at(i).is_toptag_reconstruction();
 
     // Gen-Lvl ttbar has to decay semileptonically
     if(ttbargen.DecayChannel() != TTbarGen::e_muhad && ttbargen.DecayChannel() != TTbarGen::e_ehad){
       candidates.at(i).set_discriminators("correct_match", 9999999);
+      CMfm_notSemilepGen++;
       // cout << "Not semileptonic decay" << endl;
       continue;
     }
@@ -399,12 +433,14 @@ bool ZprimeCorrectMatchDiscriminator::process(uhh2::Event& event){
 
     if(jets_lep.size() != 1){
       candidates.at(i).set_discriminators("correct_match", 9999999);
+      CMfm_not1LepJet++;
       // cout << "Not ==1 leptonic jet" << endl;
       continue;
     }
 
     if((!is_toptag_reconstruction && jets_had.size() > 3) || (is_toptag_reconstruction && jets_had.size() != 1)){
       candidates.at(i).set_discriminators("correct_match", 9999999);
+      CMfm_notOkHadJetMult++;
       // cout << "Not right amount of hadronic jets" << endl;
       continue;
     }
@@ -425,6 +461,7 @@ bool ZprimeCorrectMatchDiscriminator::process(uhh2::Event& event){
     dr = match_dr(ttbargen.BLep(), jets_lep, idx);
     if(dr > 0.4){
       candidates.at(i).set_discriminators("correct_match", 9999999);
+      CMfm_notMatchedLepB++;
       // cout << "Not leptonic b-quark matched" << endl;
       continue;
     }
@@ -440,6 +477,7 @@ bool ZprimeCorrectMatchDiscriminator::process(uhh2::Event& event){
       dr = match_dr(ttbargen.BHad(), jets_had, idx);
       if(dr > 0.4){
         candidates.at(i).set_discriminators("correct_match", 9999999);
+        CMfm_notMatchedHadB_Ak4++;
         // cout << "Not hadronic b-quark matched (AK4)" << endl;
         continue;
       }
@@ -453,6 +491,7 @@ bool ZprimeCorrectMatchDiscriminator::process(uhh2::Event& event){
       dr = match_dr(ttbargen.Q1(), jets_had, idx);
       if(dr > 0.4){
         candidates.at(i).set_discriminators("correct_match", 9999999);
+        CMfm_notMatchedQ1_Ak4++;
         // cout << "Not had Q1 matched (AK4)" << endl;
         continue;
       }
@@ -465,6 +504,7 @@ bool ZprimeCorrectMatchDiscriminator::process(uhh2::Event& event){
       dr = match_dr(ttbargen.Q2(), jets_had, idx);
       if(dr > 0.4){
         candidates.at(i).set_discriminators("correct_match", 9999999);
+        CMfm_notMatchedQ2_Ak4++;
         // cout << "Not had Q2 matched (AK4)" << endl;
         continue;
       }
@@ -475,6 +515,7 @@ bool ZprimeCorrectMatchDiscriminator::process(uhh2::Event& event){
 
       if(n_matched != jets_had.size()){
         candidates.at(i).set_discriminators("correct_match", 9999999);
+        CMfm_not1to1MatchToJet++;
         // cout << "Not number of jets and matched equal" << endl;
         continue;
       }
@@ -486,6 +527,7 @@ bool ZprimeCorrectMatchDiscriminator::process(uhh2::Event& event){
       dr = deltaR(ttbargen.BHad(), *topjet);
       if(dr > 0.8){
         candidates.at(i).set_discriminators("correct_match", 9999999);
+        CMfm_notMatchedHadB_Ak8++;
         // cout << "Not hadronic b-quark matched (TTAG)" << endl;
         continue;
       }
@@ -498,6 +540,7 @@ bool ZprimeCorrectMatchDiscriminator::process(uhh2::Event& event){
       dr = deltaR(ttbargen.Q1(), *topjet);
       if(dr > 0.8){
         candidates.at(i).set_discriminators("correct_match", 9999999);
+        CMfm_notMatchedQ1_Ak8++;
         // cout << "Not hadronic Q1 matched (TTAG)" << endl;
         continue;
       }
@@ -509,6 +552,7 @@ bool ZprimeCorrectMatchDiscriminator::process(uhh2::Event& event){
       dr = deltaR(ttbargen.Q2(), *topjet);
       if(dr > 0.8){
         candidates.at(i).set_discriminators("correct_match", 9999999);
+        CMfm_notMatchedQ2_Ak8++;
         // cout << "Not hadronic Q2 matched (TTAG)" << endl;
         continue;
       }
@@ -522,6 +566,7 @@ bool ZprimeCorrectMatchDiscriminator::process(uhh2::Event& event){
     dr = deltaPhi(ttbargen.Neutrino(), candidates.at(i).neutrino_v4());
     if(dr > 0.3){
       candidates.at(i).set_discriminators("correct_match", 9999999);
+      CMfm_notMatchedNeutrino++;
       continue;
     }
     correct_dr += dr;
@@ -532,6 +577,7 @@ bool ZprimeCorrectMatchDiscriminator::process(uhh2::Event& event){
     dr = deltaR(ttbargen.ChargedLepton(), candidates.at(i).lepton());
     if(dr > 0.1){
       candidates.at(i).set_discriminators("correct_match", 9999999);
+      CMfm_notMatchedLepton++;
       continue;
     }
     correct_dr += dr;
@@ -547,6 +593,20 @@ bool ZprimeCorrectMatchDiscriminator::process(uhh2::Event& event){
     }
     //cout << "best dr = " << dr_best << endl;
   }
+
+  event.set(h_CMfm_notSemilepGen_, CMfm_notSemilepGen);
+  event.set(h_CMfm_not1LepJet_, CMfm_not1LepJet);
+  event.set(h_CMfm_notOkHadJetMult_, CMfm_notOkHadJetMult);
+  event.set(h_CMfm_notMatchedLepB_, CMfm_notMatchedLepB);
+  event.set(h_CMfm_notMatchedHadB_Ak4_, CMfm_notMatchedHadB_Ak4);
+  event.set(h_CMfm_notMatchedQ1_Ak4_, CMfm_notMatchedQ1_Ak4);
+  event.set(h_CMfm_notMatchedQ2_Ak4_, CMfm_notMatchedQ2_Ak4);
+  event.set(h_CMfm_not1to1MatchToJet_, CMfm_not1to1MatchToJet);
+  event.set(h_CMfm_notMatchedHadB_Ak8_, CMfm_notMatchedHadB_Ak8);
+  event.set(h_CMfm_notMatchedQ1_Ak8_, CMfm_notMatchedQ1_Ak8);
+  event.set(h_CMfm_notMatchedQ2_Ak8_, CMfm_notMatchedQ2_Ak8);
+  event.set(h_CMfm_notMatchedNeutrino_, CMfm_notMatchedNeutrino);
+  event.set(h_CMfm_notMatchedLepton_, CMfm_notMatchedLepton);
 
   if(dr_best > 10.) return false;
   event.set(h_BestCandidate_, bestCand);
