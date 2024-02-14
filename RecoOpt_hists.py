@@ -33,9 +33,9 @@ hists = {   # "res_jet_bscore"                              : ["AK4 b-score (res
             # "BestChi2_resolved"                           : ["#chi^{2} (resolved)",                                             50, [ 0, 100]],
             # "BestChi2_merged"                             : ["#chi^{2} (merged)",                                               50, [ 0, 100]],
     
-            # "Njets_chi2"                                  : ["N_{jets} of Best #Chi^{2} Candidate",                             10, [ 0,  10]],
-            # "Njets_chi2_resolved"                         : ["N_{jets} of Best #Chi^{2} Candidate (resolved)",                  10, [ 0,  10]],
-            # "Njets_chi2_merged"                           : ["N_{jets} of Best #Chi^{2} Candidate (merged)",                    10, [ 0,  10]],
+            "Njets_chi2"                                  : ["N_{jets} of Best #Chi^{2} Candidate",                             10, [ 0,  10]],
+            "Njets_chi2_resolved"                         : ["N_{jets} of Best #Chi^{2} Candidate (resolved)",                  10, [ 0,  10]],
+            "Njets_chi2_merged"                           : ["N_{jets} of Best #Chi^{2} Candidate (merged)",                    10, [ 0,  10]],
 
             # "BestChi2_passedMatching"                     : ["#chi^{2} passed matching",                                        50, [ 0, 100]],
             # "BestChi2_passedMatching_resolved"            : ["#chi^{2} passed matching (resolved)",                             50, [ 0, 100]],
@@ -73,9 +73,9 @@ hists = {   # "res_jet_bscore"                              : ["AK4 b-score (res
             # "BestChi2_failedMatching_resolved"            : ["#chi^{2} failed matching (resolved)",                             50, [ 0, 100]],
             # "BestChi2_failedMatching_merged"              : ["#chi^{2} failed matching (merged)",                               50, [ 0, 100]],
 
-            "Njets_chi2_failedMatching"                   : ["N_{jets} of NotMatched Best #Chi^{2} Candidate",             10, [ 0,  10]],
-            "Njets_chi2_failedMatching_resolved"          : ["N_{jets} of NotMatched Best #Chi^{2} Candidate (resolved)",  10, [ 0,  10]],
-            "Njets_chi2_failedMatching_merged"            : ["N_{jets} of NotMatched Best #Chi^{2} Candidate (merged)",    10, [ 0,  10]],
+            # "Njets_chi2_failedMatching"                   : ["N_{jets} of NotMatched Best #Chi^{2} Candidate",             10, [ 0,  10]],
+            # "Njets_chi2_failedMatching_resolved"          : ["N_{jets} of NotMatched Best #Chi^{2} Candidate (resolved)",  10, [ 0,  10]],
+            # "Njets_chi2_failedMatching_merged"            : ["N_{jets} of NotMatched Best #Chi^{2} Candidate (merged)",    10, [ 0,  10]],
 
             # "BestChi2hadronicleg"                         : ["#chi^{2} of Hadronic leg",                                        50, [ 0, 100]],
             # "BestChi2hadronicleg_resolved"                : ["#chi^{2} of Hadronic leg (resolved)",                             50, [ 0, 100]],
@@ -97,9 +97,9 @@ hists = {   # "res_jet_bscore"                              : ["AK4 b-score (res
             # "BestChi2hadronicleg_failedMatching_resolved" : ["#chi^{2} of Hadronic leg failed matching (resolved)",             50, [ 0, 100]],
             # "BestChi2hadronicleg_failedMatching_merged"   : ["#chi^{2} of Hadronic leg failed matching (merged)",               50, [ 0, 100]],
 
-            "Njets_chi2_had_failedMatching"               : ["N_{jets} of NotMatched Best #Chi^{2} Candidate's hadronic leg",             10, [ 0,  10]],
-            "Njets_chi2_had_failedMatching_resolved"      : ["N_{jets} of NotMatched Best #Chi^{2} Candidate's hadronic leg (resolved)",  10, [ 0,  10]],
-            "Njets_chi2_had_failedMatching_merged"        : ["N_{jets} of NotMatched Best #Chi^{2} Candidate's hadronic leg (merged)",    10, [ 0,  10]],
+            # "Njets_chi2_had_failedMatching"               : ["N_{jets} of NotMatched Best #Chi^{2} Candidate's hadronic leg",             10, [ 0,  10]],
+            # "Njets_chi2_had_failedMatching_resolved"      : ["N_{jets} of NotMatched Best #Chi^{2} Candidate's hadronic leg (resolved)",  10, [ 0,  10]],
+            # "Njets_chi2_had_failedMatching_merged"        : ["N_{jets} of NotMatched Best #Chi^{2} Candidate's hadronic leg (merged)",    10, [ 0,  10]],
 
             # "BestChi2leptonicleg"                         : ["#chi^{2} of Leptonic leg",                                        50, [ 0, 100]],
             # "BestChi2leptonicleg_resolved"                : ["#chi^{2} of Leptonic leg (resolved)",                             50, [ 0, 100]],
@@ -121,9 +121,9 @@ hists = {   # "res_jet_bscore"                              : ["AK4 b-score (res
             # "BestChi2leptonicleg_failedMatching_resolved" : ["#chi^{2} of Leptonic leg failed matching (resolved)",             50, [ 0, 100]],
             # "BestChi2leptonicleg_failedMatching_merged"   : ["#chi^{2} of Leptonic leg failed matching (merged)",               50, [ 0, 100]],
 
-            "Njets_chi2_lep_failedMatching"               : ["N_{jets} of NotMatched Best #Chi^{2} Candidate's leptonic leg",             10, [ 0,  10]],
-            "Njets_chi2_lep_failedMatching_resolved"      : ["N_{jets} of NotMatched Best #Chi^{2} Candidate's leptonic leg (resolved)",  10, [ 0,  10]],
-            "Njets_chi2_lep_failedMatching_merged"        : ["N_{jets} of NotMatched Best #Chi^{2} Candidate's leptonic leg (merged)",    10, [ 0,  10]],
+            # "Njets_chi2_lep_failedMatching"               : ["N_{jets} of NotMatched Best #Chi^{2} Candidate's leptonic leg",             10, [ 0,  10]],
+            # "Njets_chi2_lep_failedMatching_resolved"      : ["N_{jets} of NotMatched Best #Chi^{2} Candidate's leptonic leg (resolved)",  10, [ 0,  10]],
+            # "Njets_chi2_lep_failedMatching_merged"        : ["N_{jets} of NotMatched Best #Chi^{2} Candidate's leptonic leg (merged)",    10, [ 0,  10]],
 
             # "DrHadB"                                      : ["#DeltaR of hadronic-b",                                           50, [ 0,  10]],
             # "DrHadB_resolved"                             : ["#DeltaR of hadronic-b (resolved)",                                50, [ 0,  10]],
@@ -151,6 +151,18 @@ hists = {   # "res_jet_bscore"                              : ["AK4 b-score (res
             # "dr_Had_q2"                                   : ["dr contribution of Hadronic q2",                                    50, [ 0, 0.8]],
             # "dr_Lep_nu"                                   : ["dr contribution of Leptonic #nu",                                   50, [ 0, 0.3]],
             # "dr_Lep_l"                                    : ["dr contribution of Leptonic lepton",                                50, [ 0, 0.1]],
+
+            "Njets_correctMatch"                                  : ["N_{jets} of BestCorrectMatch Candidate",                             10, [ 0,  10]],
+            "Njets_correctMatch_had"                              : ["Hadronic N_{jets} of BestCorrectMatch Candidate",                    10, [ 0,  10]],
+            "Njets_correctMatch_lep"                              : ["Leptonic N_{jets} of BestCorrectMatch Candidate",                    10, [ 0,  10]],
+
+            "Njets_correctMatch_resolved"                         : ["N_{jets} of BestCorrectMatch Candidate (resolved)",                  10, [ 0,  10]],
+            "Njets_correctMatch_had_resolved"                     : ["Hadronic N_{jets} of BestCorrectMatch Candidate (resolved)",         10, [ 0,  10]],
+            "Njets_correctMatch_lep_resolved"                     : ["Leptonic N_{jets} of BestCorrectMatch Candidate (resolved)",         10, [ 0,  10]],
+
+            "Njets_correctMatch_merged"                           : ["N_{jets} of BestCorrectMatch Candidate (merged)",                    10, [ 0,  10]],
+            "Njets_correctMatch_had_merged"                       : ["Hadronic N_{jets} of BestCorrectMatch Candidate (merged)",           10, [ 0,  10]],
+            "Njets_correctMatch_lep_merged"                       : ["Leptonic N_{jets} of BestCorrectMatch Candidate (merged)",           10, [ 0,  10]],
 
             # "correctDr_resolved"                          : ["correct_dr (resolved)",                                             50, [ 0, 2.0]],
             # "dr_Lep_b_resolved"                           : ["dr contribution of Leptonic b (resolved)",                          50, [ 0, 0.4]],

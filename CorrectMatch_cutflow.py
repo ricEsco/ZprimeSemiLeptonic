@@ -34,7 +34,7 @@ W = 800
 
 ## Create final histograms-------------------------------------
 # Create cutflow histogram: TH*F(name, title, nbins, xlow, xup)
-h_AK4cutflow = TH1F("h_AK4cutflow", "CorrectMatch Cutflow (Resolved)", len(AK4matching_criteria), 0, len(AK4matching_criteria))
+h_AK4cutflow = TH1F("h_AK4cutflow", "CorrectMatch Cutflow^{-1} (Resolved)", len(AK4matching_criteria), 0, len(AK4matching_criteria))
 
 # Label bins of cutflow histogram in order of matching_criteria
 for i, criteria in enumerate(AK4matching_criteria, start=1):
@@ -43,7 +43,7 @@ for i, criteria in enumerate(AK4matching_criteria, start=1):
 
 
 # Create cutflow histogram: TH*F(name, title, nbins, xlow, xup)
-h_AK8cutflow = TH1F("h_AK8cutflow", "CorrectMatch Cutflow (Merged)", len(AK8matching_criteria), 0, len(AK8matching_criteria))
+h_AK8cutflow = TH1F("h_AK8cutflow", "CorrectMatch Cutflow^{-1} (Merged)", len(AK8matching_criteria), 0, len(AK8matching_criteria))
 
 # Label bins of cutflow histogram in order of matching_criteria
 for i, criteria in enumerate(AK8matching_criteria, start=1):
