@@ -85,6 +85,9 @@ void ZprimeSemiLeptonicHists::init(){
   reliso_mu1_rebin = book<TH1F>("reliso_mu1_rebin", "#mu 1 rel. Iso ", 400, 0, 5);
   reliso_mu2_rebin = book<TH1F>("reliso_mu2_rebin", "#mu 2 rel. Iso ", 400, 0, 5);
 
+  charge_mu      = book<TH1F>("charge_mu", "N_{#mu} charge", 2, -1., 1.);
+  charge_ele     = book<TH1F>("charge_ele", "N_{e} charge", 2, -1., 1.);
+
   N_ele             = book<TH1F>("N_ele", "N^{e}", 11, -0.5, 10.5);
   pt_ele            = book<TH1F>("pt_ele", "p_{T}^{e} [GeV]", 90, 0, 900);
   pt_ele1           = book<TH1F>("pt_ele1", "p_{T}^{e 1} [GeV]", 90, 0, 900);
@@ -445,6 +448,7 @@ void ZprimeSemiLeptonicHists::init(){
   toplep_eta        = book<TH1F>("toplep_eta", "#eta^{t,lep}", 60, -3.0, 3.0);
   toplep_phi        = book<TH1F>("toplep_phi", "#phi^{t,lep}", 70, -3.5, 3.5);
   toplep_m          = book<TH1F>("toplep_m", "m^{t,lep} [GeV]", 70, 0, 7000);
+  toplep_lepcharge  = book<TH1F>("toplep_lepcharge", "lepcharge^{t,lep}", 2, -2., 2.);
   tophad_pt         = book<TH1F>("tophad_pt", "p_{T}^{t,had} [GeV]", 70, 0, 7000);
   tophad_eta        = book<TH1F>("tophad_eta", "#eta^{t,had}", 60, -3.0, 3.0);
   tophad_phi        = book<TH1F>("tophad_phi", "#phi^{t,had}", 70, -3.5, 3.5);
@@ -1146,6 +1150,7 @@ void ZprimeSemiLeptonicHists::fill(const Event & event){
   int Nmuons = muons->size();
   N_mu->Fill(Nmuons, weight);
   for(int i=0; i<Nmuons; i++){
+    charge_mu->Fill(muons->at(i).charge(), weight);
 
     pt_mu->Fill(muons->at(i).pt(),weight);
     eta_mu->Fill(muons->at(i).eta(),weight);
@@ -1207,6 +1212,7 @@ void ZprimeSemiLeptonicHists::fill(const Event & event){
   N_ele->Fill(Nelectrons, weight);
 
   for(int i=0; i<Nelectrons; i++){
+    charge_ele->Fill(electrons->at(i).charge(), weight);
     pt_ele->Fill(electrons->at(i).pt(),weight);
     eta_ele->Fill(electrons->at(i).eta(),weight);
     phi_ele->Fill(electrons->at(i).phi(),weight);
@@ -1324,6 +1330,7 @@ void ZprimeSemiLeptonicHists::fill(const Event & event){
     toplep_eta->Fill(toplep.Eta(), weight);
     toplep_phi->Fill(toplep.Phi(), weight);
     toplep_m->Fill(toplep.M(), weight);
+    toplep_lepcharge->Fill(BestZprimeCandidate->lepton().charge(), weight);
 
     tophad_pt->Fill(tophad.Pt(), weight);
     tophad_eta->Fill(tophad.Eta(), weight);

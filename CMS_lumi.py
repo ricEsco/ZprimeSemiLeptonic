@@ -3,9 +3,9 @@ from ROOT import *
 cmsText     = "CMS";
 cmsTextFont   = 61;  # default is helvetic-bold
 
-writeExtraText = False;
+writeExtraText = True;
 isPreliminary = False;
-extraText   = "";
+extraText   = "Work in progress";
 extraTextFont = 52;  # default is helvetica-italics
 
 writeChannelText = False

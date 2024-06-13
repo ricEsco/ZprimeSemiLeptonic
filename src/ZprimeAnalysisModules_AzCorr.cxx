@@ -146,9 +146,10 @@ protected:
   Event::Handle<float> h_pt_hadTop_mer; // pt of hadronic top-jets from merged topology
 
   //Event::Handle<float> h_deltaR_min;  // Smallest deltaR(hadronicjet, AK4CHSmatchedjet)
-  Event::Handle<float> h_res_jet_bscore;    // bScores of resolved jets before ANY of MY btagging requirements
-  Event::Handle<float> h_mer_subjet_bscore; // bScores of merged subjets before ANY of MY btagging requirements
-  Event::Handle<float> h_bscore_max;  // Largest bScores of hadronic sub-jets
+  Event::Handle<float> h_res_jet_bscore;       // bScores of resolved jets before ANY of MY btagging requirements
+  Event::Handle<float> h_mer_subjet_bscore;    // bScores of merged subjets before ANY of MY btagging requirements
+  Event::Handle<float> h_bscore_max_beforecut; // Largest bScores of hadronic b-(sub)jets before WP cut
+  Event::Handle<float> h_bscore_max;           // Largest bScores of hadronic b-(sub)jets after WP cut
 
   // Sum of phi-coordinates
   Event::Handle<float> h_sphi;
@@ -459,10 +460,11 @@ ZprimeAnalysisModule_AzCorr::ZprimeAnalysisModule_AzCorr(uhh2::Context& ctx){
   h_pt_hadTop_res=ctx.declare_event_output<float> ("pt_hadTop_res");  // pt of hadronic top-jet from resolved topology
   h_pt_hadTop_mer=ctx.declare_event_output<float> ("pt_hadTop_mer");  // pt of hadronic top-jets from merged topology
 
-  //h_deltaR_min=ctx.declare_event_output<float> ("deltaR_min");              // Smallest deltaR(hadronicjet, AK4CHSmatchedjet)
-  h_res_jet_bscore=ctx.declare_event_output<float> ("res_jet_bscore");        // bScores of resolved jets
-  h_mer_subjet_bscore=ctx.declare_event_output<float> ("mer_subjet_bscore");  // bScores of merged subjets
-  h_bscore_max=ctx.declare_event_output<float> ("bscore_max");                // Largest bScores of hadronic sub-jets
+  //h_deltaR_min=ctx.declare_event_output<float> ("deltaR_min");                    // Smallest deltaR(hadronicjet, AK4CHSmatchedjet)
+  h_res_jet_bscore=ctx.declare_event_output<float> ("res_jet_bscore");              // bScores of resolved jets
+  h_mer_subjet_bscore=ctx.declare_event_output<float> ("mer_subjet_bscore");        // bScores of merged subjets
+  h_bscore_max_beforecut=ctx.declare_event_output<float> ("bscore_max_beforecut");  // Largest bScores of hadronic b-(sub)jets before WP cut
+  h_bscore_max=ctx.declare_event_output<float> ("bscore_max");                      // Largest bScores of hadronic b-(sub)jets after WP cut
 
   // Sum of phi-coordinates
   h_sphi=ctx.declare_event_output<float> ("sphi");
@@ -566,10 +568,11 @@ bool ZprimeAnalysisModule_AzCorr::process(uhh2::Event& event){
   event.set(h_pt_hadTop_res, -10);  // pt of hadronic top-jets from resolved topology
   event.set(h_pt_hadTop_mer, -10);  // pt of hadronic top-jet from merged topology
 
-  //event.set(h_deltaR_min, -10);      // Smallest deltaR(hadronicjet, AK4CHSmatchedjet)
-  event.set(h_res_jet_bscore, -2);     // bScores of resolved top's jets before ANY of MY btagging requirements
-  event.set(h_mer_subjet_bscore, -2);  // bScores of merged top's subjets before ANY of MY btagging requirements
-  event.set(h_bscore_max, -10);        // Largest bScores of hadronic sub-jets
+  //event.set(h_deltaR_min, -10);        // Smallest deltaR(hadronicjet, AK4CHSmatchedjet)
+  event.set(h_res_jet_bscore, -2);       // bScores of resolved top's jets before ANY of MY btagging requirements
+  event.set(h_mer_subjet_bscore, -2);    // bScores of merged top's subjets before ANY of MY btagging requirements
+  event.set(h_bscore_max_beforecut, -2); // Largest bScores of hadronic b-(sub)jets before ANY of MY btagging requirements
+  event.set(h_bscore_max, -10);          // Largest bScores of hadronic b-(sub)jets that pass the WP 
 
   // Sum of phi-coordinates
   event.set(h_sphi, -10);     
@@ -1143,6 +1146,8 @@ bool ZprimeAnalysisModule_AzCorr::process(uhh2::Event& event){
     }
     //-----------------------------------End extraction of highest btag score------------------------------------//
 
+    // Plot max b-scores before cutting on a given WP
+    event.set(h_bscore_max_beforecut, bscore_max);
 
     // Only consider events with btagged jets that pass a given WP
     if(bscore_max >= btag_WP){
