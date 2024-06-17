@@ -148,7 +148,6 @@ protected:
   //Event::Handle<float> h_deltaR_min;  // Smallest deltaR(hadronicjet, AK4CHSmatchedjet)
   Event::Handle<float> h_res_jet_bscore;       // bScores of resolved jets before ANY of MY btagging requirements
   Event::Handle<float> h_mer_subjet_bscore;    // bScores of merged subjets before ANY of MY btagging requirements
-  Event::Handle<float> h_bscore_max_beforecut; // Largest bScores of hadronic b-(sub)jets before WP cut
   Event::Handle<float> h_bscore_max;           // Largest bScores of hadronic b-(sub)jets after WP cut
 
   // Sum of phi-coordinates
@@ -463,9 +462,7 @@ ZprimeAnalysisModule_AzCorr::ZprimeAnalysisModule_AzCorr(uhh2::Context& ctx){
   //h_deltaR_min=ctx.declare_event_output<float> ("deltaR_min");                    // Smallest deltaR(hadronicjet, AK4CHSmatchedjet)
   h_res_jet_bscore=ctx.declare_event_output<float> ("res_jet_bscore");              // bScores of resolved jets
   h_mer_subjet_bscore=ctx.declare_event_output<float> ("mer_subjet_bscore");        // bScores of merged subjets
-  h_bscore_max_beforecut=ctx.declare_event_output<float> ("bscore_max_beforecut");  // Largest bScores of hadronic b-(sub)jets before WP cut
-  h_bscore_max=ctx.declare_event_output<float> ("bscore_max");                      // Largest bScores of hadronic b-(sub)jets after WP cut
-
+  h_bscore_max=ctx.declare_event_output<float> ("bscore_max");                      // Largest bScores of hadronic b-(sub)jets
   // Sum of phi-coordinates
   h_sphi=ctx.declare_event_output<float> ("sphi");
   h_sphi_high=ctx.declare_event_output<float> ("sphi_high");
@@ -569,10 +566,9 @@ bool ZprimeAnalysisModule_AzCorr::process(uhh2::Event& event){
   event.set(h_pt_hadTop_mer, -10);  // pt of hadronic top-jet from merged topology
 
   //event.set(h_deltaR_min, -10);        // Smallest deltaR(hadronicjet, AK4CHSmatchedjet)
-  event.set(h_res_jet_bscore, -2);       // bScores of resolved top's jets before ANY of MY btagging requirements
-  event.set(h_mer_subjet_bscore, -2);    // bScores of merged top's subjets before ANY of MY btagging requirements
-  event.set(h_bscore_max_beforecut, -2); // Largest bScores of hadronic b-(sub)jets before ANY of MY btagging requirements
-  event.set(h_bscore_max, -10);          // Largest bScores of hadronic b-(sub)jets that pass the WP 
+  event.set(h_res_jet_bscore, -2);       // bScores of resolved top's jets 
+  event.set(h_mer_subjet_bscore, -2);    // bScores of merged top's subjets 
+  event.set(h_bscore_max, -10);          // Largest bScores of hadronic b-(sub)jets
 
   // Sum of phi-coordinates
   event.set(h_sphi, -10);     
@@ -1144,178 +1140,173 @@ bool ZprimeAnalysisModule_AzCorr::process(uhh2::Event& event){
         event.set(h_mer_subjet_bscore, mer_subjet_bscore);
       }
     }
+
+    event.set(h_bscore_max, bscore_max); // Plot max bscores
     //-----------------------------------End extraction of highest btag score------------------------------------//
 
-    // Plot max b-scores before cutting on a given WP
-    event.set(h_bscore_max_beforecut, bscore_max);
+    
 
-    // Only consider events with btagged jets that pass a given WP
-    if(bscore_max >= btag_WP){
-      event.set(h_bscore_max, bscore_max); // Plot max bscores
+    //------------------------------------Define 4vectors of hadronic b-jet and lepton------------------------------------//
+    // Hadronic b-jet 4-vector
+    TLorentzVector had_top_b(0, 0, 0, 0);
 
-      //------------------------------------Define 4vectors of hadronic b-jet and lepton------------------------------------//
-      // Hadronic b-jet 4-vector
-      TLorentzVector had_top_b(0, 0, 0, 0);
-
-      // Resolved topology
-      if(!is_toptag_reconstruction){ // Define hadronic b-jet as hadronic AK4-jet with highest bscore
-        for(unsigned int i=0; i< BestZprimeCandidate->jets_hadronic().size(); i++){
-          float bscore = jets_hadronic_bscores.at(i);
-          if(bscore == bscore_max) had_top_b.SetPtEtaPhiE(BestZprimeCandidate->jets_hadronic().at(i).pt(), 
-                                                          BestZprimeCandidate->jets_hadronic().at(i).eta(), 
-                                                          BestZprimeCandidate->jets_hadronic().at(i).phi(), 
-                                                          BestZprimeCandidate->jets_hadronic().at(i).energy());
-        }
+    // Resolved topology
+    if(!is_toptag_reconstruction){ // Define hadronic b-jet as hadronic AK4-jet with highest bscore
+      for(unsigned int i=0; i< BestZprimeCandidate->jets_hadronic().size(); i++){
+        float bscore = jets_hadronic_bscores.at(i);
+        if(bscore == bscore_max) had_top_b.SetPtEtaPhiE(BestZprimeCandidate->jets_hadronic().at(i).pt(), 
+                                                        BestZprimeCandidate->jets_hadronic().at(i).eta(), 
+                                                        BestZprimeCandidate->jets_hadronic().at(i).phi(), 
+                                                        BestZprimeCandidate->jets_hadronic().at(i).energy());
       }
-      // Merged topology
-      if(is_toptag_reconstruction){ // Define hadronic b-jet as hadronic AK8-subjet with highest bscore
-        for(unsigned int j=0; j < BestZprimeCandidate->tophad_topjet_ptr()->subjets().size(); j++){
-          float bscore = BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).btag_DeepJet();
-          if(bscore == bscore_max) had_top_b.SetPtEtaPhiE(BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).pt(), 
-                                                          BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).eta(), 
-                                                          BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).phi(), 
-                                                          BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).energy());
-        }
+    }
+    // Merged topology
+    if(is_toptag_reconstruction){ // Define hadronic b-jet as hadronic AK8-subjet with highest bscore
+      for(unsigned int j=0; j < BestZprimeCandidate->tophad_topjet_ptr()->subjets().size(); j++){
+        float bscore = BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).btag_DeepJet();
+        if(bscore == bscore_max) had_top_b.SetPtEtaPhiE(BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).pt(), 
+                                                        BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).eta(), 
+                                                        BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).phi(), 
+                                                        BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).energy());
       }
+    }
 
-      // Lepton 4-vector
-      TLorentzVector lep_top_lep(0, 0, 0, 0);
-      LorentzVector lep = BestZprimeCandidate->lepton().v4();
-      lep_top_lep.SetPtEtaPhiE(lep.pt(), lep.eta(), lep.phi(), lep.E());
-      //------------------------------------Define 4vectors of hadronic b-jet and lepton------------------------------------//
+    // Lepton 4-vector
+    TLorentzVector lep_top_lep(0, 0, 0, 0);
+    LorentzVector lep = BestZprimeCandidate->lepton().v4();
+    lep_top_lep.SetPtEtaPhiE(lep.pt(), lep.eta(), lep.phi(), lep.E());
+    //------------------------------------Define 4vectors of hadronic b-jet and lepton------------------------------------//
 
 
-      //-------------------------------- Begin boosting top quarks and their decay products --------------------------------//
-      // Define 4vectors of top quarks
-      TLorentzVector PosTop(0, 0, 0, 0);
-      TLorentzVector NegTop(0, 0, 0, 0);
+    //-------------------------------- Begin boosting top quarks and their decay products --------------------------------//
+    // Define 4vectors of top quarks
+    TLorentzVector PosTop(0, 0, 0, 0);
+    TLorentzVector NegTop(0, 0, 0, 0);
 
-      // POSITIVE LEPTON CONFIGURATION => Positive charged lepton has Positive Top mother
-      if(BestZprimeCandidate->lepton().charge() > 0){
-        // Define ttbar system
-        PosTop.SetPtEtaPhiE(BestZprimeCandidate->top_leptonic_v4().pt(), 
-                            BestZprimeCandidate->top_leptonic_v4().eta(), 
-                            BestZprimeCandidate->top_leptonic_v4().phi(), 
-                            BestZprimeCandidate->top_leptonic_v4().energy());
-        NegTop.SetPtEtaPhiE(BestZprimeCandidate->top_hadronic_v4().pt(), 
-                            BestZprimeCandidate->top_hadronic_v4().eta(), 
-                            BestZprimeCandidate->top_hadronic_v4().phi(), 
-                            BestZprimeCandidate->top_hadronic_v4().energy());
-        TLorentzVector ttbar = PosTop + NegTop;
-        
-        // Boost into ttbar CoM-Frame <<<-------//
-        lep_top_lep.Boost(-ttbar.BoostVector());
-        had_top_b.Boost(-ttbar.BoostVector());
-        PosTop.Boost(-ttbar.BoostVector());
-        NegTop.Boost(-ttbar.BoostVector());
-
-        // Rotate vectors into Helicity Frame <<<------//
-        // Rotate about beamline
-        lep_top_lep.RotateZ(-1.*PosTop.Phi());
-        had_top_b.RotateZ(-1.*PosTop.Phi());
-        PosTop.RotateZ(-1.*PosTop.Phi());
-        NegTop.RotateZ(-1.*PosTop.Phi());
-        // Rotate about y-axis
-        lep_top_lep.RotateY(-1.*PosTop.Theta());
-        had_top_b.RotateY(-1.*PosTop.Theta());
-        PosTop.RotateY(-1.*PosTop.Theta());
-        NegTop.RotateY(-1.*PosTop.Theta());
-
-        // Boost into ttbar Rest-Frame <<<--------//
-        lep_top_lep.Boost(-PosTop.BoostVector()); // Positive charged lepton has Positive Top mother
-        had_top_b.Boost(-NegTop.BoostVector());   // Positive charged lepton means b-jet has Negative Top mother
-      }
+    // POSITIVE LEPTON CONFIGURATION => Positive charged lepton has Positive Top mother
+    if(BestZprimeCandidate->lepton().charge() > 0){
+      // Define ttbar system
+      PosTop.SetPtEtaPhiE(BestZprimeCandidate->top_leptonic_v4().pt(), 
+                          BestZprimeCandidate->top_leptonic_v4().eta(), 
+                          BestZprimeCandidate->top_leptonic_v4().phi(), 
+                          BestZprimeCandidate->top_leptonic_v4().energy());
+      NegTop.SetPtEtaPhiE(BestZprimeCandidate->top_hadronic_v4().pt(), 
+                          BestZprimeCandidate->top_hadronic_v4().eta(), 
+                          BestZprimeCandidate->top_hadronic_v4().phi(), 
+                          BestZprimeCandidate->top_hadronic_v4().energy());
+      TLorentzVector ttbar = PosTop + NegTop;
       
-      // NEGATIVE LEPTON CONFIGURATION => Negative charged lepton has Negative Top mother
-      if(BestZprimeCandidate->lepton().charge() < 0){
-        // Define ttbar system
-        PosTop.SetPtEtaPhiE(BestZprimeCandidate->top_hadronic_v4().pt(), 
-                            BestZprimeCandidate->top_hadronic_v4().eta(), 
-                            BestZprimeCandidate->top_hadronic_v4().phi(), 
-                            BestZprimeCandidate->top_hadronic_v4().energy());
-        NegTop.SetPtEtaPhiE(BestZprimeCandidate->top_leptonic_v4().pt(), 
-                            BestZprimeCandidate->top_leptonic_v4().eta(), 
-                            BestZprimeCandidate->top_leptonic_v4().phi(), 
-                            BestZprimeCandidate->top_leptonic_v4().energy());
-        TLorentzVector ttbar = PosTop + NegTop;
-        
-        // Boost into ttbar CoM-Frame <<<-------//
-        lep_top_lep.Boost(-ttbar.BoostVector());
-        had_top_b.Boost(-ttbar.BoostVector());
-        PosTop.Boost(-ttbar.BoostVector());
-        NegTop.Boost(-ttbar.BoostVector());
+      // Boost into ttbar CoM-Frame <<<-------//
+      lep_top_lep.Boost(-ttbar.BoostVector());
+      had_top_b.Boost(-ttbar.BoostVector());
+      PosTop.Boost(-ttbar.BoostVector());
+      NegTop.Boost(-ttbar.BoostVector());
 
-        // Rotate vectors into Helicity Frame <<<------//
-        // Rotate about beamline
-        lep_top_lep.RotateZ(-1.*PosTop.Phi());
-        had_top_b.RotateZ(-1.*PosTop.Phi());
-        PosTop.RotateZ(-1.*PosTop.Phi());
-        NegTop.RotateZ(-1.*PosTop.Phi());
-        // Rotate about y-axis
-        lep_top_lep.RotateY(-1.*PosTop.Theta());
-        had_top_b.RotateY(-1.*PosTop.Theta());
-        PosTop.RotateY(-1.*PosTop.Theta());
-        NegTop.RotateY(-1.*PosTop.Theta());
+      // Rotate vectors into Helicity Frame <<<------//
+      // Rotate about beamline
+      lep_top_lep.RotateZ(-1.*PosTop.Phi());
+      had_top_b.RotateZ(-1.*PosTop.Phi());
+      PosTop.RotateZ(-1.*PosTop.Phi());
+      NegTop.RotateZ(-1.*PosTop.Phi());
+      // Rotate about y-axis
+      lep_top_lep.RotateY(-1.*PosTop.Theta());
+      had_top_b.RotateY(-1.*PosTop.Theta());
+      PosTop.RotateY(-1.*PosTop.Theta());
+      NegTop.RotateY(-1.*PosTop.Theta());
 
-        // Boost into ttbar Rest-Frame <<<--------//
-        lep_top_lep.Boost(-NegTop.BoostVector()); // Negative charged lepton has Negative Top mother
-        had_top_b.Boost(-PosTop.BoostVector());   // Negative charged lepton means b-jet has Positive Top mother
+      // Boost into ttbar Rest-Frame <<<--------//
+      lep_top_lep.Boost(-PosTop.BoostVector()); // Positive charged lepton has Positive Top mother
+      had_top_b.Boost(-NegTop.BoostVector());   // Positive charged lepton means b-jet has Negative Top mother
+    }
+    
+    // NEGATIVE LEPTON CONFIGURATION => Negative charged lepton has Negative Top mother
+    if(BestZprimeCandidate->lepton().charge() < 0){
+      // Define ttbar system
+      PosTop.SetPtEtaPhiE(BestZprimeCandidate->top_hadronic_v4().pt(), 
+                          BestZprimeCandidate->top_hadronic_v4().eta(), 
+                          BestZprimeCandidate->top_hadronic_v4().phi(), 
+                          BestZprimeCandidate->top_hadronic_v4().energy());
+      NegTop.SetPtEtaPhiE(BestZprimeCandidate->top_leptonic_v4().pt(), 
+                          BestZprimeCandidate->top_leptonic_v4().eta(), 
+                          BestZprimeCandidate->top_leptonic_v4().phi(), 
+                          BestZprimeCandidate->top_leptonic_v4().energy());
+      TLorentzVector ttbar = PosTop + NegTop;
+      
+      // Boost into ttbar CoM-Frame <<<-------//
+      lep_top_lep.Boost(-ttbar.BoostVector());
+      had_top_b.Boost(-ttbar.BoostVector());
+      PosTop.Boost(-ttbar.BoostVector());
+      NegTop.Boost(-ttbar.BoostVector());
+
+      // Rotate vectors into Helicity Frame <<<------//
+      // Rotate about beamline
+      lep_top_lep.RotateZ(-1.*PosTop.Phi());
+      had_top_b.RotateZ(-1.*PosTop.Phi());
+      PosTop.RotateZ(-1.*PosTop.Phi());
+      NegTop.RotateZ(-1.*PosTop.Phi());
+      // Rotate about y-axis
+      lep_top_lep.RotateY(-1.*PosTop.Theta());
+      had_top_b.RotateY(-1.*PosTop.Theta());
+      PosTop.RotateY(-1.*PosTop.Theta());
+      NegTop.RotateY(-1.*PosTop.Theta());
+
+      // Boost into ttbar Rest-Frame <<<--------//
+      lep_top_lep.Boost(-NegTop.BoostVector()); // Negative charged lepton has Negative Top mother
+      had_top_b.Boost(-PosTop.BoostVector());   // Negative charged lepton means b-jet has Positive Top mother
+    }
+    //-------------------------------- End boosting top quarks and their decay products --------------------------------//
+
+    // Define angular variables as sum and difference of decay products' phi-coordinates
+    // sphi and dphi = PosTopDecayProd_phi +- NegTopDecayProd_phi
+
+    if(BestZprimeCandidate->lepton().charge() > 0){ // lepton is Positive Top's Decay Product
+      auto sphi = lep_top_lep.Phi() + had_top_b.Phi();
+      // Map back into original domain if necessary
+      if(sphi > TMath::Pi()) sphi = sphi - 2*TMath::Pi();
+      if(sphi < -TMath::Pi()) sphi = sphi + 2*TMath::Pi();
+      event.set(h_sphi, sphi);
+
+      auto dphi = lep_top_lep.Phi() - had_top_b.Phi();
+      // Map back into original domain if necessary
+      if(dphi > TMath::Pi()) dphi = dphi - 2*TMath::Pi();
+      if(dphi < -TMath::Pi()) dphi = dphi + 2*TMath::Pi();
+      event.set(h_dphi, dphi);
+
+      // Plot dphi and sphi for high-pt ranges
+      if(pt_hadTop > pt_hadTop_thresh){
+        event.set(h_sphi_high, sphi);
+        event.set(h_dphi_high, dphi);
       }
-      //-------------------------------- End boosting top quarks and their decay products --------------------------------//
-  
-      // Define angular variables as sum and difference of decay products' phi-coordinates
-      // sphi and dphi = PosTopDecayProd_phi +- NegTopDecayProd_phi
-
-      if(BestZprimeCandidate->lepton().charge() > 0){ // lepton is Positive Top's Decay Product
-        float sphi = lep_top_lep.Phi() + had_top_b.Phi();
-        // Map back into original domain if necessary
-        if(sphi > TMath::Pi()) sphi = sphi - 2*TMath::Pi();
-        if(sphi < -TMath::Pi()) sphi = sphi + 2*TMath::Pi();
-        event.set(h_sphi, sphi);
-
-        float dphi = lep_top_lep.Phi() - had_top_b.Phi();
-        // Map back into original domain if necessary
-        if(dphi > TMath::Pi()) dphi = dphi - 2*TMath::Pi();
-        if(dphi < -TMath::Pi()) dphi = dphi + 2*TMath::Pi();
-        event.set(h_dphi, dphi);
-
-        // Plot dphi and sphi for high-pt ranges
-        if(pt_hadTop > pt_hadTop_thresh){
-          event.set(h_sphi_high, sphi);
-          event.set(h_dphi_high, dphi);
-        }
-        // Plot dphi and sphi for low-pt ranges
-        if(pt_hadTop < pt_hadTop_thresh){
-          event.set(h_sphi_low, sphi);
-          event.set(h_dphi_low, dphi);
-        }
+      // Plot dphi and sphi for low-pt ranges
+      if(pt_hadTop < pt_hadTop_thresh){
+        event.set(h_sphi_low, sphi);
+        event.set(h_dphi_low, dphi);
       }
+    }
 
-      if(BestZprimeCandidate->lepton().charge() < 0){ // b-quark is Positive Top's Decay Product
-        float sphi = had_top_b.Phi() + lep_top_lep.Phi();
-        // Map back into original domain if necessary
-        if(sphi > TMath::Pi()) sphi = sphi - 2*TMath::Pi();
-        if(sphi < -TMath::Pi()) sphi = sphi + 2*TMath::Pi();
-        event.set(h_sphi, sphi);
+    if(BestZprimeCandidate->lepton().charge() < 0){ // b-quark is Positive Top's Decay Product
+      auto sphi = had_top_b.Phi() + lep_top_lep.Phi();
+      // Map back into original domain if necessary
+      if(sphi > TMath::Pi()) sphi = sphi - 2*TMath::Pi();
+      if(sphi < -TMath::Pi()) sphi = sphi + 2*TMath::Pi();
+      event.set(h_sphi, sphi);
 
-        float dphi = had_top_b.Phi() - lep_top_lep.Phi();
-        // Map back into original domain if necessary
-        if(dphi > TMath::Pi()) dphi = dphi - 2*TMath::Pi();
-        if(dphi < -TMath::Pi()) dphi = dphi + 2*TMath::Pi();
-        event.set(h_dphi, dphi);
+      auto dphi = had_top_b.Phi() - lep_top_lep.Phi();
+      // Map back into original domain if necessary
+      if(dphi > TMath::Pi()) dphi = dphi - 2*TMath::Pi();
+      if(dphi < -TMath::Pi()) dphi = dphi + 2*TMath::Pi();
+      event.set(h_dphi, dphi);
 
-        // Plot dphi and sphi for high-pt ranges
-        if(pt_hadTop > pt_hadTop_thresh){
-          event.set(h_sphi_high, sphi);
-          event.set(h_dphi_high, dphi);
-        }
-        // Plot dphi and sphi for low-pt ranges
-        if(pt_hadTop < pt_hadTop_thresh){
-          event.set(h_sphi_low, sphi);
-          event.set(h_dphi_low, dphi);
-        }
+      // Plot dphi and sphi for high-pt ranges
+      if(pt_hadTop > pt_hadTop_thresh){
+        event.set(h_sphi_high, sphi);
+        event.set(h_dphi_high, dphi);
       }
-
+      // Plot dphi and sphi for low-pt ranges
+      if(pt_hadTop < pt_hadTop_thresh){
+        event.set(h_sphi_low, sphi);
+        event.set(h_dphi_low, dphi);
+      }
     }
   }
 
