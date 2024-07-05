@@ -26,8 +26,8 @@ if channel=="ele":
     _fileDir = "/nfs/dust/cms/group/zprime-uhh//"
 else:
     _channelText = "#mu+jets"
-    plotDirectory = "/nfs/dust/cms/user/ricardo/AzCorrAnalysis/muon/plots/UL18"
-    _fileDir = "/nfs/dust/cms/user/ricardo/AzCorrAnalysis/muon/workdir_AzCorr_UL18_muon"
+    plotDirectory = "/nfs/dust/cms/user/ricardo/AzCorrAnalysis/nocut/muon/plots"
+    _fileDir = "/nfs/dust/cms/user/ricardo/AzCorrAnalysis/nocut/muon/workdir_AzCorr_UL18_muon"
 print "channel is ", channel
 print "Input root:", _fileDir
 print "Output directory:", plotDirectory, "\n"
@@ -40,7 +40,6 @@ if channel=="mu":
                    "pt_hadTop"                       : ["Hadronic-top (both) p_{T}",       "Events", 25, [     0,   500]],
                    "res_jet_bscore"                  : ["b-scores of Resolved-top jets",   "Events", 20, [     0,     1]],
                    "mer_subjet_bscore"               : ["b-scores of Merged-top subjets",  "Events", 20, [     0,     1]],
-                   "bscore_max_beforecut"            : ["max b-scores before WP cut",      "Events", 20, [     0,     1]],
                    "bscore_max"                      : ["max b-scores of hadronic jets",   "Events", 20, [     0,     1]],
                    "sphi"                            : ["#Sigma#phi",                      "Events", 12, [-np.pi, np.pi]],
                    "sphi_low"                        : ["#Sigma#phi_{low pt}",             "Events", 12, [-np.pi, np.pi]],

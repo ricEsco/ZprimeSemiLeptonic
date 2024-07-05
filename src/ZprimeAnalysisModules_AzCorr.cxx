@@ -1083,21 +1083,21 @@ bool ZprimeAnalysisModule_AzCorr::process(uhh2::Event& event){
     vector <Jet> AK4CHSjets_matched = event.get(h_CHSjets_matched);                  // AK4Puppijets that have been matched to CHSjets
     vector <TopJet> TopTaggedJets = event.get(h_DeepAK8TopTags);                     // AK8Puppi jets TopTagged by DeepAK8TopTagger
     vector <float> jets_hadronic_bscores;                                            // bScores vector for resolved hadronic jets
-    float pt_hadTop_thresh = 150;                                                    // Define cut-variable as pt of hadTop for low/high regions
-    float btag_WP;                                                                   // see https://btv-wiki.docs.cern.ch/ScaleFactors/ for btag WPs
-    if (isUL16preVFP) btag_WP = 0.2598;                                              // medium WP for UL16preVFP DeepJet
-    if (isUL16postVFP) btag_WP = 0.3657;                                             // medium WP for UL16postVFP DeepJet
-    if (isUL17) btag_WP = 0.3040;                                                    // medium WP for UL17 DeepJet
-    if (isUL18) btag_WP = 0.2783;                                                    // medium WP for UL18 DeepJet
+    auto pt_hadTop_thresh = 150.;                                                    // Define cut-variable as pt of hadTop for low/high regions
+    // float btag_WP;                                                                   // see https://btv-wiki.docs.cern.ch/ScaleFactors/ for btag WPs
+    // if (isUL16preVFP) btag_WP = 0.2598;                                              // medium WP for UL16preVFP DeepJet
+    // if (isUL16postVFP) btag_WP = 0.3657;                                             // medium WP for UL16postVFP DeepJet
+    // if (isUL17) btag_WP = 0.3040;                                                    // medium WP for UL17 DeepJet
+    // if (isUL18) btag_WP = 0.2783;                                                    // medium WP for UL18 DeepJet
 
     // Plot pt of hadronic Top jet
-    float pt_hadTop = BestZprimeCandidate->top_hadronic_v4().pt();
+    auto pt_hadTop = BestZprimeCandidate->top_hadronic_v4().pt();
     if(pt_hadTop != -10) event.set(h_pt_hadTop, pt_hadTop);
     if(pt_hadTop != -10 && !is_toptag_reconstruction) event.set(h_pt_hadTop_res, pt_hadTop);
     if(pt_hadTop != -10 && is_toptag_reconstruction) event.set(h_pt_hadTop_mer, pt_hadTop);
 
     // Variable that will hold the highest bscore of the hadronic top's (sub)jets
-    float bscore_max = -2;
+    auto bscore_max = -2.;
 
 
     //-----------------------------------Begin extraction of highest btag score------------------------------------//
@@ -1105,10 +1105,10 @@ bool ZprimeAnalysisModule_AzCorr::process(uhh2::Event& event){
     if(!is_toptag_reconstruction){
       // Loop over resolved hadronic jets to find their bscore via CHS jets
       for(unsigned int i=0; i<BestZprimeCandidate->jets_hadronic().size(); i++){
-        double deltaR_min = 99;
+        auto deltaR_min = 99.;
         // Match resolved hadronic jets to CHS jets (which have bscores)
         for(unsigned int j=0; j<AK4CHSjets_matched.size(); j++){
-          double deltaR_CHS = deltaR(BestZprimeCandidate->jets_hadronic().at(i), AK4CHSjets_matched.at(j));
+          auto deltaR_CHS = deltaR(BestZprimeCandidate->jets_hadronic().at(i), AK4CHSjets_matched.at(j));
           if(deltaR_CHS < deltaR_min) deltaR_min = deltaR_CHS;}
         // Build bScore-vector for resolved hadronic jets whose bscore will correspond by index
         for(unsigned int k=0; k<AK4CHSjets_matched.size(); k++){
@@ -1117,12 +1117,12 @@ bool ZprimeAnalysisModule_AzCorr::process(uhh2::Event& event){
       }
       // Loop over bScores-vector to extract highest bscore
       for(unsigned int i=0; i<jets_hadronic_bscores.size(); i++){
-        float bscore = jets_hadronic_bscores.at(i);
+        auto bscore = jets_hadronic_bscores.at(i);
         if(bscore > bscore_max) bscore_max = bscore;
       }
       // Plot all bscores of resolved top's jets
       for(unsigned int j=0; j<jets_hadronic_bscores.size(); j++){
-        float res_jet_bscore = jets_hadronic_bscores.at(j);
+        auto res_jet_bscore = jets_hadronic_bscores.at(j);
         event.set(h_res_jet_bscore, res_jet_bscore);
       }
     }
@@ -1131,12 +1131,12 @@ bool ZprimeAnalysisModule_AzCorr::process(uhh2::Event& event){
     if(is_toptag_reconstruction){
       // Loop over hadronic top's subjets to extract highest bscore
       for(unsigned int i=0; i < BestZprimeCandidate->tophad_topjet_ptr()->subjets().size(); i++){
-        float bscore = BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(i).btag_DeepJet(); // Using DeepJet btag score
+        auto bscore = BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(i).btag_DeepJet(); // Using DeepJet btag score
         if(bscore > bscore_max) bscore_max = bscore;
       }
       // Plot all bscores of merged top's subjets
       for(unsigned int j=0; j < BestZprimeCandidate->tophad_topjet_ptr()->subjets().size(); j++){
-        float mer_subjet_bscore = BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).btag_DeepJet();
+        auto mer_subjet_bscore = BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).btag_DeepJet();
         event.set(h_mer_subjet_bscore, mer_subjet_bscore);
       }
     }
@@ -1148,12 +1148,12 @@ bool ZprimeAnalysisModule_AzCorr::process(uhh2::Event& event){
 
     //------------------------------------Define 4vectors of hadronic b-jet and lepton------------------------------------//
     // Hadronic b-jet 4-vector
-    TLorentzVector had_top_b(0, 0, 0, 0);
+    TLorentzVector had_top_b(0., 0., 0., 0.);
 
     // Resolved topology
     if(!is_toptag_reconstruction){ // Define hadronic b-jet as hadronic AK4-jet with highest bscore
       for(unsigned int i=0; i< BestZprimeCandidate->jets_hadronic().size(); i++){
-        float bscore = jets_hadronic_bscores.at(i);
+        auto bscore = jets_hadronic_bscores.at(i);
         if(bscore == bscore_max) had_top_b.SetPtEtaPhiE(BestZprimeCandidate->jets_hadronic().at(i).pt(), 
                                                         BestZprimeCandidate->jets_hadronic().at(i).eta(), 
                                                         BestZprimeCandidate->jets_hadronic().at(i).phi(), 
@@ -1163,7 +1163,7 @@ bool ZprimeAnalysisModule_AzCorr::process(uhh2::Event& event){
     // Merged topology
     if(is_toptag_reconstruction){ // Define hadronic b-jet as hadronic AK8-subjet with highest bscore
       for(unsigned int j=0; j < BestZprimeCandidate->tophad_topjet_ptr()->subjets().size(); j++){
-        float bscore = BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).btag_DeepJet();
+        auto bscore = BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).btag_DeepJet();
         if(bscore == bscore_max) had_top_b.SetPtEtaPhiE(BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).pt(), 
                                                         BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).eta(), 
                                                         BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).phi(), 
@@ -1172,7 +1172,7 @@ bool ZprimeAnalysisModule_AzCorr::process(uhh2::Event& event){
     }
 
     // Lepton 4-vector
-    TLorentzVector lep_top_lep(0, 0, 0, 0);
+    TLorentzVector lep_top_lep(0., 0., 0., 0.);
     LorentzVector lep = BestZprimeCandidate->lepton().v4();
     lep_top_lep.SetPtEtaPhiE(lep.pt(), lep.eta(), lep.phi(), lep.E());
     //------------------------------------Define 4vectors of hadronic b-jet and lepton------------------------------------//
@@ -1197,10 +1197,10 @@ bool ZprimeAnalysisModule_AzCorr::process(uhh2::Event& event){
       TLorentzVector ttbar = PosTop + NegTop;
       
       // Boost into ttbar CoM-Frame <<<-------//
-      lep_top_lep.Boost(-ttbar.BoostVector());
-      had_top_b.Boost(-ttbar.BoostVector());
-      PosTop.Boost(-ttbar.BoostVector());
-      NegTop.Boost(-ttbar.BoostVector());
+      lep_top_lep.Boost(-1.*ttbar.BoostVector());
+      had_top_b.Boost(-1.*ttbar.BoostVector());
+      PosTop.Boost(-1.*ttbar.BoostVector());
+      NegTop.Boost(-1.*ttbar.BoostVector());
 
       // Rotate vectors into Helicity Frame <<<------//
       // Rotate about beamline
@@ -1215,8 +1215,8 @@ bool ZprimeAnalysisModule_AzCorr::process(uhh2::Event& event){
       NegTop.RotateY(-1.*PosTop.Theta());
 
       // Boost into ttbar Rest-Frame <<<--------//
-      lep_top_lep.Boost(-PosTop.BoostVector()); // Positive charged lepton has Positive Top mother
-      had_top_b.Boost(-NegTop.BoostVector());   // Positive charged lepton means b-jet has Negative Top mother
+      lep_top_lep.Boost(-1.*PosTop.BoostVector()); // Positive charged lepton has Positive Top mother
+      had_top_b.Boost(-1.*NegTop.BoostVector());   // Positive charged lepton means b-jet has Negative Top mother
     }
     
     // NEGATIVE LEPTON CONFIGURATION => Negative charged lepton has Negative Top mother
@@ -1233,10 +1233,10 @@ bool ZprimeAnalysisModule_AzCorr::process(uhh2::Event& event){
       TLorentzVector ttbar = PosTop + NegTop;
       
       // Boost into ttbar CoM-Frame <<<-------//
-      lep_top_lep.Boost(-ttbar.BoostVector());
-      had_top_b.Boost(-ttbar.BoostVector());
-      PosTop.Boost(-ttbar.BoostVector());
-      NegTop.Boost(-ttbar.BoostVector());
+      lep_top_lep.Boost(-1.*ttbar.BoostVector());
+      had_top_b.Boost(-1.*ttbar.BoostVector());
+      PosTop.Boost(-1.*ttbar.BoostVector());
+      NegTop.Boost(-1.*ttbar.BoostVector());
 
       // Rotate vectors into Helicity Frame <<<------//
       // Rotate about beamline
@@ -1251,25 +1251,25 @@ bool ZprimeAnalysisModule_AzCorr::process(uhh2::Event& event){
       NegTop.RotateY(-1.*PosTop.Theta());
 
       // Boost into ttbar Rest-Frame <<<--------//
-      lep_top_lep.Boost(-NegTop.BoostVector()); // Negative charged lepton has Negative Top mother
-      had_top_b.Boost(-PosTop.BoostVector());   // Negative charged lepton means b-jet has Positive Top mother
+      lep_top_lep.Boost(-1.*NegTop.BoostVector()); // Negative charged lepton has Negative Top mother
+      had_top_b.Boost(-1.*PosTop.BoostVector());   // Negative charged lepton means b-jet has Positive Top mother
     }
     //-------------------------------- End boosting top quarks and their decay products --------------------------------//
-
+    auto pie = TMath::Pi();
     // Define angular variables as sum and difference of decay products' phi-coordinates
     // sphi and dphi = PosTopDecayProd_phi +- NegTopDecayProd_phi
 
     if(BestZprimeCandidate->lepton().charge() > 0){ // lepton is Positive Top's Decay Product
       auto sphi = lep_top_lep.Phi() + had_top_b.Phi();
       // Map back into original domain if necessary
-      if(sphi > TMath::Pi()) sphi = sphi - 2*TMath::Pi();
-      if(sphi < -TMath::Pi()) sphi = sphi + 2*TMath::Pi();
+      if(sphi > pie) sphi = sphi - 2.*pie;
+      if(sphi < -1.*pie) sphi = sphi + 2.*pie;
       event.set(h_sphi, sphi);
 
       auto dphi = lep_top_lep.Phi() - had_top_b.Phi();
       // Map back into original domain if necessary
-      if(dphi > TMath::Pi()) dphi = dphi - 2*TMath::Pi();
-      if(dphi < -TMath::Pi()) dphi = dphi + 2*TMath::Pi();
+      if(dphi > pie) dphi = dphi - 2.*pie;
+      if(dphi < -1.*pie) dphi = dphi + 2.*pie;
       event.set(h_dphi, dphi);
 
       // Plot dphi and sphi for high-pt ranges
@@ -1287,14 +1287,14 @@ bool ZprimeAnalysisModule_AzCorr::process(uhh2::Event& event){
     if(BestZprimeCandidate->lepton().charge() < 0){ // b-quark is Positive Top's Decay Product
       auto sphi = had_top_b.Phi() + lep_top_lep.Phi();
       // Map back into original domain if necessary
-      if(sphi > TMath::Pi()) sphi = sphi - 2*TMath::Pi();
-      if(sphi < -TMath::Pi()) sphi = sphi + 2*TMath::Pi();
+      if(sphi > pie) sphi = sphi - 2.*pie;
+      if(sphi < -1.*pie) sphi = sphi + 2.*pie;
       event.set(h_sphi, sphi);
 
       auto dphi = had_top_b.Phi() - lep_top_lep.Phi();
       // Map back into original domain if necessary
-      if(dphi > TMath::Pi()) dphi = dphi - 2*TMath::Pi();
-      if(dphi < -TMath::Pi()) dphi = dphi + 2*TMath::Pi();
+      if(dphi > pie) dphi = dphi - 2.*pie;
+      if(dphi < -1.*pie) dphi = dphi + 2.*pie;
       event.set(h_dphi, dphi);
 
       // Plot dphi and sphi for high-pt ranges
