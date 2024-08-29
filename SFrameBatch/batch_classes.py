@@ -24,14 +24,24 @@ def write_script(name,workdir,header,sl6_container=False):
 cat /etc/redhat-release
 echo $APPTAINER_CONTAINER
 #source /cvmfs/cms.cern.ch/cmsset_default.sh
+<<<<<<< HEAD
 #cd /data/dust/user/titasroy/Ac_UL/CMSSW_10_6_28
 #cmsenv
 #source /data/dust/user/titasroy/Ac_UL/SFrame/setup.sh
+=======
+#cd /nfs/dust/cms/user/ricardo/uhh2-106X_v2/CMSSW_10_6_28/
+#cmsenv
+#source /nfs/dust/cms/user/ricardo/uhh2-106X_v2/SFrame/setup.sh
+>>>>>>> db06d8255 (just changed some paths in batch_classes)
 #cd -
 #export LD_LIBRARY_PATH=$LD_LIBRARY_PATH_STORED:$LD_LIBRARY_PATH
 #export PATH=$PATH_STORED:$PATH
 WORKDIR=$PWD
+<<<<<<< HEAD
 source /data/dust/user/titasroy/setup_UL_Ac.sh
+=======
+source /nfs/dust/cms/user/ricardo/setup.sh
+>>>>>>> db06d8255 (just changed some paths in batch_classes)
 cd $WORKDIR
 # echo "**** BEGIN ENV"
 # printenv
