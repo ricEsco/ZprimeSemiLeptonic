@@ -133,6 +133,7 @@ protected:
   Event::Handle<float> h_Mttbar;
 
   uhh2::Event::Handle<ZprimeCandidate*> h_BestZprimeCandidateChi2;
+  uhh2::Event::Handle<ZprimeCandidate*> h_BestZprimeCandidateCorrectMatch;
 
   // Angular variables
   std::unique_ptr<TTbarGenProducer> ttgenprod;
@@ -435,9 +436,12 @@ ZprimeAnalysisModule_AzCorr::ZprimeAnalysisModule_AzCorr(uhh2::Context& ctx){
   // Zprime discriminators
   Chi2DiscriminatorZprime.reset(new ZprimeChi2Discriminator(ctx));
   h_is_zprime_reconstructed_chi2 = ctx.get_handle<bool>("is_zprime_reconstructed_chi2");
+  h_BestZprimeCandidateChi2 = ctx.get_handle<ZprimeCandidate*>("ZprimeCandidateBestChi2");
+
   CorrectMatchDiscriminatorZprime.reset(new ZprimeCorrectMatchDiscriminator(ctx));
   h_is_zprime_reconstructed_correctmatch = ctx.get_handle<bool>("is_zprime_reconstructed_correctmatch");
-  h_BestZprimeCandidateChi2 = ctx.get_handle<ZprimeCandidate*>("ZprimeCandidateBestChi2");
+  h_BestZprimeCandidateCorrectMatch = ctx.get_handle<ZprimeCandidate*>("ZprimeCandidateBestCorrectMatch");
+
   h_chi2 = ctx.declare_event_output<float> ("rec_chi2");
   h_MET = ctx.declare_event_output<float> ("met_pt");
   h_Mttbar = ctx.declare_event_output<float> ("Mttbar");
@@ -1071,14 +1075,17 @@ bool ZprimeAnalysisModule_AzCorr::process(uhh2::Event& event){
 
   // Everything below this line is for the Azimuthal Correlation studies ---------------------------------------------------------------------------------//
 
-  bool is_zprime_reconstructed_chi2 = event.get(h_is_zprime_reconstructed_chi2);     // Bool indicating ttbar reconstructed using Chi2
+  bool is_zprime_reconstructed_chi2 = event.get(h_is_zprime_reconstructed_chi2);                  // Bool indicating ttbar reconstructed using Chi2
+  bool is_zprime_reconstructed_correctmatch = event.get(h_is_zprime_reconstructed_correctmatch);  // Bool indicating ttbar reconstructed using CorrectMatch
   
   // Only build Angular varibles for events with reconstructed ttbar
-  if(is_zprime_reconstructed_chi2){
-    if(debug) cout<<" Zprime was reconstructed using Chi2--------"<<endl;
+  // if(is_zprime_reconstructed_chi2){
+  //   if(debug) cout<<" Zprime was reconstructed using Chi2--------"<<endl;
+  if(is_zprime_reconstructed_correctmatch){
+    if(debug) cout<<" Zprime was reconstructed using CorrectMatch--------"<<endl;
 
     // Set up ttbar variables, jet collections, cut variable (pT of had. top), and btag WP
-    ZprimeCandidate* BestZprimeCandidate = event.get(h_BestZprimeCandidateChi2);     // Zprime best-candidate
+    ZprimeCandidate* BestZprimeCandidate = event.get(h_BestZprimeCandidateCorrectMatch);     // Zprime best-candidate
     bool is_toptag_reconstruction = BestZprimeCandidate->is_toptag_reconstruction(); // Reconstruction process id
     vector <Jet> AK4CHSjets_matched = event.get(h_CHSjets_matched);                  // AK4Puppijets that have been matched to CHSjets
     vector <TopJet> TopTaggedJets = event.get(h_DeepAK8TopTags);                     // AK8Puppi jets TopTagged by DeepAK8TopTagger
