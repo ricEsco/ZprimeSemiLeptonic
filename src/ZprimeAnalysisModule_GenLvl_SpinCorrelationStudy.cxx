@@ -160,7 +160,7 @@ protected:
 
 ZprimeAnalysisModule_GenLvl_SpinCorrelationStudy::ZprimeAnalysisModule_GenLvl_SpinCorrelationStudy(uhh2::Context& ctx){
 
-  debug = false; 
+  debug = true; 
 
   ttgenprod.reset(new TTbarGenProducer(ctx));
 
@@ -247,7 +247,7 @@ ZprimeAnalysisModule_GenLvl_SpinCorrelationStudy::ZprimeAnalysisModule_GenLvl_Sp
 */
 
 bool ZprimeAnalysisModule_GenLvl_SpinCorrelationStudy::process(uhh2::Event& event){
-
+  if(debug) cout << "\n" << endl;
   if(debug) cout << "++++++++++++ NEW EVENT ++++++++++++++" << endl;
   if(debug) cout << " run.event: " << event.run << ". " << event.event << endl;
 
@@ -334,19 +334,37 @@ bool ZprimeAnalysisModule_GenLvl_SpinCorrelationStudy::process(uhh2::Event& even
     auto pt_hadTop_thresh = 150.;         
 
     //-------------------------------------------------- Start in LAB-frame --------------------------------------------------//
-    // Plot pt of hadronic Top 
+
+    // pt of hadronic Top 
     LorentzVector Gen_HadTop = ttbargen.TopHad().v4();
     if(Gen_HadTop.pt() != -10) event.set(h_pt_hadTop, Gen_HadTop.pt());
 
-    // Define 4vectors of decay products
+
+    // // Defining 4vectors of ttbar system START>>
+
+    // Top vectors
+    TLorentzVector PosTop;
+    PosTop.SetPtEtaPhiE(ttbargen.Top().v4().pt(), ttbargen.Top().v4().eta(), ttbargen.Top().v4().phi(), ttbargen.Top().v4().energy());
+    TLorentzVector NegTop;
+    NegTop.SetPtEtaPhiE(ttbargen.Antitop().v4().pt(), ttbargen.Antitop().v4().eta(), ttbargen.Antitop().v4().phi(), ttbargen.Antitop().v4().energy());
+
+    if(debug) cout<<"Phi coordinates of top and anti-top quarks in LAB-Frame are: "<<PosTop.Phi()<<" and "<<NegTop.Phi()<<" respectively."<<endl;
+
+    // lepton
+    LorentzVector Gen_Lep = ttbargen.ChargedLepton().v4(); 
+    TLorentzVector lepTop_lep;
+    lepTop_lep.SetPtEtaPhiE(Gen_Lep.pt(), Gen_Lep.eta(), Gen_Lep.phi(), Gen_Lep.energy());
+
+    if(debug) cout<<"Phi coordinate of lepton in LAB-Frame is: "<<lepTop_lep.Phi()<<endl;
 
     // b-quark
     LorentzVector Gen_b = ttbargen.BHad().v4(); 
     TLorentzVector hadTop_b;
     hadTop_b.SetPtEtaPhiE(Gen_b.pt(),Gen_b.eta(),Gen_b.phi(),Gen_b.energy());
 
-    // Least-energetic W-quark will be defined AFTER WE BOOST TO MOTHER TOP'S REST-FRAME
+    if(debug) cout<<"Phi coordinate of b-quark in LAB-Frame is: "<<hadTop_b.Phi()<<endl;
 
+    // Least-energetic W-daughter quark will be defined AFTER WE BOOST TO MOTHER TOP'S REST-FRAME //
     //  W-quark1
     LorentzVector Gen_q1 = ttbargen.Q1().v4(); 
     TLorentzVector hadTop_q1;
@@ -356,17 +374,6 @@ bool ZprimeAnalysisModule_GenLvl_SpinCorrelationStudy::process(uhh2::Event& even
     LorentzVector Gen_q2 = ttbargen.Q2().v4(); 
     TLorentzVector hadTop_q2;
     hadTop_q2.SetPtEtaPhiE(Gen_q2.pt(),Gen_q2.eta(),Gen_q2.phi(),Gen_q2.energy());
-
-    // lepton
-    LorentzVector Gen_Lep = ttbargen.ChargedLepton().v4(); 
-    TLorentzVector lepTop_lep;
-    lepTop_lep.SetPtEtaPhiE(Gen_Lep.pt(), Gen_Lep.eta(), Gen_Lep.phi(), Gen_Lep.energy());
-
-    // Top vectors
-    TLorentzVector PosTop;
-    PosTop.SetPtEtaPhiE(ttbargen.Top().v4().pt(), ttbargen.Top().v4().eta(), ttbargen.Top().v4().phi(), ttbargen.Top().v4().energy());
-    TLorentzVector NegTop;
-    NegTop.SetPtEtaPhiE(ttbargen.Antitop().v4().pt(), ttbargen.Antitop().v4().eta(), ttbargen.Antitop().v4().phi(), ttbargen.Antitop().v4().energy());
 
     // 4vector to represent ttbar system
     TLorentzVector ttbar(PosTop + NegTop);
@@ -379,8 +386,7 @@ bool ZprimeAnalysisModule_GenLvl_SpinCorrelationStudy::process(uhh2::Event& even
 
     // Plotting longitudinal boost of ttbar system
     // event.set(h_ttbar_boost_LabFrame, boost);
-
-    //---------------------------------------------------------- Boost into CoM-frame ----------------------------------------------------------//
+    //---------------------------------------------------------- Boosting into CoM-frame ----------------------------------------------------------//
     // Boost into ttbar Center of Momentum configuration 
     lepTop_lep.Boost(-1.*ttbar.BoostVector());
     hadTop_b.Boost(-1.*ttbar.BoostVector());
@@ -389,9 +395,12 @@ bool ZprimeAnalysisModule_GenLvl_SpinCorrelationStudy::process(uhh2::Event& even
     PosTop.Boost(-1.*ttbar.BoostVector());
     NegTop.Boost(-1.*ttbar.BoostVector());
 
-    // Cross check back-to-back configuration of ttbar system
-    if(debug) cout<<" Angle between tops is: "<< PosTop.Angle(NegTop.Vect())<<endl;
-    //---------------------------------------------------------- Boost into CoM-frame ----------------------------------------------------------//
+    if(debug) cout<<"Boosted into CoM Frame."<<endl;
+    if(debug) cout<<"Phi coordinates of top and anti-top quarks in CoM Frame are: "<<PosTop.Phi()<<" and "<<NegTop.Phi()<<" respectively."<<endl;
+    if(debug) cout<<"Angle between top quarks in CoM Frame is: "<< PosTop.Angle(NegTop.Vect())<<endl;  // Cross check back-to-back configuration of ttbar system
+    if(debug) cout<<"Phi coordinate of lepton in CoM Frame is: "<<lepTop_lep.Phi()<<endl;
+    if(debug) cout<<"Phi coordinate of b-quark in CoM Frame is: "<<hadTop_b.Phi()<<endl;
+    //---------------------------------------------------------- Boosted into CoM-frame ----------------------------------------------------------//
 
     //----- Start Rotation into Helicity Frame -----//
     // Rotate tops and decay products about beam-line
@@ -401,16 +410,21 @@ bool ZprimeAnalysisModule_GenLvl_SpinCorrelationStudy::process(uhh2::Event& even
     hadTop_q2.RotateZ(-1.*PosTop.Phi());
     PosTop.RotateZ(-1.*PosTop.Phi());
     NegTop.RotateZ(-1.*PosTop.Phi());
-    // Rotate tops and decay products about y-zxis
+    // Rotate tops and decay products about y-axis
     lepTop_lep.RotateY(-1.*PosTop.Theta());
     hadTop_b.RotateY(-1.*PosTop.Theta());
     hadTop_q1.RotateY(-1.*PosTop.Theta());
     hadTop_q2.RotateY(-1.*PosTop.Theta());
     PosTop.RotateY(-1.*PosTop.Theta());
     NegTop.RotateY(-1.*PosTop.Theta());
+
+    if(debug) cout<<"Rotated into Helicity Frame."<<endl;
+    if(debug) cout<<"Phi coordinates of top and anti-top quarks in Helicity Frame are: "<<PosTop.Phi()<<" and "<<NegTop.Phi()<<" respectively."<<endl;
+    if(debug) cout<<"Phi coordinate of lepton in Helicity Frame is: "<<lepTop_lep.Phi()<<endl;
+    if(debug) cout<<"Phi coordinate of b-quark in Helicity Frame is: "<<hadTop_b.Phi()<<endl;
     //----- End Rotation into Helicity Frame -----//
 
-    //--------------------------- Boost into ttbar rest-frame ---------------------------//
+    //--------------------------- Boosting into ttbar rest-frame ---------------------------//
     // Boost the top's to rest individually, bringing their children with them
     // Decay products get boosted in opposite directions depending on their mother top
 
@@ -420,6 +434,11 @@ bool ZprimeAnalysisModule_GenLvl_SpinCorrelationStudy::process(uhh2::Event& even
       hadTop_b.Boost(-1.*NegTop.BoostVector());   // b-jet has Negative Top mother
       hadTop_q1.Boost(-1.*NegTop.BoostVector());
       hadTop_q2.Boost(-1.*NegTop.BoostVector());
+
+      if(debug) cout<<"Boosted individual decay products into their parent top quark's rest-frame."<<endl;
+      if(debug) cout<<"Phi coordinates of top and anti-top quarks in ttbar rest-frame are: "<<PosTop.Phi()<<" and "<<NegTop.Phi()<<" respectively."<<endl;
+      if(debug) cout<<"Phi coordinate of lepton in ttbar rest-frame is: "<<lepTop_lep.Phi()<<endl;
+      if(debug) cout<<"Phi coordinate of b-quark in ttbar rest-frame is: "<<hadTop_b.Phi()<<endl;
     }
     // NEGATIVE LEPTON CONFIGURATION
     if(ttbargen.ChargedLepton().charge() < 0){ // Negatively charged lepton means
@@ -427,8 +446,13 @@ bool ZprimeAnalysisModule_GenLvl_SpinCorrelationStudy::process(uhh2::Event& even
       hadTop_b.Boost(-1.*PosTop.BoostVector());   // b-jet has Positive Top mother
       hadTop_q1.Boost(-1.*PosTop.BoostVector());
       hadTop_q2.Boost(-1.*PosTop.BoostVector());
+
+      if(debug) cout<<"Boosted individual decay products into their parent top quark's rest-frame."<<endl;
+      if(debug) cout<<"Phi coordinates of top and anti-top quarks in ttbar rest-frame are: "<<PosTop.Phi()<<" and "<<NegTop.Phi()<<" respectively."<<endl;
+      if(debug) cout<<"Phi coordinate of lepton in ttbar rest-frame is: "<<lepTop_lep.Phi()<<endl;
+      if(debug) cout<<"Phi coordinate of b-quark in ttbar rest-frame is: "<<hadTop_b.Phi()<<endl;
     }
-    //--------------------------- Boost into ttbar rest-frame ---------------------------//
+    //--------------------------- Boosted into ttbar rest-frame ---------------------------//
 
     // Define least-energetic W-quark
     TLorentzVector hadTop_qlow;
@@ -445,6 +469,7 @@ bool ZprimeAnalysisModule_GenLvl_SpinCorrelationStudy::process(uhh2::Event& even
     // sphi and dphi are both defined as: PosTop_phi +- NegTop_phi
     auto pie = TMath::Pi();
 
+    if(debug) cout<<"Angular Variables"<<endl;
     // Positive lepton means PosTop has leptonic decay
     if(ttbargen.ChargedLepton().charge() > 0){
       // Define sphi_lq from phi coordinates of lepton and qlow
@@ -463,11 +488,13 @@ bool ZprimeAnalysisModule_GenLvl_SpinCorrelationStudy::process(uhh2::Event& even
       if(sphi_lb > pie) sphi_lb = sphi_lb - 2.*pie;
       if(sphi_lb < -1.*pie) sphi_lb = sphi_lb + 2.*pie;
       event.set(h_sphi_lb, sphi_lb);
+      if(debug) cout<<"SigmaPhi of lepton and b-quark is: "<<sphi_lb<<endl;
       // Define dphi_lb from phi coordinates of lepton and b-quark
       auto dphi_lb = lepTop_lep.Phi() - hadTop_b.Phi();
       if(dphi_lb > pie) dphi_lb = dphi_lb - 2.*pie;
       if(dphi_lb < -1.*pie) dphi_lb = dphi_lb + 2.*pie;
       event.set(h_dphi_lb, dphi_lb);
+      if(debug) cout<<"DeltaPhi of lepton and b-quark is: "<<dphi_lb<<endl;
 
       // Plot dphi and sphi for high-pt ranges
       if(Gen_HadTop.pt() > pt_hadTop_thresh){
