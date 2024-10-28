@@ -446,8 +446,6 @@ bool ZprimeAnalysisModule_GenLvl_SpinCorrelationStudy::process(uhh2::Event& even
 
       if(debug) cout<<"Top quark Rest Frame"<<endl;
       // Print 4vectors of all relevant particles
-      if(debug) cout<<" top ("<<PosTop.Pt()<<", "<<PosTop.Eta()<<", "<<PosTop.Phi()<<", "<<PosTop.E()<<")"<<endl;
-      if(debug) cout<<" antitop ("<<NegTop.Pt()<<", "<<NegTop.Eta()<<", "<<NegTop.Phi()<<", "<<NegTop.E()<<")"<<endl;
       if(debug) cout<<" lepton "<<lepTop_lep.Pt()<<", "<<lepTop_lep.Eta()<<", "<<lepTop_lep.Phi()<<", "<<lepTop_lep.E()<<")"<<endl;
       if(debug) cout<<" b-quark "<<hadTop_b.Pt()<<", "<<hadTop_b.Eta()<<", "<<hadTop_b.Phi()<<", "<<hadTop_b.E()<<")"<<endl;
     }
@@ -460,8 +458,6 @@ bool ZprimeAnalysisModule_GenLvl_SpinCorrelationStudy::process(uhh2::Event& even
 
       if(debug) cout<<"Top quark Rest Frame"<<endl;
       // Print 4vectors of all relevant particles
-      if(debug) cout<<" top ("<<PosTop.Pt()<<", "<<PosTop.Eta()<<", "<<PosTop.Phi()<<", "<<PosTop.E()<<")"<<endl;
-      if(debug) cout<<" antitop ("<<NegTop.Pt()<<", "<<NegTop.Eta()<<", "<<NegTop.Phi()<<", "<<NegTop.E()<<")"<<endl;
       if(debug) cout<<" lepton "<<lepTop_lep.Pt()<<", "<<lepTop_lep.Eta()<<", "<<lepTop_lep.Phi()<<", "<<lepTop_lep.E()<<")"<<endl;
       if(debug) cout<<" b-quark "<<hadTop_b.Pt()<<", "<<hadTop_b.Eta()<<", "<<hadTop_b.Phi()<<", "<<hadTop_b.E()<<")"<<endl;
     }
