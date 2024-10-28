@@ -249,7 +249,7 @@ ZprimeAnalysisModule_GenLvl_SpinCorrelationStudy::ZprimeAnalysisModule_GenLvl_Sp
 bool ZprimeAnalysisModule_GenLvl_SpinCorrelationStudy::process(uhh2::Event& event){
   if(debug) cout << "\n" << endl;
   if(debug) cout << "++++++++++++ NEW EVENT ++++++++++++++" << endl;
-  if(debug) cout << " run.event: " << event.run << ". " << event.event << endl;
+  if(debug) cout << "run-event: " << event.run << "- " << event.event << endl;
 
   // pt of hadronic top
   event.set(h_pt_hadTop, -10);
@@ -334,7 +334,7 @@ bool ZprimeAnalysisModule_GenLvl_SpinCorrelationStudy::process(uhh2::Event& even
     auto pt_hadTop_thresh = 150.;         
 
     //-------------------------------------------------- Start in LAB-frame --------------------------------------------------//
-
+    if(debug) cout<<"Lab Frame"<<endl;
     // pt of hadronic Top 
     LorentzVector Gen_HadTop = ttbargen.TopHad().v4();
     if(Gen_HadTop.pt() != -10) event.set(h_pt_hadTop, Gen_HadTop.pt());
@@ -348,32 +348,36 @@ bool ZprimeAnalysisModule_GenLvl_SpinCorrelationStudy::process(uhh2::Event& even
     TLorentzVector NegTop;
     NegTop.SetPtEtaPhiE(ttbargen.Antitop().v4().pt(), ttbargen.Antitop().v4().eta(), ttbargen.Antitop().v4().phi(), ttbargen.Antitop().v4().energy());
 
-    if(debug) cout<<"Phi coordinates of top and anti-top quarks in LAB-Frame are: "<<PosTop.Phi()<<" and "<<NegTop.Phi()<<" respectively."<<endl;
+    // Print 4vectors of top quarks
+    if(debug) cout<<" top ("<<PosTop.Pt()<<", "<<PosTop.Eta()<<", "<<PosTop.Phi()<<", "<<PosTop.E()<<")"<<endl;
+    if(debug) cout<<" antitop ("<<NegTop.Pt()<<", "<<NegTop.Eta()<<", "<<NegTop.Phi()<<", "<<NegTop.E()<<")"<<endl;
 
     // lepton
     LorentzVector Gen_Lep = ttbargen.ChargedLepton().v4(); 
     TLorentzVector lepTop_lep;
     lepTop_lep.SetPtEtaPhiE(Gen_Lep.pt(), Gen_Lep.eta(), Gen_Lep.phi(), Gen_Lep.energy());
 
-    if(debug) cout<<"Phi coordinate of lepton in LAB-Frame is: "<<lepTop_lep.Phi()<<endl;
+    // Print 4vector of lepton
+    if(debug) cout<<" lepton "<<lepTop_lep.Pt()<<", "<<lepTop_lep.Eta()<<", "<<lepTop_lep.Phi()<<", "<<lepTop_lep.E()<<")"<<endl;
 
     // b-quark
     LorentzVector Gen_b = ttbargen.BHad().v4(); 
     TLorentzVector hadTop_b;
     hadTop_b.SetPtEtaPhiE(Gen_b.pt(),Gen_b.eta(),Gen_b.phi(),Gen_b.energy());
 
-    if(debug) cout<<"Phi coordinate of b-quark in LAB-Frame is: "<<hadTop_b.Phi()<<endl;
+    // Print 4vector of b-quark
+    if(debug) cout<<" b-quark "<<hadTop_b.Pt()<<", "<<hadTop_b.Eta()<<", "<<hadTop_b.Phi()<<", "<<hadTop_b.E()<<")"<<endl;
 
-    // Least-energetic W-daughter quark will be defined AFTER WE BOOST TO MOTHER TOP'S REST-FRAME //
-    //  W-quark1
-    LorentzVector Gen_q1 = ttbargen.Q1().v4(); 
-    TLorentzVector hadTop_q1;
-    hadTop_q1.SetPtEtaPhiE(Gen_q1.pt(),Gen_q1.eta(),Gen_q1.phi(),Gen_q1.energy());
+    // // Least-energetic W-daughter quark will be defined AFTER WE BOOST TO MOTHER TOP'S REST-FRAME //
+    // //  W-quark1
+    // LorentzVector Gen_q1 = ttbargen.Q1().v4(); 
+    // TLorentzVector hadTop_q1;
+    // hadTop_q1.SetPtEtaPhiE(Gen_q1.pt(),Gen_q1.eta(),Gen_q1.phi(),Gen_q1.energy());
 
-    //  W-quark2
-    LorentzVector Gen_q2 = ttbargen.Q2().v4(); 
-    TLorentzVector hadTop_q2;
-    hadTop_q2.SetPtEtaPhiE(Gen_q2.pt(),Gen_q2.eta(),Gen_q2.phi(),Gen_q2.energy());
+    // //  W-quark2
+    // LorentzVector Gen_q2 = ttbargen.Q2().v4(); 
+    // TLorentzVector hadTop_q2;
+    // hadTop_q2.SetPtEtaPhiE(Gen_q2.pt(),Gen_q2.eta(),Gen_q2.phi(),Gen_q2.energy());
 
     // 4vector to represent ttbar system
     TLorentzVector ttbar(PosTop + NegTop);
@@ -390,38 +394,43 @@ bool ZprimeAnalysisModule_GenLvl_SpinCorrelationStudy::process(uhh2::Event& even
     // Boost into ttbar Center of Momentum configuration 
     lepTop_lep.Boost(-1.*ttbar.BoostVector());
     hadTop_b.Boost(-1.*ttbar.BoostVector());
-    hadTop_q1.Boost(-1.*ttbar.BoostVector());
-    hadTop_q2.Boost(-1.*ttbar.BoostVector());
+    // hadTop_q1.Boost(-1.*ttbar.BoostVector());
+    // hadTop_q2.Boost(-1.*ttbar.BoostVector());
     PosTop.Boost(-1.*ttbar.BoostVector());
     NegTop.Boost(-1.*ttbar.BoostVector());
 
-    if(debug) cout<<"Boosted into CoM Frame."<<endl;
-    if(debug) cout<<"Phi coordinates of top and anti-top quarks in CoM Frame are: "<<PosTop.Phi()<<" and "<<NegTop.Phi()<<" respectively."<<endl;
-    if(debug) cout<<"Angle between top quarks in CoM Frame is: "<< PosTop.Angle(NegTop.Vect())<<endl;  // Cross check back-to-back configuration of ttbar system
-    if(debug) cout<<"Phi coordinate of lepton in CoM Frame is: "<<lepTop_lep.Phi()<<endl;
-    if(debug) cout<<"Phi coordinate of b-quark in CoM Frame is: "<<hadTop_b.Phi()<<endl;
+    if(debug) cout<<"Center of Momentum Frame"<<endl;
+    // Print 4vectors of all relevant particles
+    if(debug) cout<<" top ("<<PosTop.Pt()<<", "<<PosTop.Eta()<<", "<<PosTop.Phi()<<", "<<PosTop.E()<<")"<<endl;
+    if(debug) cout<<" antitop ("<<NegTop.Pt()<<", "<<NegTop.Eta()<<", "<<NegTop.Phi()<<", "<<NegTop.E()<<")"<<endl;
+    if(debug) cout<<" lepton "<<lepTop_lep.Pt()<<", "<<lepTop_lep.Eta()<<", "<<lepTop_lep.Phi()<<", "<<lepTop_lep.E()<<")"<<endl;
+    if(debug) cout<<" b-quark "<<hadTop_b.Pt()<<", "<<hadTop_b.Eta()<<", "<<hadTop_b.Phi()<<", "<<hadTop_b.E()<<")"<<endl;
+
     //---------------------------------------------------------- Boosted into CoM-frame ----------------------------------------------------------//
 
     //----- Start Rotation into Helicity Frame -----//
     // Rotate tops and decay products about beam-line
     lepTop_lep.RotateZ(-1.*PosTop.Phi());
     hadTop_b.RotateZ(-1.*PosTop.Phi());
-    hadTop_q1.RotateZ(-1.*PosTop.Phi());
-    hadTop_q2.RotateZ(-1.*PosTop.Phi());
+    // hadTop_q1.RotateZ(-1.*PosTop.Phi());
+    // hadTop_q2.RotateZ(-1.*PosTop.Phi());
     PosTop.RotateZ(-1.*PosTop.Phi());
     NegTop.RotateZ(-1.*PosTop.Phi());
     // Rotate tops and decay products about y-axis
     lepTop_lep.RotateY(-1.*PosTop.Theta());
     hadTop_b.RotateY(-1.*PosTop.Theta());
-    hadTop_q1.RotateY(-1.*PosTop.Theta());
-    hadTop_q2.RotateY(-1.*PosTop.Theta());
+    // hadTop_q1.RotateY(-1.*PosTop.Theta());
+    // hadTop_q2.RotateY(-1.*PosTop.Theta());
     PosTop.RotateY(-1.*PosTop.Theta());
     NegTop.RotateY(-1.*PosTop.Theta());
 
-    if(debug) cout<<"Rotated into Helicity Frame."<<endl;
-    if(debug) cout<<"Phi coordinates of top and anti-top quarks in Helicity Frame are: "<<PosTop.Phi()<<" and "<<NegTop.Phi()<<" respectively."<<endl;
-    if(debug) cout<<"Phi coordinate of lepton in Helicity Frame is: "<<lepTop_lep.Phi()<<endl;
-    if(debug) cout<<"Phi coordinate of b-quark in Helicity Frame is: "<<hadTop_b.Phi()<<endl;
+    if(debug) cout<<"Helicity Frame"<<endl;
+    // Print 4vectors of all relevant particles
+    if(debug) cout<<" top ("<<PosTop.Pt()<<", "<<PosTop.Eta()<<", "<<PosTop.Phi()<<", "<<PosTop.E()<<")"<<endl;
+    if(debug) cout<<" antitop ("<<NegTop.Pt()<<", "<<NegTop.Eta()<<", "<<NegTop.Phi()<<", "<<NegTop.E()<<")"<<endl;
+    if(debug) cout<<" lepton "<<lepTop_lep.Pt()<<", "<<lepTop_lep.Eta()<<", "<<lepTop_lep.Phi()<<", "<<lepTop_lep.E()<<")"<<endl;
+    if(debug) cout<<" b-quark "<<hadTop_b.Pt()<<", "<<hadTop_b.Eta()<<", "<<hadTop_b.Phi()<<", "<<hadTop_b.E()<<")"<<endl;
+
     //----- End Rotation into Helicity Frame -----//
 
     //--------------------------- Boosting into ttbar rest-frame ---------------------------//
@@ -432,121 +441,131 @@ bool ZprimeAnalysisModule_GenLvl_SpinCorrelationStudy::process(uhh2::Event& even
     if(ttbargen.ChargedLepton().charge() > 0){ // Positively charged lepton means
       lepTop_lep.Boost(-1.*PosTop.BoostVector()); // lepton has Positive Top mother
       hadTop_b.Boost(-1.*NegTop.BoostVector());   // b-jet has Negative Top mother
-      hadTop_q1.Boost(-1.*NegTop.BoostVector());
-      hadTop_q2.Boost(-1.*NegTop.BoostVector());
+      // hadTop_q1.Boost(-1.*NegTop.BoostVector());
+      // hadTop_q2.Boost(-1.*NegTop.BoostVector());
 
-      if(debug) cout<<"Boosted individual decay products into their parent top quark's rest-frame."<<endl;
-      if(debug) cout<<"Phi coordinates of top and anti-top quarks in ttbar rest-frame are: "<<PosTop.Phi()<<" and "<<NegTop.Phi()<<" respectively."<<endl;
-      if(debug) cout<<"Phi coordinate of lepton in ttbar rest-frame is: "<<lepTop_lep.Phi()<<endl;
-      if(debug) cout<<"Phi coordinate of b-quark in ttbar rest-frame is: "<<hadTop_b.Phi()<<endl;
+      if(debug) cout<<"Top quark Rest Frame"<<endl;
+      // Print 4vectors of all relevant particles
+      if(debug) cout<<" top ("<<PosTop.Pt()<<", "<<PosTop.Eta()<<", "<<PosTop.Phi()<<", "<<PosTop.E()<<")"<<endl;
+      if(debug) cout<<" antitop ("<<NegTop.Pt()<<", "<<NegTop.Eta()<<", "<<NegTop.Phi()<<", "<<NegTop.E()<<")"<<endl;
+      if(debug) cout<<" lepton "<<lepTop_lep.Pt()<<", "<<lepTop_lep.Eta()<<", "<<lepTop_lep.Phi()<<", "<<lepTop_lep.E()<<")"<<endl;
+      if(debug) cout<<" b-quark "<<hadTop_b.Pt()<<", "<<hadTop_b.Eta()<<", "<<hadTop_b.Phi()<<", "<<hadTop_b.E()<<")"<<endl;
     }
     // NEGATIVE LEPTON CONFIGURATION
     if(ttbargen.ChargedLepton().charge() < 0){ // Negatively charged lepton means
       lepTop_lep.Boost(-1.*NegTop.BoostVector()); // lepton has Negative Top mother
       hadTop_b.Boost(-1.*PosTop.BoostVector());   // b-jet has Positive Top mother
-      hadTop_q1.Boost(-1.*PosTop.BoostVector());
-      hadTop_q2.Boost(-1.*PosTop.BoostVector());
+      // hadTop_q1.Boost(-1.*PosTop.BoostVector());
+      // hadTop_q2.Boost(-1.*PosTop.BoostVector());
 
-      if(debug) cout<<"Boosted individual decay products into their parent top quark's rest-frame."<<endl;
-      if(debug) cout<<"Phi coordinates of top and anti-top quarks in ttbar rest-frame are: "<<PosTop.Phi()<<" and "<<NegTop.Phi()<<" respectively."<<endl;
-      if(debug) cout<<"Phi coordinate of lepton in ttbar rest-frame is: "<<lepTop_lep.Phi()<<endl;
-      if(debug) cout<<"Phi coordinate of b-quark in ttbar rest-frame is: "<<hadTop_b.Phi()<<endl;
+      if(debug) cout<<"Top quark Rest Frame"<<endl;
+      // Print 4vectors of all relevant particles
+      if(debug) cout<<" top ("<<PosTop.Pt()<<", "<<PosTop.Eta()<<", "<<PosTop.Phi()<<", "<<PosTop.E()<<")"<<endl;
+      if(debug) cout<<" antitop ("<<NegTop.Pt()<<", "<<NegTop.Eta()<<", "<<NegTop.Phi()<<", "<<NegTop.E()<<")"<<endl;
+      if(debug) cout<<" lepton "<<lepTop_lep.Pt()<<", "<<lepTop_lep.Eta()<<", "<<lepTop_lep.Phi()<<", "<<lepTop_lep.E()<<")"<<endl;
+      if(debug) cout<<" b-quark "<<hadTop_b.Pt()<<", "<<hadTop_b.Eta()<<", "<<hadTop_b.Phi()<<", "<<hadTop_b.E()<<")"<<endl;
     }
+
+    // Print opening angle between lepton and b-quark
+    if(debug) cout<<" Opening angle between lepton and b-quark: "<<lepTop_lep.Angle(hadTop_b.Vect())<<endl;
+
+
     //--------------------------- Boosted into ttbar rest-frame ---------------------------//
+    if(debug) cout<<"---"<<endl;
+    // // Define least-energetic W-quark
+    // TLorentzVector hadTop_qlow;
 
-    // Define least-energetic W-quark
-    TLorentzVector hadTop_qlow;
-
-    // Set 4vector of less-energetic W-daughter 
-    if(hadTop_q1.E() < hadTop_q2.E()){hadTop_qlow = hadTop_q1;}
-    else{hadTop_qlow = hadTop_q2;}
+    // // Set 4vector of less-energetic W-daughter 
+    // if(hadTop_q1.E() < hadTop_q2.E()){hadTop_qlow = hadTop_q1;}
+    // else{hadTop_qlow = hadTop_q2;}
 
     // Plot phi-coordinates from the boosted 4vectors
     event.set(h_phi_lep, lepTop_lep.Phi());
     event.set(h_phi_b, hadTop_b.Phi());
-    event.set(h_phi_qlow, hadTop_qlow.Phi());
+    // event.set(h_phi_qlow, hadTop_qlow.Phi());
 
     // sphi and dphi are both defined as: PosTop_phi +- NegTop_phi
     auto pie = TMath::Pi();
 
-    if(debug) cout<<"Angular Variables"<<endl;
+    if(debug) cout<<" Angular Variables:"<<endl;
+
     // Positive lepton means PosTop has leptonic decay
     if(ttbargen.ChargedLepton().charge() > 0){
-      // Define sphi_lq from phi coordinates of lepton and qlow
-      auto sphi_lq = lepTop_lep.Phi() + hadTop_qlow.Phi();
-      if(sphi_lq > pie) sphi_lq = sphi_lq - 2.*pie;
-      if(sphi_lq < -1.*pie) sphi_lq = sphi_lq + 2.*pie;
-      event.set(h_sphi_lq, sphi_lq);
-      // Define dphi_lq from phi coordinates of lepton and qlow
-      auto dphi_lq = lepTop_lep.Phi() - hadTop_qlow.Phi();
-      if(dphi_lq > pie) dphi_lq = dphi_lq - 2.*pie;
-      if(dphi_lq < -1.*pie) dphi_lq = dphi_lq + 2.*pie;
-      event.set(h_dphi_lq, dphi_lq);
+      // // Define sphi_lq from phi coordinates of lepton and qlow
+      // auto sphi_lq = lepTop_lep.Phi() + hadTop_qlow.Phi();
+      // if(sphi_lq > pie) sphi_lq = sphi_lq - 2.*pie;
+      // if(sphi_lq < -1.*pie) sphi_lq = sphi_lq + 2.*pie;
+      // event.set(h_sphi_lq, sphi_lq);
+      // // Define dphi_lq from phi coordinates of lepton and qlow
+      // auto dphi_lq = lepTop_lep.Phi() - hadTop_qlow.Phi();
+      // if(dphi_lq > pie) dphi_lq = dphi_lq - 2.*pie;
+      // if(dphi_lq < -1.*pie) dphi_lq = dphi_lq + 2.*pie;
+      // event.set(h_dphi_lq, dphi_lq);
 
       // Define sphi_lb from phi coordinates of lepton and b-quark
       auto sphi_lb = lepTop_lep.Phi() + hadTop_b.Phi();
-      if(sphi_lb > pie) sphi_lb = sphi_lb - 2.*pie;
-      if(sphi_lb < -1.*pie) sphi_lb = sphi_lb + 2.*pie;
+      if(sphi_lb > pie) sphi_lb = sphi_lb - 2*pie;
+      if(sphi_lb < -1*pie) sphi_lb = sphi_lb + 2*pie;
       event.set(h_sphi_lb, sphi_lb);
-      if(debug) cout<<"SigmaPhi of lepton and b-quark is: "<<sphi_lb<<endl;
+      if(debug) cout<<" SigmaPhi of lepton and b-quark is: "<<sphi_lb<<endl;
       // Define dphi_lb from phi coordinates of lepton and b-quark
       auto dphi_lb = lepTop_lep.Phi() - hadTop_b.Phi();
-      if(dphi_lb > pie) dphi_lb = dphi_lb - 2.*pie;
-      if(dphi_lb < -1.*pie) dphi_lb = dphi_lb + 2.*pie;
+      if(dphi_lb > pie) dphi_lb = dphi_lb - 2*pie;
+      if(dphi_lb < -1*pie) dphi_lb = dphi_lb + 2*pie;
       event.set(h_dphi_lb, dphi_lb);
-      if(debug) cout<<"DeltaPhi of lepton and b-quark is: "<<dphi_lb<<endl;
+      if(debug) cout<<" DeltaPhi of lepton and b-quark is: "<<dphi_lb<<endl;
 
       // Plot dphi and sphi for high-pt ranges
       if(Gen_HadTop.pt() > pt_hadTop_thresh){
-        event.set(h_sphi_lq_high, sphi_lq);
-        event.set(h_dphi_lq_high, dphi_lq);
+        // event.set(h_sphi_lq_high, sphi_lq);
+        // event.set(h_dphi_lq_high, dphi_lq);
         event.set(h_sphi_lb_high, sphi_lb);
         event.set(h_dphi_lb_high, dphi_lb);
       }
       // Plot dphi_lq and sphi_lq for low-pt ranges
       if(Gen_HadTop.pt() < pt_hadTop_thresh){
-        event.set(h_sphi_lq_low, sphi_lq);
-        event.set(h_dphi_lq_low, dphi_lq);
+        // event.set(h_sphi_lq_low, sphi_lq);
+        // event.set(h_dphi_lq_low, dphi_lq);
         event.set(h_sphi_lb_low, sphi_lb);
         event.set(h_dphi_lb_low, dphi_lb);
       }
 
       // Plot dphi and sphi for various ranges of ttbar mass
       // 0 < Mass1 < 500
-      if(ttbar.M() < 500.){
-        event.set(h_sphi_lq_Mass1, sphi_lq);
-        event.set(h_dphi_lq_Mass1, dphi_lq);
-        event.set(h_sphi_lb_Mass1, sphi_lb);
-        event.set(h_dphi_lb_Mass1, dphi_lb);
-      }
-      // 500 < Mass2 < 750
-      if(ttbar.M() > 500. &&  ttbar.M() < 750.){
-        event.set(h_sphi_lq_Mass2, sphi_lq);
-        event.set(h_dphi_lq_Mass2, dphi_lq);
-        event.set(h_sphi_lb_Mass2, sphi_lb);
-        event.set(h_dphi_lb_Mass2, dphi_lb);
-      }
-      // 750 < Mass3 < 1000
-      if(ttbar.M() > 750. &&  ttbar.M() < 1000.){
-        event.set(h_sphi_lq_Mass3, sphi_lq);
-        event.set(h_dphi_lq_Mass3, dphi_lq);
-        event.set(h_sphi_lb_Mass3, sphi_lb);
-        event.set(h_dphi_lb_Mass3, dphi_lb);
-      }
-      // 1000 < Mass4 < 1500
-      if(ttbar.M() > 1000. && ttbar.M() < 1500.){
-        event.set(h_sphi_lq_Mass4, sphi_lq);
-        event.set(h_dphi_lq_Mass4, dphi_lq);
-        event.set(h_sphi_lb_Mass4, sphi_lb);
-        event.set(h_dphi_lb_Mass4, dphi_lb);
-      }
-      // Mass5 > 1500
-      if(ttbar.M() > 1500.){
-        event.set(h_sphi_lq_Mass5, sphi_lq);
-        event.set(h_dphi_lq_Mass5, dphi_lq);
-        event.set(h_sphi_lb_Mass5, sphi_lb);
-        event.set(h_dphi_lb_Mass5, dphi_lb);
-      }
+      // if(ttbar.M() < 500.){
+      //   event.set(h_sphi_lq_Mass1, sphi_lq);
+      //   event.set(h_dphi_lq_Mass1, dphi_lq);
+      //   event.set(h_sphi_lb_Mass1, sphi_lb);
+      //   event.set(h_dphi_lb_Mass1, dphi_lb);
+      // }
+      // // 500 < Mass2 < 750
+      // if(ttbar.M() > 500. &&  ttbar.M() < 750.){
+      //   event.set(h_sphi_lq_Mass2, sphi_lq);
+      //   event.set(h_dphi_lq_Mass2, dphi_lq);
+      //   event.set(h_sphi_lb_Mass2, sphi_lb);
+      //   event.set(h_dphi_lb_Mass2, dphi_lb);
+      // }
+      // // 750 < Mass3 < 1000
+      // if(ttbar.M() > 750. &&  ttbar.M() < 1000.){
+      //   event.set(h_sphi_lq_Mass3, sphi_lq);
+      //   event.set(h_dphi_lq_Mass3, dphi_lq);
+      //   event.set(h_sphi_lb_Mass3, sphi_lb);
+      //   event.set(h_dphi_lb_Mass3, dphi_lb);
+      // }
+      // // 1000 < Mass4 < 1500
+      // if(ttbar.M() > 1000. && ttbar.M() < 1500.){
+      //   event.set(h_sphi_lq_Mass4, sphi_lq);
+      //   event.set(h_dphi_lq_Mass4, dphi_lq);
+      //   event.set(h_sphi_lb_Mass4, sphi_lb);
+      //   event.set(h_dphi_lb_Mass4, dphi_lb);
+      // }
+      // // Mass5 > 1500
+      // if(ttbar.M() > 1500.){
+      //   event.set(h_sphi_lq_Mass5, sphi_lq);
+      //   event.set(h_dphi_lq_Mass5, dphi_lq);
+      //   event.set(h_sphi_lb_Mass5, sphi_lb);
+      //   event.set(h_dphi_lb_Mass5, dphi_lb);
+      // }
 
       // // Plot dphi and sphi for various ranges of longitudinal boost of ttbar system
       // // 0 < boost1 < 0.3
@@ -581,80 +600,82 @@ bool ZprimeAnalysisModule_GenLvl_SpinCorrelationStudy::process(uhh2::Event& even
 
     // Negative lepton means PosTop has hadronic decay
     if(ttbargen.ChargedLepton().charge() < 0){
-      // Define sphi_lq from phi coordinates of lepton and qlow
-      auto sphi_lq =  hadTop_qlow.Phi() + lepTop_lep.Phi();
-      if(sphi_lq > pie) sphi_lq = sphi_lq - 2.*pie;
-      if(sphi_lq < -1.*pie) sphi_lq = sphi_lq + 2.*pie;
-      event.set(h_sphi_lq, sphi_lq);
-      // Define dphi_lq from phi coordinates of lepton and qlow
-      auto dphi_lq =  hadTop_qlow.Phi() - lepTop_lep.Phi();
-      if(dphi_lq > pie) dphi_lq = dphi_lq - 2.*pie;
-      if(dphi_lq < -1.*pie) dphi_lq = dphi_lq + 2.*pie;
-      event.set(h_dphi_lq, dphi_lq);
+      // // Define sphi_lq from phi coordinates of lepton and qlow
+      // auto sphi_lq =  hadTop_qlow.Phi() + lepTop_lep.Phi();
+      // if(sphi_lq > pie) sphi_lq = sphi_lq - 2.*pie;
+      // if(sphi_lq < -1.*pie) sphi_lq = sphi_lq + 2.*pie;
+      // event.set(h_sphi_lq, sphi_lq);
+      // // Define dphi_lq from phi coordinates of lepton and qlow
+      // auto dphi_lq =  hadTop_qlow.Phi() - lepTop_lep.Phi();
+      // if(dphi_lq > pie) dphi_lq = dphi_lq - 2.*pie;
+      // if(dphi_lq < -1.*pie) dphi_lq = dphi_lq + 2.*pie;
+      // event.set(h_dphi_lq, dphi_lq);
 
       // Define sphi_lb from phi coordinates of lepton and b-quark
       auto sphi_lb =  hadTop_b.Phi() + lepTop_lep.Phi();
-      if(sphi_lb > pie) sphi_lb = sphi_lb - 2.*pie;
-      if(sphi_lb < -1.*pie) sphi_lb = sphi_lb + 2.*pie;
+      if(sphi_lb > pie) sphi_lb = sphi_lb - 2*pie;
+      if(sphi_lb < -1*pie) sphi_lb = sphi_lb + 2*pie;
       event.set(h_sphi_lb, sphi_lb);
+      if(debug) cout<<" SigmaPhi of lepton and b-quark is: "<<sphi_lb<<endl;
       // Define dphi_lb from phi coordinates of lepton and b-quark
       auto dphi_lb =  hadTop_b.Phi() - lepTop_lep.Phi();
-      if(dphi_lb > pie) dphi_lb = dphi_lb - 2.*pie;
-      if(dphi_lb < -1.*pie) dphi_lb = dphi_lb + 2.*pie;
+      if(dphi_lb > pie) dphi_lb = dphi_lb - 2*pie;
+      if(dphi_lb < -1*pie) dphi_lb = dphi_lb + 2*pie;
       event.set(h_dphi_lb, dphi_lb);
+      if(debug) cout<<" DeltaPhi of lepton and b-quark is: "<<dphi_lb<<endl;
 
       // Plot dphi and sphi for high-pt ranges
       if(Gen_HadTop.pt() > pt_hadTop_thresh){
-        event.set(h_sphi_lq_high, sphi_lq);
-        event.set(h_dphi_lq_high, dphi_lq);
+        // event.set(h_sphi_lq_high, sphi_lq);
+        // event.set(h_dphi_lq_high, dphi_lq);
         event.set(h_sphi_lb_high, sphi_lb);
         event.set(h_dphi_lb_high, dphi_lb);
       }
       // Plot dphi_lq and sphi_lq for low-pt ranges
       if(Gen_HadTop.pt() < pt_hadTop_thresh){
-        event.set(h_sphi_lq_low, sphi_lq);
-        event.set(h_dphi_lq_low, dphi_lq);
+        // event.set(h_sphi_lq_low, sphi_lq);
+        // event.set(h_dphi_lq_low, dphi_lq);
         event.set(h_sphi_lb_low, sphi_lb);
         event.set(h_dphi_lb_low, dphi_lb);
       }
 
 
-      // Plot dphi and sphi for various ranges of ttbar mass
-      // 0 < Mass1 < 500
-      if(ttbar.M() < 500.){
-        event.set(h_sphi_lq_Mass1, sphi_lq);
-        event.set(h_dphi_lq_Mass1, dphi_lq);
-        event.set(h_sphi_lb_Mass1, sphi_lb);
-        event.set(h_dphi_lb_Mass1, dphi_lb);
-      }
-      // 500 < Mass2 < 750
-      if(ttbar.M() > 500. &&  ttbar.M() < 750.){
-        event.set(h_sphi_lq_Mass2, sphi_lq);
-        event.set(h_dphi_lq_Mass2, dphi_lq);
-        event.set(h_sphi_lb_Mass2, sphi_lb);
-        event.set(h_dphi_lb_Mass2, dphi_lb);
-      }
-      // 750 < Mass3 < 1000
-      if(ttbar.M() > 750. &&  ttbar.M() < 1000.){
-        event.set(h_sphi_lq_Mass3, sphi_lq);
-        event.set(h_dphi_lq_Mass3, dphi_lq);
-        event.set(h_sphi_lb_Mass3, sphi_lb);
-        event.set(h_dphi_lb_Mass3, dphi_lb);
-      }
-      // 1000 < Mass4 < 1500
-      if(ttbar.M() > 1000. && ttbar.M() < 1500.){
-        event.set(h_sphi_lq_Mass4, sphi_lq);
-        event.set(h_dphi_lq_Mass4, dphi_lq);
-        event.set(h_sphi_lb_Mass4, sphi_lb);
-        event.set(h_dphi_lb_Mass4, dphi_lb);
-      }
-      // Mass5 > 1500
-      if(ttbar.M() > 1500.){
-        event.set(h_sphi_lq_Mass5, sphi_lq);
-        event.set(h_dphi_lq_Mass5, dphi_lq);
-        event.set(h_sphi_lb_Mass5, sphi_lb);
-        event.set(h_dphi_lb_Mass5, dphi_lb);
-      }
+      // // Plot dphi and sphi for various ranges of ttbar mass
+      // // 0 < Mass1 < 500
+      // if(ttbar.M() < 500.){
+      //   event.set(h_sphi_lq_Mass1, sphi_lq);
+      //   event.set(h_dphi_lq_Mass1, dphi_lq);
+      //   event.set(h_sphi_lb_Mass1, sphi_lb);
+      //   event.set(h_dphi_lb_Mass1, dphi_lb);
+      // }
+      // // 500 < Mass2 < 750
+      // if(ttbar.M() > 500. &&  ttbar.M() < 750.){
+      //   event.set(h_sphi_lq_Mass2, sphi_lq);
+      //   event.set(h_dphi_lq_Mass2, dphi_lq);
+      //   event.set(h_sphi_lb_Mass2, sphi_lb);
+      //   event.set(h_dphi_lb_Mass2, dphi_lb);
+      // }
+      // // 750 < Mass3 < 1000
+      // if(ttbar.M() > 750. &&  ttbar.M() < 1000.){
+      //   event.set(h_sphi_lq_Mass3, sphi_lq);
+      //   event.set(h_dphi_lq_Mass3, dphi_lq);
+      //   event.set(h_sphi_lb_Mass3, sphi_lb);
+      //   event.set(h_dphi_lb_Mass3, dphi_lb);
+      // }
+      // // 1000 < Mass4 < 1500
+      // if(ttbar.M() > 1000. && ttbar.M() < 1500.){
+      //   event.set(h_sphi_lq_Mass4, sphi_lq);
+      //   event.set(h_dphi_lq_Mass4, dphi_lq);
+      //   event.set(h_sphi_lb_Mass4, sphi_lb);
+      //   event.set(h_dphi_lb_Mass4, dphi_lb);
+      // }
+      // // Mass5 > 1500
+      // if(ttbar.M() > 1500.){
+      //   event.set(h_sphi_lq_Mass5, sphi_lq);
+      //   event.set(h_dphi_lq_Mass5, dphi_lq);
+      //   event.set(h_sphi_lb_Mass5, sphi_lb);
+      //   event.set(h_dphi_lb_Mass5, dphi_lb);
+      // }
 
 
       // // Plot dphi and sphi for various ranges of longitudinal boost of ttbar system
