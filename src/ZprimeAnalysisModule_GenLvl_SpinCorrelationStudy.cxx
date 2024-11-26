@@ -160,7 +160,8 @@ protected:
 
 ZprimeAnalysisModule_GenLvl_SpinCorrelationStudy::ZprimeAnalysisModule_GenLvl_SpinCorrelationStudy(uhh2::Context& ctx){
 
-  debug = true; 
+  // debug = true; 
+  debug = false;
 
   ttgenprod.reset(new TTbarGenProducer(ctx));
 
@@ -402,10 +403,10 @@ bool ZprimeAnalysisModule_GenLvl_SpinCorrelationStudy::process(uhh2::Event& even
     if(debug) cout<<" antitop ("<<NegTop_CoM.Pt()<<", "<<NegTop_CoM.Eta()<<", "<<NegTop_CoM.Phi()<<", "<<NegTop_CoM.E()<<")"<<endl;
     if(debug) cout<<" lepton ("<<lepTop_lep_CoM.Pt()<<", "<<lepTop_lep_CoM.Eta()<<", "<<lepTop_lep_CoM.Phi()<<", "<<lepTop_lep_CoM.E()<<")"<<endl;
     if(debug) cout<<" b-quark ("<<hadTop_b_CoM.Pt()<<", "<<hadTop_b_CoM.Eta()<<", "<<hadTop_b_CoM.Phi()<<", "<<hadTop_b_CoM.E()<<")"<<endl;
-    if(debug) cout<<" sign of scattering angle is "<<sign_cos_PosTop_beam<<endl;
-    if(debug) cout<<" kbase ("<<kbase.X()<<", "<<kbase.Y()<<", "<<kbase.Z()<<")"<<endl;
-    if(debug) cout<<" rbase ("<<rbase.X()<<", "<<rbase.Y()<<", "<<rbase.Z()<<")"<<endl;
-    if(debug) cout<<" nbase ("<<nbase.X()<<", "<<nbase.Y()<<", "<<nbase.Z()<<")"<<endl;
+    // if(debug) cout<<" sign of scattering angle is "<<sign_cos_PosTop_beam<<endl;
+    // if(debug) cout<<" kbase ("<<kbase.X()<<", "<<kbase.Y()<<", "<<kbase.Z()<<")"<<endl;
+    // if(debug) cout<<" rbase ("<<rbase.X()<<", "<<rbase.Y()<<", "<<rbase.Z()<<")"<<endl;
+    // if(debug) cout<<" nbase ("<<nbase.X()<<", "<<nbase.Y()<<", "<<nbase.Z()<<")"<<endl;
     //---------------------------------------------------------- Boosted into CoM-frame ----------------------------------------------------------//
 
     //---------------------------------------------------- Start Rotation into Helicity Frame ----------------------------------------------------//
@@ -421,7 +422,7 @@ bool ZprimeAnalysisModule_GenLvl_SpinCorrelationStudy::process(uhh2::Event& even
 
     TVector3 kbase_H = kbase;
     kbase_H.RotateZ(-1.*PosTop_CoM.Phi());
-    if(debug) cout<<"kbase ("<<kbase_H.X()<<", "<<kbase_H.Y()<<", "<<kbase_H.Z()<<") after rotation abt Z by "<< -1.*PosTop_CoM.Phi()<< " radians"  <<endl;
+    // if(debug) cout<<"kbase ("<<kbase_H.X()<<", "<<kbase_H.Y()<<", "<<kbase_H.Z()<<") after rotation abt Z by "<< -1.*PosTop_CoM.Phi()<< " radians"  <<endl;
     TVector3 rbase_H = rbase;
     rbase_H.RotateZ(-1.*PosTop_CoM.Phi());
     TVector3 nbase_H = nbase;
@@ -439,7 +440,7 @@ bool ZprimeAnalysisModule_GenLvl_SpinCorrelationStudy::process(uhh2::Event& even
 
     TVector3 kbase_Hel = kbase_H;
     kbase_Hel.RotateY(-1.*PosTop_CoM.Theta());
-    if(debug) cout<<"kbase ("<<kbase_Hel.X()<<", "<<kbase_Hel.Y()<<", "<<kbase_Hel.Z()<<") after rotation abt Y by "<< -1.*PosTop_CoM.Theta() << " radians" <<endl;
+    // if(debug) cout<<"kbase ("<<kbase_Hel.X()<<", "<<kbase_Hel.Y()<<", "<<kbase_Hel.Z()<<") after rotation abt Y by "<< -1.*PosTop_CoM.Theta() << " radians" <<endl;
     TVector3 rbase_Hel = rbase_H;
     rbase_Hel.RotateY(-1.*PosTop_CoM.Theta());
     TVector3 nbase_Hel = nbase_H;
@@ -451,9 +452,9 @@ bool ZprimeAnalysisModule_GenLvl_SpinCorrelationStudy::process(uhh2::Event& even
     if(debug) cout<<" antitop ("<<NegTop_Hel.Pt()<<", "<<NegTop_Hel.Eta()<<", "<<NegTop_Hel.Phi()<<", "<<NegTop_Hel.E()<<")"<<endl;
     if(debug) cout<<" lepton ("<<lepTop_lep_Hel.Pt()<<", "<<lepTop_lep_Hel.Eta()<<", "<<lepTop_lep_Hel.Phi()<<", "<<lepTop_lep_Hel.E()<<")"<<endl;
     if(debug) cout<<" b-quark ("<<hadTop_b_Hel.Pt()<<", "<<hadTop_b_Hel.Eta()<<", "<<hadTop_b_Hel.Phi()<<", "<<hadTop_b_Hel.E()<<")"<<endl;
-    if(debug) cout<<" kbase ("<<kbase_Hel.X()<<", "<<kbase_Hel.Y()<<", "<<kbase_Hel.Z()<<")"<<endl;
-    if(debug) cout<<" rbase ("<<rbase_Hel.X()<<", "<<rbase_Hel.Y()<<", "<<rbase_Hel.Z()<<")"<<endl;
-    if(debug) cout<<" nbase ("<<nbase_Hel.X()<<", "<<nbase_Hel.Y()<<", "<<nbase_Hel.Z()<<")"<<endl;
+    // if(debug) cout<<" kbase ("<<kbase_Hel.X()<<", "<<kbase_Hel.Y()<<", "<<kbase_Hel.Z()<<")"<<endl;
+    // if(debug) cout<<" rbase ("<<rbase_Hel.X()<<", "<<rbase_Hel.Y()<<", "<<rbase_Hel.Z()<<")"<<endl;
+    // if(debug) cout<<" nbase ("<<nbase_Hel.X()<<", "<<nbase_Hel.Y()<<", "<<nbase_Hel.Z()<<")"<<endl;
     //---------------------------------------------------- End Rotation into Helicity Frame ----------------------------------------------------//
 
     //----------------- Apply rotation to align Bernreuther basis vectors based on sign of scattering angle -----------------//
@@ -487,15 +488,15 @@ bool ZprimeAnalysisModule_GenLvl_SpinCorrelationStudy::process(uhh2::Event& even
       nbase_BoseSymm.RotateZ(TMath::Pi()/2.);
     }
 
-    if(debug) cout<<"Coordinates now wrt Bernreuther basis:"<<endl;
-    // Print 3vectors of all relevant particles
-    if(debug) cout<<" top ("<<PosTop_BoseSymm.Pt()<<", "<<PosTop_BoseSymm.Eta()<<", "<<PosTop_BoseSymm.Phi()<<")"<<endl;
-    if(debug) cout<<" antitop ("<<NegTop_BoseSymm.Pt()<<", "<<NegTop_BoseSymm.Eta()<<", "<<NegTop_BoseSymm.Phi()<<")"<<endl;
-    if(debug) cout<<" lepton ("<<lepTop_lep_BoseSymm.Pt()<<", "<<lepTop_lep_BoseSymm.Eta()<<", "<<lepTop_lep_BoseSymm.Phi()<<")"<<endl;
-    if(debug) cout<<" b-quark ("<<hadTop_b_BoseSymm.Pt()<<", "<<hadTop_b_BoseSymm.Eta()<<", "<<hadTop_b_BoseSymm.Phi()<<")"<<endl;
-    if(debug) cout<<" kbase ("<<kbase_BoseSymm.X()<<", "<<kbase_BoseSymm.Y()<<", "<<kbase_BoseSymm.Z()<<")"<<endl;
-    if(debug) cout<<" rbase ("<<rbase_BoseSymm.X()<<", "<<rbase_BoseSymm.Y()<<", "<<rbase_BoseSymm.Z()<<")"<<endl;
-    if(debug) cout<<" nbase ("<<nbase_BoseSymm.X()<<", "<<nbase_BoseSymm.Y()<<", "<<nbase_BoseSymm.Z()<<")"<<endl;
+    // if(debug) cout<<"Coordinates now wrt Bernreuther basis:"<<endl;
+    // // Print 3vectors of all relevant particles
+    // if(debug) cout<<" top ("<<PosTop_BoseSymm.Pt()<<", "<<PosTop_BoseSymm.Eta()<<", "<<PosTop_BoseSymm.Phi()<<")"<<endl;
+    // if(debug) cout<<" antitop ("<<NegTop_BoseSymm.Pt()<<", "<<NegTop_BoseSymm.Eta()<<", "<<NegTop_BoseSymm.Phi()<<")"<<endl;
+    // if(debug) cout<<" lepton ("<<lepTop_lep_BoseSymm.Pt()<<", "<<lepTop_lep_BoseSymm.Eta()<<", "<<lepTop_lep_BoseSymm.Phi()<<")"<<endl;
+    // if(debug) cout<<" b-quark ("<<hadTop_b_BoseSymm.Pt()<<", "<<hadTop_b_BoseSymm.Eta()<<", "<<hadTop_b_BoseSymm.Phi()<<")"<<endl;
+    // if(debug) cout<<" kbase ("<<kbase_BoseSymm.X()<<", "<<kbase_BoseSymm.Y()<<", "<<kbase_BoseSymm.Z()<<")"<<endl;
+    // if(debug) cout<<" rbase ("<<rbase_BoseSymm.X()<<", "<<rbase_BoseSymm.Y()<<", "<<rbase_BoseSymm.Z()<<")"<<endl;
+    // if(debug) cout<<" nbase ("<<nbase_BoseSymm.X()<<", "<<nbase_BoseSymm.Y()<<", "<<nbase_BoseSymm.Z()<<")"<<endl;
     //----------------- Applied rotation to align Bernreuther basis vectors based on sign of scattering angle -----------------//
 
     //--------------------------- Boosting into ttbar rest-frame ---------------------------//

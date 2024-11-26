@@ -25,8 +25,8 @@ if channel=="ele":
     _fileDir = "/nfs/dust/cms/group/zprime-uhh//"
 else:
     _channelText = "#mu+jets"
-    plotDirectory = "/nfs/dust/cms/user/ricardo/SpinCorrAnalysis_Gen/plots/updatedBoostProcedure/UL18/fullGenSample"
-    _fileDir =      "/nfs/dust/cms/user/ricardo/SpinCorrAnalysis_Gen/updatedBoostProcedure/muon/workdir_SpinCorr_Gen_UL18_muon"
+    plotDirectory = "/nfs/dust/cms/user/ricardo/SpinCorrAnalysis_Gen/plots/BernreutherBasisProcedure/UL18/"
+    _fileDir =      "/nfs/dust/cms/user/ricardo/SpinCorrAnalysis_Gen/BernreutherBasisProcedure/muon/workdir_SpinCorr_Gen_UL18_muon/"
 
 print "channel is ", channel
 print "The input root files will come from", _fileDir
@@ -35,13 +35,13 @@ print "The output will go into", plotDirectory, "\n"
 
 ### define the histograms dictionary with entry syntax: {"variable_handle" : ["Plot name", "vertical-axis name", number of bins, [x-min, x-max]]}
 if channel=="mu": 
-       histograms =  {#"pt_hadTop"              : ["Hadronic-top p_{T}",                       "Events", 25, [     0,   500]],
-    #                   "ttbar_mass_LabFrame"    : ["Mass_{t#bar{t}}",                          "Events", 40, [     0,  2000]],
+       histograms =  {"pt_hadTop"              : ["Hadronic-top p_{T}",                       "Events", 25, [     0,   500]],
+                    #  "ttbar_mass_LabFrame"    : ["Mass_{t#bar{t}}",                          "Events", 40, [     0,  2000]],
                     #  "ttbar_boost_LabFrame"    : ["longitudinal boost_{t#bar{t}}",            "Events", 10, [     0,     1]],
                     #  "phi_lep"                 : ["#phi_{#mu}",                               "Events", 12, [-np.pi, np.pi]],
                     #  "phi_b"                   : ["#phi_{b-quark}",                           "Events", 12, [-np.pi, np.pi]],
                     #  "phi_qlow"                : ["#phi_{W-quark_{soft}}",                    "Events", 12, [-np.pi, np.pi]],
-                     "sphi_lq"                 : ["#Sigma#phi (l,W_{q})",                     "Events", 12, [-np.pi, np.pi]],
+                    #  "sphi_lq"                 : ["#Sigma#phi (l,W_{q})",                     "Events", 12, [-np.pi, np.pi]],
                     #  "sphi_lq_low"             : ["#Sigma#phi_{low pt} (l,W_{q})",            "Events", 12, [-np.pi, np.pi]],
                     #  "sphi_lq_high"            : ["#Sigma#phi^{high pt} (l,W_{q})",           "Events", 12, [-np.pi, np.pi]],
                     #  "sphi_lq_Mass1"           : ["#Sigma#phi_{Mass 0-500} (l,W_{q})",        "Events", 12, [-np.pi, np.pi]],
@@ -49,7 +49,7 @@ if channel=="mu":
                     #  "sphi_lq_Mass3"           : ["#Sigma#phi_{Mass 750-1000} (l,W_{q})",     "Events", 12, [-np.pi, np.pi]],
                     #  "sphi_lq_Mass4"           : ["#Sigma#phi_{Mass 1000-1500} (l,W_{q})",    "Events", 12, [-np.pi, np.pi]],
                     #  "sphi_lq_Mass5"           : ["#Sigma#phi_{Mass 1500-Inf} (l,W_{q})",     "Events", 12, [-np.pi, np.pi]],
-                     "dphi_lq"                 : ["#Delta#phi (l,W_{q})",                     "Events", 12, [-np.pi, np.pi]],
+                    #  "dphi_lq"                 : ["#Delta#phi (l,W_{q})",                     "Events", 12, [-np.pi, np.pi]],
                     #  "dphi_lq_low"             : ["#Delta#phi_{low pt} (l,W_{q})",            "Events", 12, [-np.pi, np.pi]],
                     #  "dphi_lq_high"            : ["#Delta#phi^{high pt} (l,W_{q})",           "Events", 12, [-np.pi, np.pi]],
                     #  "dphi_lq_Mass1"           : ["#Delta#phi_{Mass 0-500} (l,W_{q})",        "Events", 12, [-np.pi, np.pi]],
@@ -58,16 +58,16 @@ if channel=="mu":
                     #  "dphi_lq_Mass4"           : ["#Delta#phi_{Mass 1000-1500} (l,W_{q})",    "Events", 12, [-np.pi, np.pi]],
                     #  "dphi_lq_Mass5"           : ["#Delta#phi_{Mass 1500-Inf} (l,W_{q})",     "Events", 12, [-np.pi, np.pi]],
                      "sphi_lb"                 : ["#Sigma#phi (l,b)",                         "Events", 12, [-np.pi, np.pi]],
-                    #  "sphi_lb_low"             : ["#Sigma#phi_{low pt} (l,b)",                "Events", 12, [-np.pi, np.pi]],
-                    #  "sphi_lb_high"            : ["#Sigma#phi^{high pt} (l,b)",               "Events", 12, [-np.pi, np.pi]],
+                     "sphi_lb_low"             : ["#Sigma#phi_{low pt} (l,b)",                "Events", 12, [-np.pi, np.pi]],
+                     "sphi_lb_high"            : ["#Sigma#phi^{high pt} (l,b)",               "Events", 12, [-np.pi, np.pi]],
                     #  "sphi_lb_Mass1"           : ["#Sigma#phi_{Mass 0-500} (l,b)",            "Events", 12, [-np.pi, np.pi]],
                     #  "sphi_lb_Mass2"           : ["#Sigma#phi_{Mass 500-750} (l,b)",          "Events", 12, [-np.pi, np.pi]],
                     #  "sphi_lb_Mass3"           : ["#Sigma#phi_{Mass 750-1000} (l,b)",         "Events", 12, [-np.pi, np.pi]],
                     #  "sphi_lb_Mass4"           : ["#Sigma#phi_{Mass 1000-1500} (l,b)",        "Events", 12, [-np.pi, np.pi]],
                     #  "sphi_lb_Mass5"           : ["#Sigma#phi_{Mass 1500-Inf} (l,b)",         "Events", 12, [-np.pi, np.pi]],
                      "dphi_lb"                 : ["#Delta#phi (l,b)",                         "Events", 12, [-np.pi, np.pi]],
-                    #  "dphi_lb_low"             : ["#Delta#phi_{low pt} (l,b)",                "Events", 12, [-np.pi, np.pi]],
-                    #  "dphi_lb_high"            : ["#Delta#phi^{high pt} (l,b)",               "Events", 12, [-np.pi, np.pi]],
+                     "dphi_lb_low"             : ["#Delta#phi_{low pt} (l,b)",                "Events", 12, [-np.pi, np.pi]],
+                     "dphi_lb_high"            : ["#Delta#phi^{high pt} (l,b)",               "Events", 12, [-np.pi, np.pi]],
                     #  "dphi_lb_Mass1"           : ["#Delta#phi_{Mass 0-500} (l,b)",            "Events", 12, [-np.pi, np.pi]],
                     #  "dphi_lb_Mass2"           : ["#Delta#phi_{Mass 500-750} (l,b)",          "Events", 12, [-np.pi, np.pi]],
                     #  "dphi_lb_Mass3"           : ["#Delta#phi_{Mass 750-1000} (l,b)",         "Events", 12, [-np.pi, np.pi]],
