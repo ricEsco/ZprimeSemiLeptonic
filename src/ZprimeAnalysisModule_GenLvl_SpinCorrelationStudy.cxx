@@ -348,18 +348,21 @@ bool ZprimeAnalysisModule_GenLvl_SpinCorrelationStudy::process(uhh2::Event& even
 
     // Assign hadronic b-quark based on sign of lepton
     TLorentzVector hadTop_b;
-    if(ttbargen.ChargedLepton().charge() > 0){ 
-      LorentzVector Gen_b = ttbargen.bAntitop().v4(); // Positive lepton means hadronic b-quark is from antitop
-      hadTop_b.SetPtEtaPhiE(Gen_b.pt(),Gen_b.eta(),Gen_b.phi(),Gen_b.energy());
-      // Print 4vector and charge of b-quark
-      if(debug) cout<<" b-quark ("<<hadTop_b.Pt()<<", "<<hadTop_b.Eta()<<", "<<hadTop_b.Phi()<<", "<<hadTop_b.E()<<")"<<endl;
-    }
-    else{
-      LorentzVector Gen_b = ttbargen.bTop().v4(); // Negative lepton means hadronic b-quark is from top
-      hadTop_b.SetPtEtaPhiE(Gen_b.pt(),Gen_b.eta(),Gen_b.phi(),Gen_b.energy());
-      // Print 4vector of b-quark
-      if(debug) cout<<" b-quark ("<<hadTop_b.Pt()<<", "<<hadTop_b.Eta()<<", "<<hadTop_b.Phi()<<", "<<hadTop_b.E()<<")"<<endl;
-    }
+    LorentzVector Gen_b = ttbargen.BHad().v4();
+    hadTop_b.SetPtEtaPhiE(Gen_b.pt(),Gen_b.eta(),Gen_b.phi(),Gen_b.energy());
+    // if(ttbargen.ChargedLepton().charge() > 0){ // Positive lepton means hadronic b-quark is from antitop
+    //   LorentzVector Gen_b = ttbargen.bAntitop().v4(); 
+    //   hadTop_b.SetPtEtaPhiE(Gen_b.pt(),Gen_b.eta(),Gen_b.phi(),Gen_b.energy());
+    //   // Print 4vector and charge of b-quark
+    //   if(debug) cout<<" b-quark ("<<hadTop_b.Pt()<<", "<<hadTop_b.Eta()<<", "<<hadTop_b.Phi()<<", "<<hadTop_b.E()<<")"<<endl;
+    // }
+    // else{ // Negative lepton means hadronic b-quark is from top
+    //   LorentzVector Gen_b = ttbargen.bTop().v4(); 
+    //   hadTop_b.SetPtEtaPhiE(Gen_b.pt(),Gen_b.eta(),Gen_b.phi(),Gen_b.energy());
+    //   // Print 4vector of b-quark
+    //   if(debug) cout<<" b-quark ("<<hadTop_b.Pt()<<", "<<hadTop_b.Eta()<<", "<<hadTop_b.Phi()<<", "<<hadTop_b.E()<<")"<<endl;
+    // }
+
 
     // 4vector to represent ttbar system
     TLorentzVector ttbar(PosTop + NegTop);

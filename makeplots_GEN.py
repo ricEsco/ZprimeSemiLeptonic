@@ -25,8 +25,8 @@ if channel=="ele":
     _fileDir = "/nfs/dust/cms/group/zprime-uhh//"
 else:
     _channelText = "#mu+jets"
-    plotDirectory = "/nfs/dust/cms/user/ricardo/SpinCorrAnalysis_Gen/plots/BernreutherBasisProcedure/UL18/"
-    _fileDir =      "/nfs/dust/cms/user/ricardo/SpinCorrAnalysis_Gen/BernreutherBasisProcedure/muon/workdir_SpinCorr_Gen_UL18_muon/"
+    plotDirectory = "/nfs/dust/cms/user/ricardo/SpinCorrAnalysis_Gen/plots/BernreutherBasisProcedure/UL18/ogBhhad"
+    _fileDir =      "/nfs/dust/cms/user/ricardo/SpinCorrAnalysis_Gen/BernreutherBasisProcedure/ogBhad/muon/workdir_SpinCorr_Gen_UL18_muon/"
 
 print "channel is ", channel
 print "The input root files will come from", _fileDir
@@ -35,7 +35,7 @@ print "The output will go into", plotDirectory, "\n"
 
 ### define the histograms dictionary with entry syntax: {"variable_handle" : ["Plot name", "vertical-axis name", number of bins, [x-min, x-max]]}
 if channel=="mu": 
-       histograms =  {"pt_hadTop"              : ["Hadronic-top p_{T}",                       "Events", 25, [     0,   500]],
+       histograms =  {#"pt_hadTop"              : ["Hadronic-top p_{T}",                       "Events", 25, [     0,   500]],
                     #  "ttbar_mass_LabFrame"    : ["Mass_{t#bar{t}}",                          "Events", 40, [     0,  2000]],
                     #  "ttbar_boost_LabFrame"    : ["longitudinal boost_{t#bar{t}}",            "Events", 10, [     0,     1]],
                     #  "phi_lep"                 : ["#phi_{#mu}",                               "Events", 12, [-np.pi, np.pi]],
@@ -79,8 +79,8 @@ else:
 
 
 ### The sample_names array has filenames of samples that will contribute to each plot
-sample_names = ["TTToSemiLeptonic", "TTToSemiLeptonic_2", "TTToSemiLeptonic_3", "TTToSemiLeptonic_4", "TTToSemiLeptonic_5", "TTToSemiLeptonic_6", "TTToSemiLeptonic_7", "TTToSemiLeptonic_8"]
-
+#sample_names = ["TTToSemiLeptonic", "TTToSemiLeptonic_2", "TTToSemiLeptonic_3", "TTToSemiLeptonic_4", "TTToSemiLeptonic_5", "TTToSemiLeptonic_6", "TTToSemiLeptonic_7", "TTToSemiLeptonic_8"]
+sample_names = ["TTToSemiLeptonic", "TTToSemiLeptonic_8"]
 
 ### The stackList dictionary maps the list of samples to their color
 stackList = {"TTToSemiLeptonic":[kRed], "TTToSemiLeptonic_2":[kRed], "TTToSemiLeptonic_3":[kRed], "TTToSemiLeptonic_4":[kRed], "TTToSemiLeptonic_5":[kRed], "TTToSemiLeptonic_6":[kRed], "TTToSemiLeptonic_7":[kRed], "TTToSemiLeptonic_8":[kRed]}
@@ -171,6 +171,8 @@ pad1.cd()
 
 ### We loop through each histogram and fill it with the different samples
 for histName in histograms:
+    pad1.Clear()
+    pad1.Update()
     print "--- Working on the", histName, "histogram ---"
     for sample in sample_names:
         #print "sample is", sample
@@ -178,51 +180,60 @@ for histName in histograms:
         tree_MC[histName][sample]=_file[sample].Get("AnalysisTree")
         tree_MC[histName][sample].Draw("%s>>h_%s_%s(%i,%f,%f)"%(histName,histName,sample,histograms[histName][2],histograms[histName][3][0],histograms[histName][3][1]))
         hist[histName][sample] = tree_MC[histName][sample].GetHistogram()
-        hist[histName][sample].SetLineColor(0)         # making the first histogram invisible
-        hist[histName][sample].SetMarkerColor(kWhite)  # making the first histogram invisible
+        # hide lines from the first histograms
+        # hist[histName][sample].SetLineColor(0)
+        # hist[histName][sample].SetMarkerColor(0)
+        hist[histName][sample].GetXaxis().SetRangeUser(-np.pi, np.pi)
+
+        # hist[histName][sample].SetLineColor(0)         # making the first histogram invisible
+        # hist[histName][sample].SetMarkerColor(kWhite)  # making the first histogram invisible
         if (sample=="TTToSemiLeptonic_8"):
-            hist[histName][sample].SetLineColor(kRed)
-            hist[histName][sample].SetMarkerColor(kBlack)
-            hist[histName][sample].SetMarkerStyle(1)
-            hist[histName][sample].SetLineWidth(2)
-            hist[histName][sample].SetYTitle(histograms[histName][1])
-            legendR[histName].AddEntry(hist[histName][sample],"UL 18 TTbar-semi",'le')
-            legendR[histName].SetTextSize(0.04)
+            # hist[histName][sample].SetLineColor(kRed)
+            # hist[histName][sample].SetMarkerColor(kBlack)
+            # hist[histName][sample].SetMarkerStyle(1)
+            # hist[histName][sample].SetLineWidth(2)
+            # hist[histName][sample].SetYTitle(histograms[histName][1])
+            hist[histName][sample].GetXaxis().SetRangeUser(-np.pi, np.pi)
+            # legendR[histName].AddEntry(hist[histName][sample],"UL 18 TTbar-semi",'le')
+            # legendR[histName].SetTextSize(0.04)
             print "Filling with", sample
             stack[histName].Add(hist[histName][sample])
+            #print "Histogram content for", sample, ":", [hist[histName][sample].GetBinContent(i) for i in range(1, hist[histName][sample].GetNbinsX() + 1)]  # Debug print
             continue
-        hist[histName][sample].SetYTitle(histograms[histName][1])
+
         print "Filling with", sample
-        stack[histName].Add(hist[histName][sample])   
-    #stack[histName].Draw("e") 
+        stack[histName].Add(hist[histName][sample])
+        #print "Histogram content for", sample, ":", [hist[histName][sample].GetBinContent(i) for i in range(1, hist[histName][sample].GetNbinsX() + 1)]  # Debug print
+        
+    # create a histogram copy of the THStack
+    h_sum = stack[histName].GetStack().Last().Clone("h_sum")
+    # normalize to center around amplitude
+    half_range = (h_sum.GetMaximum() - h_sum.GetMinimum()) / 2
+    norm = h_sum.GetMaximum() - half_range
+    h_sum.Scale(1/norm)
+    max_bin = h_sum.GetMaximum()
+    min_bin = h_sum.GetMinimum()
+    # set vertical axis limits to center histogram
+    h_sum.SetMaximum(max_bin*1.2)
+    h_sum.SetMinimum(min_bin*0.8)
 
-    # Set vertical-axis limits
-    maxVal = stack[histName].GetMaximum()
-    # minVal = max(stack[histName].GetStack()[0].GetMinimum(), 1)
-    minVal = 1
-    if Log:
-        stack[histName].SetMaximum(10**(1.5*log10(maxVal) - 0.5*log10(minVal)))
-        stack[histName].SetMinimum(minVal)
-    else:
-        stack[histName].SetMaximum(1.5*maxVal)
-        stack[histName].SetMinimum(minVal)
-    
-    pad1.Draw()
-    pad1.SetLogy(Log)
-    
-    y2 = pad1.GetY2()
-    
-    stack[histName].Draw("e")
-    stack[histName].GetXaxis().SetTitle(histograms[histName][0])
-    stack[histName].SetTitle('')
-    stack[histName].GetXaxis().SetLabelSize(0.06)
-    stack[histName].GetYaxis().SetLabelSize(gStyle.GetLabelSize()/(1.-padRatio+padOverlap))
-    stack[histName].GetYaxis().SetTitleSize(gStyle.GetTitleSize()/(1.-padRatio+padOverlap))
-    stack[histName].GetYaxis().SetTitleOffset(gStyle.GetTitleYOffset()*(1.-padRatio+padOverlap))
-    stack[histName].GetYaxis().SetTitle("Events")
+    # clear pad of previous histograms
+    pad1.Clear()
 
-    CMS_lumi.CMS_lumi(pad1, 18, 11) # parameters are: (pad, Year, iPosX, extraLumiText = "") <----------- DONT FORGET TO CHANGE THE YEAR TO GET THE RIGHT LUMI
-    legendR[histName].Draw()
+    # draw histogram with bells and whistles
+    # legendR[histName].Draw()
+    h_sum.SetLineColor(kRed)
+    h_sum.SetMarkerColor(kBlack)
+    h_sum.SetMarkerStyle(1)
+    h_sum.SetLineWidth(2)
+    h_sum.GetXaxis().SetTitle(histograms[histName][0])
+    h_sum.GetXaxis().SetLabelSize(0.06)
+    h_sum.SetYTitle(histograms[histName][1])
+    h_sum.GetYaxis().SetTitle("Events")
+    h_sum.Draw("hist same")
+
+    # CMS_lumi.CMS_lumi(pad1, 18, 11) # parameters are: (pad, Year, iPosX, extraLumiText = "") <----------- DONT FORGET TO CHANGE THE YEAR TO GET THE RIGHT LUMI
+
     pad1.Update()
     if Log:
         canvas.SaveAs("%s/%s_log.png"%(plotDirectory,histName))
