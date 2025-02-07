@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #where UHH2 code installed
-pathGL_code=/nfs/dust/cms/user/ricardo/uhh2-106X_v2/CMSSW_10_6_28/src/UHH2
+pathGL_code=/data/dust/user/ricardo/uhh2-106X_v2/CMSSW_10_6_28/src/UHH2
 #where (NOT MERGED) trees after preselection stored
 path_data=/nfs/dust/cms/group/zprime-uhh/Presel_UL18/workdir_Preselection_UL18/uhh2.AnalysisModuleRunner.
 

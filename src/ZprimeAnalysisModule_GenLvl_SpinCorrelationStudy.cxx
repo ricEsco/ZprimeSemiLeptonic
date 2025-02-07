@@ -177,6 +177,9 @@ ZprimeAnalysisModule_GenLvl_SpinCorrelationStudy::ZprimeAnalysisModule_GenLvl_Sp
   // Longitudinal boost of ttbar system
   h_ttbar_boost_LabFrame=ctx.declare_event_output<double> ("ttbar_boost_LabFrame");
 
+  // Opening angle between lepton and b-quark
+  h_cosPhi_lab=ctx.declare_event_output<double> ("cosPhi_lab");
+
   // Phi of decay products
   h_phi_lep=ctx.declare_event_output<double> ("phi_lep"); // lepton from leptonic leg
   h_phi_b=ctx.declare_event_output<double> ("phi_b"); // b-quark from hadronic leg
@@ -260,6 +263,9 @@ bool ZprimeAnalysisModule_GenLvl_SpinCorrelationStudy::process(uhh2::Event& even
 
   // Plotting longitudinal boost of ttbar system
   event.set(h_ttbar_boost_LabFrame, -10);
+
+  // Cosine of angle between lepton and b-quark in lab frame
+  event.set(h_cosPhi_lab, -10);
 
   // Phi of decay products
   event.set(h_phi_lep, -10); // lepton from leptonic leg
@@ -346,26 +352,17 @@ bool ZprimeAnalysisModule_GenLvl_SpinCorrelationStudy::process(uhh2::Event& even
     if(debug) cout<<" lepton ("<<lepTop_lep.Pt()<<", "<<lepTop_lep.Eta()<<", "<<lepTop_lep.Phi()<<", "<<lepTop_lep.E()<<")"<<endl;
 
 
-    // Assign hadronic b-quark based on sign of lepton
+    // Assign hadronic b-quark based on CandidateBuilder assignment
     TLorentzVector hadTop_b;
     LorentzVector Gen_b = ttbargen.BHad().v4();
     hadTop_b.SetPtEtaPhiE(Gen_b.pt(),Gen_b.eta(),Gen_b.phi(),Gen_b.energy());
-    // if(ttbargen.ChargedLepton().charge() > 0){ // Positive lepton means hadronic b-quark is from antitop
-    //   LorentzVector Gen_b = ttbargen.bAntitop().v4(); 
-    //   hadTop_b.SetPtEtaPhiE(Gen_b.pt(),Gen_b.eta(),Gen_b.phi(),Gen_b.energy());
-    //   // Print 4vector and charge of b-quark
-    //   if(debug) cout<<" b-quark ("<<hadTop_b.Pt()<<", "<<hadTop_b.Eta()<<", "<<hadTop_b.Phi()<<", "<<hadTop_b.E()<<")"<<endl;
-    // }
-    // else{ // Negative lepton means hadronic b-quark is from top
-    //   LorentzVector Gen_b = ttbargen.bTop().v4(); 
-    //   hadTop_b.SetPtEtaPhiE(Gen_b.pt(),Gen_b.eta(),Gen_b.phi(),Gen_b.energy());
-    //   // Print 4vector of b-quark
-    //   if(debug) cout<<" b-quark ("<<hadTop_b.Pt()<<", "<<hadTop_b.Eta()<<", "<<hadTop_b.Phi()<<", "<<hadTop_b.E()<<")"<<endl;
-    // }
-
 
     // 4vector to represent ttbar system
     TLorentzVector ttbar(PosTop + NegTop);
+
+    // Compute and plot cosine of angle between lepton and b-quark in lab frame
+    double cosPhi_lab = lepTop_lep.Vect().Unit().Dot(hadTop_b.Vect().Unit());
+    event.set(h_cosPhi_lab, cosPhi_lab);
 
     // Plotting mass of ttbar system
     event.set(h_ttbar_mass_LabFrame, ttbar.M());
@@ -533,15 +530,6 @@ bool ZprimeAnalysisModule_GenLvl_SpinCorrelationStudy::process(uhh2::Event& even
 
     // Print opening angle between lepton and b-quark
     if(debug) cout<<" Opening angle between lepton and b-quark: "<<lepTop_lep_Rest.Angle(hadTop_b_Rest.Vect())<<endl;
-
-    // // Print the charge of the decay particles
-    // if(debug) cout<<" Charge of lepton: "<<ttbargen.ChargedLepton().charge()<<endl;
-    // if(ttbargen.ChargedLepton().charge() > 0){ 
-    //   if(debug) cout<<" Charge of b-quark: "<<ttbargen.bAntitop().charge()<<endl;
-    // }
-    // else{
-    //   if(debug) cout<<" Charge of b-quark: "<<ttbargen.bTop().charge()<<endl;
-    // }
 
     // Print the PID of the decay particles
     if(debug) cout<<" PID of lepton: "<<ttbargen.ChargedLepton().pdgId()<<endl;

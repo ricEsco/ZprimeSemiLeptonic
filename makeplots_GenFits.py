@@ -25,8 +25,8 @@ if channel=="ele":
     _fileDir = "/nfs/dust/cms/group/zprime-uhh//"
 else:
     _channelText = "#mu+jets"
-    plotDirectory = "/nfs/dust/cms/user/ricardo/SpinCorrAnalysis_Gen/plots/updatedBoostProcedure/UL18/genFit/optimize/nonNormalized"
-    _fileDir =      "/nfs/dust/cms/user/ricardo/SpinCorrAnalysis_Gen/updatedBoostProcedure/optimize/muon/workdir_SpinCorr_Gen_UL18_muon"
+    plotDirectory = "/data/dust/user/ricardo/SpinCorrAnalysis_Gen/plots/updatedBoostProcedure/UL18/genFit/optimize/nonNormalized"
+    _fileDir =      "/data/dust/user/ricardo/SpinCorrAnalysis_Gen/updatedBoostProcedure/optimize/muon/workdir_SpinCorr_Gen_UL18_muon"
 
 print "channel is ", channel
 print "The input root files will come from", _fileDir

@@ -26,8 +26,8 @@ if channel=="ele":
     _fileDir = "/nfs/dust/cms/group/zprime-uhh//"
 else:
     _channelText = "#mu+jets"
-    plotDirectory = "/nfs/dust/cms/user/ricardo/AzCorrAnalysis/nocut/correctmatch/plots"
-    _fileDir = "/nfs/dust/cms/user/ricardo/AzCorrAnalysis/nocut/correctmatch/muon/workdir_AzCorr_UL18_muon"
+    plotDirectory = "/data/dust/user/ricardo/AzCorrAnalysis/nocut/correctmatch/plots"
+    _fileDir = "/data/dust/user/ricardo/AzCorrAnalysis/nocut/correctmatch/muon/workdir_AzCorr_UL18_muon"
 print "channel is ", channel
 print "Input root:", _fileDir
 print "Output directory:", plotDirectory, "\n"

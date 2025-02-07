@@ -8,9 +8,9 @@ from array import array
 import CMS_lumi
 from Style import *
 
-fileDir =      "/nfs/dust/cms/user/ricardo/AzCorrAnalysis/missing_muons/muon/workdir_Zprime_AnalysisDNN_UL18_muon"
-plotDirectory = "/nfs/dust/cms/user/ricardo/analysis_output/UL18_DNN/missingmuons"
-logplotDirectory = "/nfs/dust/cms/user/ricardo/analysis_output/UL18_DNN/missingmuons/log"
+fileDir =      "/data/dust/user/ricardo/AzCorrAnalysis/missing_muons/muon/workdir_Zprime_AnalysisDNN_UL18_muon"
+plotDirectory = "/data/dust/user/ricardo/analysis_output/UL18_DNN/missingmuons"
+logplotDirectory = "/data/dust/user/ricardo/analysis_output/UL18_DNN/missingmuons/log"
 
 # Choose whether to plot with log scale or not
 log = True
