@@ -2051,13 +2051,6 @@ void ZprimeSemiLeptonicHists::fill(const Event & event){
   }//end of gen matching and deltay reco gen vars
     if(debug) cout << "after filling dY hists" << endl;
   
-<<<<<<< HEAD
-  //begin spin correlation with matching and deltay for all else(all MC and data)---------------->
-  // for all MC and DATA
-if (is_zprime_reconstructed_chi2 ){
-   
-    // if (debug) cout << "shouldnt be here if ttbar : " << endl;
-=======
   
   
   
@@ -2263,7 +2256,6 @@ if (is_zprime_reconstructed_chi2 ){
   // for backgrounds and DATA
   if(is_zprime_reconstructed_chi2 && !is_tt){
     if (debug) cout << "shouldnt be here if ttbar : " << endl;
->>>>>>> f8dcfbeca (corrected positive negative cases in the boosting of angular variables)
    // const auto& genparticles = event.genparticles;
     ZprimeCandidate* BestZprimeCandidate = event.get(h_BestZprimeCandidateChi2);
     float Mreco = BestZprimeCandidate->Zprime_v4().M();
@@ -2457,25 +2449,6 @@ if (is_zprime_reconstructed_chi2 ){
                           BestZprimeCandidate->top_leptonic_v4().energy());
     }
     TLorentzVector ttbar = PosTop + NegTop;
-<<<<<<< HEAD
-    TLorentzVector lep_top_lep_CoM = lep_top_lep;
-    // Boost into ttbar CoM-Frame <<<-------//
-    lep_top_lep_CoM.Boost(-1.*ttbar.BoostVector());
-    TLorentzVector had_top_b_CoM = had_top_b;
-    had_top_b_CoM.Boost(-ttbar.BoostVector());
-    TLorentzVector PosTop_CoM = PosTop;
-    PosTop_CoM.Boost(-ttbar.BoostVector());
-    TLorentzVector NegTop_CoM = NegTop;
-    NegTop_CoM.Boost(-ttbar.BoostVector());
-
-
-    ///old
-    // lep_top_lep.Boost(-ttbar.BoostVector());
-    // had_top_b.Boost(-ttbar.BoostVector());
-    // PosTop.Boost(-ttbar.BoostVector());
-    // NegTop.Boost(-ttbar.BoostVector());
-
-=======
 
     // Boost into ttbar CoM-Frame <<<--------------------------------------------------------------------------//
     TLorentzVector lep_top_lep_CoM = lep_top_lep;
@@ -2486,17 +2459,12 @@ if (is_zprime_reconstructed_chi2 ){
     PosTop_CoM.Boost(-ttbar.BoostVector());
     TLorentzVector NegTop_CoM = NegTop;
     NegTop_CoM.Boost(-ttbar.BoostVector());
->>>>>>> a13e06191 (added Bernreuther basis and required rotation to angular variable definition)
 
     // Beam unit vector in COM frame
     TVector3 beam_axis(0,0,1);
 
-<<<<<<< HEAD
 
    // Calculating top scattering angle for PosTop only
-=======
-    // Calculating top scattering angle for PosTop only
->>>>>>> a13e06191 (added Bernreuther basis and required rotation to angular variable definition)
     double cos_PosTop_beam = PosTop_CoM.Vect().Unit().Dot(beam_axis);
     double sin_PosTop_beam = sqrt(1 - cos_PosTop_beam*cos_PosTop_beam);
 
@@ -2537,7 +2505,6 @@ if (is_zprime_reconstructed_chi2 ){
     PosTop_Hel.RotateY(-1.*PosTop_CoM.Theta());
     TLorentzVector NegTop_Hel = NegTop_H;
     NegTop_Hel.RotateY(-1.*PosTop_CoM.Theta());
-<<<<<<< HEAD
 
     TVector3 kbase_Hel = kbase_H;
     kbase_Hel.RotateY(-1.*PosTop_CoM.Theta());
@@ -2546,64 +2513,6 @@ if (is_zprime_reconstructed_chi2 ){
     TVector3 nbase_Hel = nbase_H;
     nbase_Hel.RotateY(-1.*PosTop_CoM.Theta());
 
-    // Rotation to align with Bernreuther basis <<<---------//
-    TLorentzVector lep_top_lep_BoseSymm = lep_top_lep_Hel;
-    TLorentzVector had_top_b_BoseSymm = had_top_b_Hel;
-    TLorentzVector PosTop_BoseSymm = PosTop_Hel;
-    TLorentzVector NegTop_BoseSymm = NegTop_Hel;
-
-    TVector3 kbase_BoseSymm = kbase_Hel;
-    TVector3 rbase_BoseSymm = rbase_Hel;
-    TVector3 nbase_BoseSymm = nbase_Hel;
-
-    // if(sign_cos_PosTop_beam > 0.){
-    //   lep_top_lep_BoseSymm.RotateZ(-1.*TMath::Pi()/2.);
-    //   had_top_b_BoseSymm.RotateZ(-1.*TMath::Pi()/2.);
-    //   PosTop_BoseSymm.RotateZ(-1.*TMath::Pi()/2.);
-    //   NegTop_BoseSymm.RotateZ(-1.*TMath::Pi()/2.);
-
-    //   kbase_BoseSymm.RotateZ(-1.*TMath::Pi()/2.);
-    //   rbase_BoseSymm.RotateZ(-1.*TMath::Pi()/2.);
-    //   nbase_BoseSymm.RotateZ(-1.*TMath::Pi()/2.);
-    // }
-    // else{
-    //   lep_top_lep_BoseSymm.RotateZ(TMath::Pi()/2.);
-    //   had_top_b_BoseSymm.RotateZ(TMath::Pi()/2.);
-    //   PosTop_BoseSymm.RotateZ(TMath::Pi()/2.);
-    //   NegTop_BoseSymm.RotateZ(TMath::Pi()/2.);
-
-    //   kbase_BoseSymm.RotateZ(TMath::Pi()/2.);
-    //   rbase_BoseSymm.RotateZ(TMath::Pi()/2.);
-    //   nbase_BoseSymm.RotateZ(TMath::Pi()/2.);
-    // }
-     // Boosting into ttbar rest-frame <<<-------------------------------------------------------//
-    TLorentzVector lep_top_lep_Rest = lep_top_lep_BoseSymm;
-    TLorentzVector had_top_b_Rest = had_top_b_BoseSymm;
-    TLorentzVector PosTop_Rest = PosTop_BoseSymm;
-    TLorentzVector NegTop_Rest = NegTop_BoseSymm;
-=======
->>>>>>> a13e06191 (added Bernreuther basis and required rotation to angular variable definition)
-
-    TVector3 kbase_Hel = kbase_H;
-    kbase_Hel.RotateY(-1.*PosTop_CoM.Theta());
-    TVector3 rbase_Hel = rbase_H;
-    rbase_Hel.RotateY(-1.*PosTop_CoM.Theta());
-    TVector3 nbase_Hel = nbase_H;
-    nbase_Hel.RotateY(-1.*PosTop_CoM.Theta());
-
-<<<<<<< HEAD
-
-
-
-  //old code
-    if(BestZprimeCandidate->lepton().charge() > 0){
-      lep_top_lep_Rest.Boost(-1.*PosTop_BoseSymm.BoostVector()); // lepton has Positive Top mother
-      had_top_b_Rest.Boost(-1.*NegTop_BoseSymm.BoostVector());   // b-jet has Negative Top mother
-    }
-    else if (BestZprimeCandidate->lepton().charge() < 0){
-      lep_top_lep_Rest.Boost(-1.*NegTop_BoseSymm.BoostVector()); // lepton has Negative Top mother
-      had_top_b_Rest.Boost(-1.*PosTop_BoseSymm.BoostVector());   // b-jet has Positive Top mother
-=======
     // Rotation to align with Bernreuther basis <<<---------//
     TLorentzVector lep_top_lep_BoseSymm = lep_top_lep_Hel;
     TLorentzVector had_top_b_BoseSymm = had_top_b_Hel;
@@ -2633,7 +2542,6 @@ if (is_zprime_reconstructed_chi2 ){
       kbase_BoseSymm.RotateZ(TMath::Pi()/2.);
       rbase_BoseSymm.RotateZ(TMath::Pi()/2.);
       nbase_BoseSymm.RotateZ(TMath::Pi()/2.);
->>>>>>> a13e06191 (added Bernreuther basis and required rotation to angular variable definition)
     }
 
     // Boosting into ttbar rest-frame <<<-------------------------------------------------------//
