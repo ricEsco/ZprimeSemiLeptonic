@@ -123,13 +123,18 @@ static inline double clamp_xi(double x){
 }
 //template method end
 
+// Static member definitions - shared across all instances
+std::map<float, std::unique_ptr<TH1D>> ZprimeSemiLeptonicSystematicsHists::noac_weights_map;
+bool ZprimeSemiLeptonicSystematicsHists::noac_weights_initialized = false;
+
 ZprimeSemiLeptonicSystematicsHists::ZprimeSemiLeptonicSystematicsHists(uhh2::Context& ctx, const std::string& dirname):
 Hists(ctx, dirname) {
 
   is_mc = ctx.get("dataset_type") == "MC";
   is_Muon = ctx.get("channel") == "muon";
-  is_tt = ctx.get("dataset_version").find("TTTo") == 0;
-
+  std::string dataset_version = ctx.get("dataset_version");
+  is_tt = (dataset_version.find("TTTo") == 0) || (dataset_version.find("EFT") != std::string::npos);
+  
   isMuon = false; isElectron = false;
   if(ctx.get("channel") == "muon") isMuon = true;
   if(ctx.get("channel") == "electron") isElectron = true;
@@ -242,36 +247,44 @@ Hists(ctx, dirname) {
     f_values = {-100.0f, -12.0f, -8.0f, -4.0f, -2.0f, -1.0f, -0.8f, -0.6f, -0.4f, -0.2f, 0.0f, 0.2f, 0.4f, 0.6f, 0.8f, 1.0f, 2.0f, 4.0f, 8.0f, 12.0f, 100.0f};
 
     if(use_noac_evtweights_ && !noac_gen_file_.empty() && !noac_gen_hist_.empty()){
-    // Glob inputs to get the generator histogram files
-    glob_t gl; memset(&gl, 0, sizeof(gl));
-      int r = glob(noac_gen_file_.c_str(), 0, nullptr, &gl);
-      // STEP 1: Sum all of the DeltaY_xi_gen histograms from ttree which was carried from preselection
-      // Reads gen-level tanh(delta|y|) histograms from all TTbar files
-      // Sums them into a single sumH histogram
-      TH1D *sumH = nullptr;
-      if(r == 0){
-        // loop over the generator histogram files
-        for(size_t i=0;i<gl.gl_pathc;++i){
-          const char *fp = gl.gl_pathv[i];
-          std::unique_ptr<TFile> f(TFile::Open(fp));
-          if(!f || f->IsZombie()) continue;
-          TH1 *h = dynamic_cast<TH1*>(f->Get(noac_gen_hist_.c_str()));
-          if(!h) continue;
-          std::unique_ptr<TH1D> hD(static_cast<TH1D*>(h->Clone("_tmpH")));
-          hD->SetDirectory(0);
-          if(!sumH){ sumH = static_cast<TH1D*>(hD->Clone("Hgen_sum_sys")); sumH->SetDirectory(0); }
-          else { sumH->Add(hD.get()); }
+      // Only initialize once - weights are shared across all instances
+      if(!noac_weights_initialized){
+        // Glob inputs to get the generator histogram files
+        glob_t gl; memset(&gl, 0, sizeof(gl));
+        int r = glob(noac_gen_file_.c_str(), 0, nullptr, &gl);
+        // STEP 1: Sum all of the DeltaY_xi_gen histograms from ttree which was carried from preselection
+        // Reads gen-level tanh(delta|y|) histograms from all TTbar files
+        // Sums them into a single sumH histogram
+        TH1D *sumH = nullptr;
+        if(r == 0){
+          // loop over the generator histogram files
+          for(size_t i=0;i<gl.gl_pathc;++i){
+            const char *fp = gl.gl_pathv[i];
+            std::unique_ptr<TFile> f(TFile::Open(fp));
+            if(!f || f->IsZombie()) continue;
+            TH1 *h = dynamic_cast<TH1*>(f->Get(noac_gen_hist_.c_str()));
+            if(!h) continue;
+            std::unique_ptr<TH1D> hD(static_cast<TH1D*>(h->Clone("_tmpH")));
+            hD->SetDirectory(0);
+            if(!sumH){ sumH = static_cast<TH1D*>(hD->Clone("Hgen_sum_sys")); sumH->SetDirectory(0); }
+            else { sumH->Add(hD.get()); }
+          }
+          globfree(&gl);
         }
-        globfree(&gl);
-      }
-      if(sumH){
-        // build the NoAC weights from the generator histogram
-        noac_weights_map.clear();
-        for(const float fv : f_values){
-          try{ noac_weights_map[fv] = build_noac_weights_from_gen(*sumH, fv); } catch(...){ }
+        if(sumH){
+          // build the NoAC weights from the generator histogram
+          noac_weights_map.clear();
+          for(const float fv : f_values){
+            try{ 
+              noac_weights_map[fv] = build_noac_weights_from_gen(*sumH, fv);
+            } catch(...){ 
+              // Skip failed weights
+            }
+          }
+          noac_weights_initialized = true;  // Mark as initialized so other instances skip
+          delete sumH;
         }
-        delete sumH;
-      }
+      }  // End of initialization block
     }
   }
   //template method end

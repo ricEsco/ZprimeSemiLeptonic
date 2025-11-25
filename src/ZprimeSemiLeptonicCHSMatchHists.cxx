@@ -111,7 +111,7 @@ void ZprimeSemiLeptonicCHSMatchHists::init(){
   ratio_chs_eta                 = book<TH1F>("ratio_chs_eta", "(CHS #eta-Puppi #eta)/CHS #eta", 100, -2.5, 2.5);
   ratio_puppi_eta               = book<TH1F>("ratio_puppi_eta", "(CHS #eta-Puppi #eta)/Puppi #eta", 100, -2.5, 2.5);
   ratio_chs_puppi_pt            = book<TH1F>("ratio_chs_puppi_pt", "CHS p_{T}/Puppi p_{T}", 800, -100, 100.);
-  ratio_chs_puppi_eta           = book<TH1F>("ratio_puppi_eta", "CHS #eta/Puppi #eta", 100, -2.5, 2.5);
+  ratio_chs_puppi_eta           = book<TH1F>("ratio_chs_puppi_eta", "CHS #eta/Puppi #eta", 100, -2.5, 2.5);
   Puppi_bjet_pt                 = book<TH1F>("Puppi_bjet_pt", "Puppi bjet p_{T}^{jets} [GeV]", 150, 0, 1500);
   CHS_bjet_pt                   = book<TH1F>("CHS_bjet_pt", "CHS bjet p_{T}^{jets} [GeV]", 150, 0, 1500);
   diff_bjet_pt                  = book<TH1F>("diff_bjet_pt", "p_{T}(CHS jet- Puppi jet) GeV",  40, -200, 200.);

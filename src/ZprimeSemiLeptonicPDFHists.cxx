@@ -149,7 +149,8 @@ Hists(ctx, dirname){
  
   is_mc = ctx.get("dataset_type") == "MC";
   is_dy = ctx.get("dataset_version").find("DYJets") == 0;
-  is_tt = ctx.get("dataset_version").find("TTTo") == 0;
+  std::string dataset_version = ctx.get("dataset_version");
+  is_tt = (dataset_version.find("TTTo") == 0) || (dataset_version.find("EFT") != std::string::npos);
   is_wjets = ctx.get("dataset_version").find("WJets") == 0;
   is_qcd_HTbinned = ctx.get("dataset_version").find("QCD_HT") == 0;
   is_alps = ctx.get("dataset_version").find("ALP") == 0;

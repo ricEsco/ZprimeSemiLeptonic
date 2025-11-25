@@ -7,6 +7,9 @@
 #include <UHH2/common/include/TTbarGen.h>
 #include <UHH2/common/include/TTbarReconstruction.h>
 #include <UHH2/common/include/ReconstructionHypothesisDiscriminators.h>
+#include <map>
+#include <string>
+#include <vector>
 
 #include <TLorentzVector.h>
 
@@ -37,7 +40,7 @@ protected:
   TH1F *N_HOTVRTaggedjets, *pt_HOTVRTaggedjet, *pt_HOTVRTaggedjet1, *pt_HOTVRTaggedjet2, *pt_HOTVRTaggedjet3, *eta_HOTVRTaggedjet, *eta_HOTVRTaggedjet1, *eta_HOTVRTaggedjet2, *eta_HOTVRTaggedjet3, *phi_HOTVRTaggedjet, *phi_HOTVRTaggedjet1, *phi_HOTVRTaggedjet2, *phi_HOTVRTaggedjet3, *m_HOTVRTaggedjet, *m_HOTVRTaggedjet1, *m_HOTVRTaggedjet2, *m_HOTVRTaggedjet3, *N_subjets_HOTVRTaggedjet, *N_subjets_HOTVRTaggedjet1, *N_subjets_HOTVRTaggedjet2, *N_subjets_HOTVRTaggedjet3, *N_daughters_HOTVRTaggedjet, *N_daughters_HOTVRTaggedjet1, *N_daughters_HOTVRTaggedjet2, *N_daughters_HOTVRTaggedjet3, *dRmin_AK8_HOTVRTaggedjet, *dRmin_AK8_HOTVRTaggedjet1, *dRmin_AK8_HOTVRTaggedjet2, *dRmin_AK8_HOTVRTaggedjet3, *dRmin_mu_HOTVRTaggedjet, *dRmin_mu_HOTVRTaggedjet1, *dRmin_mu_HOTVRTaggedjet2, *dRmin_mu_HOTVRTaggedjet3, *tau1_HOTVRTaggedjet, *tau1_HOTVRTaggedjet1, *tau1_HOTVRTaggedjet2, *tau1_HOTVRTaggedjet3, *tau2_HOTVRTaggedjet, *tau2_HOTVRTaggedjet1, *tau2_HOTVRTaggedjet2, *tau2_HOTVRTaggedjet3, *tau3_HOTVRTaggedjet, *tau3_HOTVRTaggedjet1, *tau3_HOTVRTaggedjet2, *tau3_HOTVRTaggedjet3, *tau21_HOTVRTaggedjet, *tau21_HOTVRTaggedjet1, *tau21_HOTVRTaggedjet2, *tau21_HOTVRTaggedjet3, *tau32_HOTVRTaggedjet, *tau32_HOTVRTaggedjet1, *tau32_HOTVRTaggedjet2, *tau32_HOTVRTaggedjet3;
   TH1F *N_AK8PuppiTaggedjets, *pt_AK8PuppiTaggedjet, *pt_AK8PuppiTaggedjet1, *pt_AK8PuppiTaggedjet2, *pt_AK8PuppiTaggedjet3, *eta_AK8PuppiTaggedjet, *eta_AK8PuppiTaggedjet1, *eta_AK8PuppiTaggedjet2, *eta_AK8PuppiTaggedjet3, *phi_AK8PuppiTaggedjet, *phi_AK8PuppiTaggedjet1, *phi_AK8PuppiTaggedjet2, *phi_AK8PuppiTaggedjet3, *mSD_AK8PuppiTaggedjet, *mSD_AK8PuppiTaggedjet1, *mSD_AK8PuppiTaggedjet2, *mSD_AK8PuppiTaggedjet3, *N_subjets_AK8PuppiTaggedjet, *N_subjets_AK8PuppiTaggedjet1, *N_subjets_AK8PuppiTaggedjet2, *N_subjets_AK8PuppiTaggedjet3, *N_daughters_AK8PuppiTaggedjet, *N_daughters_AK8PuppiTaggedjet1, *N_daughters_AK8PuppiTaggedjet2, *N_daughters_AK8PuppiTaggedjet3, *dRmin_HOTVR_AK8PuppiTaggedjet, *dRmin_HOTVR_AK8PuppiTaggedjet1, *dRmin_HOTVR_AK8PuppiTaggedjet2, *dRmin_HOTVR_AK8PuppiTaggedjet3, *dRmin_mu_AK8PuppiTaggedjet, *dRmin_mu_AK8PuppiTaggedjet1, *dRmin_mu_AK8PuppiTaggedjet2, *dRmin_mu_AK8PuppiTaggedjet3, *tau1_AK8PuppiTaggedjet, *tau1_AK8PuppiTaggedjet1, *tau1_AK8PuppiTaggedjet2, *tau1_AK8PuppiTaggedjet3, *tau2_AK8PuppiTaggedjet, *tau2_AK8PuppiTaggedjet1, *tau2_AK8PuppiTaggedjet2, *tau2_AK8PuppiTaggedjet3, *tau3_AK8PuppiTaggedjet, *tau3_AK8PuppiTaggedjet1, *tau3_AK8PuppiTaggedjet2, *tau3_AK8PuppiTaggedjet3, *tau21_AK8PuppiTaggedjet, *tau21_AK8PuppiTaggedjet1, *tau21_AK8PuppiTaggedjet2, *tau21_AK8PuppiTaggedjet3, *tau32_AK8PuppiTaggedjet, *tau32_AK8PuppiTaggedjet1, *tau32_AK8PuppiTaggedjet2, *tau32_AK8PuppiTaggedjet3;
   TH1F *NPV, *MET, *MET_rebin, *MET_rebin2, *MET_rebin3, *ST, *ST_rebin, *ST_rebin2, *ST_rebin3, *STjets, *STjets_rebin, *STjets_rebin2, *STjets_rebin3, *STlep, *STlep_rebin, *STlep_rebin2, *STlep_rebin3, *DeltaY_notMatched, *DeltaY_reco, *DeltaY_reco_best_plot, *DeltaY_gen_best_plot, *DeltaY_reco_0_500,*DeltaY_reco_500_750, *DeltaY_reco_750_1000,*DeltaY_reco_1000_1500, *DeltaY_reco_1500Inf;
-  TH1F *DeltaY_gen, *DeltaY_xi_reco, *DeltaY_xi_reco_20, *DeltaY_xi_reco_10, *DeltaY_xi_reco_6, *DeltaY_xi_gen, *Mtt_gen, *DeltaY_reco_unw, *DeltaY_xi_reco_unw;
+  TH1F *DeltaY_gen, *DeltaY_xi_reco, *DeltaY_xi_reco_20, *DeltaY_xi_reco_10, *DeltaY_xi_reco_6, *DeltaY_xi_reco_12, *DeltaY_xi_reco_18, *DeltaY_xi_reco_24, *DeltaY_xi_reco_30, *DeltaY_xi_reco_36, *DeltaY_xi_gen, *Mtt_gen, *DeltaY_reco_unw, *DeltaY_xi_reco_unw;
   TH1F *toplep_pt, *toplep_eta, *toplep_phi, *toplep_m, *tophad_pt, *tophad_eta, *tophad_phi, *tophad_m, *ditop_mass, *ditop_absDeltaPhi, *ditop_deltaEta, *ditop_absDeltaEta, *ditop_deltaR, *M_Zprime, *M_Zprime_rebin, *M_Zprime_rebin2, *M_Zprime_rebin3, *M_Zprime_rebin4, *M_Zprime_rebin5, *M_Zprime_rebin6, *M_Zprime_rebin7, *M_Zprime_rebin8, *chi2_Zprime, *chi2_Zprime_rebin, *chi2_Zprime_rebin2, *M_tophad, *M_toplep, *M_Zprime_ak4, *M_Zprime_ak4_rebin, *M_Zprime_ak4_rebin2, *M_Zprime_ak4_rebin3, *M_Zprime_ak4_rebin4, *M_Zprime_ak4_rebin5, *M_Zprime_ak4_rebin6, *M_Zprime_ak4_rebin7, *chi2_Zprime_ak4, *chi2_Zprime_ak4_rebin, *chi2_Zprime_ak4_rebin2, *M_tophad_ak4, *M_toplep_ak4, *M_Zprime_ttag, *M_Zprime_ttag_rebin, *M_Zprime_ttag_rebin2, *M_Zprime_ttag_rebin3, *M_Zprime_ttag_rebin4, *M_Zprime_ttag_rebin5, *M_Zprime_ttag_rebin6, *M_Zprime_ttag_rebin7, *chi2_Zprime_ttag, *chi2_Zprime_ttag_rebin, *chi2_Zprime_ttag_rebin2, *M_tophad_ttag, *M_tophad_ttag_M, *M_tophad_ttag_v4, *M_toplep_ttag, *M_tophad_dr_ak4, *M_toplep_dr_ak4, *M_tophad_dr_ttag, *M_toplep_dr_ttag, *dr_discr_Zprime, *M_Zprime_dr, *M_Zprime_dr_rebin, *M_Zprime_dr_rebin2, *M_Zprime_dr_rebin3, *S11, *S12, *S13, *S22, *S23, *S33, *sum_event_weights;
   TH1F *DeltaY_reco_high, *DeltaY_reco_low, *DeltaY_reco_s1, *DeltaY_reco_s2,*DeltaY_reco_d1, *DeltaY_reco_d2, *Sigma_phi_1, *Sigma_phi_2, *Sigma_phi_high, *Sigma_phi_low, *Sigma_phi, *Delta_phi,*Delta_phi_1, *Delta_phi_2, *Delta_phi_high, *Delta_phi_low;
   TH1F *DeltaY_reco_high_match, *DeltaY_reco_low_match, *DeltaY_reco_s1_match, *DeltaY_reco_s2_match, *DeltaY_reco_d1_match, *DeltaY_reco_d2_match, *Sigma_phi_1_match, *Sigma_phi_2_match, *Sigma_phi_match, *Sigma_phi_high_match, *Sigma_phi_low_match, *Delta_phi_1_match, *Delta_phi_2_match, *Delta_phi_match, *Delta_phi_high_match, *Delta_phi_low_match;
@@ -70,7 +73,7 @@ protected:
   TH1F *h_N_Ak4; //*h_N_Ak4_SR, *h_N_Ak4_CR1, *h_N_Ak4_CR2;
  // TH1F *h_M_tt_SR, *h_chi2_SR, *h_M_tt_CR1, *h_chi2_CR1, *h_M_tt_CR2, *h_chi2_CR2; 
 
-  TH2F *N_Jets_vs_HT, *mttbar_vs_costhetastar, *costhetastar_vs_mttbar, *DeltaY_xi_genVsReco, *DeltaY_xi_genVsReco_20, *DeltaY_xi_genVsReco_10, *DeltaY_xi_genVsReco_6, *response_matrix;
+ TH2F *N_Jets_vs_HT, *mttbar_vs_costhetastar, *costhetastar_vs_mttbar, *response_matrix;
 
   uhh2::Event::Handle< std::vector<TopJet> > h_AK8TopTags;
   uhh2::Event::Handle< std::vector<Jet> > h_CHSjets_matched;
@@ -94,44 +97,26 @@ protected:
   bool gen_match;
 
   //template method
-  // --- NoAC multi-f histogram variants (filled only if weights available) ---
-  TH1F *DeltaY_reco_noacm1, *DeltaY_reco_noac0, *DeltaY_reco_noac1;
-  TH1F *DeltaY_reco_noacm08, *DeltaY_reco_noacm06, *DeltaY_reco_noacm04, *DeltaY_reco_noacm02,
-       *DeltaY_reco_noac02,  *DeltaY_reco_noac04,  *DeltaY_reco_noac06,  *DeltaY_reco_noac08;
-  TH1F *DeltaY_xi_reco_noacm1, *DeltaY_xi_reco_noac0, *DeltaY_xi_reco_noac1;
-  TH1F *DeltaY_xi_reco_noacm08, *DeltaY_xi_reco_noacm06, *DeltaY_xi_reco_noacm04, *DeltaY_xi_reco_noacm02,
-       *DeltaY_xi_reco_noac02,  *DeltaY_xi_reco_noac04,  *DeltaY_xi_reco_noac06,  *DeltaY_xi_reco_noac08;
-  TH1F *DeltaY_xi_reco_20_noacm1, *DeltaY_xi_reco_20_noac0, *DeltaY_xi_reco_20_noac1;
-  TH1F *DeltaY_xi_reco_20_noacm08, *DeltaY_xi_reco_20_noacm06, *DeltaY_xi_reco_20_noacm04, *DeltaY_xi_reco_20_noacm02,
-       *DeltaY_xi_reco_20_noac02,  *DeltaY_xi_reco_20_noac04,  *DeltaY_xi_reco_20_noac06,  *DeltaY_xi_reco_20_noac08;
-  TH1F *DeltaY_xi_reco_10_noacm1, *DeltaY_xi_reco_10_noac0, *DeltaY_xi_reco_10_noac1;
-  TH1F *DeltaY_xi_reco_10_noacm08, *DeltaY_xi_reco_10_noacm06, *DeltaY_xi_reco_10_noacm04, *DeltaY_xi_reco_10_noacm02,
-       *DeltaY_xi_reco_10_noac02,  *DeltaY_xi_reco_10_noac04,  *DeltaY_xi_reco_10_noac06,  *DeltaY_xi_reco_10_noac08;
-  TH1F *DeltaY_xi_reco_6_noacm1,  *DeltaY_xi_reco_6_noac0,  *DeltaY_xi_reco_6_noac1;
-  TH1F *DeltaY_xi_reco_6_noacm08,  *DeltaY_xi_reco_6_noacm06,  *DeltaY_xi_reco_6_noacm04,  *DeltaY_xi_reco_6_noacm02,
-       *DeltaY_xi_reco_6_noac02,   *DeltaY_xi_reco_6_noac04,   *DeltaY_xi_reco_6_noac06,   *DeltaY_xi_reco_6_noac08;
-  // Persisted NoAC weight shapes
-  TH1F *NoAC_W_cfg, *NoAC_W_m1, *NoAC_W_0, *NoAC_W_1;
-  TH1F *NoAC_W_m08, *NoAC_W_m06, *NoAC_W_m04, *NoAC_W_m02,
-       *NoAC_W_02,  *NoAC_W_04,  *NoAC_W_06,  *NoAC_W_08;
+  struct NoACHistBundle {
+     TH1F *deltaY = nullptr;
+     std::map<int, TH1F*> xi_histograms; // key: number of bins
+   };
+   // configuration for template method variations
+   std::vector<std::pair<std::string, double>> noac_points_;  // suffix, f value
+   std::vector<int> xi_template_binnings_;                    // e.g. 50, 36, 20, 18, 12, 10, 6
+   std::map<std::string, NoACHistBundle> noac_histograms_;    // suffix -> booked histograms
+   // Persisted NoAC weight shapes
+   std::map<std::string, TH1F*> noac_weight_shapes_;          // suffix -> TH1F for monitoring
+   TH1F *NoAC_W_cfg = nullptr;
   // --- NoAC from GEN preselection hist ---
   bool use_noac_evtweights_ = false;
   std::string noac_gen_file_;
   std::string noac_gen_hist_;
   double noac_fraction_ = 0.0;
   std::unique_ptr<TH1D> noac_weights_;  // W(xi; f)
-  // Multi-f weights
-  std::unique_ptr<TH1D> noac_weights_m1_;
-  std::unique_ptr<TH1D> noac_weights_0_;
-  std::unique_ptr<TH1D> noac_weights_1_;
-  std::unique_ptr<TH1D> noac_weights_m08_;
-  std::unique_ptr<TH1D> noac_weights_m06_;
-  std::unique_ptr<TH1D> noac_weights_m04_;
-  std::unique_ptr<TH1D> noac_weights_m02_;
-  std::unique_ptr<TH1D> noac_weights_02_;
-  std::unique_ptr<TH1D> noac_weights_04_;
-  std::unique_ptr<TH1D> noac_weights_06_;
-  std::unique_ptr<TH1D> noac_weights_08_;
+  // Multi-f weights keyed by suffix
+  std::map<std::string, std::unique_ptr<TH1D>> noac_weight_map_;
+  // suffix -> W(xi; f)
   //template method end
 
   //uhh2::Event::Handle<float> h_chi2;

@@ -231,7 +231,8 @@ Hists(ctx, dirname) {
   isMuon = false; isElectron = false;
   if(ctx.get("channel") == "muon") isMuon = true;
   if(ctx.get("channel") == "electron") isElectron = true;
-  is_tt = ctx.get("dataset_version").find("TTTo") == 0;
+  std::string dataset_version = ctx.get("dataset_version");
+  is_tt = (dataset_version.find("TTTo") == 0) || (dataset_version.find("EFT") != std::string::npos);
   gen_match=true;
   if(isdeepAK8){
     h_AK8TopTags = ctx.get_handle<std::vector<TopJet>>("DeepAK8TopTags");
@@ -247,6 +248,12 @@ Hists(ctx, dirname) {
   h_xi_gen     = ctx.get_handle<float>("xi_gen");
   h_DeltaY_gen = ctx.get_handle<float>("DeltaY_gen");
   h_mtt_gen    = ctx.get_handle<float>("mtt_gen");
+
+  // if(is_tt && dataset_version.find("EFT") == std::string::npos) {
+  //   // Only try to get handle for nonEFT TTbar samples
+  //   // Note: This handle may not exist in all samples.
+  //   h_ttbargen = ctx.get_handle<TTbarGen>("ttbargen");
+  // }
   //  h_chi2 = ctx.get_handle<float>("chi2");
 
   // ------------------------------------------------------------

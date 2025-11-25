@@ -178,9 +178,52 @@ protected:
   TH1F *DeltaY_toppt_a_down;
   TH1F *DeltaY_toppt_b_up;
   TH1F *DeltaY_toppt_b_down;
-  // --- Template method: xi = tanh(DeltaY), 6 bins ---
+  // --- Template method: xi = tanh(DeltaY), multiple binning schemes ---
   TH1F *DeltaY_xi_reco_6;
-  // lepton/trigger/pileup/prefiring
+  TH1F *DeltaY_xi_reco_12;
+  TH1F *DeltaY_xi_reco_18;
+  TH1F *DeltaY_xi_reco_24;
+  TH1F *DeltaY_xi_reco_30;
+  TH1F *DeltaY_xi_reco_36;
+  TH1F *DeltaY_xi_reco_50;
+  // NoAC systematics (f=+1 is Down, f=-1 is Up) - all binning schemes
+  TH1F *DeltaY_xi_reco_6_NoAC_up;
+  TH1F *DeltaY_xi_reco_6_NoAC_down;
+  TH1F *DeltaY_xi_reco_12_NoAC_up;
+  TH1F *DeltaY_xi_reco_12_NoAC_down;
+  TH1F *DeltaY_xi_reco_18_NoAC_up;
+  TH1F *DeltaY_xi_reco_18_NoAC_down;
+  TH1F *DeltaY_xi_reco_24_NoAC_up;
+  TH1F *DeltaY_xi_reco_24_NoAC_down;
+  TH1F *DeltaY_xi_reco_30_NoAC_up;
+  TH1F *DeltaY_xi_reco_30_NoAC_down;
+  TH1F *DeltaY_xi_reco_36_NoAC_up;
+  TH1F *DeltaY_xi_reco_36_NoAC_down;
+  TH1F *DeltaY_xi_reco_50_NoAC_up;
+  TH1F *DeltaY_xi_reco_50_NoAC_down;
+  // NoAC systematics for f=±2, ±8, ±12 - all binning schemes
+  TH1F *DeltaY_xi_reco_6_NoAC_up_f2;   TH1F *DeltaY_xi_reco_6_NoAC_down_f2;
+  TH1F *DeltaY_xi_reco_6_NoAC_up_f8;   TH1F *DeltaY_xi_reco_6_NoAC_down_f8;
+  TH1F *DeltaY_xi_reco_6_NoAC_up_f12;  TH1F *DeltaY_xi_reco_6_NoAC_down_f12;
+  TH1F *DeltaY_xi_reco_12_NoAC_up_f2;  TH1F *DeltaY_xi_reco_12_NoAC_down_f2;
+  TH1F *DeltaY_xi_reco_12_NoAC_up_f8;  TH1F *DeltaY_xi_reco_12_NoAC_down_f8;
+  TH1F *DeltaY_xi_reco_12_NoAC_up_f12; TH1F *DeltaY_xi_reco_12_NoAC_down_f12;
+  TH1F *DeltaY_xi_reco_18_NoAC_up_f2;  TH1F *DeltaY_xi_reco_18_NoAC_down_f2;
+  TH1F *DeltaY_xi_reco_18_NoAC_up_f8;  TH1F *DeltaY_xi_reco_18_NoAC_down_f8;
+  TH1F *DeltaY_xi_reco_18_NoAC_up_f12; TH1F *DeltaY_xi_reco_18_NoAC_down_f12;
+  TH1F *DeltaY_xi_reco_24_NoAC_up_f2;  TH1F *DeltaY_xi_reco_24_NoAC_down_f2;
+  TH1F *DeltaY_xi_reco_24_NoAC_up_f8;  TH1F *DeltaY_xi_reco_24_NoAC_down_f8;
+  TH1F *DeltaY_xi_reco_24_NoAC_up_f12; TH1F *DeltaY_xi_reco_24_NoAC_down_f12;
+  TH1F *DeltaY_xi_reco_30_NoAC_up_f2;  TH1F *DeltaY_xi_reco_30_NoAC_down_f2;
+  TH1F *DeltaY_xi_reco_30_NoAC_up_f8;  TH1F *DeltaY_xi_reco_30_NoAC_down_f8;
+  TH1F *DeltaY_xi_reco_30_NoAC_up_f12; TH1F *DeltaY_xi_reco_30_NoAC_down_f12;
+  TH1F *DeltaY_xi_reco_36_NoAC_up_f2;  TH1F *DeltaY_xi_reco_36_NoAC_down_f2;
+  TH1F *DeltaY_xi_reco_36_NoAC_up_f8;  TH1F *DeltaY_xi_reco_36_NoAC_down_f8;
+  TH1F *DeltaY_xi_reco_36_NoAC_up_f12; TH1F *DeltaY_xi_reco_36_NoAC_down_f12;
+  TH1F *DeltaY_xi_reco_50_NoAC_up_f2;  TH1F *DeltaY_xi_reco_50_NoAC_down_f2;
+  TH1F *DeltaY_xi_reco_50_NoAC_up_f8;  TH1F *DeltaY_xi_reco_50_NoAC_down_f8;
+  TH1F *DeltaY_xi_reco_50_NoAC_up_f12; TH1F *DeltaY_xi_reco_50_NoAC_down_f12;
+  // lepton/trigger/pileup/prefiring - 6 bins
   TH1F *DeltaY_xi_reco_6_ele_reco_up;      TH1F *DeltaY_xi_reco_6_ele_reco_down;
   TH1F *DeltaY_xi_reco_6_ele_id_up;        TH1F *DeltaY_xi_reco_6_ele_id_down;
   TH1F *DeltaY_xi_reco_6_ele_trigger_up;   TH1F *DeltaY_xi_reco_6_ele_trigger_down;
@@ -193,13 +236,13 @@ protected:
   TH1F *DeltaY_xi_reco_6_mu_trigger_syst_up; TH1F *DeltaY_xi_reco_6_mu_trigger_syst_down;
   TH1F *DeltaY_xi_reco_6_pu_up;            TH1F *DeltaY_xi_reco_6_pu_down;
   TH1F *DeltaY_xi_reco_6_prefiring_up;     TH1F *DeltaY_xi_reco_6_prefiring_down;
-  // scales, isr fsr
+  // scales, isr fsr - 6 bins
   TH1F *DeltaY_xi_reco_6_murmuf_upup;      TH1F *DeltaY_xi_reco_6_murmuf_upnone;
   TH1F *DeltaY_xi_reco_6_murmuf_noneup;    TH1F *DeltaY_xi_reco_6_murmuf_nonedown;
   TH1F *DeltaY_xi_reco_6_murmuf_downnone;  TH1F *DeltaY_xi_reco_6_murmuf_downdown;
   TH1F *DeltaY_xi_reco_6_isr_up;           TH1F *DeltaY_xi_reco_6_isr_down;
   TH1F *DeltaY_xi_reco_6_fsr_up;           TH1F *DeltaY_xi_reco_6_fsr_down;
-  // btag
+  // btag - 6 bins
   TH1F *DeltaY_xi_reco_6_btag_cferr1_up;   TH1F *DeltaY_xi_reco_6_btag_cferr1_down;
   TH1F *DeltaY_xi_reco_6_btag_cferr2_up;   TH1F *DeltaY_xi_reco_6_btag_cferr2_down;
   TH1F *DeltaY_xi_reco_6_btag_hf_up;       TH1F *DeltaY_xi_reco_6_btag_hf_down;
@@ -208,12 +251,152 @@ protected:
   TH1F *DeltaY_xi_reco_6_btag_lf_up;       TH1F *DeltaY_xi_reco_6_btag_lf_down;
   TH1F *DeltaY_xi_reco_6_btag_lfstats1_up; TH1F *DeltaY_xi_reco_6_btag_lfstats1_down;
   TH1F *DeltaY_xi_reco_6_btag_lfstats2_up; TH1F *DeltaY_xi_reco_6_btag_lfstats2_down;
-  // ttag, mistag, toppt
+  // ttag, mistag, toppt - 6 bins
   TH1F *DeltaY_xi_reco_6_ttag_corr_up;     TH1F *DeltaY_xi_reco_6_ttag_corr_down;
   TH1F *DeltaY_xi_reco_6_ttag_uncorr_up;   TH1F *DeltaY_xi_reco_6_ttag_uncorr_down;
   TH1F *DeltaY_xi_reco_6_tmistag_up;       TH1F *DeltaY_xi_reco_6_tmistag_down;
   TH1F *DeltaY_xi_reco_6_toppt_a_up;       TH1F *DeltaY_xi_reco_6_toppt_a_down;
   TH1F *DeltaY_xi_reco_6_toppt_b_up;       TH1F *DeltaY_xi_reco_6_toppt_b_down;
+
+  // lepton/trigger/pileup/prefiring - 12 bins
+  TH1F *DeltaY_xi_reco_12_ele_reco_up;      TH1F *DeltaY_xi_reco_12_ele_reco_down;
+  TH1F *DeltaY_xi_reco_12_ele_id_up;        TH1F *DeltaY_xi_reco_12_ele_id_down;
+  TH1F *DeltaY_xi_reco_12_ele_trigger_up;   TH1F *DeltaY_xi_reco_12_ele_trigger_down;
+  TH1F *DeltaY_xi_reco_12_mu_reco_up;       TH1F *DeltaY_xi_reco_12_mu_reco_down;
+  TH1F *DeltaY_xi_reco_12_mu_iso_stat_up;   TH1F *DeltaY_xi_reco_12_mu_iso_stat_down;
+  TH1F *DeltaY_xi_reco_12_mu_iso_syst_up;   TH1F *DeltaY_xi_reco_12_mu_iso_syst_down;
+  TH1F *DeltaY_xi_reco_12_mu_id_stat_up;    TH1F *DeltaY_xi_reco_12_mu_id_stat_down;
+  TH1F *DeltaY_xi_reco_12_mu_id_syst_up;    TH1F *DeltaY_xi_reco_12_mu_id_syst_down;
+  TH1F *DeltaY_xi_reco_12_mu_trigger_stat_up; TH1F *DeltaY_xi_reco_12_mu_trigger_stat_down;
+  TH1F *DeltaY_xi_reco_12_mu_trigger_syst_up; TH1F *DeltaY_xi_reco_12_mu_trigger_syst_down;
+  TH1F *DeltaY_xi_reco_12_pu_up;            TH1F *DeltaY_xi_reco_12_pu_down;
+  TH1F *DeltaY_xi_reco_12_prefiring_up;     TH1F *DeltaY_xi_reco_12_prefiring_down;
+  // scales, isr fsr - 12 bins
+  TH1F *DeltaY_xi_reco_12_murmuf_upup;      TH1F *DeltaY_xi_reco_12_murmuf_upnone;
+  TH1F *DeltaY_xi_reco_12_murmuf_noneup;    TH1F *DeltaY_xi_reco_12_murmuf_nonedown;
+  TH1F *DeltaY_xi_reco_12_murmuf_downnone;  TH1F *DeltaY_xi_reco_12_murmuf_downdown;
+  TH1F *DeltaY_xi_reco_12_isr_up;           TH1F *DeltaY_xi_reco_12_isr_down;
+  TH1F *DeltaY_xi_reco_12_fsr_up;           TH1F *DeltaY_xi_reco_12_fsr_down;
+  // btag - 12 bins
+  TH1F *DeltaY_xi_reco_12_btag_cferr1_up;   TH1F *DeltaY_xi_reco_12_btag_cferr1_down;
+  TH1F *DeltaY_xi_reco_12_btag_cferr2_up;   TH1F *DeltaY_xi_reco_12_btag_cferr2_down;
+  TH1F *DeltaY_xi_reco_12_btag_hf_up;       TH1F *DeltaY_xi_reco_12_btag_hf_down;
+  TH1F *DeltaY_xi_reco_12_btag_hfstats1_up; TH1F *DeltaY_xi_reco_12_btag_hfstats1_down;
+  TH1F *DeltaY_xi_reco_12_btag_hfstats2_up; TH1F *DeltaY_xi_reco_12_btag_hfstats2_down;
+  TH1F *DeltaY_xi_reco_12_btag_lf_up;       TH1F *DeltaY_xi_reco_12_btag_lf_down;
+  TH1F *DeltaY_xi_reco_12_btag_lfstats1_up; TH1F *DeltaY_xi_reco_12_btag_lfstats1_down;
+  TH1F *DeltaY_xi_reco_12_btag_lfstats2_up; TH1F *DeltaY_xi_reco_12_btag_lfstats2_down;
+  // ttag, mistag, toppt - 12 bins
+  TH1F *DeltaY_xi_reco_12_ttag_corr_up;     TH1F *DeltaY_xi_reco_12_ttag_corr_down;
+  TH1F *DeltaY_xi_reco_12_ttag_uncorr_up;   TH1F *DeltaY_xi_reco_12_ttag_uncorr_down;
+  TH1F *DeltaY_xi_reco_12_tmistag_up;       TH1F *DeltaY_xi_reco_12_tmistag_down;
+  TH1F *DeltaY_xi_reco_12_toppt_a_up;       TH1F *DeltaY_xi_reco_12_toppt_a_down;
+  TH1F *DeltaY_xi_reco_12_toppt_b_up;       TH1F *DeltaY_xi_reco_12_toppt_b_down;
+
+  // lepton/trigger/pileup/prefiring - 50 bins
+  TH1F *DeltaY_xi_reco_50_ele_reco_up;      TH1F *DeltaY_xi_reco_50_ele_reco_down;
+  TH1F *DeltaY_xi_reco_50_ele_id_up;        TH1F *DeltaY_xi_reco_50_ele_id_down;
+  TH1F *DeltaY_xi_reco_50_ele_trigger_up;   TH1F *DeltaY_xi_reco_50_ele_trigger_down;
+  TH1F *DeltaY_xi_reco_50_mu_reco_up;       TH1F *DeltaY_xi_reco_50_mu_reco_down;
+  TH1F *DeltaY_xi_reco_50_mu_iso_stat_up;   TH1F *DeltaY_xi_reco_50_mu_iso_stat_down;
+  TH1F *DeltaY_xi_reco_50_mu_iso_syst_up;   TH1F *DeltaY_xi_reco_50_mu_iso_syst_down;
+  TH1F *DeltaY_xi_reco_50_mu_id_stat_up;    TH1F *DeltaY_xi_reco_50_mu_id_stat_down;
+  TH1F *DeltaY_xi_reco_50_mu_id_syst_up;    TH1F *DeltaY_xi_reco_50_mu_id_syst_down;
+  TH1F *DeltaY_xi_reco_50_mu_trigger_stat_up; TH1F *DeltaY_xi_reco_50_mu_trigger_stat_down;
+  TH1F *DeltaY_xi_reco_50_mu_trigger_syst_up; TH1F *DeltaY_xi_reco_50_mu_trigger_syst_down;
+  TH1F *DeltaY_xi_reco_50_pu_up;            TH1F *DeltaY_xi_reco_50_pu_down;
+  TH1F *DeltaY_xi_reco_50_prefiring_up;     TH1F *DeltaY_xi_reco_50_prefiring_down;
+  // scales, isr fsr - 50 bins
+  TH1F *DeltaY_xi_reco_50_murmuf_upup;      TH1F *DeltaY_xi_reco_50_murmuf_upnone;
+  TH1F *DeltaY_xi_reco_50_murmuf_noneup;    TH1F *DeltaY_xi_reco_50_murmuf_nonedown;
+  TH1F *DeltaY_xi_reco_50_murmuf_downnone;  TH1F *DeltaY_xi_reco_50_murmuf_downdown;
+  TH1F *DeltaY_xi_reco_50_isr_up;           TH1F *DeltaY_xi_reco_50_isr_down;
+  TH1F *DeltaY_xi_reco_50_fsr_up;           TH1F *DeltaY_xi_reco_50_fsr_down;
+  // btag - 50 bins
+  TH1F *DeltaY_xi_reco_50_btag_cferr1_up;   TH1F *DeltaY_xi_reco_50_btag_cferr1_down;
+  TH1F *DeltaY_xi_reco_50_btag_cferr2_up;   TH1F *DeltaY_xi_reco_50_btag_cferr2_down;
+  TH1F *DeltaY_xi_reco_50_btag_hf_up;       TH1F *DeltaY_xi_reco_50_btag_hf_down;
+  TH1F *DeltaY_xi_reco_50_btag_hfstats1_up; TH1F *DeltaY_xi_reco_50_btag_hfstats1_down;
+  TH1F *DeltaY_xi_reco_50_btag_hfstats2_up; TH1F *DeltaY_xi_reco_50_btag_hfstats2_down;
+  TH1F *DeltaY_xi_reco_50_btag_lf_up;       TH1F *DeltaY_xi_reco_50_btag_lf_down;
+  TH1F *DeltaY_xi_reco_50_btag_lfstats1_up; TH1F *DeltaY_xi_reco_50_btag_lfstats1_down;
+  TH1F *DeltaY_xi_reco_50_btag_lfstats2_up; TH1F *DeltaY_xi_reco_50_btag_lfstats2_down;
+  // ttag, mistag, toppt - 50 bins
+  TH1F *DeltaY_xi_reco_50_ttag_corr_up;     TH1F *DeltaY_xi_reco_50_ttag_corr_down;
+  TH1F *DeltaY_xi_reco_50_ttag_uncorr_up;   TH1F *DeltaY_xi_reco_50_ttag_uncorr_down;
+  TH1F *DeltaY_xi_reco_50_tmistag_up;       TH1F *DeltaY_xi_reco_50_tmistag_down;
+  TH1F *DeltaY_xi_reco_50_toppt_a_up;       TH1F *DeltaY_xi_reco_50_toppt_a_down;
+  TH1F *DeltaY_xi_reco_50_toppt_b_up;       TH1F *DeltaY_xi_reco_50_toppt_b_down;
+
+  // lepton/trigger/pileup/prefiring - 24 bins
+  TH1F *DeltaY_xi_reco_24_ele_reco_up;      TH1F *DeltaY_xi_reco_24_ele_reco_down;
+  TH1F *DeltaY_xi_reco_24_ele_id_up;        TH1F *DeltaY_xi_reco_24_ele_id_down;
+  TH1F *DeltaY_xi_reco_24_ele_trigger_up;   TH1F *DeltaY_xi_reco_24_ele_trigger_down;
+  TH1F *DeltaY_xi_reco_24_mu_reco_up;       TH1F *DeltaY_xi_reco_24_mu_reco_down;
+  TH1F *DeltaY_xi_reco_24_mu_iso_stat_up;   TH1F *DeltaY_xi_reco_24_mu_iso_stat_down;
+  TH1F *DeltaY_xi_reco_24_mu_iso_syst_up;   TH1F *DeltaY_xi_reco_24_mu_iso_syst_down;
+  TH1F *DeltaY_xi_reco_24_mu_id_stat_up;    TH1F *DeltaY_xi_reco_24_mu_id_stat_down;
+  TH1F *DeltaY_xi_reco_24_mu_id_syst_up;    TH1F *DeltaY_xi_reco_24_mu_id_syst_down;
+  TH1F *DeltaY_xi_reco_24_mu_trigger_stat_up; TH1F *DeltaY_xi_reco_24_mu_trigger_stat_down;
+  TH1F *DeltaY_xi_reco_24_mu_trigger_syst_up; TH1F *DeltaY_xi_reco_24_mu_trigger_syst_down;
+  TH1F *DeltaY_xi_reco_24_pu_up;            TH1F *DeltaY_xi_reco_24_pu_down;
+  TH1F *DeltaY_xi_reco_24_prefiring_up;     TH1F *DeltaY_xi_reco_24_prefiring_down;
+  // scales, isr fsr - 24 bins
+  TH1F *DeltaY_xi_reco_24_murmuf_upup;      TH1F *DeltaY_xi_reco_24_murmuf_upnone;
+  TH1F *DeltaY_xi_reco_24_murmuf_noneup;    TH1F *DeltaY_xi_reco_24_murmuf_nonedown;
+  TH1F *DeltaY_xi_reco_24_murmuf_downnone;  TH1F *DeltaY_xi_reco_24_murmuf_downdown;
+  TH1F *DeltaY_xi_reco_24_isr_up;           TH1F *DeltaY_xi_reco_24_isr_down;
+  TH1F *DeltaY_xi_reco_24_fsr_up;           TH1F *DeltaY_xi_reco_24_fsr_down;
+  // btag - 24 bins
+  TH1F *DeltaY_xi_reco_24_btag_cferr1_up;   TH1F *DeltaY_xi_reco_24_btag_cferr1_down;
+  TH1F *DeltaY_xi_reco_24_btag_cferr2_up;   TH1F *DeltaY_xi_reco_24_btag_cferr2_down;
+  TH1F *DeltaY_xi_reco_24_btag_hf_up;       TH1F *DeltaY_xi_reco_24_btag_hf_down;
+  TH1F *DeltaY_xi_reco_24_btag_hfstats1_up; TH1F *DeltaY_xi_reco_24_btag_hfstats1_down;
+  TH1F *DeltaY_xi_reco_24_btag_hfstats2_up; TH1F *DeltaY_xi_reco_24_btag_hfstats2_down;
+  TH1F *DeltaY_xi_reco_24_btag_lf_up;       TH1F *DeltaY_xi_reco_24_btag_lf_down;
+  TH1F *DeltaY_xi_reco_24_btag_lfstats1_up; TH1F *DeltaY_xi_reco_24_btag_lfstats1_down;
+  TH1F *DeltaY_xi_reco_24_btag_lfstats2_up; TH1F *DeltaY_xi_reco_24_btag_lfstats2_down;
+  // ttag, mistag, toppt - 24 bins
+  TH1F *DeltaY_xi_reco_24_ttag_corr_up;     TH1F *DeltaY_xi_reco_24_ttag_corr_down;
+  TH1F *DeltaY_xi_reco_24_ttag_uncorr_up;   TH1F *DeltaY_xi_reco_24_ttag_uncorr_down;
+  TH1F *DeltaY_xi_reco_24_tmistag_up;       TH1F *DeltaY_xi_reco_24_tmistag_down;
+  TH1F *DeltaY_xi_reco_24_toppt_a_up;       TH1F *DeltaY_xi_reco_24_toppt_a_down;
+  TH1F *DeltaY_xi_reco_24_toppt_b_up;       TH1F *DeltaY_xi_reco_24_toppt_b_down;
+
+  // lepton/trigger/pileup/prefiring - 30 bins
+  TH1F *DeltaY_xi_reco_30_ele_reco_up;      TH1F *DeltaY_xi_reco_30_ele_reco_down;
+  TH1F *DeltaY_xi_reco_30_ele_id_up;        TH1F *DeltaY_xi_reco_30_ele_id_down;
+  TH1F *DeltaY_xi_reco_30_ele_trigger_up;   TH1F *DeltaY_xi_reco_30_ele_trigger_down;
+  TH1F *DeltaY_xi_reco_30_mu_reco_up;       TH1F *DeltaY_xi_reco_30_mu_reco_down;
+  TH1F *DeltaY_xi_reco_30_mu_iso_stat_up;   TH1F *DeltaY_xi_reco_30_mu_iso_stat_down;
+  TH1F *DeltaY_xi_reco_30_mu_iso_syst_up;   TH1F *DeltaY_xi_reco_30_mu_iso_syst_down;
+  TH1F *DeltaY_xi_reco_30_mu_id_stat_up;    TH1F *DeltaY_xi_reco_30_mu_id_stat_down;
+  TH1F *DeltaY_xi_reco_30_mu_id_syst_up;    TH1F *DeltaY_xi_reco_30_mu_id_syst_down;
+  TH1F *DeltaY_xi_reco_30_mu_trigger_stat_up; TH1F *DeltaY_xi_reco_30_mu_trigger_stat_down;
+  TH1F *DeltaY_xi_reco_30_mu_trigger_syst_up; TH1F *DeltaY_xi_reco_30_mu_trigger_syst_down;
+  TH1F *DeltaY_xi_reco_30_pu_up;            TH1F *DeltaY_xi_reco_30_pu_down;
+  TH1F *DeltaY_xi_reco_30_prefiring_up;     TH1F *DeltaY_xi_reco_30_prefiring_down;
+  // scales, isr fsr - 30 bins
+  TH1F *DeltaY_xi_reco_30_murmuf_upup;      TH1F *DeltaY_xi_reco_30_murmuf_upnone;
+  TH1F *DeltaY_xi_reco_30_murmuf_noneup;    TH1F *DeltaY_xi_reco_30_murmuf_nonedown;
+  TH1F *DeltaY_xi_reco_30_murmuf_downnone;  TH1F *DeltaY_xi_reco_30_murmuf_downdown;
+  TH1F *DeltaY_xi_reco_30_isr_up;           TH1F *DeltaY_xi_reco_30_isr_down;
+  TH1F *DeltaY_xi_reco_30_fsr_up;           TH1F *DeltaY_xi_reco_30_fsr_down;
+  // btag - 30 bins
+  TH1F *DeltaY_xi_reco_30_btag_cferr1_up;   TH1F *DeltaY_xi_reco_30_btag_cferr1_down;
+  TH1F *DeltaY_xi_reco_30_btag_cferr2_up;   TH1F *DeltaY_xi_reco_30_btag_cferr2_down;
+  TH1F *DeltaY_xi_reco_30_btag_hf_up;       TH1F *DeltaY_xi_reco_30_btag_hf_down;
+  TH1F *DeltaY_xi_reco_30_btag_hfstats1_up; TH1F *DeltaY_xi_reco_30_btag_hfstats1_down;
+  TH1F *DeltaY_xi_reco_30_btag_hfstats2_up; TH1F *DeltaY_xi_reco_30_btag_hfstats2_down;
+  TH1F *DeltaY_xi_reco_30_btag_lf_up;       TH1F *DeltaY_xi_reco_30_btag_lf_down;
+  TH1F *DeltaY_xi_reco_30_btag_lfstats1_up; TH1F *DeltaY_xi_reco_30_btag_lfstats1_down;
+  TH1F *DeltaY_xi_reco_30_btag_lfstats2_up; TH1F *DeltaY_xi_reco_30_btag_lfstats2_down;
+  // ttag, mistag, toppt - 30 bins
+  TH1F *DeltaY_xi_reco_30_ttag_corr_up;     TH1F *DeltaY_xi_reco_30_ttag_corr_down;
+  TH1F *DeltaY_xi_reco_30_ttag_uncorr_up;   TH1F *DeltaY_xi_reco_30_ttag_uncorr_down;
+  TH1F *DeltaY_xi_reco_30_tmistag_up;       TH1F *DeltaY_xi_reco_30_tmistag_down;
+  TH1F *DeltaY_xi_reco_30_toppt_a_up;       TH1F *DeltaY_xi_reco_30_toppt_a_down;
+  TH1F *DeltaY_xi_reco_30_toppt_b_up;       TH1F *DeltaY_xi_reco_30_toppt_b_down;
 
 
   TH1F *DeltaY_reco_d1_mu_reco_up;
@@ -547,7 +730,8 @@ protected:
   
   // Template-method (xi) multi-f infrastructure
   std::vector<float> f_values;
-  std::map<float, std::unique_ptr<TH1D>> noac_weights_map;
+  static std::map<float, std::unique_ptr<TH1D>> noac_weights_map;  // Static: shared across all instances
+  static bool noac_weights_initialized;  // Flag to track if weights have been initialized
   std::map<std::string, TH1F*> h_deltaY_xi_reco_map;
   virtual ~ZprimeSemiLeptonicSystematicsHists();
 };
