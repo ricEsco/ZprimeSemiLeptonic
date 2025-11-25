@@ -27,7 +27,7 @@ protected:
   bool is_htott_pseudo;
   bool is_zprimetott;
 
-TH1F *DeltaY,*DeltaY_reco, *DeltaY_gen, *DeltaY_gen_0_500, *DeltaY_gen_500_750, *DeltaY_gen_750_1000, *DeltaY_gen_1000_1500, *DeltaY_gen_1500Inf,  *DeltaY_ele, *DeltaY_N_ele, *DeltaY_P_ele, *DeltaY_muon, *DeltaY_N_muon, *DeltaY_P_muon, *M_top, *M_antitop, *Pt_ttbar, *Pt_top, *Pt_antitop, *Eta_ttbar, *Eta_top, *Eta_antitop; //-beren # of events gen info
+TH1F *Mtt_gen, *DeltaY_xi_gen, *DeltaY_xi_gen_20, *DeltaY_xi_gen_10, *DeltaY_xi_gen_6, *DeltaY_reco, *DeltaY_gen, *DeltaY_gen_0_500, *DeltaY_gen_500_750, *DeltaY_gen_750_1000, *DeltaY_gen_1000_1500, *DeltaY_gen_1500Inf,  *DeltaY_ele, *DeltaY_N_ele, *DeltaY_P_ele, *DeltaY_muon, *DeltaY_N_muon, *DeltaY_P_muon, *M_top, *M_antitop, *Pt_ttbar, *Pt_top, *Pt_antitop, *Eta_ttbar, *Eta_top, *Eta_antitop; //-beren # of events gen info
 
 TH1F *leadingJetPtHist, *genHT_dist, *mttbar, *topgen_pt, *topgen_eta, *antitopgen_pt, *antitopgen_eta, *leptongen_pt, *leptongen_eta, *muongen_pt, *muongen_eta, *electrongen_pt, *electrongen_eta, *bquarkgen_pt, *bquarkgen_eta;
 
@@ -47,5 +47,14 @@ TH1F *NPV, *MET, *MET_rebin, *MET_rebin2, *MET_rebin3, *ST, *ST_rebin, *ST_rebin
 
 TH2F *dRmin_ptrel_mu, *dRmin_ptrel_mu1, *dRmin_ptrel_ele, *dRmin_ptrel_ele1;
 
+
   virtual ~ZprimeSemiLeptonicPreselectionHists();
+
+private:
+  uhh2::Context* ctx;
+  Event::Handle<TTbarGen> h_ttbargen;
+  uhh2::Event::Handle<float> h_xi_gen;
+  uhh2::Event::Handle<float> h_mtt_gen;
+  uhh2::Event::Handle<float> h_DeltaY_gen;
+
 };

@@ -2,8 +2,8 @@
 
 year="UL18" # UL16preVFP UL16postVFP UL17 UL18
 channel="muon" # electron muon
-input_dir="/nfs/dust/cms/group/zprime-uhh/Analysis_${year}/chi2/${channel}/workdir_Analysis_${year}_${channel}_chi2/"
-output_dir="/nfs/dust/cms/group/zprime-uhh/Analysis_${year}/chi2/${channel}/"
+input_dir="/data/dust/group/zprime-uhh/Analysis_${year}/chi2/${channel}/workdir_Analysis_${year}_${channel}_chi2/"
+output_dir="/data/dust/group/zprime-uhh/Analysis_${year}/chi2/${channel}/"
 
 echo "year: ${year}"
 echo "channel: ${channel}"

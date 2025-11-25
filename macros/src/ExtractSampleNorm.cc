@@ -28,7 +28,7 @@ using namespace std;
 
 void ExtractSampleNorm(){
 
-  TString file_dir = "/nfs/dust/cms/group/zprime-uhh/Presel_";
+  TString file_dir = "/data/dust/group/zprime-uhh/Presel_";
   vector<TString> year = {
     "UL16preVFP",
     "UL16postVFP",

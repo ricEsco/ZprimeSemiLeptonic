@@ -66,8 +66,8 @@ int argc = 2;
   //year = "UL18";
   //lumi_plot = 59.8;
   TString fdir;
-  fdir = "/nfs/dust/cms/group/zprime-uhh/Analysis_" + year + "/dilepton_TriggerModule/";
-  // fdir = "/nfs/dust/cms/user/deleokse/RunII_106_v2/DiLepton_TriggerModule/Analysis_" + year +"_dilepton_Trigger/";
+  fdir = "/data/dust/group/zprime-uhh/Analysis_" + year + "/dilepton_TriggerModule/";
+  // fdir = "/data/dust/user/deleokse/RunII_106_v2/DiLepton_TriggerModule/Analysis_" + year +"_dilepton_Trigger/";
   //year = argv[1];
   //TString fdir;
   //if(year.EqualTo("2016")){year_v = "_2016v3"; lumi_plot = 35.9; fdir = "no";}
@@ -75,7 +75,7 @@ int argc = 2;
   //else if(year.EqualTo("2018")){year_v = "_2018"; lumi_plot = 59.74; fdir = "no";}
   //else if(year.EqualTo("UL16")){year_v = "_UL16"; lumi_plot = 0.0; fdir = "no";}
   //else if(year.EqualTo("UL17")){year_v = "_UL17"; lumi_plot = 0.0; fdir = "no";}
-  //else if(year.EqualTo("UL18")){year_v = "_UL18"; lumi_plot = 59.8; fdir = "/nfs/dust/cms/user/deleokse/RunII_106_v2/Analysis_UL18_EleTriggerModule/muon/";}
+  //else if(year.EqualTo("UL18")){year_v = "_UL18"; lumi_plot = 59.8; fdir = "/data/dust/user/deleokse/RunII_106_v2/Analysis_UL18_EleTriggerModule/muon/";}
   //else throw runtime_error("I need the correct year; 2016, 2017, 2018, UL16, UL17 or UL18");
 
   if(argc == 2){

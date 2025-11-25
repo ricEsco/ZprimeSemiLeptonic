@@ -44,7 +44,6 @@
 #include <UHH2/ZprimeSemiLeptonic/include/TopTagScaleFactor.h>
 #include <UHH2/ZprimeSemiLeptonic/include/TopMistagScaleFactor.h>
 
-#include <UHH2/common/include/TTbarGen.h>
 #include <UHH2/common/include/TTbarReconstruction.h>
 #include <UHH2/common/include/ReconstructionHypothesisDiscriminators.h>
 
@@ -122,9 +121,6 @@ protected:
 
   // NN variables handles
   unique_ptr<Variables_NN> Variables_module;
-  // unique_ptr<Variables_EFT_SR> VariablesEFTSR_module;
-  // unique_ptr<Variables_EFT_CR1> VariablesEFTCR1_module;
-  // unique_ptr<Variables_EFT_CR2> VariablesEFTCR2_module;
   // systematics handles
   // unique_ptr<ZprimeSemiLeptonicSystematicsModule> SystematicsModule;
 
@@ -137,6 +133,21 @@ protected:
   Event::Handle<float> h_ak8jet1_pt; Event::Handle<float> h_ak8jet1_eta;
   Event::Handle<float> h_Mttbar;
 
+  // GEN-level variables from preselection (for template method)
+  uhh2::Event::Handle<float> h_xi_gen;
+  uhh2::Event::Handle<float> h_mtt_gen;
+  uhh2::Event::Handle<float> h_DeltaY_gen;
+
+  // read from input file
+  uhh2::Event::Handle<float> h_xi_gen_in;
+  uhh2::Event::Handle<float> h_DeltaY_gen_in;
+  uhh2::Event::Handle<float> h_mtt_gen_in;
+
+  // (optional) write-through to your output file so the next job can read again
+  uhh2::Event::Handle<float> h_xi_gen_out;
+  uhh2::Event::Handle<float> h_DeltaY_gen_out;
+  uhh2::Event::Handle<float> h_mtt_gen_out;
+  
   uhh2::Event::Handle<ZprimeCandidate*> h_BestZprimeCandidateChi2;
   uhh2::Event::Handle<ZprimeCandidate*> h_BestZprimeCandidateCorrectMatch;
 
@@ -221,7 +232,7 @@ void ZprimeAnalysisModule::fill_histograms(uhh2::Event& event, string tag){
 
 ZprimeAnalysisModule::ZprimeAnalysisModule(uhh2::Context& ctx){
 
-  debug = false; // false/true
+  debug =false; // false/true
 
   // Access to gen-level particles
   ttgenprod.reset(new TTbarGenProducer(ctx));
@@ -449,9 +460,6 @@ ZprimeAnalysisModule::ZprimeAnalysisModule(uhh2::Context& ctx){
   HEM_selection.reset(new HEMSelection(ctx)); // HEM issue in 2018, veto on leptons and jets
 
   Variables_module.reset(new Variables_NN(ctx, mode)); // variables for NN
-  // VariablesEFTSR_module.reset(new Variables_EFT_SR(ctx, mode)); // variables for NN
-  // VariablesEFTCR1_module.reset(new Variables_EFT_CR1(ctx, mode)); // variables for NN
-  // VariablesEFTCR2_module.reset(new Variables_EFT_CR2(ctx, mode)); // variables for NN
   // if(!isEleTriggerMeasurement) SystematicsModule.reset(new ZprimeSemiLeptonicSystematicsModule(ctx));
 
   // Split interference signal samples by sign
@@ -606,6 +614,18 @@ ZprimeAnalysisModule::ZprimeAnalysisModule(uhh2::Context& ctx){
       ratio_hist_ele->SetDirectory(0);
     }
   }
+
+  // GEN-level variables from preselection - read and write to carry forward
+  if(isMC) {
+    h_xi_gen_in     = ctx.declare_event_input<float>("xi_gen");
+    h_DeltaY_gen_in = ctx.declare_event_input<float>("DeltaY_gen");
+    h_mtt_gen_in    = ctx.declare_event_input<float>("mtt_gen");
+    
+    // Re-expose as outputs so AnalysisDNN can read them
+    h_xi_gen_out     = ctx.declare_event_output<float>("xi_gen");
+    h_DeltaY_gen_out = ctx.declare_event_output<float>("DeltaY_gen");
+    h_mtt_gen_out    = ctx.declare_event_output<float>("mtt_gen");
+  }
 }
 
 /*
@@ -654,6 +674,26 @@ bool ZprimeAnalysisModule::process(uhh2::Event& event){
   event.set(h_dphi_low, -10); 
   event.set(h_dphi_high, -10);
 
+
+  // Copy GEN-level variables from input to output (for template method)
+  // if(isMC) {
+  //   if(event.is_valid(h_xi_gen_in)) {
+  //     event.set(h_xi_gen_out,     event.get(h_xi_gen_in));
+  //     event.set(h_DeltaY_gen_out, event.get(h_DeltaY_gen_in));
+  //     event.set(h_mtt_gen_out,    event.get(h_mtt_gen_in));
+  //   }
+  // }
+
+  if(isMC && event.is_valid(h_xi_gen_in)) {
+  float xi = event.get(h_xi_gen_in);
+  if(!std::isfinite(xi)) {
+    // leave it unset; Hists guard will skip
+  } else {
+    event.set(h_xi_gen_out, xi);
+  }
+  if(event.is_valid(h_DeltaY_gen_in)) event.set(h_DeltaY_gen_out, event.get(h_DeltaY_gen_in));
+  if(event.is_valid(h_mtt_gen_in))    event.set(h_mtt_gen_out,    event.get(h_mtt_gen_in));
+  }
 
   if(!event.isRealData){
     if(!SignSplit->passes(event)) return false;
@@ -1187,6 +1227,12 @@ bool ZprimeAnalysisModule::process(uhh2::Event& event){
   Variables_module->process(event);
   fill_histograms(event, "NNInputsBeforeReweight");
   if(debug) cout << "NNInputsBeforeReweight: ok" << endl;
+
+  if(event.is_valid(h_xi_gen_in)) {
+    event.set(h_xi_gen_out,     event.get(h_xi_gen_in));
+    event.set(h_DeltaY_gen_out, event.get(h_DeltaY_gen_in));
+    event.set(h_mtt_gen_out,    event.get(h_mtt_gen_in));
+  }
 
   // histograms for systematics
   // if(!isEleTriggerMeasurement) SystematicsModule->process(event);

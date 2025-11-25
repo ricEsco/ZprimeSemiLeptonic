@@ -12,7 +12,7 @@ if __name__ == "__main__":
     remove = True #remove directories with old results
 
     #put your local sfram_batch dir in search path
-    sys.path.append('/nfs/dust/cms/user/gonvaq/SFrameBatch/')
+    sys.path.append('/data/dust/user/gonvaq/SFrameBatch/')
     #import the main function
     from sframe_batch import SFrameBatchMain
 

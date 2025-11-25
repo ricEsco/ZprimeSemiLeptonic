@@ -27,8 +27,8 @@ void CompareBTag_CHS_PUPPI(){
 
   TString filename_PUPPI = "";
   TString filename_CHS = "";
-  filename_PUPPI += "/nfs/dust/cms/user/deleokse/RunII_102X_v2/ZPrime_lowmass_HOTVR/ZPrime_2018/Analysis_2018_AK4CHS/muon/NOMINAL/uhh2.AnalysisModuleRunner.MC.TTbar_PUPPI.root";
-  filename_CHS += "/nfs/dust/cms/user/deleokse/RunII_102X_v2/ZPrime_lowmass_HOTVR/ZPrime_2018/Analysis_2018_AK4CHS/muon/NOMINAL/uhh2.AnalysisModuleRunner.MC.TTbar_CHS.root";
+  filename_PUPPI += "/data/dust/user/deleokse/RunII_102X_v2/ZPrime_lowmass_HOTVR/ZPrime_2018/Analysis_2018_AK4CHS/muon/NOMINAL/uhh2.AnalysisModuleRunner.MC.TTbar_PUPPI.root";
+  filename_CHS += "/data/dust/user/deleokse/RunII_102X_v2/ZPrime_lowmass_HOTVR/ZPrime_2018/Analysis_2018_AK4CHS/muon/NOMINAL/uhh2.AnalysisModuleRunner.MC.TTbar_CHS.root";
 
   TFile* f_in_PUPPI = new TFile(filename_PUPPI, "READ");
   TFile* f_in_CHS = new TFile(filename_CHS, "READ");

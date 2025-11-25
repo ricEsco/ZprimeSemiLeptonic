@@ -19,7 +19,11 @@ using namespace uhh2;
 
 ZprimeSemiLeptonicPreselectionHists::ZprimeSemiLeptonicPreselectionHists(uhh2::Context& ctx, const std::string& dirname):
 Hists(ctx, dirname) {
+  // Store context reference
+  this->ctx = &ctx;
 
+  // Initialize TTbarGen handle
+  h_ttbargen = ctx.get_handle<TTbarGen>("ttbargen");
 
   is_mc = ctx.get("dataset_type") == "MC";
   is_dy = ctx.get("dataset_version").find("DYJets") == 0;
@@ -53,24 +57,6 @@ void ZprimeSemiLeptonicPreselectionHists::init(){
   m_jet1            = book<TH1F>("m_jet1", "m^{jet 1}", 50, 0, 500);
   m_jet2            = book<TH1F>("m_jet2", "m^{jet 2}", 50, 0, 500);
   m_jet3            = book<TH1F>("m_jet3", "m^{jet 3}", 50, 0, 500);
-
-//-beren -new variables for unfolding study
-  DeltaY_ele        = book<TH1F>("DeltaY_ele", "#Delta y",2,-2.,2.); 
-  DeltaY_N_ele      = book<TH1F>("DeltaY_N_ele", "#Delta y",1,-2.,0); 
-  DeltaY_P_ele      = book<TH1F>("DeltaY_P_ele", "#Delta y",1,0.,2.); 
-  DeltaY_muon       = book<TH1F>("DeltaY_muon", "#Delta y",2,-2.,2.); 
-  DeltaY_N_muon     = book<TH1F>("DeltaY_N_muon", "#Delta y",1,-2.,0); 
-  DeltaY_P_muon     = book<TH1F>("DeltaY_P_muon", "#Delta y",1,0.,2.); 
-  M_top             = book<TH1F>("M_top", "M_{t}^{gen} [GeV]", 30, 0, 300);
-  M_antitop         = book<TH1F>("M_antitop", "M_{#bar{t}}^{gen} [GeV]", 30, 0, 300);
-  Pt_ttbar          = book<TH1F>("Pt_ttbar", "p_{T}^{t#bar{t}, gen} [GeV]", 100, 0, 1000);
-  Pt_top            = book<TH1F>("Pt_top", "p_{T}^{t, gen} [GeV]", 300, 0, 3000);
-  Pt_antitop        = book<TH1F>("Pt_antitop", "p_{T}^{#bar{t}, gen} [GeV]", 300, 0, 3000);
-  Eta_ttbar         = book<TH1F>("Eta_ttbar", "#eta^{T}^{t#bar{t}, gen} [GeV]", 50, -3, 3);
-  Eta_top           = book<TH1F>("Eta_top", "#eta^{t, gen} [GeV]", 50, -3, 3);
-  Eta_antitop       = book<TH1F>("Eta_antitop", "#eta^{#bar{t}, gen} [GeV]", 50, -3, 3);
-  //Mttbar - gen particles
-  //-beren
 
   // leptons
   N_mu              = book<TH1F>("N_mu", "N^{#mu}", 11, -0.5, 10.5);
@@ -275,15 +261,6 @@ void ZprimeSemiLeptonicPreselectionHists::init(){
   sum_event_weights_fsr_up = book<TH1F>("sum_event_weights_fsr_up", "counting experiment", 1, 0.5, 1.5);
   sum_event_weights_fsr_down = book<TH1F>("sum_event_weights_fsr_down", "counting experiment", 1, 0.5, 1.5);
 
-  // DeltaY
-  DeltaY_reco           = book<TH1F>("DeltaY_reco", "#Delta Y_{(t,#bar{t})}",2,-2,2);
-  DeltaY_gen            = book<TH1F>("DeltaY_gen", "#Delta Y_{(t,#bar{t})}",2,-2,2);
-  DeltaY_gen_0_500      = book<TH1F>("DeltaY_gen_0_500", "#Delta Y_{(t,#bar{t})} Mttbar[0,500]",2,-2,2);
-  DeltaY_gen_500_750    = book<TH1F>("DeltaY_gen_500_750", "#Delta Y_{(t,#bar{t})} Mttbar[500, 750]",2,-2,2);
-  DeltaY_gen_750_1000   = book<TH1F>("DeltaY_gen_750_1000", "#Delta Y_{(t,#bar{t})} Mttbar[750,1000]",2,-2,2);
-  DeltaY_gen_1000_1500  = book<TH1F>("DeltaY_gen_1000_1500", "#Delta Y_{(t,#bar{t}) Mttbar[1000,1500]}",2,-2,2);
-  DeltaY_gen_1500Inf    = book<TH1F>("DeltaY_gen_1500Inf", "#Delta Y_{(t,#bar{t})} Mttbar[1500, Inf)",2,-2,2);
-
   N_mu_charge     = book<TH1F>("N_mu_charge", "Muon charge", 2, -2., 2.);
   N_ele_charge    = book<TH1F>("N_ele_charge", "Electron charge", 2, -2., 2.);
 
@@ -320,6 +297,18 @@ void ZprimeSemiLeptonicPreselectionHists::init(){
     hist_names[i] = s_name;
     book<TH1F>(char_name, char_title,  1, 0.5, 1.5);
   }
+
+  // Template method histograms
+  Mtt_gen               = book<TH1F>("Mtt_gen", "M_{t#bar{t}} GEN [GeV]", 100, 0, 2000);
+  DeltaY_gen            = book<TH1F>("DeltaY_gen", "#Delta|Y|_{(t,#bar{t})} GEN ", 50, -2.5, 2.5);
+  DeltaY_xi_gen         = book<TH1F>("DeltaY_xi_gen", "#xi = tanh(#Delta|Y|) GEN ", 50, -1.0, 1.0);
+  DeltaY_xi_gen_36      = book<TH1F>("DeltaY_xi_gen_36", "#xi = tanh(#Delta|Y|) GEN ", 36, -1.0, 1.0);
+  DeltaY_xi_gen_20      = book<TH1F>("DeltaY_xi_gen_20", "#xi = tanh(#Delta|Y|) GEN ", 20, -1.0, 1.0);
+  DeltaY_xi_gen_10      = book<TH1F>("DeltaY_xi_gen_10", "#xi = tanh(#Delta|Y|) GEN ", 10, -1.0, 1.0);
+  DeltaY_xi_gen_6       = book<TH1F>("DeltaY_xi_gen_6", "#xi = tanh(#Delta|Y|) GEN ", 6, -1.0, 1.0);
+
+  // Response matrix for template method
+
 }
 
 
@@ -327,218 +316,10 @@ void ZprimeSemiLeptonicPreselectionHists::fill(const Event & event){
 
   double weight = event.weight;
 
-
-//-beren Delta Y
-
-
-  
-
-  // const GenParticle* top = nullptr;
-  // const GenParticle* antitop = nullptr;
-
-// Loop to identify top and antitop quarks
-  // for (const GenParticle& genp : *(event.genparticles)) {
-  //     if (genp.pdgId() == 6) {
-  //         top = &genp;
-  //     } else if (genp.pdgId() == -6) {
-  //         antitop = &genp;
-  //     }
-  // }
-
-
-  // if (top && antitop) { 
-  //   auto top_v4 = top->v4();
-  //   auto antitop_v4 = antitop->v4();
-
-  //   double energy = top_v4.energy() + antitop_v4.energy();
-  //   double px = top_v4.Px() + antitop_v4.Px();
-  //   double py = top_v4.Py() + antitop_v4.Py();
-  //   double pz = top_v4.Pz() + antitop_v4.Pz();
-
-  //   double ttbar_mass = sqrt(energy*energy - (px*px + py*py + pz*pz));
-  //   // // cout<< "mttbar:"<< ttbar_mass << endl; 
-  //   // mttbar->Fill(ttbar_mass);
-
-  // }
-
-  // cout<< "GenParticles" << endl; 
-// 
-    // Define variables to store the top quark and the antitop quark
-  // GenParticle top, antitop;
-  //   // Loop over all generated particles in the event
-  // for(const GenParticle & gp : *event.genparticles){
-
-  //   if(gp.pdgId() == 6){
-  //     top = gp;
-  //   }
-  //   else if(gp.pdgId() == -6){
-  //   antitop = gp;
-  //     }
-  // }
-
-  // // Calculate the invariant mass of the top-antitop pair using their 4-momenta
-  // float ttbar_mass = inv_mass(top.v4() + antitop.v4());
-
-
-  // float dygen= TMath::Abs(0.5*TMath::Log((top.energy() + top.pt()*TMath::SinH(top.eta()))/(top.energy() - top.pt()*TMath::SinH(top.eta())))) - TMath::Abs(0.5*TMath::Log((antitop.energy() + antitop.pt()*TMath::SinH(antitop.eta()))/(antitop.energy() - antitop.pt()*TMath::SinH(antitop.eta()))));
-
-  // DeltaY_gen->Fill(dygen, weight);
-
-  // if(ttbar_mass>=0 && ttbar_mass < 500){
-  //   DeltaY_gen_0_500->Fill(dygen, weight);
-  // }
-  // if(ttbar_mass>=500 && ttbar_mass < 750){
-  //   DeltaY_gen_500_750->Fill(dygen, weight);
-  // }
-  // if(ttbar_mass>=750 && ttbar_mass < 1000){
-  //   DeltaY_gen_750_1000->Fill(dygen, weight);
-  // }
-  // if(ttbar_mass>=1000 && ttbar_mass < 1500){
-  //   DeltaY_gen_1000_1500->Fill(dygen, weight);
-  // }
-  // if(ttbar_mass>=1500){
-  //    DeltaY_gen_1500Inf->Fill(dygen, weight);
-  // }
-
-
-
-
-
-
-  //  // leptonic leg of ttbar definition
-  //   const vector<GenParticle> & genparticles = *(event.genparticles);
-  //   for (unsigned int i = 0; i < genparticles.size(); ++i) {
-  //     const GenParticle &genp = genparticles[i];
-  //     if (abs(genp.pdgId()) == 6) {
-  //       if (genp.pdgId() == 6) {
-  //         // cout<< "top is found" << endl;
-  //         topgen_pt->Fill(genp.pt());
-  //         topgen_eta->Fill(genp.eta());
-  //       } else if (genp.pdgId() == -6) {
-  //         // cout<< "antitop is found" << endl;
-  //         antitopgen_pt->Fill(genp.pt());
-  //         antitopgen_eta->Fill(genp.eta());
-  //       }
-
-  //       const GenParticle* w = nullptr;
-  //       const GenParticle* b = nullptr;
-
-  //       for (unsigned int j = 0; j < genparticles.size(); ++j) {
-  //           const GenParticle &gp = genparticles[j];
-  //           auto m1 = gp.mother(&genparticles, 1);
-  //           auto m2 = gp.mother(&genparticles, 2);
-  //           bool has_top_mother = (m1 && m1->index() == genp.index()) || (m2 && m2->index() == genp.index());
-
-  //           if (has_top_mother) {
-  //               if (abs(gp.pdgId()) == 24) { // W boson
-  //                   w = &gp;
-  //                   // cout<< "w is found" << endl;
-  //               } 
-  //               else if (abs(gp.pdgId()) == 5) { // b quark
-  //                   b = &gp;
-  //                   // cout<< "b is found" << endl;
-  //               }
-  //           }
-  //       }
-
-  //       // Check W boson decays leptonically
-  //       const GenParticle* leadingJet = nullptr;
-  //       float leadingJetPt = 0;
-  //       if (w) {
-  //         // bool isLeptonic = false;
-  //         // const GenParticle* lepton = nullptr;
-  //         // const GenParticle* neutrino = nullptr;
-  //         for (unsigned int k = 0; k < genparticles.size(); ++k) {
-  //           const GenParticle &daught = genparticles[k];
-  //           auto m1 = daught.mother(&genparticles, 1);
-  //           auto m2 = daught.mother(&genparticles, 2);
-  //           bool has_w_mother = (m1 && m1->index() == w->index()) || (m2 && m2->index() == w->index());
-
-  //           if (has_w_mother) {
-  //             int pdgId = abs(daught.pdgId());
-
-  //             if (pdgId == 11 || pdgId == 13) {
-  //               // isLeptonic = true;
-  //               // lepton = &daught;
-  //               leptongen_pt->Fill(daught.pt());
-  //               leptongen_eta->Fill(daught.eta());
-  //               // cout<< "lepton is found" << endl;
-
-  //               if (pdgId == 11) { // Electron
-  //                   electrongen_pt->Fill(daught.pt());
-  //                   electrongen_eta->Fill(daught.eta());
-  //                   // cout<< "electron is found" << endl;
-  //               } else if (pdgId == 13) { // Muon
-  //                   muongen_pt->Fill(daught.pt());
-  //                   muongen_eta->Fill(daught.eta());
-  //                   // cout<< "muon is found" << endl;
-  //               }
-  //             } 
-
-  //             if (pdgId < 6 || pdgId == 21) {
-  //               if (daught.pt() > leadingJetPt) {
-  //                   leadingJetPt = daught.pt(); 
-  //                   leadingJet = &daught;
-  //               }
-  //             }
-  //           }
-  //         }
-  //       }
-
-  //       if (leadingJet) {
-  //         leadingJetPtHist->Fill(leadingJet->pt());
-  //         // cout << "Leading jet pt: " << leadingJet->pt() << ", pdgId: " << leadingJet->pdgId() << endl;
-  //       }
-
-  //       if (b) {
-  //         bquarkgen_pt->Fill(b->pt());
-  //         bquarkgen_eta->Fill(b->eta());
-  //       }
-  //     }
-  //   }
+  // Check if this is a TTbar MC event
+  bool is_tt = ctx->get("dataset_version").find("TTTo") == 0;
+  bool is_mc = ctx->get("dataset_type") == "MC";
     
-
-  //   float genHT = 0;
-  //   for(const GenParticle & gp : *event.genparticles){
-  //     // the particle is a light quark or a gluon
-  //     if (std::abs(gp.pdgId()) < 6 || std::abs(gp.pdgId()) == 21){
-  //       // the particle is not a decay product of top quarks or W bosons
-  //       if(gp.mother1() != 6 && gp.mother1() != 24 && gp.mother2() != 6 && gp.mother2() != 24) {
-  //         // include particles with pt > 10 GeV and status 23 in the genHT calculation
-  //         if (gp.pt() > 10 && gp.status() == 23) {
-  //           genHT += gp.pt();
-  //         }
-  //       }
-  //     }
-  //   }
-
-  //   genHT_dist->Fill(genHT);
-    
-    // gen histograms filling end
-  
-
-  // double_t DeltaY_gen_ele = TMath::Abs(0.5*TMath::Log((electron.energy() + electron.pt()*TMath::SinH(electron.eta()))/(electron.energy() - electron.pt()*TMath::SinH(electron.eta())))) - TMath::Abs(0.5*TMath::Log((antielectron.energy() + antielectron.pt()*TMath::SinH(antielectron.eta()))/(antielectron.energy() - antielectron.pt()*TMath::SinH(antielectron.eta()))));
-  // double_t DeltaY_gen_muon= TMath::Abs(0.5*TMath::Log((muon.energy() + muon.pt()*TMath::SinH(muon.eta()))/(muon.energy() - muon.pt()*TMath::SinH(muon.eta())))) - TMath::Abs(0.5*TMath::Log((antimuon.energy() + antimuon.pt()*TMath::SinH(antimuon.eta()))/(antimuon.energy() - antimuon.pt()*TMath::SinH(antimuon.eta()))));
-  
-  // DeltaY_ele->Fill(DeltaY_gen_ele);
-  // DeltaY_muon->Fill(DeltaY_gen_muon);
-
-  // if(DeltaY_gen_ele <0){
-  //   DeltaY_N_ele->Fill(DeltaY_gen_ele,weight);
-  // }
-  // else if(DeltaY_gen_ele>0){
-  //   DeltaY_P_ele->Fill(DeltaY_gen_ele,weight);
-  // }
-
-  // if(DeltaY_gen_muon <0){
-  //   DeltaY_N_muon->Fill(DeltaY_gen_muon,weight);
-  // }
-  // else if(DeltaY_gen_muon>0){
-  //   DeltaY_P_muon->Fill(DeltaY_gen_muon,weight);
-  // }
-
-
- /// -beren Delta Y
 
 
   /*
@@ -988,6 +769,41 @@ void ZprimeSemiLeptonicPreselectionHists::fill(const Event & event){
     }
   }
   // cout<< "general: ok" << endl; 
+
+  // Template method: Fill GEN-level histograms for ALL ttbar MC events
+  if(is_tt && is_mc) {
+    
+    const auto& ttbargen = event.get(h_ttbargen);
+    
+    // Only process semileptonic decays (e+jets, mu+jets) - includes tau->e/mu
+    if(ttbargen.IsSemiLeptonicDecay()) {
+      const int lepId = std::abs(ttbargen.ChargedLepton().pdgId());
+      if(lepId == 11 || lepId == 13) {
+        
+        const GenParticle& gen_top = ttbargen.Top();
+        const GenParticle& gen_antitop = ttbargen.Antitop();
+        
+        // Calculate DeltaY at gen level
+        double gen_top_rapidity = gen_top.v4().Rapidity();
+        double gen_antitop_rapidity = gen_antitop.v4().Rapidity();
+        
+        double DeltaY_gen_val = std::abs(gen_top_rapidity) - std::abs(gen_antitop_rapidity);
+        double xi_gen_val = std::tanh(DeltaY_gen_val);
+        double mtt_gen_val = (gen_top.v4() + gen_antitop.v4()).M();
+
+        DeltaY_gen->Fill(DeltaY_gen_val, weight);
+        DeltaY_xi_gen->Fill(xi_gen_val, weight);
+        DeltaY_xi_gen_36->Fill(xi_gen_val, weight);
+        DeltaY_xi_gen_20->Fill(xi_gen_val, weight);
+        DeltaY_xi_gen_10->Fill(xi_gen_val, weight);
+        DeltaY_xi_gen_6->Fill(xi_gen_val, weight);
+        Mtt_gen->Fill(mtt_gen_val, weight);
+      
+        // DeltaY_xi_genVsReco->Fill(xi_gen_val, xi_reco_val, weight);
+  
+      }
+    }
+  }
 
 } //Method
 

@@ -48,10 +48,10 @@ padOverlap = 0.15
 
 padGap = 0.01
 if (channel=="electron" or channel=="muon"):
-	#fileDir ="/nfs/dust/cms/user/titasroy/Ac_UL_ntuples/%s/%s/workdir_AnalysisDNN_%s_%s_dY/NOMINAL/"%(year,channel,year,channel)
-    fileDir="/nfs/dust/cms/user/titasroy/Ac_UL_ntuples/%s/%s/workdir_AnalysisDNN_%s_%s//NOMINAL/"%(year,channel,year, channel)
+	#fileDir ="/data/dust/user/titasroy/Ac_UL_ntuples/%s/%s/workdir_AnalysisDNN_%s_%s_dY/NOMINAL/"%(year,channel,year,channel)
+    fileDir="/data/dust/user/titasroy/Ac_UL_ntuples/%s/%s/workdir_AnalysisDNN_%s_%s//NOMINAL/"%(year,channel,year, channel)
 else:
-	fileDir ="/nfs/dust/cms/user/titasroy/Ac_UL_ntuples/%s/lepton/"%(year)
+	fileDir ="/data/dust/user/titasroy/Ac_UL_ntuples/%s/lepton/"%(year)
 
 import CMS_lumi
 
@@ -216,7 +216,7 @@ systematic_name_mapping = {
 
 histo_={}
 
-samples=["DATA","DYJets", "Diboson","QCD", "WJets", "ST","TTbar"]
+samples=["DATA","DYJets", "Diboson","QCD", "WJets", "ST","TTbar","MC_EFT"]
 for cat in categories:
     hist_combined[cat]={}
     hist_sys_comb[cat]={}
@@ -226,9 +226,10 @@ for cat in categories:
         for sys in systematic_name_mapping:
             hist_sys_comb[cat][sample][sys]={}
             if sample!="DATA":
+                if sample!="MC_EFT":
                 # print(cat,sample,sys)
-                hist_sys_comb[cat][sample][sys]["Up"]=TH1F("%s_%s_%s_Up"%(cat,sample,sys),"%s_%s_%s_Up"%(cat,sample,sys),36,1.,37.)
-                hist_sys_comb[cat][sample][sys]["Down"]=TH1F("%s_%s_%s_Down"%(cat,sample,sys),"%s_%s_%s_Down"%(cat,sample,sys),36,1.,37.)
+                    hist_sys_comb[cat][sample][sys]["Up"]=TH1F("%s_%s_%s_Up"%(cat,sample,sys),"%s_%s_%s_Up"%(cat,sample,sys),36,1.,37.)
+                    hist_sys_comb[cat][sample][sys]["Down"]=TH1F("%s_%s_%s_Down"%(cat,sample,sys),"%s_%s_%s_Down"%(cat,sample,sys),36,1.,37.)
 
 
 
@@ -252,63 +253,71 @@ for cat in categories:
     legendR.SetBorderSize(0)
     legendR.SetFillColor(0)
     samples=["DATA","DYJets", "Diboson","QCD", "WJets", "ST","TTbar"]
-    for sample in ["DATA","DYJets", "Diboson","QCD", "WJets", "ST","TTbar"]:
+    for sample in ["DATA","DYJets", "Diboson","QCD", "WJets", "ST","TTbar","MC_EFT"]:
         print sample
         for histo in histograms:
         # print("at histo loop: ",hist_sys_comb['0_500_SR']['DYJets']['prefiring']["Up"])
         # for sample in ["DATA","DYJets", "Diboson","QCD", "WJets", "ST","TTbar"]:
             if sample=="DATA":
                 file[sample]=TFile("%s/uhh2.AnalysisModuleRunner.DATA.DATA.root"%(fileDir),"read")
+                temp_hist="DeltaY_reco_%s_General/%s"%(cat,histo)
+            elif sample=="MC_EFT":
+                file[sample]=TFile("%s/uhh2.AnalysisModuleRunner.MC.MC_EFT.root"%(fileDir),"read")
+                temp_hist="DeltaY_reco_PDFVariations_%s/%s_PDF_1"%(cat,histo)
             else:
                 file[sample] = TFile("%s/uhh2.AnalysisModuleRunner.MC.%s.root"%(fileDir,sample),"read")
+                temp_hist="DeltaY_reco_%s_General/%s"%(cat,histo)
             
-            temp_hist="DeltaY_reco_%s_General/%s"%(cat,histo)
+            # temp_hist="DeltaY_reco_%s_General/%s"%(cat,histo)
             histo_[sample]=file[sample].Get(temp_hist)
-            if sample!="DATA":
-                for sys in systematic_name_mapping:
-                    # print sys, sample, cat
-                    if "PDF" in sys :
-                        sys_hist_up="DeltaY_reco_PDFVariations_%s/%s_%s"%(cat,histo,sys)
-                        sys_hist_down="DeltaY_reco_PDFVariations_%s/%s_%s"%(cat,histo,sys)
+            if (sample!="DATA"):
+                if sample!="MC_EFT":
+                    print(sample)
+                    for sys in systematic_name_mapping:
+                        # print sys, sample, cat
+                        if "PDF" in sys :
+                            sys_hist_up="DeltaY_reco_PDFVariations_%s/%s_%s"%(cat,histo,sys)
+                            sys_hist_down="DeltaY_reco_PDFVariations_%s/%s_%s"%(cat,histo,sys)
+                            
+                        if "murmuf" in sys:
+                            sys_hist_up="DeltaY_reco_SystVariations_%s/%s_%s"%(cat,histo,sys)
+                            sys_hist_down="DeltaY_reco_SystVariations_%s/%s_%s"%(cat,histo,sys)
                         
-                    if "murmuf" in sys:
-                        sys_hist_up="DeltaY_reco_SystVariations_%s/%s_%s"%(cat,histo,sys)
-                        sys_hist_down="DeltaY_reco_SystVariations_%s/%s_%s"%(cat,histo,sys)
-                       
-                    else:
-                        sys_hist_up="DeltaY_reco_SystVariations_%s/%s_%s_up"%(cat,histo,sys)
-                        sys_hist_down="DeltaY_reco_SystVariations_%s/%s_%s_down"%(cat,histo,sys)
-                    
-                    histo_sys[sample][sys]["up"]=file[sample].Get(sys_hist_up)
-                    histo_sys[sample][sys]["down"]=file[sample].Get(sys_hist_down)
-                    if histo=="DeltaY_reco_d1":
-                        for i in range(histo_sys[sample][sys]["up"].GetNbinsX()):
-                            hist_sys_comb[cat][sample][sys]["Up"].SetBinContent(1+i,histo_sys[sample][sys]["up"].GetBinContent(i+1))
-                            hist_sys_comb[cat][sample][sys]["Up"].SetBinError(1+i,histo_sys[sample][sys]["up"].GetBinError(i+1))
+                        else:
+                            sys_hist_up="DeltaY_reco_SystVariations_%s/%s_%s_up"%(cat,histo,sys)
+                            sys_hist_down="DeltaY_reco_SystVariations_%s/%s_%s_down"%(cat,histo,sys)
+                        
+                        histo_sys[sample][sys]["up"]=file[sample].Get(sys_hist_up)
+                        histo_sys[sample][sys]["down"]=file[sample].Get(sys_hist_down)
+                        if histo=="DeltaY_reco_d1":
+                            for i in range(histo_sys[sample][sys]["up"].GetNbinsX()):
+                                print(sample, cat, sys)
+                                hist_sys_comb[cat][sample][sys]["Up"].SetBinContent(1+i,histo_sys[sample][sys]["up"].GetBinContent(i+1))
+                                hist_sys_comb[cat][sample][sys]["Up"].SetBinError(1+i,histo_sys[sample][sys]["up"].GetBinError(i+1))
 
-                            hist_sys_comb[cat][sample][sys]["Down"].SetBinContent(1+i,histo_sys[sample][sys]["down"].GetBinContent(i+1))
-                            hist_sys_comb[cat][sample][sys]["Down"].SetBinError(1+i,histo_sys[sample][sys]["down"].GetBinError(i+1))
-                    if histo=="DeltaY_reco_d2":
-                        for i in range(histo_sys[sample][sys]["up"].GetNbinsX()):
-                            hist_sys_comb[cat][sample][sys]["Up"].SetBinContent(3+i,histo_sys[sample][sys]["up"].GetBinContent(i+1))
-                            hist_sys_comb[cat][sample][sys]["Up"].SetBinError(3+i,histo_sys[sample][sys]["up"].GetBinError(i+1))
+                                hist_sys_comb[cat][sample][sys]["Down"].SetBinContent(1+i,histo_sys[sample][sys]["down"].GetBinContent(i+1))
+                                hist_sys_comb[cat][sample][sys]["Down"].SetBinError(1+i,histo_sys[sample][sys]["down"].GetBinError(i+1))
+                        if histo=="DeltaY_reco_d2":
+                            for i in range(histo_sys[sample][sys]["up"].GetNbinsX()):
+                                hist_sys_comb[cat][sample][sys]["Up"].SetBinContent(3+i,histo_sys[sample][sys]["up"].GetBinContent(i+1))
+                                hist_sys_comb[cat][sample][sys]["Up"].SetBinError(3+i,histo_sys[sample][sys]["up"].GetBinError(i+1))
 
-                            hist_sys_comb[cat][sample][sys]["Down"].SetBinContent(3+i,histo_sys[sample][sys]["down"].GetBinContent(i+1))
-                            hist_sys_comb[cat][sample][sys]["Down"].SetBinError(3+i,histo_sys[sample][sys]["down"].GetBinError(i+1))
-                    if histo=="Sigma_phi_1":
-                        for i in range(histo_sys[sample][sys]["up"].GetNbinsX()):
-                            hist_sys_comb[cat][sample][sys]["Up"].SetBinContent(5+i,histo_sys[sample][sys]["up"].GetBinContent(i+1))
-                            hist_sys_comb[cat][sample][sys]["Up"].SetBinError(5+i,histo_sys[sample][sys]["up"].GetBinError(i+1))
+                                hist_sys_comb[cat][sample][sys]["Down"].SetBinContent(3+i,histo_sys[sample][sys]["down"].GetBinContent(i+1))
+                                hist_sys_comb[cat][sample][sys]["Down"].SetBinError(3+i,histo_sys[sample][sys]["down"].GetBinError(i+1))
+                        if histo=="Sigma_phi_1":
+                            for i in range(histo_sys[sample][sys]["up"].GetNbinsX()):
+                                hist_sys_comb[cat][sample][sys]["Up"].SetBinContent(5+i,histo_sys[sample][sys]["up"].GetBinContent(i+1))
+                                hist_sys_comb[cat][sample][sys]["Up"].SetBinError(5+i,histo_sys[sample][sys]["up"].GetBinError(i+1))
 
-                            hist_sys_comb[cat][sample][sys]["Down"].SetBinContent(5+i,histo_sys[sample][sys]["down"].GetBinContent(i+1))
-                            hist_sys_comb[cat][sample][sys]["Down"].SetBinError(5+i,histo_sys[sample][sys]["down"].GetBinError(i+1))
-                    if histo=="Sigma_phi_2":
-                        for i in range(histo_sys[sample][sys]["up"].GetNbinsX()):
-                            hist_sys_comb[cat][sample][sys]["Up"].SetBinContent(21+i,histo_sys[sample][sys]["up"].GetBinContent(i+1))
-                            hist_sys_comb[cat][sample][sys]["Up"].SetBinError(21+i,histo_sys[sample][sys]["up"].GetBinError(i+1))
+                                hist_sys_comb[cat][sample][sys]["Down"].SetBinContent(5+i,histo_sys[sample][sys]["down"].GetBinContent(i+1))
+                                hist_sys_comb[cat][sample][sys]["Down"].SetBinError(5+i,histo_sys[sample][sys]["down"].GetBinError(i+1))
+                        if histo=="Sigma_phi_2":
+                            for i in range(histo_sys[sample][sys]["up"].GetNbinsX()):
+                                hist_sys_comb[cat][sample][sys]["Up"].SetBinContent(21+i,histo_sys[sample][sys]["up"].GetBinContent(i+1))
+                                hist_sys_comb[cat][sample][sys]["Up"].SetBinError(21+i,histo_sys[sample][sys]["up"].GetBinError(i+1))
 
-                            hist_sys_comb[cat][sample][sys]["Down"].SetBinContent(21+i,histo_sys[sample][sys]["down"].GetBinContent(i+1))
-                            hist_sys_comb[cat][sample][sys]["Down"].SetBinError(21+i,histo_sys[sample][sys]["down"].GetBinError(i+1))
+                                hist_sys_comb[cat][sample][sys]["Down"].SetBinContent(21+i,histo_sys[sample][sys]["down"].GetBinContent(i+1))
+                                hist_sys_comb[cat][sample][sys]["Down"].SetBinError(21+i,histo_sys[sample][sys]["down"].GetBinError(i+1))
             if histo=="DeltaY_reco_d1":
                 for i in range(histo_[sample].GetNbinsX()):
                     # print(histo_[sample].GetBinContent(i+1))
@@ -327,9 +336,10 @@ for cat in categories:
                     hist_combined[cat][sample].SetBinContent(21+i,histo_[sample].GetBinContent(i+1))	
                     hist_combined[cat][sample].SetBinError(21+i,histo_[sample].GetBinError(i+1))
             # print("is systematic histo right before sys loop? : ", hist_sys_comb['0_500_SR']['DYJets']['prefiring']["Up"])
-        if sample!="DATA":		
-            hist_combined[cat][sample].SetFillColor(stackList_orig[sample][0])
-            hist_combined[cat][sample].SetLineColor(stackList_orig[sample][0])
+        if sample!="DATA":
+            if sample!="MC_EFT":
+                hist_combined[cat][sample].SetFillColor(stackList_orig[sample][0])
+                hist_combined[cat][sample].SetLineColor(stackList_orig[sample][0])
         if sample=="TTbar":
             print("writing ttbar")
             legendR.AddEntry(hist_combined[cat][sample],"t#bar{t}",'f')
@@ -352,6 +362,13 @@ for cat in categories:
     hist_combined[cat]["DATA"].SetLineColor(kBlack)
     hist_combined[cat]["DATA"].SetYTitle("Events")     
     hist_combined[cat]["DATA"].Draw("pe,x0")
+
+    hist_combined[cat]["MC_EFT"].SetMarkerStyle(42)
+    hist_combined[cat]["MC_EFT"].SetMarkerColor(7)
+    hist_combined[cat]["MC_EFT"].SetMarkerSize(0.8)
+    hist_combined[cat]["MC_EFT"].SetLineColor(7)
+    hist_combined[cat]["MC_EFT"].SetYTitle("Events")     
+    hist_combined[cat]["MC_EFT"].Draw("pe,x0")
     data_total=hist_combined[cat]["DATA"].GetBinContent(1)
     print("DATA: ",hist_combined[cat]["DATA"].GetBinContent(1) )
     print(cat)
@@ -426,8 +443,10 @@ for cat in categories:
     pad1.SetLogy(log)
     stack.Draw("HIST")
     hist_combined[cat]["DATA"].Draw("E,X0,SAME")
+    hist_combined[cat]["MC_EFT"].Draw("E,X0,SAME")
     errorban.Draw("E2,SAME")
     legendR.AddEntry(hist_combined[cat]["DATA"], "Data", 'pe')
+    legendR.AddEntry(hist_combined[cat]["MC_EFT"], "EFT ref pt", 'pe')
     ratio = hist_combined[cat]["DATA"].Clone("ratio")
     temp = stack.GetStack().Last().Clone("temp")
     for i_bin in range(1,temp.GetNbinsX()+1):
@@ -522,7 +541,7 @@ for cat in categories:
 cat_region={"%s_SR"%(mass_range):["SR"],"%s_CR1"%(mass_range):["CR1"],"%s_CR2"%(mass_range):["CR2"]}
 
 
-sample_name={"TTbar":["TTbar"],"ST":["ST"],"WJets":["WJets"],"DATA":["data_obs"]}
+sample_name={"TTbar":["TTbar"],"ST":["ST"],"WJets":["WJets"],"DATA":["data_obs"],"MC_EFT":["EFT_refpt"]}
 
 systematic_name_mapping = {
     # "mu_reco": "muonReco",
@@ -557,20 +576,21 @@ for cat in categories:
     combine_file.mkdir(cat_region[cat][0])
     # print("making directory: ", cat_region[cat][0])
     combine_file.cd(cat_region[cat][0])
-    for sample in ["TTbar","ST","WJets","DATA"]:
+    for sample in ["TTbar","ST","WJets","DATA","MC_EFT"]:
         hist_combined[cat][sample].Write(sample_name[sample][0])
-        if sample!="DATA":
-            for sys in systematic_name_mapping:
-                # print(cat,sample,sys)
-                if "murmuf" in sys and sample!="TTbar":
-                    continue
-                if "murmuf" in sys and sample=="TTbar":
-                    hist_scale_Up[cat].Write("%s_%sUp"%(sample,sys))
-                    hist_scale_Down[cat].Write("%s_%sDown"%(sample,sys))
-                else:
-                    hist_sys_comb[cat][sample][sys]["Up"].Write("%s_%sUp"%(sample,sys))
-                    hist_sys_comb[cat][sample][sys]["Down"].Write("%s_%sDown"%(sample,sys))
-               
+        if sample!="DATA" :
+            if sample!="MC_EFT":
+                for sys in systematic_name_mapping:
+                    # print(cat,sample,sys)
+                    if "murmuf" in sys and sample!="TTbar":
+                        continue
+                    if "murmuf" in sys and sample=="TTbar":
+                        hist_scale_Up[cat].Write("%s_%sUp"%(sample,sys))
+                        hist_scale_Down[cat].Write("%s_%sDown"%(sample,sys))
+                    else:
+                        hist_sys_comb[cat][sample][sys]["Up"].Write("%s_%sUp"%(sample,sys))
+                        hist_sys_comb[cat][sample][sys]["Down"].Write("%s_%sDown"%(sample,sys))
+                
 
 
 

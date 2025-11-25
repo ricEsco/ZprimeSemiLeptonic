@@ -5,8 +5,8 @@
 
 year="UL17" # UL16preVFP / UL16postVFP / UL17 / UL18
 channel="muon" # electron / muon
-input_dir="/nfs/dust/cms/group/zprime-uhh/Analysis_${year}/${channel}/workdir_Analysis_${year}_${channel}/"
-output_dir="/nfs/dust/cms/group/zprime-uhh/Analysis_${year}/${channel}/"
+input_dir="/data/dust/group/zprime-uhh/Analysis_${year}/${channel}/workdir_Analysis_${year}_${channel}/"
+output_dir="/data/dust/group/zprime-uhh/Analysis_${year}/${channel}/"
 
 pwd="$(pwd)/"
 root.exe -b -l -q startup.C+

@@ -6,6 +6,7 @@
 #include "UHH2/common/include/JetIds.h"
 #include <math.h>
 #include <sstream>
+#include <iomanip>
 
 #include <UHH2/common/include/TTbarGen.h>
 #include <UHH2/common/include/TTbarReconstruction.h>
@@ -13,11 +14,135 @@
 
 #include <UHH2/core/include/LorentzVector.h>
 #include "TH1F.h"
+#include "TH1D.h"
 #include "TH2F.h"
+#include "TFile.h"
 #include <iostream>
+#include <algorithm>
+#include <cmath>
+#include <limits>
+#include <glob.h>
+#include <cstring>
 
 using namespace std;
 using namespace uhh2;
+
+// NoAC weight helper functions (static methods)
+std::unique_ptr<TH1D> ZprimeSemiLeptonicPDFHists::mirror_hist_1d(const TH1* H) {
+  auto H1 = dynamic_cast<const TH1D*>(H);
+  if(!H1) throw std::runtime_error("[NoAC] mirror_hist_1d expects TH1D");
+  auto M = std::unique_ptr<TH1D>(static_cast<TH1D*>(H1->Clone((std::string(H1->GetName())+"_mir").c_str())));
+  M->SetDirectory(nullptr);
+  M->Reset("ICES");
+  const TAxis* xax = H1->GetXaxis();
+  for(int i=1;i<=H1->GetNbinsX();++i){
+    const double xc = xax->GetBinCenter(i);
+    int j = xax->FindBin(-xc);
+    if(j < 1) j = 1;
+    if(j > H1->GetNbinsX()) j = H1->GetNbinsX();
+    M->SetBinContent(i, H1->GetBinContent(j));
+    M->SetBinError  (i, H1->GetBinError(j));
+  }
+  return M;
+}
+
+std::unique_ptr<TH1D> ZprimeSemiLeptonicPDFHists::build_noac_weights_from_gen(const TH1D& Hgen_in, float f_noac) {
+  auto Hgen = &Hgen_in;
+  if(!Hgen) throw std::runtime_error("[NoAC] Hgen is null");
+
+  auto Hmir = mirror_hist_1d(Hgen);
+  auto S = std::unique_ptr<TH1D>(static_cast<TH1D*>(Hgen->Clone("NoAC_S"))); S->SetDirectory(nullptr); S->Reset("ICES");
+  auto A = std::unique_ptr<TH1D>(static_cast<TH1D*>(Hgen->Clone("NoAC_A"))); A->SetDirectory(nullptr); A->Reset("ICES");
+
+  S->Add(Hgen, Hmir.get(), 0.5,  0.5);
+  A->Add(Hgen, Hmir.get(), 0.5, -0.5);
+
+  auto W = std::unique_ptr<TH1D>(static_cast<TH1D*>(Hgen->Clone("NoAC_W")));
+  W->SetDirectory(nullptr); W->Reset("ICES");
+
+  const int nb = Hgen->GetNbinsX();
+  int n_bad = 0;
+  for(int i=1;i<=nb;++i){
+    const double s = S->GetBinContent(i);
+    const double a = A->GetBinContent(i);
+    const double denom = s + a;
+    const double numer = s + (1.0 - static_cast<double>(f_noac)) * a;
+    double w = (denom>0.0 ? numer/denom : 1.0);
+    if(!(denom>0.0)) ++n_bad;
+    W->SetBinContent(i, w);
+  }
+  if(n_bad){
+    std::cout << "[NoAC] warning: " << n_bad << " GEN bins had (S+A)<=0; set w=1 there" << std::endl;
+  }
+
+  // renormalize <W> wrt Hgen content to keep total yield
+  double sumW=0.0, sum1=0.0;
+  for(int i=1;i<=nb;++i){
+    const double wi = W->GetBinContent(i);
+    const double hi = Hgen->GetBinContent(i);
+    sumW += wi*hi;
+    sum1 += hi;
+  }
+  if(sumW>0.0 && sum1>0.0){
+    const double norm = sumW/sum1;
+    for(int i=1;i<=nb;++i){
+      W->SetBinContent(i, W->GetBinContent(i)/norm);
+    }
+  }
+  return W;
+}
+
+double ZprimeSemiLeptonicPDFHists::lookup_noac_weight(double xi, const TH1* W){
+  if(!W || !std::isfinite(xi)) return 1.0;
+  double xmin = W->GetXaxis()->GetXmin();
+  double xmax = W->GetXaxis()->GetXmax();
+  if(xi <= xmin) xi = std::nextafter(xmin, xmax);
+  if(xi >= xmax) xi = std::nextafter(xmax, xmin);
+  int bin = W->GetXaxis()->FindFixBin(xi);
+  if(bin < 1) bin = 1;
+  if(bin > W->GetNbinsX()) bin = W->GetNbinsX();
+  const double w = W->GetBinContent(bin);
+  if(!std::isfinite(w) || w <= 0.0 || w > 100.0) return 1.0;
+  return w;
+}
+
+namespace {
+  // Helper: clone arbitrary TH1 into a detached TH1D
+  static std::unique_ptr<TH1D> clone_as_TH1D(const TH1* src, const std::string &out_name){
+    if(!src) return nullptr;
+    const TAxis* ax = src->GetXaxis();
+    const int nb = ax->GetNbins();
+    std::unique_ptr<TH1D> dst;
+    const TArrayD* xbins = ax->GetXbins();
+    if(xbins && xbins->GetSize() > 0){
+      dst.reset(new TH1D(out_name.c_str(), src->GetTitle(), nb, xbins->GetArray()));
+    } else {
+      dst.reset(new TH1D(out_name.c_str(), src->GetTitle(), nb, ax->GetXmin(), ax->GetXmax()));
+    }
+    dst->SetDirectory(nullptr);
+    for(int i=1;i<=nb;++i){
+      dst->SetBinContent(i, src->GetBinContent(i));
+      dst->SetBinError  (i, src->GetBinError(i));
+    }
+    return dst;
+  }
+  
+  // Map f values to exact suffixes from kNoACSpecs
+  std::string get_noac_suffix(float fv) {
+    static const std::map<float, std::string> f_to_suffix = {
+      {-100.0f, "noacm100"}, {-12.0f, "noacm12"}, {-8.0f, "noacm8"}, {-4.0f, "noacm4"}, {-2.0f, "noacm2"},
+      {-1.0f, "noacm1"}, {-0.8f, "noacm08"}, {-0.6f, "noacm06"}, {-0.4f, "noacm04"}, {-0.2f, "noacm02"},
+      {0.0f, "noac0"},
+      {0.2f, "noac02"}, {0.4f, "noac04"}, {0.6f, "noac06"}, {0.8f, "noac08"},
+      {1.0f, "noac1"}, {2.0f, "noac2"}, {4.0f, "noac4"}, {8.0f, "noac8"}, {12.0f, "noac12"}, {100.0f, "noac100"}
+    };
+    auto it = f_to_suffix.find(fv);
+    if(it != f_to_suffix.end()) return it->second;
+    if(std::abs(fv) < 0.01f) return "noac0";
+    else if(fv < 0) return "noacm" + std::to_string(static_cast<int>(std::abs(fv)));
+    else return "noac" + std::to_string(static_cast<int>(fv));
+  }
+}
 
 ZprimeSemiLeptonicPDFHists::ZprimeSemiLeptonicPDFHists(uhh2::Context & ctx, const std::string& dirname): 
 Hists(ctx, dirname){
@@ -47,6 +172,53 @@ Hists(ctx, dirname){
     h_AK8TopTags = ctx.get_handle<std::vector<TopJet>>("HOTVRTopTags");
   }
   h_CHSjets_matched = ctx.get_handle<std::vector<Jet>>("CHS_matched");
+  
+  //template method - NoAC setup for TTbar
+  use_noac_evtweights_ = false;
+  noac_gen_file_ = "";
+  noac_gen_hist_ = "";
+  if(is_mc && is_tt){
+    h_xi_gen = ctx.get_handle<float>("xi_gen");
+    use_noac_evtweights_ = (ctx.get("noac_apply_event_weight") == string("true"));
+    noac_gen_file_ = ctx.get("noac_gen_file");
+    noac_gen_hist_ = ctx.get("noac_gen_hist");
+    
+    // f values for the NoAC weights (all f values from kNoACSpecs)
+    f_values = {-100.0f, -12.0f, -8.0f, -4.0f, -2.0f, -1.0f, -0.8f, -0.6f, -0.4f, -0.2f, 0.0f, 0.2f, 0.4f, 0.6f, 0.8f, 1.0f, 2.0f, 4.0f, 8.0f, 12.0f, 100.0f};
+    
+    if(use_noac_evtweights_ && !noac_gen_file_.empty() && !noac_gen_hist_.empty()){
+      // Glob inputs to get the generator histogram files
+      glob_t gl; memset(&gl, 0, sizeof(gl));
+      int r = glob(noac_gen_file_.c_str(), 0, nullptr, &gl);
+      // sum the generator histograms
+      TH1D *sumH = nullptr;
+      if(r == 0){
+        // loop over the generator histogram files
+        for(size_t i=0;i<gl.gl_pathc;++i){
+          const char *fp = gl.gl_pathv[i];
+          std::unique_ptr<TFile> f(TFile::Open(fp));
+          if(!f || f->IsZombie()) continue;
+          TH1 *h = dynamic_cast<TH1*>(f->Get(noac_gen_hist_.c_str()));
+          if(!h) continue;
+          std::unique_ptr<TH1D> hD = clone_as_TH1D(h, "_tmpH");
+          if(!sumH){ sumH = static_cast<TH1D*>(hD->Clone("Hgen_sum_pdf")); sumH->SetDirectory(0); }
+          else { sumH->Add(hD.get()); }
+        }
+        globfree(&gl);
+      }
+      if(sumH){
+        // build the NoAC weights from the generator histogram
+        noac_weights_map.clear();
+        for(const float fv : f_values){
+          try{ 
+            noac_weights_map[fv] = build_noac_weights_from_gen(*sumH, fv); 
+          } catch(...){ }
+        }
+        delete sumH;
+      }
+    }
+  }
+  //template method end
 
   for(int i=0; i<100; i++){
     std::stringstream ss_name;
@@ -55,6 +227,7 @@ Hists(ctx, dirname){
     std::stringstream ss_name_dy_d2;
     std::stringstream ss_name_sigma_1;
     std::stringstream ss_name_sigma_2;
+    std::stringstream ss_name_xi;
 
 
 
@@ -65,7 +238,7 @@ Hists(ctx, dirname){
     ss_name_sigma_1 << "Sigma_phi_1_PDF_" << i+1;
     ss_name_sigma_2 << "Sigma_phi_2_PDF_" << i+1;
 
-
+    ss_name_xi    << "DeltaY_xi_reco_6_PDF_" << i+1;
 
 
     stringstream ss_title;
@@ -74,6 +247,8 @@ Hists(ctx, dirname){
     stringstream ss_title_dy_d2;
     stringstream ss_title_sigma_1;
     stringstream ss_title_sigma_2;
+    stringstream ss_title_xi;
+
 
 
     ss_title << "#DeltaY_{t#bar{t}} for PDF No. "  << i+1 << " out of 100" ;
@@ -85,6 +260,8 @@ Hists(ctx, dirname){
     ss_title_sigma_1 <<"#Sigma #phi for #DeltaY >0 for PDF No. "<< i+1 << " out of 100" ;
     ss_title_sigma_2 <<"#Sigma #phi for #DeltaY <0 for PDF No. "<< i+1 << " out of 100" ;
 
+    ss_title_xi    << "tanh(#Delta y)_{reco} for PDF No. " << i+1 << " out of 100";
+
     std::string s_name = ss_name.str();
     std::string s_name_dy_d1 = ss_name_dy_d1.str();
     std::string s_title_dy_d1 = ss_title_dy_d1.str();
@@ -94,6 +271,10 @@ Hists(ctx, dirname){
     std::string s_title_sigma_1 = ss_title_sigma_1.str();
     std::string s_name_sigma_2 = ss_name_sigma_2.str();
     std::string s_title_sigma_2 = ss_title_sigma_2.str();
+
+    std::string s_name_xi    = ss_name_xi.str();
+    std::string s_title_xi    = ss_title_xi.str();
+
 
     std::string s_name_tt = ss_name_tt.str();
     std::string s_title = ss_title.str();
@@ -119,6 +300,8 @@ Hists(ctx, dirname){
     hist_names_dy_d2[i] = s_name_dy_d2;
     hist_names_sigma_1[i] = s_name_sigma_1;
     hist_names_sigma_2[i] = s_name_sigma_2;
+    hist_names_xi[i]    = s_name_xi;
+
 
     book<TH1F>(char_name_dy_d1, char_title_dy_d1,  2, -2.5, 2.5);
     book<TH1F>(char_name_dy_d2, char_title_dy_d2,  2, -2.5, 2.5);
@@ -127,6 +310,35 @@ Hists(ctx, dirname){
     book<TH1F>(char_name, char_title,  2, -2.5, 2.5);
     book<TH2F>(char_name_tt, char_title_tt,  2, -2.5, 2.5, 2, -2.5, 2.5);
 
+    book<TH1F>(s_name_xi.c_str(),    s_title_xi.c_str(),    /*nbins*/ 6,  -1.0,  1.0);
+  }
+  
+  // Book PDF histograms for all binning schemes (6, 12, 18, 24, 30, 36, 50) - nominal only
+  // Note: 6-bin histograms are already booked above, so add them to the map
+  for(int pdf_idx = 0; pdf_idx < 100; ++pdf_idx){
+    std::stringstream ss6;
+    ss6 << "DeltaY_xi_reco_6_PDF_" << (pdf_idx + 1);
+    std::string hname6 = ss6.str();
+    if(h_pdf_xi_reco_map.find(hname6) == h_pdf_xi_reco_map.end()){
+      // The 6-bin histograms are already booked as hist_names_xi, so get them from there
+      if(auto* hxi = dynamic_cast<TH1F*>(hist(hist_names_xi[pdf_idx].c_str()))){
+        h_pdf_xi_reco_map[hname6] = hxi;
+      }
+    }
+  }
+  
+  const int pdf_bin_schemes[] = {12, 18, 24, 30, 36, 50};
+  for(int pdf_idx = 0; pdf_idx < 100; ++pdf_idx){
+    for(int nb : pdf_bin_schemes){
+      std::stringstream ss;
+      ss << "DeltaY_xi_reco_" << nb << "_PDF_" << (pdf_idx + 1);
+      std::string hname = ss.str();
+      if(h_pdf_xi_reco_map.find(hname) == h_pdf_xi_reco_map.end()){
+        std::stringstream ss_title;
+        ss_title << "tanh(#Delta y)_{reco} " << nb << " bins for PDF No. " << (pdf_idx + 1) << " out of 100";
+        h_pdf_xi_reco_map[hname] = book<TH1F>(hname.c_str(), ss_title.str().c_str(), nb, -1.0, 1.0);
+      }
+    }
   }
 }
 
@@ -264,7 +476,6 @@ void ZprimeSemiLeptonicPDFHists::fill(const Event & event){
         //if (debug)cout <<"Lepton is positive for PDF"<<endl;
         DeltaY_reco_best = TMath::Abs(0.5*TMath::Log((lep_top.energy() + lep_top.pt()*TMath::SinH(lep_top.eta()))/(lep_top.energy() - lep_top.pt()*TMath::SinH(lep_top.eta())))) - TMath::Abs(0.5*TMath::Log((had_top.energy() + had_top.pt()*TMath::SinH(had_top.eta()))/(had_top.energy() - had_top.pt()*TMath::SinH(had_top.eta()))));
         DeltaY_gen_best = TMath::Abs(0.5*TMath::Log((best_matched_gen_leptop.energy() + best_matched_gen_leptop.pt()*TMath::SinH(best_matched_gen_leptop.eta()))/(best_matched_gen_leptop.energy() - best_matched_gen_leptop.pt()*TMath::SinH(best_matched_gen_leptop.eta())))) - TMath::Abs(0.5*TMath::Log((best_matched_gen_hadtop.energy() + best_matched_gen_hadtop.pt()*TMath::SinH(best_matched_gen_hadtop.eta()))/(best_matched_gen_hadtop.energy() - best_matched_gen_hadtop.pt()*TMath::SinH(best_matched_gen_hadtop.eta()))));
-
         } else {
           //if (debug)cout <<"Lepton is negative for PDF"<<endl;
           DeltaY_reco_best = TMath::Abs(0.5*TMath::Log((had_top.energy() + had_top.pt()*TMath::SinH(had_top.eta()))/(had_top.energy() - had_top.pt()*TMath::SinH(had_top.eta())))) - TMath::Abs(0.5*TMath::Log((lep_top.energy() + lep_top.pt()*TMath::SinH(lep_top.eta()))/(lep_top.energy() - lep_top.pt()*TMath::SinH(lep_top.eta()))));
@@ -295,8 +506,53 @@ void ZprimeSemiLeptonicPDFHists::fill(const Event & event){
           }
         }
       }
+      
+      // template-method variable
+      // xi = tanh(dy_reco)
+      double deltay_reco = 0.0;
+      if (isLeptonPositive) {
+        deltay_reco = std::abs(lep_top.Rapidity()) - std::abs(had_top.Rapidity());
+      } else {
+        deltay_reco = std::abs(had_top.Rapidity()) - std::abs(lep_top.Rapidity());
+      }
+      const double deltay_xi = TMath::TanH(deltay_reco);
 
+      // ---- guards (early return) ----
+      const auto &systw = event.genInfo->systweights();
+      const size_t needed = static_cast<size_t>(MY_FIRST_INDEX) + 100u;
 
+      const float orig_w = event.genInfo->originalXWGTUP();
+      if (systw.size() > needed && orig_w != 0.f) {
+        // Get NoAC weight for f=0 (nominal) if available
+        double w_noac_nominal = 1.0;
+        if(use_noac_evtweights_ && !noac_weights_map.empty() && noac_weights_map.count(0.0f) && event.is_valid(h_xi_gen)){
+          const double xi_gen_evt = static_cast<double>(event.get(h_xi_gen));
+          w_noac_nominal = lookup_noac_weight(xi_gen_evt, noac_weights_map[0.0f].get());
+        }
+
+        // ---- fill 100 PDF replica histos for 6-bin (existing) ----
+        for (int i = 0; i < 100; ++i) {
+          const double pdfw = systw.at(MY_FIRST_INDEX + i);
+          if (auto* hxi = dynamic_cast<TH1F*>(hist(hist_names_xi[i].c_str())))
+            hxi->Fill(deltay_xi, weight * pdfw / orig_w * w_noac_nominal);
+        }
+        
+        // ---- fill 100 PDF replica histos for all other binning schemes (12, 18, 24, 30, 36, 50) ----
+        const int pdf_bin_schemes[] = {12, 18, 24, 30, 36, 50};
+        for (int i = 0; i < 100; ++i) {
+          const double pdfw = systw.at(MY_FIRST_INDEX + i);
+          for(int nb : pdf_bin_schemes){
+            std::stringstream ss;
+            ss << "DeltaY_xi_reco_" << nb << "_PDF_" << (i + 1);
+            std::string hname = ss.str();
+            auto it = h_pdf_xi_reco_map.find(hname);
+            if(it != h_pdf_xi_reco_map.end()){
+              it->second->Fill(deltay_xi, weight * pdfw / orig_w * w_noac_nominal);
+            }
+          }
+        }
+        //template method end
+      }
     }// loop ending for ttbar only
     //else{
     if (debug)cout << "checking for all MC" << endl;

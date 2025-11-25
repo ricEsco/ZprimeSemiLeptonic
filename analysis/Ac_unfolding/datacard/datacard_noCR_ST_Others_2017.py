@@ -1,11 +1,43 @@
 import os
+import ROOT
+
+# List of JEC sources to include in the datacard
+jec_sources = [
+    "AbsoluteStat",
+    "AbsoluteScale",
+    "AbsoluteMPFBias",
+    "FlavorQCD",
+    "Fragmentation",
+    "PileUpDataMC",
+    "PileUpPtBB",
+    "PileUpPtEC1",
+    "PileUpPtEC2",
+    "PileUpPtHF",
+    "PileUpPtRef",
+    "RelativeFSR",
+    "RelativeJEREC1",
+    "RelativeJEREC2",
+    "RelativeJERHF",
+    "RelativePtBB",
+    "RelativePtEC1",
+    "RelativePtEC2",
+    "RelativePtHF",
+    "RelativeBal",
+    "RelativeSample",
+    "RelativeStatEC",
+    "RelativeStatFSR",
+    "RelativeStatHF",
+    "SinglePionECAL",
+    "SinglePionHCAL",
+    "TimePtEta"
+]
 
 template = """imax * number of bins
 jmax 3 number of processes minus 1
 kmax * number of nuisance parameters
 ----------------------------------------------------------------------------------------------------------------------------------
-shapes data_obs     {lepton}_{year}_{mass_range}_SR      /nfs/dust/cms/user/beozek/uuh2-106X_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/analysis/Ac_unfolding/UL17/combine_input/individual_files/dY_{year}_{lepton}_{mass_range}_SR.root data_obs
-shapes *            {lepton}_{year}_{mass_range}_SR      /nfs/dust/cms/user/beozek/uuh2-106X_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/analysis/Ac_unfolding/UL17/combine_input/individual_files/dY_{year}_{lepton}_{mass_range}_SR.root $PROCESS $PROCESS_$SYSTEMATIC
+shapes data_obs     {lepton}_{year}_{mass_range}_SR      /data/dust/user/beozek/uuh2-106X_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/analysis/Ac_unfolding/UL17/combine_input/individual_files/dY_{year}_{lepton}_{mass_range}_SR.root data_obs
+shapes *            {lepton}_{year}_{mass_range}_SR      /data/dust/user/beozek/uuh2-106X_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/analysis/Ac_unfolding/UL17/combine_input/individual_files/dY_{year}_{lepton}_{mass_range}_SR.root $PROCESS $PROCESS_$SYSTEMATIC
 ----------------------------------------------------------------------------------------------------------------------------------
 bin                     {lepton}_{year}_{mass_range}_SR   {lepton}_{year}_{mass_range}_SR   {lepton}_{year}_{mass_range}_SR   {lepton}_{year}_{mass_range}_SR
 process                 TTbar_1                           TTbar_2                           ST                                Others
@@ -40,9 +72,14 @@ pdf                 shape   1          1          -          -
 jer_UL16            shape   -          -          -          -
 jer_UL17            shape   1          1          -          -
 jer_UL18            shape   -          -          -          -
-jec                 shape   1          1          -          -
-#hdamp               shape   1          1          -          -
-btagCferr1          shape   1          1          1          1
+"""
+
+# Add JEC sources to fixed systematics
+for source in jec_sources:
+    fixed_systematics += "jec{}           shape   1          1          -          -     \n".format(source)
+
+# Rest of the fixed systematics
+fixed_systematics += """btagCferr1          shape   1          1          1          1
 btagCferr2          shape   1          1          1          1
 btagHf              shape   1          1          1          1
 btagHfstats1        shape   1          1          1          1
@@ -60,8 +97,8 @@ final_part = """
 {lepton}_{year}_{mass_range}_SR autoMCStats 1e06 1 1
 """
 
-leptons = ["muon", "ele"]
-mass_ranges = ["0_500", "500_750", "750_1000", "1000_1500", "1500Inf"]
+leptons = ["ele"]
+mass_ranges = ["0_500", "500_750", "750_1000", "1000_1500", "1500_Inf"]
 year = "UL17"
 
 # Define systematics for each lepton
@@ -91,7 +128,7 @@ for lepton in leptons:
         # Add dynamic systematics for each lepton
         datacard_content = add_systematics(datacard_content, lepton, systematics)
         
-        # Add fixed systematics
+        # Add fixed systematics (including JEC sources)
         datacard_content += fixed_systematics
         
         # Add final part with autoMCStats

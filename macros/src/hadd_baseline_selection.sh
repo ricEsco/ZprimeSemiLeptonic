@@ -2,8 +2,8 @@
 
 year="UL16preVFP" # UL16preVFP / UL16postVFP / UL17 / UL18
 channel="electron" # electron / muon
-input_dir="/nfs/dust/cms/group/zprime-uhh/Analysis_${year}/${channel}/workdir_Analysis_${year}_${channel}/"
-output_dir="/nfs/dust/cms/group/zprime-uhh/Analysis_${year}/${channel}/"
+input_dir="/data/dust/group/zprime-uhh/Analysis_${year}/${channel}/workdir_Analysis_${year}_${channel}/"
+output_dir="/data/dust/group/zprime-uhh/Analysis_${year}/${channel}/"
 
 echo "hadding: year=${year}, channel=${channel}"
 

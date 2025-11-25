@@ -25,7 +25,7 @@ using namespace std;
 
 void mistag(){
 
-TString file_dir = "/nfs/dust/cms/group/zprime-uhh/AnalysisDNN_UL17/Mistag_rate/muon";
+TString file_dir = "/data/dust/group/zprime-uhh/AnalysisDNN_UL17/Mistag_rate/muon";
 
 TString  filename_DATA  = file_dir + "/uhh2.AnalysisModuleRunner.DATA.DATA.root";
 TString  filename_TTbar = file_dir + "/uhh2.AnalysisModuleRunner.MC.TTbar.root";

@@ -26,7 +26,7 @@ using namespace std;
 
 void ExtractCustomBTagSF(){
 
-  TString file_dir = "/nfs/dust/cms/group/zprime-uhh/";
+  TString file_dir = "/data/dust/group/zprime-uhh/";
 
   vector<TString> channel = {
     "electron",

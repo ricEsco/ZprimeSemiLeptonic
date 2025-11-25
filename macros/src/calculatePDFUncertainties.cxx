@@ -1,7 +1,7 @@
 void calculatePDFUncertainties(){
 
-  TString input_dir = "/nfs/dust/cms/user/jabuschh/ZprimeSemiLeptonic/RunII_106X_v2/UL18/muon/AnalysisDNN_withSyst/";
-  TString output_dir = "/nfs/dust/cms/user/jabuschh/uhh2-106X_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/macros/src/PDF_hists/";
+  TString input_dir = "/data/dust/user/jabuschh/ZprimeSemiLeptonic/RunII_106X_v2/UL18/muon/AnalysisDNN_withSyst/";
+  TString output_dir = "/data/dust/user/jabuschh/uhh2-106X_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/macros/src/PDF_hists/";
   TString root_dir = "Zprime_PDFVariations_DNN_output0/";
   TString hist_name = "M_Zprime";
 

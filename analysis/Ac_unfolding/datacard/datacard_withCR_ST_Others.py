@@ -1,25 +1,57 @@
 import os
+import ROOT
+
+# List of JEC sources to include in the datacard
+jec_sources = [
+    "AbsoluteStat",
+    "AbsoluteScale",
+    "AbsoluteMPFBias",
+    "FlavorQCD",
+    "Fragmentation",
+    "PileUpDataMC",
+    "PileUpPtBB",
+    "PileUpPtEC1",
+    "PileUpPtEC2",
+    "PileUpPtHF",
+    "PileUpPtRef",
+    "RelativeFSR",
+    "RelativeJEREC1",
+    "RelativeJEREC2",
+    "RelativeJERHF",
+    "RelativePtBB",
+    "RelativePtEC1",
+    "RelativePtEC2",
+    "RelativePtHF",
+    "RelativeBal",
+    "RelativeSample",
+    "RelativeStatEC",
+    "RelativeStatFSR",
+    "RelativeStatHF",
+    "SinglePionECAL",
+    "SinglePionHCAL",
+    "TimePtEta"
+]
 
 template = """imax 3 number of bins
 jmax 3 number of processes minus 1
 kmax * number of nuisance parameters
 ----------------------------------------------------------------------------------------------------------------------------------
-shapes data_obs     {lepton}_{year}_{mass_range}_SR      /nfs/dust/cms/user/beozek/uuh2-106X_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/analysis/Ac_unfolding/UL18/combine_input/combined_regions/dY_{year}_{lepton}_{mass_range}.root SR/data_obs
-shapes *            {lepton}_{year}_{mass_range}_SR      /nfs/dust/cms/user/beozek/uuh2-106X_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/analysis/Ac_unfolding/UL18/combine_input/combined_regions/dY_{year}_{lepton}_{mass_range}.root SR/$PROCESS SR/$PROCESS_$SYSTEMATIC
-shapes data_obs     {lepton}_{year}_{mass_range}_CR1     /nfs/dust/cms/user/beozek/uuh2-106X_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/analysis/Ac_unfolding/UL18/combine_input/combined_regions/dY_{year}_{lepton}_{mass_range}.root CR1/data_obs
-shapes *            {lepton}_{year}_{mass_range}_CR1     /nfs/dust/cms/user/beozek/uuh2-106X_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/analysis/Ac_unfolding/UL18/combine_input/combined_regions/dY_{year}_{lepton}_{mass_range}.root CR1/$PROCESS CR1/$PROCESS_$SYSTEMATIC
-shapes data_obs     {lepton}_{year}_{mass_range}_CR2     /nfs/dust/cms/user/beozek/uuh2-106X_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/analysis/Ac_unfolding/UL18/combine_input/combined_regions/dY_{year}_{lepton}_{mass_range}.root CR2/data_obs
-shapes *            {lepton}_{year}_{mass_range}_CR2     /nfs/dust/cms/user/beozek/uuh2-106X_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/analysis/Ac_unfolding/UL18/combine_input/combined_regions/dY_{year}_{lepton}_{mass_range}.root CR2/$PROCESS CR2/$PROCESS_$SYSTEMATIC
+shapes data_obs     {lepton}_{year}_{mass_range}_SR      /data/dust/user/beozek/uuh2-106X_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/analysis/Ac_unfolding/UL17/combine_input/combined_regions/dY_{year}_{lepton}_{mass_range}.root SR/data_obs
+shapes *            {lepton}_{year}_{mass_range}_SR      /data/dust/user/beozek/uuh2-106X_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/analysis/Ac_unfolding/UL17/combine_input/combined_regions/dY_{year}_{lepton}_{mass_range}.root SR/$PROCESS SR/$PROCESS_$SYSTEMATIC
+shapes data_obs     {lepton}_{year}_{mass_range}_CR1     /data/dust/user/beozek/uuh2-106X_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/analysis/Ac_unfolding/UL17/combine_input/combined_regions/dY_{year}_{lepton}_{mass_range}.root CR1/data_obs
+shapes *            {lepton}_{year}_{mass_range}_CR1     /data/dust/user/beozek/uuh2-106X_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/analysis/Ac_unfolding/UL17/combine_input/combined_regions/dY_{year}_{lepton}_{mass_range}.root CR1/$PROCESS CR1/$PROCESS_$SYSTEMATIC
+shapes data_obs     {lepton}_{year}_{mass_range}_CR2     /data/dust/user/beozek/uuh2-106X_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/analysis/Ac_unfolding/UL17/combine_input/combined_regions/dY_{year}_{lepton}_{mass_range}.root CR2/data_obs
+shapes *            {lepton}_{year}_{mass_range}_CR2     /data/dust/user/beozek/uuh2-106X_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/analysis/Ac_unfolding/UL17/combine_input/combined_regions/dY_{year}_{lepton}_{mass_range}.root CR2/$PROCESS CR2/$PROCESS_$SYSTEMATIC
 ----------------------------------------------------------------------------------------------------------------------------------
 bin                     {lepton}_{year}_{mass_range}_SR   {lepton}_{year}_{mass_range}_SR    {lepton}_{year}_{mass_range}_SR    {lepton}_{year}_{mass_range}_SR    {lepton}_{year}_{mass_range}_CR1  {lepton}_{year}_{mass_range}_CR1   {lepton}_{year}_{mass_range}_CR1   {lepton}_{year}_{mass_range}_CR1   {lepton}_{year}_{mass_range}_CR2  {lepton}_{year}_{mass_range}_CR2   {lepton}_{year}_{mass_range}_CR2   {lepton}_{year}_{mass_range}_CR2
 process                 TTbar_1                           TTbar_2                            ST                                 Others                            TTbar_1                           TTbar_2                            ST                                 Others                           TTbar_1                           TTbar_2                            ST                                 Others
 process                 -1                                0                                  1                                  2                                 -1                                0                                  1                                  2                                 -1                                0                                  1                                  2
 rate                    -1                                -1                                 -1                                 -1                                -1                                -1                                 -1                                 -1                                -1                                -1                                 -1                                 -1
 ----------------------------------------------------------------------------------------------------------------------------------
-lumi_corr_161718    lnN     1.02       1.02       1.02       1.02       1.02       1.02       1.02       1.02       1.02       1.02       1.02       1.02
-lumi_corr_1718      lnN     1.002      1.002      1.002      1.002      1.002      1.002      1.002      1.002      1.002      1.002      1.002      1.002
-lumi_uncorr_18      lnN     1.015      1.015      1.015      1.015      1.015      1.015      1.015      1.015      1.015      1.015      1.015      1.015
-lumi_uncorr_17      lnN     -          -          -          -          -          -          -          -          -          -          -          -
+lumi_corr_161718    lnN     1.009      1.009     1.009    1.009
+lumi_corr_1718      lnN     1.006      1.006      1.006      1.006
+lumi_uncorr_18      lnN     -          -          -          -          -          -          -          -          -          -          -          -
+lumi_uncorr_17      lnN     1.02       1.02       1.02       1.02       1.02       1.02       1.02       1.02       1.02       1.02       1.02       1.02
 lumi_uncorr_16      lnN     -          -          -          -          -          -          -          -          -          -          -          -
 TTbar_norm          lnN     1.05       1.05       -          -          1.05       1.05       -          -          1.05       1.05       -          -
 ST_norm             lnN     -          -          1.20       -          -          -          1.20       -          -          -          1.20       -
@@ -36,17 +68,21 @@ def add_systematics(template, lepton, systematics):
     return template
 
 # Add the fixed systematics (shared between leptons)
-
 fixed_systematics = """isr                 shape   1          1          -          -          1          1          -          -          1          1          -          -
 fsr                 shape   1          1          -          -          1          1          -          -          1          1          -          -
 murmuf              shape   1          1          -          -          1          1          -          -          1          1          -          -
 pdf                 shape   1          1          -          -          1          1          -          -          1          1          -          -
 jer_UL16            shape   -          -          -          -          -          -          -          -          -          -          -          -
-jer_UL17            shape   -          -          -          -          -          -          -          -          -          -          -          -
-jer_UL18            shape   1          1          -          -          1          1          -          -          1          1          -          -
-jec                 shape   1          1          -          -          1          1          -          -          1          1          -          -
-#hdamp               shape   1          1          -          -          1          1          -          -          1          1          -          -
-btagCferr1          shape   1          1          1          1          1          1          1          1          1          1          1          1
+jer_UL17            shape   1          1          -          -          1          1          -          -          1          1          -          -
+jer_UL18            shape   -          -          -          -          -          -          -          -          -          -          -          -
+"""
+
+# Add JEC sources to fixed systematics
+for source in jec_sources:
+    fixed_systematics += "jec{}           shape   1          1          -          -          1          1          -          -          1          1          -          -\n".format(source)
+
+# Rest of the fixed systematics
+fixed_systematics += """btagCferr1          shape   1          1          1          1          1          1          1          1          1          1          1          1
 btagCferr2          shape   1          1          1          1          1          1          1          1          1          1          1          1
 btagHf              shape   1          1          1          1          1          1          1          1          1          1          1          1
 btagHfstats1        shape   1          1          1          1          1          1          1          1          1          1          1          1
@@ -68,7 +104,7 @@ final_part = """
 
 leptons = ["muon", "ele"]
 mass_ranges = ["0_500", "500_750", "750_1000", "1000_1500", "1500_Inf"]
-year = "UL18"
+year = "UL17"
 
 # Define systematics for each lepton
 systematics = {
@@ -97,7 +133,7 @@ for lepton in leptons:
         # Add dynamic systematics for each lepton
         datacard_content = add_systematics(datacard_content, lepton, systematics)
         
-        # Add fixed systematics
+        # Add fixed systematics (including JEC sources)
         datacard_content += fixed_systematics
         
         # Add final part with autoMCStats

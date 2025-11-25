@@ -26,7 +26,7 @@ using namespace std;
 void eff(){
 
   TString filename_base = "";
-  filename_base += "/nfs/dust/cms/user/deleokse/RunII_102X_v2/ZPrime_lowmass/ZPrime_2018/Analysis_2018/muon/NOMINAL/uhh2.AnalysisModuleRunner.MC.";
+  filename_base += "/data/dust/user/deleokse/RunII_102X_v2/ZPrime_lowmass/ZPrime_2018/Analysis_2018/muon/NOMINAL/uhh2.AnalysisModuleRunner.MC.";
 
   vector<TString> samples = {"TTbar", "ST", "QCD"};
   vector<float> before_matchable, before_correct_matchable, after_matchable, after_correct_matchable;

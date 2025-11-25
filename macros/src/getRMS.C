@@ -24,8 +24,8 @@ using namespace std;
 
 void getRMS(){
 
-  TString uhh2_basedir = "/nfs/dust/cms/user/jabuschh/uhh2-106X_v2/";
-  TString file_dir = "/nfs/dust/cms/group/zprime-uhh/";
+  TString uhh2_basedir = "/data/dust/user/jabuschh/uhh2-106X_v2/";
+  TString file_dir = "/data/dust/group/zprime-uhh/";
   TString file_name = "";
 
   vector<TString> year = {

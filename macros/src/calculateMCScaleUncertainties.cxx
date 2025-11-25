@@ -1,8 +1,8 @@
 {
 
-  TString input_dir = "/nfs/dust/cms/user/jabuschh/ZprimeSemiLeptonic/RunII_106X_v2/UL18/muon/AnalysisDNN_withSyst/";
-  TString output_dir = "/nfs/dust/cms/user/jabuschh/uhh2-106X_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/macros/src/MCScale_hists/";
-  TString save_dir = "/nfs/dust/cms/user/jabuschh/uhh2-106X_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/plots/mttbarSystRatio/";
+  TString input_dir = "/data/dust/user/jabuschh/ZprimeSemiLeptonic/RunII_106X_v2/UL18/muon/AnalysisDNN_withSyst/";
+  TString output_dir = "/data/dust/user/jabuschh/uhh2-106X_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/macros/src/MCScale_hists/";
+  TString save_dir = "/data/dust/user/jabuschh/uhh2-106X_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/plots/mttbarSystRatio/";
   TString root_dir = "Zprime_SystVariations_DNN_output0/";
   TString hist_name = "M_Zprime";
 

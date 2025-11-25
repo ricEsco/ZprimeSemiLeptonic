@@ -11,7 +11,9 @@
 <!ENTITY IS_DEEPAK8 "true">
 <!ENTITY IS_LOOSER_SELECTION "false">
 <!ENTITY CHANNEL "electron">
-<!ENTITY OUTPUTdir "/nfs/dust/cms/user/titasroy/Ac_UL_ntuples/2017/&CHANNEL;/">
+<!ENTITY SAMPLE "none">
+
+<!ENTITY OUTPUTdir  "/data/dust/group/cms/zprime-uhh/AnalysisDNN_UL17_new/&CHANNEL;/">
 
 <!ENTITY SingleElectron_RunB SYSTEM "../data/Skimming_datasets_UL17_electron/DATA_SingleElectron_RunB_UL17.xml">
 <!ENTITY SingleElectron_RunC SYSTEM "../data/Skimming_datasets_UL17_electron/DATA_SingleElectron_RunC_UL17.xml">
@@ -64,7 +66,7 @@
 
 <!--
 <ConfigParse NEventsBreak="0" LastBreak="0" FileSplit="1" AutoResubmit="0"/>
-<ConfigSGE RAM="2" DISK="2" Mail="titasroy@uic.edu" Notification="as" Workdir="workdir_AnalysisDNN_2017_electron"/>
+<ConfigSGE RAM="2" DISK="2" Mail="bozek3@uic.edu" Notification="as" Workdir="workdir_AnalysisDNN_UL17_electron_nominal"/>
 -->
 
 <JobConfiguration JobName="ZprimePreselectionJob" OutputLevel="INFO">
@@ -112,8 +114,8 @@
     <InputData Lumi="130515.21256145429" NEventsMax="&NEVT;" Type="MC" Version="WW&YEARsuffix;" Cacheable="&b_Cacheable;"> &WW; <InputTree Name="AnalysisTree"/> </InputData>
     <InputData Lumi="166609.8567057629" NEventsMax="&NEVT;" Type="MC" Version="WZ&YEARsuffix;" Cacheable="&b_Cacheable;"> &WZ; <InputTree Name="AnalysisTree"/> </InputData>
     <InputData Lumi="160155.57851602067" NEventsMax="&NEVT;" Type="MC" Version="ZZ&YEARsuffix;" Cacheable="&b_Cacheable;"> &ZZ; <InputTree Name="AnalysisTree"/> </InputData>
-    <InputData Lumi="0.14003410973641742" NEventsMax="&NEVT;" Type="MC" Version="QCD_HT50to100&YEARsuffix;" Cacheable="&b_Cacheable;"> &QCD_HT50to100; <InputTree Name="AnalysisTree"/> </InputData>
-    <InputData Lumi="2.257501313002965" NEventsMax="&NEVT;" Type="MC" Version="QCD_HT100to200&YEARsuffix;" Cacheable="&b_Cacheable;"> &QCD_HT100to200; <InputTree Name="AnalysisTree"/> </InputData> 
+    <!-- <InputData Lumi="0.14003410973641742" NEventsMax="&NEVT;" Type="MC" Version="QCD_HT50to100&YEARsuffix;" Cacheable="&b_Cacheable;"> &QCD_HT50to100; <InputTree Name="AnalysisTree"/> </InputData> -->
+    <!-- <InputData Lumi="2.257501313002965" NEventsMax="&NEVT;" Type="MC" Version="QCD_HT100to200&YEARsuffix;" Cacheable="&b_Cacheable;"> &QCD_HT100to200; <InputTree Name="AnalysisTree"/> </InputData>  -->
     <InputData Lumi="27.28312572533849" NEventsMax="&NEVT;" Type="MC" Version="QCD_HT200to300&YEARsuffix;" Cacheable="&b_Cacheable;"> &QCD_HT200to300; <InputTree Name="AnalysisTree"/> </InputData>
     <InputData Lumi="132.3281652790626" NEventsMax="&NEVT;" Type="MC" Version="QCD_HT300to500&YEARsuffix;" Cacheable="&b_Cacheable;"> &QCD_HT300to500; <InputTree Name="AnalysisTree"/> </InputData>
     <InputData Lumi="1178.1662821357943" NEventsMax="&NEVT;" Type="MC" Version="QCD_HT500to700&YEARsuffix;" Cacheable="&b_Cacheable;"> &QCD_HT500to700; <InputTree Name="AnalysisTree"/> </InputData>
@@ -135,15 +137,15 @@
       <Item Name="METName" Value="slimmedMETsPuppi"/>
       <Item Name="genMETName" Value="slimmedMETs_GenMET"/>
 
-      <Item Name="lumi_file" Value="/nfs/dust/cms/user/deleokse/RunII_106_v2/CMSSW_10_6_28/src/UHH2/common/UHH2-data/UL17/Cert_294927-306462_13TeV_UL2017_Collisions17_GoldenJSON_normtag.root"/>
+      <Item Name="lumi_file" Value="/data/dust/user/deleokse/RunII_106_v2/CMSSW_10_6_28/src/UHH2/common/UHH2-data/UL17/Cert_294927-306462_13TeV_UL2017_Collisions17_GoldenJSON_normtag.root"/>
       <Item Name="lumihists_lumi_per_bin" Value="500.0"/>
 
-      <Item Name="pileup_directory" Value="/nfs/dust/cms/user/deleokse/RunII_106_v2/CMSSW_10_6_28/src/UHH2/common/UHH2-data/UL17/MyMCPileupHistogram_UL17.root" />
-      <Item Name="pileup_directory_data" Value="/nfs/dust/cms/user/deleokse/RunII_106_v2/CMSSW_10_6_28/src/UHH2/common/UHH2-data/UL17/MyDataPileupHistogram_UL17.root" />
-      <Item Name="pileup_directory_data_up" Value="/nfs/dust/cms/user/deleokse/RunII_106_v2/CMSSW_10_6_28/src/UHH2/common/UHH2-data/UL17/MyDataPileupHistogram_UL17_72383.root" />
-      <Item Name="pileup_directory_data_down" Value="/nfs/dust/cms/user/deleokse/RunII_106_v2/CMSSW_10_6_28/src/UHH2/common/UHH2-data/UL17/MyDataPileupHistogram_UL17_66017.root" />
+      <Item Name="pileup_directory" Value="/data/dust/user/deleokse/RunII_106_v2/CMSSW_10_6_28/src/UHH2/common/UHH2-data/UL17/MyMCPileupHistogram_UL17.root" />
+      <Item Name="pileup_directory_data" Value="/data/dust/user/deleokse/RunII_106_v2/CMSSW_10_6_28/src/UHH2/common/UHH2-data/UL17/MyDataPileupHistogram_UL17.root" />
+      <Item Name="pileup_directory_data_up" Value="/data/dust/user/deleokse/RunII_106_v2/CMSSW_10_6_28/src/UHH2/common/UHH2-data/UL17/MyDataPileupHistogram_UL17_72383.root" />
+      <Item Name="pileup_directory_data_down" Value="/data/dust/user/deleokse/RunII_106_v2/CMSSW_10_6_28/src/UHH2/common/UHH2-data/UL17/MyDataPileupHistogram_UL17_66017.root" />
 
-      <Item Name="NLOCorrections" Value="/nfs/dust/cms/user/deleokse/RunII_106_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/data/" />
+      <Item Name="NLOCorrections" Value="/data/dust/user/deleokse/RunII_106_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/data/" />
 
       <Item Name="is_hotvr" Value="&IS_HOTVR;"/>
       <Item Name="is_deepAK8" Value="&IS_DEEPAK8;"/>
@@ -179,6 +181,7 @@
       <Item Name="Systematic_TopPt_a" Value="nominal"/>
       <Item Name="Systematic_TopPt_b" Value="nominal"/>
       <Item Name="channel" Value="&CHANNEL;"/>
+      <Item Name="sample" Value="&SAMPLE;"/>
 
       <Item Name="AnalysisModule" Value="ZprimeAnalysisModule_applyNN"/>
     </UserConfig>

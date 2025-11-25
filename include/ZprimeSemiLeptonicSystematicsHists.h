@@ -10,6 +10,9 @@
 
 #include <TLorentzVector.h>
 #include <string>
+#include <map>
+#include <memory>
+#include <vector>
 
 class ZprimeSemiLeptonicSystematicsHists: public uhh2::Hists {
 public:
@@ -175,6 +178,42 @@ protected:
   TH1F *DeltaY_toppt_a_down;
   TH1F *DeltaY_toppt_b_up;
   TH1F *DeltaY_toppt_b_down;
+  // --- Template method: xi = tanh(DeltaY), 6 bins ---
+  TH1F *DeltaY_xi_reco_6;
+  // lepton/trigger/pileup/prefiring
+  TH1F *DeltaY_xi_reco_6_ele_reco_up;      TH1F *DeltaY_xi_reco_6_ele_reco_down;
+  TH1F *DeltaY_xi_reco_6_ele_id_up;        TH1F *DeltaY_xi_reco_6_ele_id_down;
+  TH1F *DeltaY_xi_reco_6_ele_trigger_up;   TH1F *DeltaY_xi_reco_6_ele_trigger_down;
+  TH1F *DeltaY_xi_reco_6_mu_reco_up;       TH1F *DeltaY_xi_reco_6_mu_reco_down;
+  TH1F *DeltaY_xi_reco_6_mu_iso_stat_up;   TH1F *DeltaY_xi_reco_6_mu_iso_stat_down;
+  TH1F *DeltaY_xi_reco_6_mu_iso_syst_up;   TH1F *DeltaY_xi_reco_6_mu_iso_syst_down;
+  TH1F *DeltaY_xi_reco_6_mu_id_stat_up;    TH1F *DeltaY_xi_reco_6_mu_id_stat_down;
+  TH1F *DeltaY_xi_reco_6_mu_id_syst_up;    TH1F *DeltaY_xi_reco_6_mu_id_syst_down;
+  TH1F *DeltaY_xi_reco_6_mu_trigger_stat_up; TH1F *DeltaY_xi_reco_6_mu_trigger_stat_down;
+  TH1F *DeltaY_xi_reco_6_mu_trigger_syst_up; TH1F *DeltaY_xi_reco_6_mu_trigger_syst_down;
+  TH1F *DeltaY_xi_reco_6_pu_up;            TH1F *DeltaY_xi_reco_6_pu_down;
+  TH1F *DeltaY_xi_reco_6_prefiring_up;     TH1F *DeltaY_xi_reco_6_prefiring_down;
+  // scales, isr fsr
+  TH1F *DeltaY_xi_reco_6_murmuf_upup;      TH1F *DeltaY_xi_reco_6_murmuf_upnone;
+  TH1F *DeltaY_xi_reco_6_murmuf_noneup;    TH1F *DeltaY_xi_reco_6_murmuf_nonedown;
+  TH1F *DeltaY_xi_reco_6_murmuf_downnone;  TH1F *DeltaY_xi_reco_6_murmuf_downdown;
+  TH1F *DeltaY_xi_reco_6_isr_up;           TH1F *DeltaY_xi_reco_6_isr_down;
+  TH1F *DeltaY_xi_reco_6_fsr_up;           TH1F *DeltaY_xi_reco_6_fsr_down;
+  // btag
+  TH1F *DeltaY_xi_reco_6_btag_cferr1_up;   TH1F *DeltaY_xi_reco_6_btag_cferr1_down;
+  TH1F *DeltaY_xi_reco_6_btag_cferr2_up;   TH1F *DeltaY_xi_reco_6_btag_cferr2_down;
+  TH1F *DeltaY_xi_reco_6_btag_hf_up;       TH1F *DeltaY_xi_reco_6_btag_hf_down;
+  TH1F *DeltaY_xi_reco_6_btag_hfstats1_up; TH1F *DeltaY_xi_reco_6_btag_hfstats1_down;
+  TH1F *DeltaY_xi_reco_6_btag_hfstats2_up; TH1F *DeltaY_xi_reco_6_btag_hfstats2_down;
+  TH1F *DeltaY_xi_reco_6_btag_lf_up;       TH1F *DeltaY_xi_reco_6_btag_lf_down;
+  TH1F *DeltaY_xi_reco_6_btag_lfstats1_up; TH1F *DeltaY_xi_reco_6_btag_lfstats1_down;
+  TH1F *DeltaY_xi_reco_6_btag_lfstats2_up; TH1F *DeltaY_xi_reco_6_btag_lfstats2_down;
+  // ttag, mistag, toppt
+  TH1F *DeltaY_xi_reco_6_ttag_corr_up;     TH1F *DeltaY_xi_reco_6_ttag_corr_down;
+  TH1F *DeltaY_xi_reco_6_ttag_uncorr_up;   TH1F *DeltaY_xi_reco_6_ttag_uncorr_down;
+  TH1F *DeltaY_xi_reco_6_tmistag_up;       TH1F *DeltaY_xi_reco_6_tmistag_down;
+  TH1F *DeltaY_xi_reco_6_toppt_a_up;       TH1F *DeltaY_xi_reco_6_toppt_a_down;
+  TH1F *DeltaY_xi_reco_6_toppt_b_up;       TH1F *DeltaY_xi_reco_6_toppt_b_down;
 
 
   TH1F *DeltaY_reco_d1_mu_reco_up;
@@ -493,5 +532,22 @@ protected:
   uhh2::Event::Handle<bool> h_is_zprime_reconstructed_chi2;
   uhh2::Event::Handle<ZprimeCandidate*> h_BestZprimeCandidateChi2;
   uhh2::Event::Handle<std::vector<ReconstructionHypothesis>> h_ttbar_hyps;
+
+  // --- NoAC support for tanh systematics (TT-only) ---
+  bool use_noac_evtweights_ = false;
+  std::string noac_gen_file_;
+  std::string noac_gen_hist_;
+  double noac_fraction_ = 0.0;
+  uhh2::Event::Handle<float> h_xi_gen;
+  std::unique_ptr<TH1D> noac_weights_;
+
+  static std::unique_ptr<TH1D> mirror_hist_1d(const TH1D &src);
+  static std::unique_ptr<TH1D> build_noac_weights_from_gen(const TH1D &Hgen, double f_noac);
+  static double lookup_noac_weight(const TH1 *W, double xi);
+  
+  // Template-method (xi) multi-f infrastructure
+  std::vector<float> f_values;
+  std::map<float, std::unique_ptr<TH1D>> noac_weights_map;
+  std::map<std::string, TH1F*> h_deltaY_xi_reco_map;
   virtual ~ZprimeSemiLeptonicSystematicsHists();
 };

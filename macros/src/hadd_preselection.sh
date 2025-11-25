@@ -1,8 +1,8 @@
 #!/bin/bash
 
 year="UL17" # UL16preVFP / UL16postVFP / UL17 / UL18
-input_dir="/nfs/dust/cms/group/zprime-uhh/Presel_${year}/workdir_Preselection_${year}/"
-output_dir="/nfs/dust/cms/group/zprime-uhh/Presel_${year}/"
+input_dir="/data/dust/group/zprime-uhh/Presel_${year}/workdir_Preselection_${year}/"
+output_dir="/data/dust/group/zprime-uhh/Presel_${year}/"
 
 echo "hadding: year=${year}"
 

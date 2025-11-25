@@ -178,7 +178,7 @@ protected:
 };
 
 
-////////////////////////    NN vars
+////////////////////////    NN vars //////////////
 class Variables_NN : uhh2::AnalysisModule{
 
 public:

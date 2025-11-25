@@ -30,7 +30,7 @@ region_score = options.region_score if options.region_score else "0"
 
 # finalState = options.channel
 
-inputDir = "/nfs/dust/cms/user/beozek/uuh2-106X_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/output_DNN/{}/{}/nominal/".format(year, lepton_flavor)
+inputDir = "/data/dust/user/beozek/uuh2-106X_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/output_DNN/{}/{}/nominal/".format(year, lepton_flavor)
 combine_file_name = 'dY_{}_{}_{}_{}.root'.format(year, lepton_flavor, mass_range, region)
 combine_file = TFile(combine_file_name, 'RECREATE')
 # stackList = {"TTbar", "WJets", "DY", "ST", "Diboson", "QCD", "DATA"}
@@ -47,13 +47,10 @@ systematic_name_mapping = {
     "mu_reco": "muonReco",
     "pu": "pu",
     "prefiring": "prefiringWeight",
-    # "mu_id": "muonID",
     "mu_id_stat" : "muonIDStat",
     "mu_id_syst" : "muonIDSyst",
-    # "mu_iso": "muonIso",
     "mu_iso_stat" : "muonIsoStat",
     "mu_iso_syst" : "muonIsoSyst",
-    # "mu_trigger": "muonTrigger",
     "mu_trigger_stat" : "muonTriggerStat",
     "mu_trigger_syst" : "muonTriggerSyst",
     "ele_id" : "eleID", 
@@ -74,6 +71,10 @@ systematic_name_mapping = {
     "tmistag": "tmistag"  
     
 }
+
+# Define lepton-specific systematics
+muon_systematics = ["mu_reco", "mu_id_stat", "mu_id_syst", "mu_iso_stat", "mu_iso_syst", "mu_trigger_stat", "mu_trigger_syst"]
+electron_systematics = ["ele_id", "ele_trigger", "ele_reco"]
 
 # reads nominal histograms and computes projections for the "TTbar" sample. 
 # for other samples, it reads nominal histograms and writes them to the output file. 
@@ -119,7 +120,16 @@ for sample in stackList:
         
         
         for sys, new_sys_name in systematic_name_mapping.items():
-            if (debug): print sys
+            # Skip electron systematics for muon flavor
+            if lepton_flavor == "muon" and sys in electron_systematics:
+                if (debug): print("Skipping electron systematic {} for muon flavor".format(sys))
+                continue
+            # Skip muon systematics for electron flavor
+            if lepton_flavor == "ele" and sys in muon_systematics:
+                if (debug): print("Skipping muon systematic {} for electron flavor".format(sys))
+                continue
+                
+            if (debug): print(sys)
             for variation in ["up", "down"]:
                 
                 # Retrieve matrices for systematic variations
@@ -152,7 +162,16 @@ for sample in stackList:
         
         
         for sys, new_sys_name in systematic_name_mapping.items():
-            if (debug): print sys
+            # Skip electron systematics for muon flavor
+            if lepton_flavor == "muon" and sys in electron_systematics:
+                if (debug): print("Skipping electron systematic {} for muon flavor".format(sys))
+                continue
+            # Skip muon systematics for electron flavor
+            if lepton_flavor == "ele" and sys in muon_systematics:
+                if (debug): print("Skipping muon systematic {} for electron flavor".format(sys))
+                continue
+                
+            if (debug): print(sys)
             
             for variation in ["up", "down"]:
                 sys_hist_name = "DeltaY_{}_{}".format(sys, variation)
@@ -414,7 +433,7 @@ def processJERJEC(inputDir, v_samples_ttbar, combine_file, sys_variations, year)
     for sys_variation in sys_variations: 
         if (debug): print(" --- processing {} variation for year {} ---".format(sys_variation, year))
         for sample in v_samples_ttbar:
-            sys_file = TFile.Open("/nfs/dust/cms/user/beozek/uuh2-106X_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/output_DNN/{}/{}/workdir_AnalysisDNN_{}_{}_{}/{}.root".format(year, lepton_flavor, year, lepton_flavor, sys_variation, sample), "READ")
+            sys_file = TFile.Open("/data/dust/user/beozek/uuh2-106X_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/output_DNN/{}/{}/workdir_AnalysisDNN_{}_{}_{}/{}.root".format(year, lepton_flavor, year, lepton_flavor, sys_variation, sample), "READ")
             if not sys_file:
                 if (debug): print("Input file for {} variation {} not found.".format(sample, sys_variation))
                 continue
@@ -448,47 +467,116 @@ def processJERJEC(inputDir, v_samples_ttbar, combine_file, sys_variations, year)
                     ProjX_1_jerjec.Write(output_name_1)
                     ProjX_2_jerjec.Write(output_name_2)
 
+#to process individual JEC sources
+def processJECSources(inputDir, v_samples_ttbar, combine_file, jec_sources, year):
+    if (debug): print(" ----------------- JEC Sources processing for year {} ----------------".format(year))
+
+    for jec_source in jec_sources:
+        for direction in ["up", "down"]:
+            sys_variation = "JEC_{}_{}".format(jec_source, direction)
+            if (debug): print(" --- processing {} variation for year {} ---".format(sys_variation, year))
+            
+            for sample in v_samples_ttbar:
+                sys_file = TFile.Open("/data/dust/user/beozek/uuh2-106X_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/output_JEC/{}/{}/workdir_AnalysisDNN_{}_{}_JEC_{}_{}/{}.root".format(
+                                                                                                                                    year, lepton_flavor, year, lepton_flavor, direction, jec_source, sample), "READ")
+                
+                if not sys_file:
+                    if (debug): print("Input file for JEC source {} direction {} not found.".format(jec_source, direction))
+                    continue
+                
+                combine_file.cd()
+
+                if sample == "TTbar":
+                    if (debug): print("Processing TTbar for JEC source {} direction {} in year {}".format(jec_source, direction, year))
+                    
+                    matrix_path_jec = "DeltaY_reco_{}_{}_General/response_matrix".format(mass_range, region)
+                    Matrix = sys_file.Get(matrix_path_jec)
+                    if not Matrix:
+                        print("Matrix not found for TTbar JEC source {} direction {} for year {}.".format(jec_source, direction, year))
+                    else:
+                        # Format JEC source name for histogram naming
+                        formatted_source = jec_source
+                        output_name_1 = "TTbar_1_jec{}{}".format(formatted_source, direction.capitalize())
+                        output_name_2 = "TTbar_2_jec{}{}".format(formatted_source, direction.capitalize())
+                        
+                        # Generate the JEC source projections
+                        ProjX_1_jec = Matrix.ProjectionX(output_name_1, 1, 1)
+                        ProjX_2_jec = Matrix.ProjectionX(output_name_2, 2, 2)
+                        
+                        # Write the JEC source projections to the combine file
+                        ProjX_1_jec.Write(output_name_1)
+                        ProjX_2_jec.Write(output_name_2)
+
 ############ 
 # ----------------- hdamp ----------------
 ############ 
 
-# def processhdamp(inputDir, v_samples_ttbar, combine_file, sys_variations_hdamp, year):
-#     if (debug): print(" ----------------- hdamp processing for year {} ----------------".format(year))
+def processhdamp(inputDir, v_samples_ttbar, combine_file, sys_variations_hdamp, year):
+    if (debug): print(" ----------------- hdamp processing for year {} ----------------".format(year))
 
-#     for sys_variation in sys_variations_hdamp: 
-#         if (debug): print(" --- processing {} variation for year {} ---".format(sys_variation, year))
-#         for sample in v_samples_ttbar:
-#             sys_file = TFile.Open("/nfs/dust/cms/user/beozek/uuh2-106X_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/output_DNN/{}/{}/workdir_AnalysisDNN_{}_{}_{}/{}.root".format(year, lepton_flavor, year, lepton_flavor, sys_variation, sample), "READ")
-#             # print("file path: ", sys_file)
-#             if not sys_file:
-#                 if (debug): print("Input file for {} variation {} not found.".format(sample, sys_variation))
-#                 continue
+    for sys_variation in sys_variations_hdamp: 
+        if (debug): print(" --- processing {} variation for year {} ---".format(sys_variation, year))
+        for sample in v_samples_ttbar:
+            sys_file = TFile.Open("/data/dust/user/beozek/uuh2-106X_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/output_DNN/{}/{}/workdir_AnalysisDNN_{}_{}_{}/{}.root".format(year, lepton_flavor, year, lepton_flavor, sys_variation, sample), "READ")
+            # print("file path: ", sys_file)
+            if not sys_file:
+                if (debug): print("Input file for {} variation {} not found.".format(sample, sys_variation))
+                continue
             
-#             combine_file.cd()
+            combine_file.cd()
 
-#             if sample == "TTbar":
-#                 if (debug): print("Processing TTbar for {} in year {}".format(sys_variation, year))
+            if sample == "TTbar":
+                if (debug): print("Processing TTbar for {} in year {}".format(sys_variation, year))
                 
-#                 matrix_path_hdamp = "DeltaY_reco_{}_{}_General/response_matrix".format(mass_range, region)
-#                 Matrix = sys_file.Get(matrix_path_hdamp)
-#                 if not Matrix:
-#                     print("Matrix not found for TTbar for year {}.".format(year))
-#                 else:
-#                     output_name_1 = "TTbar_1_{}".format(sys_variation.split('_')[0].lower() + sys_variation.split('_')[1].capitalize())
-#                     output_name_2 = "TTbar_2_{}".format(sys_variation.split('_')[0].lower() + sys_variation.split('_')[1].capitalize())
+                matrix_path_hdamp = "DeltaY_reco_{}_{}_General/response_matrix".format(mass_range, region)
+                Matrix = sys_file.Get(matrix_path_hdamp)
+                if not Matrix:
+                    print("Matrix not found for TTbar for year {}.".format(year))
+                else:
+                    output_name_1 = "TTbar_1_{}".format(sys_variation.split('_')[0].lower() + sys_variation.split('_')[1].capitalize())
+                    output_name_2 = "TTbar_2_{}".format(sys_variation.split('_')[0].lower() + sys_variation.split('_')[1].capitalize())
                     
                     
-#                     # Create unique output names for each year
+                    # Create unique output names for each year
                     
-#                     # Generate the hdamp projections for each year
-#                     ProjX_1_hdamp = Matrix.ProjectionX(output_name_1, 1, 1)
-#                     ProjX_2_hdamp = Matrix.ProjectionX(output_name_2, 2, 2)
+                    # Generate the hdamp projections for each year
+                    ProjX_1_hdamp = Matrix.ProjectionX(output_name_1, 1, 1)
+                    ProjX_2_hdamp = Matrix.ProjectionX(output_name_2, 2, 2)
                     
-#                     # Write the year-specific hdamp projections to the combine file
-#                     ProjX_1_hdamp.Write(output_name_1)
-#                     ProjX_2_hdamp.Write(output_name_2)
+                    # Write the year-specific hdamp projections to the combine file
+                    ProjX_1_hdamp.Write(output_name_1)
+                    ProjX_2_hdamp.Write(output_name_2)
 
-
+# JEC sources as provided
+jec_sources = [
+    "AbsoluteStat",
+    "AbsoluteScale",
+    "AbsoluteMPFBias",
+    "FlavorQCD",
+    "Fragmentation",
+    "PileUpDataMC",
+    "PileUpPtBB",
+    "PileUpPtEC1",
+    "PileUpPtEC2",
+    "PileUpPtHF",
+    "PileUpPtRef",
+    "RelativeFSR",
+    "RelativeJEREC1",
+    "RelativeJEREC2",
+    "RelativeJERHF",
+    "RelativePtBB",
+    "RelativePtEC1",
+    "RelativePtEC2",
+    "RelativePtHF",
+    "RelativeBal",
+    "RelativeSample",
+    "RelativeStatEC",
+    "RelativeStatFSR",
+    "RelativeStatHF",
+    "SinglePionECAL",
+    "SinglePionHCAL",
+    "TimePtEta"
+]
 
 sys_variations = ["JEC_up", "JEC_down", "JER_up", "JER_down"]
 sys_variations_hdamp = ["hdamp_up", "hdamp_down"]
@@ -505,6 +593,9 @@ processPDF(inputDir, v_samples_ttbar, combine_file)
 
 # Call the JER/JEC processing for each year
 processJERJEC(inputDir, v_samples_ttbar, combine_file, sys_variations, year)
+
+# Call the new JEC sources processing
+processJECSources(inputDir, v_samples_ttbar, combine_file, jec_sources, year)
 
 # Call the hdamp processing 
 # processhdamp(inputDir, v_samples_ttbar, combine_file, sys_variations_hdamp, year)

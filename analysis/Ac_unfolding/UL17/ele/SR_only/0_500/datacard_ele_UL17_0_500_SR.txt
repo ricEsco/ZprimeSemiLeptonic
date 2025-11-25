@@ -1,0 +1,72 @@
+imax * number of bins
+jmax 3 number of processes minus 1
+kmax * number of nuisance parameters
+----------------------------------------------------------------------------------------------------------------------------------
+shapes data_obs     ele_UL17_0_500_SR      /data/dust/user/beozek/uuh2-106X_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/analysis/Ac_unfolding/UL17/combine_input/individual_files/dY_UL17_ele_0_500_SR.root data_obs
+shapes *            ele_UL17_0_500_SR      /data/dust/user/beozek/uuh2-106X_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/analysis/Ac_unfolding/UL17/combine_input/individual_files/dY_UL17_ele_0_500_SR.root $PROCESS $PROCESS_$SYSTEMATIC
+----------------------------------------------------------------------------------------------------------------------------------
+bin                     ele_UL17_0_500_SR   ele_UL17_0_500_SR   ele_UL17_0_500_SR   ele_UL17_0_500_SR
+process                 TTbar_1                           TTbar_2                           ST                                Others
+process                 -1                                0                                 1                                 2
+rate                    -1                                -1                                -1                                -1
+----------------------------------------------------------------------------------------------------------------------------------
+lumi_corr_161718    lnN     1.009      1.009     1.009    1.009
+lumi_corr_1718      lnN     1.006      1.006      1.006      1.006
+lumi_uncorr_18      lnN     -          -          -          -
+lumi_uncorr_17      lnN     1.02       1.02       1.02       1.02
+lumi_uncorr_16      lnN     -          -          -          -
+TTbar_norm          lnN     1.05       1.05       -          -
+ST_norm             lnN     -          -          1.2        -
+Others_norm         lnN     -          -          -          1.2
+pu                  shape   1          1          1          1
+prefiringWeight     shape   1          1          1          1
+eleTrigger          shape   1          1          1          1
+eleReco             shape   1          1          1          1
+eleID               shape   1          1          1          1
+isr                 shape   1          1          -          -
+fsr                 shape   1          1          -          -
+murmuf              shape   1          1          -          -
+pdf                 shape   1          1          -          -
+jer_UL16            shape   -          -          -          -
+jer_UL17            shape   1          1          -          -
+jer_UL18            shape   -          -          -          -
+jecAbsoluteStat           shape   1          1          -          -     
+jecAbsoluteScale           shape   1          1          -          -     
+jecAbsoluteMPFBias           shape   1          1          -          -     
+jecFlavorQCD           shape   1          1          -          -     
+jecFragmentation           shape   1          1          -          -     
+jecPileUpDataMC           shape   1          1          -          -     
+jecPileUpPtBB           shape   1          1          -          -     
+jecPileUpPtEC1           shape   1          1          -          -     
+jecPileUpPtEC2           shape   1          1          -          -     
+jecPileUpPtHF           shape   1          1          -          -     
+jecPileUpPtRef           shape   1          1          -          -     
+jecRelativeFSR           shape   1          1          -          -     
+jecRelativeJEREC1           shape   1          1          -          -     
+jecRelativeJEREC2           shape   1          1          -          -     
+jecRelativeJERHF           shape   1          1          -          -     
+jecRelativePtBB           shape   1          1          -          -     
+jecRelativePtEC1           shape   1          1          -          -     
+jecRelativePtEC2           shape   1          1          -          -     
+jecRelativePtHF           shape   1          1          -          -     
+jecRelativeBal           shape   1          1          -          -     
+jecRelativeSample           shape   1          1          -          -     
+jecRelativeStatEC           shape   1          1          -          -     
+jecRelativeStatFSR           shape   1          1          -          -     
+jecRelativeStatHF           shape   1          1          -          -     
+jecSinglePionECAL           shape   1          1          -          -     
+jecSinglePionHCAL           shape   1          1          -          -     
+jecTimePtEta           shape   1          1          -          -     
+btagCferr1          shape   1          1          1          1
+btagCferr2          shape   1          1          1          1
+btagHf              shape   1          1          1          1
+btagHfstats1        shape   1          1          1          1
+btagHfstats2        shape   1          1          1          1
+btagLf              shape   1          1          1          1
+btagLfstats1        shape   1          1          1          1
+btagLfstats2        shape   1          1          1          1
+ttagCorr            shape   1          1          1          1
+ttagUncorr          shape   1          1          1          1
+tmistag             shape   1          1          1          1
+
+ele_UL17_0_500_SR autoMCStats 1e06 1 1
