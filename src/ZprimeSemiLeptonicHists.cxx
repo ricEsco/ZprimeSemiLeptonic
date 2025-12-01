@@ -2340,40 +2340,47 @@ if (is_zprime_reconstructed_chi2 ){
     if(sphi < -TMath::Pi()) sphi = sphi + 2*TMath::Pi();
     if(dphi > TMath::Pi()) dphi = dphi - 2*TMath::Pi();
     if(dphi < -TMath::Pi()) dphi = dphi + 2*TMath::Pi();
-    Sigma_phi->Fill(sphi,weight);
-    Delta_phi->Fill(dphi,weight);
+    Sigma_phi->Fill(sphi, weight);
+    Delta_phi->Fill(dphi, weight);
 
-    // Plot dphi and sphi for high-pt ranges
+    // Plot dphi and sphi for high-pt range && positive dy_reco
     if(pt_hadTop > pt_hadTop_thresh && dyreco >0){
-      Sigma_phi_1->Fill(sphi,weight);
-      Delta_phi_1->Fill(dphi,weight);
+      Sigma_phi_1->Fill(sphi, weight);
+      Delta_phi_1->Fill(dphi, weight);
     }
+    // Plot dphi and sphi for high-pt range && negative dy_reco
     if(pt_hadTop > pt_hadTop_thresh && dyreco <0){
-      Sigma_phi_2->Fill(sphi,weight);
-      Delta_phi_2->Fill(dphi,weight);
+      Sigma_phi_2->Fill(sphi, weight);
+      Delta_phi_2->Fill(dphi, weight);
     }
+    // Plot dy_reco for low-pt ranges && positive sphi
     if(pt_hadTop < pt_hadTop_thresh && sphi >0){
-      DeltaY_reco_s1->Fill(dyreco,weight);
+      DeltaY_reco_s1->Fill(dyreco, weight);
     }
+    // Plot dy_reco for low-pt ranges && negative sphi
     if(pt_hadTop < pt_hadTop_thresh && sphi <0){
-      DeltaY_reco_s2->Fill(dyreco,weight);
+      DeltaY_reco_s2->Fill(dyreco, weight);
     }
+    // Plot dy_reco for low-pt ranges && positive dphi
     if(pt_hadTop < pt_hadTop_thresh && dphi >0){
-      DeltaY_reco_d1->Fill(dyreco,weight);
+      DeltaY_reco_d1->Fill(dyreco, weight);
     }
+    // Plot dy_reco for low-pt ranges && negative dphi
     if(pt_hadTop < pt_hadTop_thresh && dphi <0){
-      DeltaY_reco_d2->Fill(dyreco,weight);
+      DeltaY_reco_d2->Fill(dyreco, weight);
     }
+
+    // Plot all for high-pt ranges
     if(pt_hadTop > pt_hadTop_thresh){
-      Sigma_phi_high->Fill(sphi,weight);
-      Delta_phi_high->Fill(dphi,weight);
-      DeltaY_reco_high->Fill(dyreco,weight);
+      Sigma_phi_high->Fill(sphi, weight);
+      Delta_phi_high->Fill(dphi, weight);
+      DeltaY_reco_high->Fill(dyreco, weight);
     }
-    // Plot dphi and sphi for low-pt ranges
+    // Plot all for low-pt ranges
     if(pt_hadTop < pt_hadTop_thresh){
-      Sigma_phi_low->Fill(sphi,weight);
-      Delta_phi_low->Fill(dphi,weight);
-      DeltaY_reco_low->Fill(dyreco,weight);
+      Sigma_phi_low->Fill(sphi, weight);
+      Delta_phi_low->Fill(dphi, weight);
+      DeltaY_reco_low->Fill(dyreco, weight);
     }
 
 
