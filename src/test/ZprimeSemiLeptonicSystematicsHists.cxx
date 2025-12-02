@@ -17,8 +17,6 @@
 #include "TH2D.h"
 #include "TH2F.h"
 #include "TFile.h"
-#include "TTree.h"
-#include "TBranch.h"
 #include <iostream>
 #include <string>
 #include <sstream>
@@ -248,106 +246,43 @@ Hists(ctx, dirname) {
     // f values for the NoAC weights (all f values from kNoACSpecs)
     f_values = {-100.0f, -12.0f, -8.0f, -4.0f, -2.0f, -1.0f, -0.8f, -0.6f, -0.4f, -0.2f, 0.0f, 0.2f, 0.4f, 0.6f, 0.8f, 1.0f, 2.0f, 4.0f, 8.0f, 12.0f, 100.0f};
 
-    if(use_noac_evtweights_ && !noac_gen_file_.empty()){
+    if(use_noac_evtweights_ && !noac_gen_file_.empty() && !noac_gen_hist_.empty()){
       // Only initialize once - weights are shared across all instances
       if(!noac_weights_initialized){
-        // reading from TTree only
-        TH1D *sumH = nullptr;
-        
+        // Glob inputs to get the generator histogram files
         glob_t gl; memset(&gl, 0, sizeof(gl));
         int r = glob(noac_gen_file_.c_str(), 0, nullptr, &gl);
-        bool read_from_tree = false;
-        int files_processed = 0;
-        int files_with_tree = 0;
-        int files_with_branch = 0;
-        Long64_t total_events = 0;
-        Long64_t total_nan_count = 0;
-        Long64_t total_valid_count = 0;
-        Long64_t total_out_of_range_count = 0;
-
         // STEP 1: Sum all of the DeltaY_xi_gen histograms from ttree which was carried from preselection
         // Reads gen-level tanh(delta|y|) histograms from all TTbar files
-        if(r == 0 && gl.gl_pathc > 0){
-          // Create 300-bin histogram for TTree reading
-          sumH = new TH1D("Hgen_sum_from_tree", "GEN histogram from TTree xi_gen branch", 
-                          300, -1.0, 1.0);
-          sumH->SetDirectory(0);
-          
-          if (debug) cout << "INFO: Initializing NoAC weights from " << gl.gl_pathc << " preselection files..." << endl;          
-          for(size_t i=0; i<gl.gl_pathc; ++i){
+        // Sums them into a single sumH histogram
+        TH1D *sumH = nullptr;
+        if(r == 0){
+          // loop over the generator histogram files
+          for(size_t i=0;i<gl.gl_pathc;++i){
             const char *fp = gl.gl_pathv[i];
             std::unique_ptr<TFile> f(TFile::Open(fp));
             if(!f || f->IsZombie()) continue;
-            files_processed++;
-            // Try to get the TTree ("AnalysisTree" )
-            TTree *tree = dynamic_cast<TTree*>(f->Get("AnalysisTree"));
-            
-            if(tree){
-              files_with_tree++;
-              // Check if xi_gen branch exists
-              TBranch *br = tree->GetBranch("xi_gen");
-              if(br){
-                files_with_branch++;
-                
-                Long64_t nentries = tree->GetEntries();
-                total_events += nentries;
-                
-                // Create a temporary histogram with unique name for this file
-                TString tempH_name = TString::Format("tempH_%zu", i);
-                TH1D *tempH = new TH1D(tempH_name.Data(), "temp", 300, -1.0, 1.0);
-                tempH->SetDirectory(0);
-                
-                // Check if weight branch exists
-                TBranch *wbr = tree->GetBranch("weight");
-                bool has_weight = (wbr != nullptr);
-                
-                // Build selection string: finite xi_gen and in range [-1, 1]
-                // (xi_gen == xi_gen) is false for NaN, true for finite numbers
-                // (xi_gen*xi_gen < 1e10) filters out Inf values
-                TString selection = "(xi_gen == xi_gen) && (xi_gen*xi_gen < 1e10) && (xi_gen >= -1.0) && (xi_gen <= 1.0)";
-                TString weight_expr = has_weight ? "weight" : "1.0";
-                
-                // Project directly into histogram
-                Long64_t nselected = tree->Project(tempH_name.Data(), "xi_gen", selection.Data(), weight_expr.Data());
-                
-                // Add to sum histogram
-                sumH->Add(tempH);
-                
-                total_valid_count += nselected;
-                total_nan_count += (nentries - nselected);  // Approximate
-                
-                delete tempH;
-                read_from_tree = true;
-              } else {
-                cout << "WARNING: TTree found in " << fp << " but 'xi_gen' branch not found!" << endl;
-              }
-            } else {
-              cout << "WARNING: No TTree found in " << fp << " (tried AnalysisTree, tree, Tree)" << endl;
-            }
-            f->Close();
+            TH1 *h = dynamic_cast<TH1*>(f->Get(noac_gen_hist_.c_str()));
+            if(!h) continue;
+            std::unique_ptr<TH1D> hD(static_cast<TH1D*>(h->Clone("_tmpH")));
+            hD->SetDirectory(0);
+            if(!sumH){ sumH = static_cast<TH1D*>(hD->Clone("Hgen_sum_sys")); sumH->SetDirectory(0); }
+            else { sumH->Add(hD.get()); }
           }
           globfree(&gl);
-        }  
+        }
         if(sumH){
-          // Verify we have 300 bins
-          if(sumH->GetNbinsX() != 300){
-            // cout << "ERROR: Expected 300 bins but got " << sumH->GetNbinsX() << " bins!" << endl;
-            delete sumH;
-            sumH = nullptr;
-          } else {
-            // build the NoAC weights from the generator histogram (300 bins from TTree)
-            noac_weights_map.clear();
-            for(const float fv : f_values){
-              try{ 
-                noac_weights_map[fv] = build_noac_weights_from_gen(*sumH, fv);
-              } catch(...){ 
-                // Skip failed weights
-                cout << "WARNING: Failed to build NoAC weights for f=" << fv << endl;
-              }
+          // build the NoAC weights from the generator histogram
+          noac_weights_map.clear();
+          for(const float fv : f_values){
+            try{ 
+              noac_weights_map[fv] = build_noac_weights_from_gen(*sumH, fv);
+            } catch(...){ 
+              // Skip failed weights
             }
-            noac_weights_initialized = true;  // Mark as initialized so other instances skip
-            delete sumH;
           }
+          noac_weights_initialized = true;  // Mark as initialized so other instances skip
+          delete sumH;
         }
       }  // End of initialization block
     }
@@ -993,11 +928,6 @@ void ZprimeSemiLeptonicSystematicsHists::init(){
 void ZprimeSemiLeptonicSystematicsHists::fill(const Event & event){
 
   double weight = event.weight;
-  
-  // Debug: Check for NaN/Inf in event weight
-  static int weight_debug_count = 0;
-  const int max_weight_debug = 10;
-  
   float ele_reco_nominal   = event.get(h_ele_reco);
   float ele_reco_up        = event.get(h_ele_reco_up);
   float ele_reco_down      = event.get(h_ele_reco_down);
@@ -1040,6 +970,20 @@ void ZprimeSemiLeptonicSystematicsHists::fill(const Event & event){
   float pu_nominal         = event.get(h_pu);
   float pu_up              = event.get(h_pu_up);
   float pu_down            = event.get(h_pu_down);
+  
+  // Validate pileup weights - replace NaN/Inf/0 with 1.0 for corrupted events
+  // This prevents corrupted weights from zeroing out event weights in systematic calculations
+  // Set to 1.0 (no reweighting) instead of 0.0 to preserve event weight
+  // Note: We can't modify the event here (const reference), so we only correct the local values
+  if(!std::isfinite(pu_nominal) || pu_nominal == 0.0f) {
+    pu_nominal = 1.0f;
+  }
+  if(!std::isfinite(pu_up) || pu_up == 0.0f) {
+    pu_up = 1.0f;
+  }
+  if(!std::isfinite(pu_down) || pu_down == 0.0f) {
+    pu_down = 1.0f;
+  }
   float prefiring_nominal  = event.get(h_prefiring);
   float prefiring_up       = event.get(h_prefiring_up);
   float prefiring_down     = event.get(h_prefiring_down);
@@ -1181,6 +1125,8 @@ void ZprimeSemiLeptonicSystematicsHists::fill(const Event & event){
   ZprimeCandidate* BestZprimeCandidate = event.get(h_BestZprimeCandidateChi2);
   if(is_zprime_reconstructed_chi2 && is_mc){
     if(is_tt){
+      // std::cout << "[DEBUG TTbar] Entering ttbar section. is_Muon=" << is_Muon 
+      //           << ", isElectron=" << isElectron << ", is_tt=" << is_tt << std::endl;
       if (debug)cout << "check ttbar all sys for deltay RM" <<endl;
       const auto& genparticles = event.genparticles;
       // ZprimeCandidate* BestZprimeCandidate = event.get(h_BestZprimeCandidateChi2);
@@ -1409,17 +1355,38 @@ void ZprimeSemiLeptonicSystematicsHists::fill(const Event & event){
         w_noac_nominal = lookup_noac_weight(noac_weights_map[0.0f].get(), xi_gen_evt);
       }
       for(unsigned int i=0; i<names.size(); i++){
-          const double w_up = weight * syst_up.at(i)/syst_nominal.at(i);
-          const double w_dn = weight * syst_down.at(i)/syst_nominal.at(i);
-  
+        // Safety check: avoid division by zero and handle missing systematic weights
         const double nom = syst_nominal.at(i);
         const double up = syst_up.at(i);
         const double dn = syst_down.at(i);
         
-        if(!std::isfinite(nom) || nom == 0.0 || !std::isfinite(up) || up == 0.0 || !std::isfinite(dn) || dn == 0.0){
-          cout << "DEBUG SYSTEMATIC [" << names.at(i) << "]: nom=" << nom << ", up=" << up << ", dn=" << dn << endl;
+        // Check if up/down are finite and valid before using them
+        // NaN != 0.0 is true, so we need explicit finite check
+        const bool nom_valid = std::isfinite(nom) && nom != 0.0 && std::abs(nom) > 1e-10;
+        const bool up_valid = std::isfinite(up) && up != 0.0 && std::abs(up) > 1e-10;
+        const bool dn_valid = std::isfinite(dn) && dn != 0.0 && std::abs(dn) > 1e-10;
+        
+        // Calculate systematic weights
+        // If nominal is invalid, we can't calculate systematic variation, so use nominal weight
+        // If up/down are invalid, use nominal weight (no systematic variation for this event)
+        double w_up, w_dn;
+        if(nom_valid && up_valid){
+          w_up = weight * up / nom;  // Replace nominal systematic weight with up variation
+        } else {
+          w_up = weight;  // Use nominal weight if we can't calculate variation
         }
-
+        
+        if(nom_valid && dn_valid){
+          w_dn = weight * dn / nom;  // Replace nominal systematic weight with down variation
+        } else {
+          w_dn = weight;  // Use nominal weight if we can't calculate variation
+        }
+        
+        // Final safety check: ensure weights are finite before filling
+        if(!std::isfinite(w_up) || !std::isfinite(w_dn)){
+          continue; // Skip this systematic if weights are invalid
+        }
+        
         hists_up_tt.at(i)->Fill(DeltaY_reco_best, DeltaY_gen_best, w_up);
         hists_down_tt.at(i)->Fill(DeltaY_reco_best, DeltaY_gen_best, w_dn);
         // xi systematics (with NoAC f=0 weight applied to match nominal)

@@ -138,6 +138,20 @@ protected:
   // Add Delta_phi and Sigma_phi handles
   Event::Handle<float> h_Delta_phi;
   Event::Handle<float> h_Sigma_phi;
+    // GEN-level variables from preselection (for template method)
+    uhh2::Event::Handle<float> h_xi_gen;
+    uhh2::Event::Handle<float> h_mtt_gen;
+    uhh2::Event::Handle<float> h_DeltaY_gen;
+  
+    // read from input file
+    uhh2::Event::Handle<float> h_xi_gen_in;
+    uhh2::Event::Handle<float> h_DeltaY_gen_in;
+    uhh2::Event::Handle<float> h_mtt_gen_in;
+  
+    // (optional) write-through to your output file so the next job can read again
+    uhh2::Event::Handle<float> h_xi_gen_out;
+    uhh2::Event::Handle<float> h_DeltaY_gen_out;
+    uhh2::Event::Handle<float> h_mtt_gen_out;
   
   // Add missing handles for CHSjets_matched and AK8TopTags
   Event::Handle<std::vector<Jet>> h_CHSjets_matched;
@@ -340,13 +354,13 @@ ZprimeAnalysisModule_EFT::ZprimeAnalysisModule_EFT(uhh2::Context& ctx){
   BTag::wp btag_wp = BTag::WP_MEDIUM;
   JetId id_btag = BTag(btag_algo, btag_wp);
 
-  // double a_toppt = 0.0615; // par a TopPt Reweighting
-  // double b_toppt = -0.0005; // par b TopPt Reweighting
+  double a_toppt = 0.0615; // par a TopPt Reweighting
+  double b_toppt = -0.0005; // par b TopPt Reweighting
 
   // Modules
   LumiWeight_module.reset(new MCLumiWeight(ctx));
   PUWeight_module.reset(new MCPileupReweight(ctx, Sys_PU));
-  //TopPtReweight_module.reset(new TopPtReweighting(ctx, a_toppt, b_toppt, Sys_TopPt_a, Sys_TopPt_b, ""));
+  TopPtReweight_module.reset(new TopPtReweighting(ctx, a_toppt, b_toppt, Sys_TopPt_a, Sys_TopPt_b, ""));
   MCScale_module.reset(new MCScaleVariation(ctx));
   hadronic_top.reset(new HadronicTop(ctx));
 
@@ -502,7 +516,7 @@ ZprimeAnalysisModule_EFT::ZprimeAnalysisModule_EFT(uhh2::Context& ctx){
 
   if(isMC){
     TString sample_name = "";
-    vector<TString> names = {"MC_EFT_Mttbar_0-700_UL17", "MC_EFT_Mttbar_700-900_UL17", "MC_EFT_Mttbar_900-Inf_UL17", "ST", "WJets", "DY", "QCD", "ALP_ttbar_signal", "ALP_ttbar_interference", "HscalarToTTTo1L1Nu2J_m365_w36p5_res", "HscalarToTTTo1L1Nu2J_m400_w40p0_res", "HscalarToTTTo1L1Nu2J_m500_w50p0_res", "HscalarToTTTo1L1Nu2J_m600_w60p0_res", "HscalarToTTTo1L1Nu2J_m800_w80p0_res", "HscalarToTTTo1L1Nu2J_m1000_w100p0_res", "HscalarToTTTo1L1Nu2J_m365_w36p5_int_pos", "HscalarToTTTo1L1Nu2J_m400_w40p0_int_pos", "HscalarToTTTo1L1Nu2J_m500_w50p0_int_pos", "HscalarToTTTo1L1Nu2J_m600_w60p0_int_pos", "HscalarToTTTo1L1Nu2J_m800_w80p0_int_pos", "HscalarToTTTo1L1Nu2J_m1000_w100p0_int_pos", "HscalarToTTTo1L1Nu2J_m365_w36p5_int_neg", "HscalarToTTTo1L1Nu2J_m400_w40p0_int_neg", "HscalarToTTTo1L1Nu2J_m500_w50p0_int_neg", "HscalarToTTTo1L1Nu2J_m600_w60p0_int_neg", "HscalarToTTTo1L1Nu2J_m800_w80p0_int_neg", "HscalarToTTTo1L1Nu2J_m1000_w100p0_int_neg", "HpseudoToTTTo1L1Nu2J_m365_w36p5_res", "HpseudoToTTTo1L1Nu2J_m400_w40p0_res", "HpseudoToTTTo1L1Nu2J_m500_w50p0_res", "HpseudoToTTTo1L1Nu2J_m600_w60p0_res", "HpseudoToTTTo1L1Nu2J_m800_w80p0_res", "HpseudoToTTTo1L1Nu2J_m1000_w100p0_res", "HpseudoToTTTo1L1Nu2J_m365_w36p5_int_pos", "HpseudoToTTTo1L1Nu2J_m400_w40p0_int_pos", "HpseudoToTTTo1L1Nu2J_m500_w50p0_int_pos", "HpseudoToTTTo1L1Nu2J_m600_w60p0_int_pos", "HpseudoToTTTo1L1Nu2J_m800_w80p0_int_pos", "HpseudoToTTTo1L1Nu2J_m1000_w100p0_int_pos", "HpseudoToTTTo1L1Nu2J_m365_w36p5_int_neg", "HpseudoToTTTo1L1Nu2J_m400_w40p0_int_neg", "HpseudoToTTTo1L1Nu2J_m500_w50p0_int_neg", "HpseudoToTTTo1L1Nu2J_m600_w60p0_int_neg", "HpseudoToTTTo1L1Nu2J_m800_w80p0_int_neg", "HpseudoToTTTo1L1Nu2J_m1000_w100p0_int_neg", "HscalarToTTTo1L1Nu2J_m365_w91p25_res", "HscalarToTTTo1L1Nu2J_m400_w100p0_res", "HscalarToTTTo1L1Nu2J_m500_w125p0_res", "HscalarToTTTo1L1Nu2J_m600_w150p0_res", "HscalarToTTTo1L1Nu2J_m800_w200p0_res", "HscalarToTTTo1L1Nu2J_m1000_w250p0_res", "HscalarToTTTo1L1Nu2J_m365_w91p25_int_pos", "HscalarToTTTo1L1Nu2J_m400_w100p0_int_pos", "HscalarToTTTo1L1Nu2J_m500_w125p0_int_pos", "HscalarToTTTo1L1Nu2J_m600_w150p0_int_pos", "HscalarToTTTo1L1Nu2J_m800_w200p0_int_pos", "HscalarToTTTo1L1Nu2J_m1000_w250p0_int_pos", "HscalarToTTTo1L1Nu2J_m365_w91p25_int_neg", "HscalarToTTTo1L1Nu2J_m400_w100p0_int_neg", "HscalarToTTTo1L1Nu2J_m500_w125p0_int_neg", "HscalarToTTTo1L1Nu2J_m600_w150p0_int_neg", "HscalarToTTTo1L1Nu2J_m800_w200p0_int_neg", "HscalarToTTTo1L1Nu2J_m1000_w250p0_int_neg", "HpseudoToTTTo1L1Nu2J_m365_w91p25_res", "HpseudoToTTTo1L1Nu2J_m400_w100p0_res", "HpseudoToTTTo1L1Nu2J_m500_w125p0_res", "HpseudoToTTTo1L1Nu2J_m600_w150p0_res", "HpseudoToTTTo1L1Nu2J_m800_w200p0_res", "HpseudoToTTTo1L1Nu2J_m1000_w250p0_res", "HpseudoToTTTo1L1Nu2J_m365_w91p25_int_pos", "HpseudoToTTTo1L1Nu2J_m400_w100p0_int_pos", "HpseudoToTTTo1L1Nu2J_m500_w125p0_int_pos", "HpseudoToTTTo1L1Nu2J_m600_w150p0_int_pos", "HpseudoToTTTo1L1Nu2J_m800_w200p0_int_pos", "HpseudoToTTTo1L1Nu2J_m1000_w250p0_int_pos", "HpseudoToTTTo1L1Nu2J_m365_w91p25_int_neg", "HpseudoToTTTo1L1Nu2J_m400_w100p0_int_neg", "HpseudoToTTTo1L1Nu2J_m500_w125p0_int_neg", "HpseudoToTTTo1L1Nu2J_m600_w150p0_int_neg", "HpseudoToTTTo1L1Nu2J_m800_w200p0_int_neg", "HpseudoToTTTo1L1Nu2J_m1000_w250p0_int_neg", "HscalarToTTTo1L1Nu2J_m365_w9p125_res", "HscalarToTTTo1L1Nu2J_m400_w10p0_res", "HscalarToTTTo1L1Nu2J_m500_w12p5_res", "HscalarToTTTo1L1Nu2J_m600_w15p0_res", "HscalarToTTTo1L1Nu2J_m800_w20p0_res", "HscalarToTTTo1L1Nu2J_m1000_w25p0_res", "HscalarToTTTo1L1Nu2J_m365_w9p125_int_pos", "HscalarToTTTo1L1Nu2J_m400_w10p0_int_pos", "HscalarToTTTo1L1Nu2J_m500_w12p5_int_pos", "HscalarToTTTo1L1Nu2J_m600_w15p0_int_pos", "HscalarToTTTo1L1Nu2J_m800_w20p0_int_pos", "HscalarToTTTo1L1Nu2J_m1000_w25p0_int_pos", "HscalarToTTTo1L1Nu2J_m365_w9p125_int_neg", "HscalarToTTTo1L1Nu2J_m400_w10p0_int_neg", "HscalarToTTTo1L1Nu2J_m500_w12p5_int_neg", "HscalarToTTTo1L1Nu2J_m600_w15p0_int_neg", "HscalarToTTTo1L1Nu2J_m800_w20p0_int_neg", "HscalarToTTTo1L1Nu2J_m1000_w25p0_int_neg", "HpseudoToTTTo1L1Nu2J_m365_w9p125_res", "HpseudoToTTTo1L1Nu2J_m400_w10p0_res", "HpseudoToTTTo1L1Nu2J_m500_w12p5_res", "HpseudoToTTTo1L1Nu2J_m600_w15p0_res", "HpseudoToTTTo1L1Nu2J_m800_w20p0_res", "HpseudoToTTTo1L1Nu2J_m1000_w25p0_res", "HpseudoToTTTo1L1Nu2J_m365_w9p125_int_pos", "HpseudoToTTTo1L1Nu2J_m400_w10p0_int_pos", "HpseudoToTTTo1L1Nu2J_m500_w12p5_int_pos", "HpseudoToTTTo1L1Nu2J_m600_w15p0_int_pos", "HpseudoToTTTo1L1Nu2J_m800_w20p0_int_pos", "HpseudoToTTTo1L1Nu2J_m1000_w25p0_int_pos", "HpseudoToTTTo1L1Nu2J_m365_w9p125_int_neg", "HpseudoToTTTo1L1Nu2J_m400_w10p0_int_neg", "HpseudoToTTTo1L1Nu2J_m500_w12p5_int_neg", "HpseudoToTTTo1L1Nu2J_m600_w15p0_int_neg", "HpseudoToTTTo1L1Nu2J_m800_w20p0_int_neg", "HpseudoToTTTo1L1Nu2J_m1000_w25p0_int_neg", "RSGluonToTT_M-500", "RSGluonToTT_M-1000", "RSGluonToTT_M-1500", "RSGluonToTT_M-2000", "RSGluonToTT_M-2500", "RSGluonToTT_M-3000", "RSGluonToTT_M-3500", "RSGluonToTT_M-4000", "RSGluonToTT_M-4500", "RSGluonToTT_M-5000", "RSGluonToTT_M-5500", "RSGluonToTT_M-6000", "ZPrimeToTT_M400_W40", "ZPrimeToTT_M500_W50", "ZPrimeToTT_M600_W60", "ZPrimeToTT_M700_W70", "ZPrimeToTT_M800_W80", "ZPrimeToTT_M900_W90", "ZPrimeToTT_M1000_W100", "ZPrimeToTT_M1200_W120", "ZPrimeToTT_M1400_W140", "ZPrimeToTT_M1600_W160", "ZPrimeToTT_M1800_W180", "ZPrimeToTT_M2000_W200", "ZPrimeToTT_M2500_W250", "ZPrimeToTT_M3000_W300", "ZPrimeToTT_M3500_W350", "ZPrimeToTT_M4000_W400", "ZPrimeToTT_M4500_W450", "ZPrimeToTT_M5000_W500", "ZPrimeToTT_M6000_W600",  "ZPrimeToTT_M7000_W700", "ZPrimeToTT_M8000_W800", "ZPrimeToTT_M9000_W900", "ZPrimeToTT_M400_W120", "ZPrimeToTT_M500_W150", "ZPrimeToTT_M600_W180", "ZPrimeToTT_M700_W210", "ZPrimeToTT_M800_W240", "ZPrimeToTT_M900_W270", "ZPrimeToTT_M1000_W300", "ZPrimeToTT_M1200_W360", "ZPrimeToTT_M1400_W420", "ZPrimeToTT_M1600_W480", "ZPrimeToTT_M1800_W540", "ZPrimeToTT_M2000_W600", "ZPrimeToTT_M2500_W750", "ZPrimeToTT_M3000_W900", "ZPrimeToTT_M3500_W1050", "ZPrimeToTT_M4000_W1200", "ZPrimeToTT_M4500_W1350", "ZPrimeToTT_M5000_W1500", "ZPrimeToTT_M6000_W1800", "ZPrimeToTT_M7000_W2100", "ZPrimeToTT_M8000_W2400", "ZPrimeToTT_M9000_W2700", "ZPrimeToTT_M400_W4", "ZPrimeToTT_M500_W5", "ZPrimeToTT_M600_W6", "ZPrimeToTT_M700_W7", "ZPrimeToTT_M800_W8", "ZPrimeToTT_M900_W9", "ZPrimeToTT_M1000_W10", "ZPrimeToTT_M1200_W12", "ZPrimeToTT_M1400_W14", "ZPrimeToTT_M1600_W16", "ZPrimeToTT_M1800_W18", "ZPrimeToTT_M2000_W20", "ZPrimeToTT_M2500_W25", "ZPrimeToTT_M3000_W30", "ZPrimeToTT_M3500_W35", "ZPrimeToTT_M4000_W40", "ZPrimeToTT_M4500_W45", "ZPrimeToTT_M5000_W50", "ZPrimeToTT_M6000_W60", "ZPrimeToTT_M7000_W70", "ZPrimeToTT_M8000_W80", "ZPrimeToTT_M9000_W90", "ZprimeDMToTTbarResoIncl_MZp1000_Mchi10_V1", "ZprimeDMToTTbarResoIncl_MZp1500_Mchi10_V1", "ZprimeDMToTTbarResoIncl_MZp2000_Mchi10_V1", "ZprimeDMToTTbarResoIncl_MZp2500_Mchi10_V1", "ZprimeDMToTTbarResoIncl_MZp3000_Mchi10_V1", "ZprimeDMToTTbarResoIncl_MZp3500_Mchi10_V1", "ZprimeDMToTTbarResoIncl_MZp4000_Mchi10_V1", "ZprimeDMToTTbarResoIncl_MZp4500_Mchi10_V1", "ZprimeDMToTTbarResoIncl_MZp5000_Mchi10_V1", "ZprimeDMToTTbarResoIncl_MZp2500_Mchi1000_A1", "ZprimeDMToTTbarResoIncl_MZp2500_Mchi1000_V1", "ZprimeDMToTTbarResoIncl_MZp2500_Mchi10_A1"};
+    vector<TString> names = {"MC_EFT_Mttbar_0-700_UL17", "MC_EFT_Mttbar_700-900_UL17", "MC_EFT_Mttbar_900-Inf_UL17", "ST", "WJets", "DY", "QCD"};
 
     for(unsigned int i=0; i<names.size(); i++){
       if( ctx.get("dataset_version").find(names.at(i)) != std::string::npos ) sample_name = names.at(i);
@@ -553,6 +567,18 @@ ZprimeAnalysisModule_EFT::ZprimeAnalysisModule_EFT(uhh2::Context& ctx){
     }
   }
 
+  // GEN-level variables from preselection - read and write to carry forward
+  if(isMC) {
+    h_xi_gen_in     = ctx.declare_event_input<float>("xi_gen");
+    h_DeltaY_gen_in = ctx.declare_event_input<float>("DeltaY_gen");
+    h_mtt_gen_in    = ctx.declare_event_input<float>("mtt_gen");
+    
+    // Re-expose as outputs so AnalysisDNN can read them
+    h_xi_gen_out     = ctx.declare_event_output<float>("xi_gen");
+    h_DeltaY_gen_out = ctx.declare_event_output<float>("DeltaY_gen");
+    h_mtt_gen_out    = ctx.declare_event_output<float>("mtt_gen");
+  }
+
   // Initialize handles
   
   h_CHSjets_matched = ctx.get_handle<std::vector<Jet>>("CHS_matched");
@@ -584,6 +610,26 @@ bool ZprimeAnalysisModule_EFT::process(uhh2::Event& event){
   // Initialize reco flags with false
   event.set(h_is_zprime_reconstructed_chi2, false);
   event.set(h_is_zprime_reconstructed_correctmatch, false);
+
+  // Copy GEN-level variables from input to output (for template method)
+  // if(isMC) {
+  //   if(event.is_valid(h_xi_gen_in)) {
+  //     event.set(h_xi_gen_out,     event.get(h_xi_gen_in));
+  //     event.set(h_DeltaY_gen_out, event.get(h_DeltaY_gen_in));
+  //     event.set(h_mtt_gen_out,    event.get(h_mtt_gen_in));
+  //   }
+  // }
+
+  if(isMC && event.is_valid(h_xi_gen_in)) {
+    float xi = event.get(h_xi_gen_in);
+    if(!std::isfinite(xi)) {
+      // leave it unset; Hists guard will skip
+    } else {
+      event.set(h_xi_gen_out, xi);
+    }
+    if(event.is_valid(h_DeltaY_gen_in)) event.set(h_DeltaY_gen_out, event.get(h_DeltaY_gen_in));
+    if(event.is_valid(h_mtt_gen_in))    event.set(h_mtt_gen_out,    event.get(h_mtt_gen_in));
+    }
 
   if(!event.isRealData){
     if(!SignSplit->passes(event)) return false;
@@ -626,7 +672,7 @@ bool ZprimeAnalysisModule_EFT::process(uhh2::Event& event){
   lumihists_Weights_Lumi->fill(event);
 
   // top pt reweighting
-  //TopPtReweight_module->process(event);
+  TopPtReweight_module->process(event);
   //if(debug) cout << "TopPtReweight: ok" << endl;
   //fill_histograms(event, "Weights_TopPt");
   //lumihists_Weights_TopPt->fill(event);
@@ -1141,6 +1187,11 @@ bool ZprimeAnalysisModule_EFT::process(uhh2::Event& event){
   fill_histograms(event, "NNInputsBeforeReweight");
   if(debug) cout << "NNInputsBeforeReweight: ok" << endl;
 
+  if(event.is_valid(h_xi_gen_in)) {
+    event.set(h_xi_gen_out,     event.get(h_xi_gen_in));
+    event.set(h_DeltaY_gen_out, event.get(h_DeltaY_gen_in));
+    event.set(h_mtt_gen_out,    event.get(h_mtt_gen_in));
+  }
   // Calculate and store DeltaY_reco
   event.set(h_DeltaY_reco, -100);
   // Initialize Delta_phi and Sigma_phi with default values

@@ -302,6 +302,7 @@ void ZprimeSemiLeptonicPreselectionHists::init(){
   Mtt_gen               = book<TH1F>("Mtt_gen", "M_{t#bar{t}} GEN [GeV]", 100, 0, 2000);
   DeltaY_gen            = book<TH1F>("DeltaY_gen", "#Delta|Y|_{(t,#bar{t})} GEN ", 50, -2.5, 2.5);
   DeltaY_xi_gen         = book<TH1F>("DeltaY_xi_gen", "#xi = tanh(#Delta|Y|) GEN ", 50, -1.0, 1.0);
+  DeltaY_xi_gen_300     = book<TH1F>("DeltaY_xi_gen_300", "#xi = tanh(#Delta|Y|) GEN ", 300, -1.0, 1.0);
   DeltaY_xi_gen_36      = book<TH1F>("DeltaY_xi_gen_36", "#xi = tanh(#Delta|Y|) GEN ", 36, -1.0, 1.0);
   DeltaY_xi_gen_20      = book<TH1F>("DeltaY_xi_gen_20", "#xi = tanh(#Delta|Y|) GEN ", 20, -1.0, 1.0);
   DeltaY_xi_gen_10      = book<TH1F>("DeltaY_xi_gen_10", "#xi = tanh(#Delta|Y|) GEN ", 10, -1.0, 1.0);
@@ -316,8 +317,9 @@ void ZprimeSemiLeptonicPreselectionHists::fill(const Event & event){
 
   double weight = event.weight;
 
-  // Check if this is a TTbar MC event
-  bool is_tt = ctx->get("dataset_version").find("TTTo") == 0;
+  // Check if this is a TTbar MC event (including EFT samples)
+  std::string dataset_version = ctx->get("dataset_version");
+  bool is_tt = (dataset_version.find("TTTo") == 0) || (dataset_version.find("EFT") != std::string::npos);
   bool is_mc = ctx->get("dataset_type") == "MC";
     
 
@@ -771,7 +773,7 @@ void ZprimeSemiLeptonicPreselectionHists::fill(const Event & event){
   // cout<< "general: ok" << endl; 
 
   // Template method: Fill GEN-level histograms for ALL ttbar MC events
-  if(is_tt && is_mc) {
+  if(is_tt && is_mc && event.is_valid(h_ttbargen)) {
     
     const auto& ttbargen = event.get(h_ttbargen);
     
@@ -793,6 +795,7 @@ void ZprimeSemiLeptonicPreselectionHists::fill(const Event & event){
 
         DeltaY_gen->Fill(DeltaY_gen_val, weight);
         DeltaY_xi_gen->Fill(xi_gen_val, weight);
+        DeltaY_xi_gen_300->Fill(xi_gen_val, weight);
         DeltaY_xi_gen_36->Fill(xi_gen_val, weight);
         DeltaY_xi_gen_20->Fill(xi_gen_val, weight);
         DeltaY_xi_gen_10->Fill(xi_gen_val, weight);

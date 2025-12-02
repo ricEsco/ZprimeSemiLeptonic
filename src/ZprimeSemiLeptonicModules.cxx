@@ -3622,9 +3622,9 @@ std::vector<float> StructureConstantsCalculator::calculate_new_weights(
     const std::vector<float>& structs, 
     const std::vector<float>& wc_values) {
   
-  // if(wc_values.size() != static_cast<size_t>(num_WCs_) || structs.size() < 1 + num_WCs_ + num_WCs_ + (num_WCs_*(num_WCs_-1))/2) {
-  //   return {1.0}; // Return default weight if dimensions don't match
-  // }
+ //if(wc_values.size() != static_cast<size_t>(num_WCs_) || structs.size() < 1 + num_WCs_ + num_WCs_ + (num_WCs_*(num_WCs_-1))/2) {
+  // return {1.0}; // Return default weight if dimensions don't match
+  //}
   
   // Constant term
   float weight = structs[0];

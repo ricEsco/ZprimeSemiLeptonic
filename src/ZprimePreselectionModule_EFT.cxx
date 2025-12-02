@@ -51,6 +51,18 @@ public:
 protected:
   bool debug;
 
+  // mttbar mass bin edges
+  const std::vector<double> mttbar_bin_edges = {0., 350., 500., 750., 1000., 1500., 20000.};
+  // Bins: [0-350), [350-500), [500-750), [750-1000), [1000-1500), [1500-20000)
+  
+  // Helper function to find mttbar bin
+  inline int find_mtt_bin(double mtt) {
+    for (size_t i = 0; i+1 < mttbar_bin_edges.size(); ++i) {
+      if (mtt >= mttbar_bin_edges[i] && mtt < mttbar_bin_edges[i+1]) return static_cast<int>(i);
+    }
+    return -1;
+  }
+
   // Weight ID mapping
   std::map<int, std::string> weight_id_map;
   void load_weight_ids(const std::string& filename);
@@ -60,6 +72,9 @@ protected:
   std::unique_ptr<AnalysisModule> hotvrjetCorr;
   std::unique_ptr<TopPuppiJetCorrections> toppuppijetCorr;
   std::unique_ptr<CHSJetCorrections> CHSjetCorr;
+  
+  // TTbarGen producer
+  std::unique_ptr<TTbarGenProducer> ttgenprod;
 
   // Cleaners
   std::unique_ptr<JetCleaner>      jet_IDcleaner, jet_cleaner1, jet_cleaner2;
@@ -89,6 +104,12 @@ protected:
 
   // additional branch with AK4 CHS jets -> for b-tagging
   Event::Handle<vector<Jet>> h_CHSjets;
+
+  // TTbarGen handle for mttbar calculation
+  Event::Handle<TTbarGen> h_ttbargen;
+  uhh2::Event::Handle<float> h_xi_gen;
+  uhh2::Event::Handle<float> h_mtt_gen;
+  uhh2::Event::Handle<float> h_DeltaY_gen;
 
 };
 
@@ -251,6 +272,9 @@ ZprimePreselectionModule_EFT::ZprimePreselectionModule_EFT(uhh2::Context& ctx){
   CHSjetCorr.reset(new CHSJetCorrections());
   CHSjetCorr->init(ctx);
 
+  // TTbarGen producer
+  if(isMC) ttgenprod.reset(new TTbarGenProducer(ctx, "ttbargen", false));
+
   //// EVENT SELECTION
   jet1_sel.reset(new NJetSelection(1, -1, JetId(PtEtaCut(jet1_pt, 2.5))));
   jet2_sel.reset(new NJetSelection(2, -1, JetId(PtEtaCut(jet2_pt, 2.5))));
@@ -259,6 +283,15 @@ ZprimePreselectionModule_EFT::ZprimePreselectionModule_EFT(uhh2::Context& ctx){
   // additional branch with Ak4 CHS jets
   h_CHSjets = ctx.get_handle<vector<Jet>>("jetsAk4CHS");
 
+  // TTbarGen handle for mttbar calculation
+  h_ttbargen = ctx.get_handle<TTbarGen>("ttbargen");
+
+  // GEN-level outputs (so they exist in the event and output tree)
+  if (isMC) {
+    h_xi_gen     = ctx.declare_event_output<float>("xi_gen");
+    h_mtt_gen    = ctx.declare_event_output<float>("mtt_gen");
+    h_DeltaY_gen = ctx.declare_event_output<float>("DeltaY_gen");
+  }
   // Load weight IDs from file if this is an EFT sample
   if(isEFT && isMC) {
     string weight_id_file = ctx.get("weightIDFile", "/data/dust/user/beozek/uuh2-106X_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/EFT/EFTweights.txt");
@@ -267,7 +300,16 @@ ZprimePreselectionModule_EFT::ZprimePreselectionModule_EFT(uhh2::Context& ctx){
   }
 
   // Book histograms
-  vector<string> histogram_tags = {"Input", "CommonModules", "HOTVRCorrections", "PUPPICorrections", "Lepton1", "JetID", "JetCleaner1", "JetCleaner2", "TopjetCleaner", "Jet1", "Jet2", "MET"};
+  vector<string> histogram_tags = {"Input", "mtt_gen_inclusive", "CommonModules", "HOTVRCorrections", "PUPPICorrections", "Lepton1", "JetID", "JetCleaner1", "JetCleaner2", "TopjetCleaner", "Jet1", "Jet2", "MET"};
+  
+  // Add mttbar bin tags
+  for (size_t i = 0; i+1 < mttbar_bin_edges.size(); ++i) {
+    const double low = mttbar_bin_edges[i];
+    const double high = mttbar_bin_edges[i+1];
+    const string bin_tag = "mtt_gen_" + to_string((int)low) + "_" + to_string((int)high);
+    histogram_tags.push_back(bin_tag);
+  }
+
   book_histograms(ctx, histogram_tags);
 
   lumihists.reset(new LuminosityHists(ctx, "lumi"));
@@ -275,46 +317,69 @@ ZprimePreselectionModule_EFT::ZprimePreselectionModule_EFT(uhh2::Context& ctx){
 
 bool ZprimePreselectionModule_EFT::process(uhh2::Event& event){
 
-  // Store EFT weights if this is an EFT sample
-  if(!event.isRealData && event.genInfo && isEFT) {
-    // Store number of weights
-    event.set(h_n_eft_weights, event.genInfo->systweights().size());
-    
-    // Store reference point weight (first weight)
-    if(event.genInfo->systweights().size() > 0) {
-      event.set(h_ref_point_weight, event.genInfo->systweights().at(0));
-    }
-    
-    // Store all weights
-    for(size_t i = 0; i < event.genInfo->systweights().size() && i < h_eft_weights.size(); i++) {
-      event.set(h_eft_weights[i], event.genInfo->systweights().at(i));
-    }
+  // Process TTbarGen producer for MC events
+  if (isMC && ttgenprod) {
+    ttgenprod->process(event);
+  }
 
-    // Print weights for first event only (for debugging)
-    static bool first_event = true;
-    if(first_event) {
-      cout << "\n=== Weight Information ===\n";
-      size_t n_weights = event.genInfo->systweights().size();
-      cout << "Total number of weights: " << n_weights << "\n\n";
+  // Store EFT weights if this is an EFT sample
+  // Ensure all declared handles are initialized to prevent SFrame errors
+  if(isEFT && !h_eft_weights.empty()) {
+    if(!event.isRealData && event.genInfo) {
+      // Store number of weights
+      event.set(h_n_eft_weights, event.genInfo->systweights().size());
       
-      // Print first 10 weights with their names
-      size_t weights_to_print = std::min(size_t(10), n_weights);
-      cout << "First " << weights_to_print << " weights:\n";
-      for(size_t i = 0; i < weights_to_print; i++) {
-        cout << weight_id_map[i] << " = " << event.genInfo->systweights().at(i);
-        if(i == 0) cout << " (reference point)";
-        cout << "\n";
+      // Store reference point weight (first weight)
+      if(event.genInfo->systweights().size() > 0) {
+        event.set(h_ref_point_weight, event.genInfo->systweights().at(0));
       }
       
-      // Print last 10 weights if there are more than 20 weights
-      if(n_weights > 20) {
-        cout << "\nLast " << weights_to_print << " weights:\n";
-        for(size_t i = n_weights - weights_to_print; i < n_weights; i++) {
-          cout << weight_id_map[i] << " = " << event.genInfo->systweights().at(i) << "\n";
+      // Store all weights that exist in the event
+      size_t n_available_weights = event.genInfo->systweights().size();
+      for(size_t i = 0; i < n_available_weights && i < h_eft_weights.size(); i++) {
+        event.set(h_eft_weights[i], event.genInfo->systweights().at(i));
+      }
+      
+      // Initialize remaining handles to default value (1.0) to ensure all declared handles are valid
+      // This prevents SFrame errors when handles are declared but not set
+      for(size_t i = n_available_weights; i < h_eft_weights.size(); i++) {
+        event.set(h_eft_weights[i], 1.0f);
+      }
+
+      // Print weights for first event only (for debugging)
+      static bool first_event = true;
+      if(first_event) {
+        cout << "\n=== Weight Information ===\n";
+        size_t n_weights = event.genInfo->systweights().size();
+        cout << "Total number of weights: " << n_weights << "\n\n";
+        
+        // Print first 10 weights with their names
+        size_t weights_to_print = std::min(size_t(10), n_weights);
+        cout << "First " << weights_to_print << " weights:\n";
+        for(size_t i = 0; i < weights_to_print; i++) {
+          cout << weight_id_map[i] << " = " << event.genInfo->systweights().at(i);
+          if(i == 0) cout << " (reference point)";
+          cout << "\n";
         }
+        
+        // Print last 10 weights if there are more than 20 weights
+        if(n_weights > 20) {
+          cout << "\nLast " << weights_to_print << " weights:\n";
+          for(size_t i = n_weights - weights_to_print; i < n_weights; i++) {
+            cout << weight_id_map[i] << " = " << event.genInfo->systweights().at(i) << "\n";
+          }
+        }
+        cout << "=========================\n\n";
+        first_event = false;
       }
-      cout << "=========================\n\n";
-      first_event = false;
+    } else {
+      // Initialize all handles to default values if genInfo is missing or this is data
+      // This ensures all declared handles are valid even in edge cases
+      event.set(h_n_eft_weights, 0);
+      event.set(h_ref_point_weight, 1.0f);
+      for(size_t i = 0; i < h_eft_weights.size(); i++) {
+        event.set(h_eft_weights[i], 1.0f);
+      }
     }
   }
 
@@ -326,10 +391,39 @@ bool ZprimePreselectionModule_EFT::process(uhh2::Event& event){
   fill_histograms(event, "Input");
    if(debug) cout << "first plots input: ok" << endl;
 
+    // Calculate mttbar and fill appropriate bin histograms
+    if (isMC && event.is_valid(h_ttbargen)) {
+      // set defaults first, every event
+      event.set(h_xi_gen,     std::numeric_limits<float>::quiet_NaN());
+      event.set(h_mtt_gen,    std::numeric_limits<float>::quiet_NaN());
+      event.set(h_DeltaY_gen, std::numeric_limits<float>::quiet_NaN());
+      const auto& ttbargen = event.get(h_ttbargen);
+      if (ttbargen.IsSemiLeptonicDecay()) {
+        int lepId = std::abs(ttbargen.ChargedLepton().pdgId());
+        if (lepId == 11 || lepId == 13) { 
+          const auto& top  = ttbargen.Top();
+          const auto& atop = ttbargen.Antitop();
+          double mtt = (top.v4() + atop.v4()).M();
+          double dy  = std::abs(top.v4().Rapidity()) - std::abs(atop.v4().Rapidity());
+          event.set(h_xi_gen,     std::tanh(dy));
+          event.set(h_mtt_gen,    static_cast<float>(mtt));
+          event.set(h_DeltaY_gen, static_cast<float>(dy));
+  
+          // Only fill histograms if e/muon semileptonic
+          fill_histograms(event, "mtt_gen_inclusive");
+          const int ibin = find_mtt_bin(mtt);
+          if (ibin >= 0) {
+            const string bin_tag = "mtt_gen_" + to_string((int)mttbar_bin_edges[ibin]) + "_" + to_string((int)mttbar_bin_edges[ibin+1]);
+            fill_histograms(event, bin_tag);
+          }
+        }
+      }
+    }
+
   bool commonResult = common->process(event);
   if (!commonResult) return false;
   if(debug) cout << "CommonModules: ok" << endl;
-  fill_histograms(event, "CommonModules");
+  // fill_histograms(event, "CommonModules");
 
   sort_by_pt<Muon>(*event.muons);
   sort_by_pt<Electron>(*event.electrons);
@@ -339,13 +433,12 @@ bool ZprimePreselectionModule_EFT::process(uhh2::Event& event){
 
   if(isHOTVR){
     hotvrjetCorr->process(event);
-    fill_histograms(event, "HOTVRCorrections");
+    // fill_histograms(event, "HOTVRCorrections");
   }
 
   toppuppijetCorr->process(event);
   if(debug) cout << "TopPuppiJetCorrections: ok" << endl;
-  fill_histograms(event, "PUPPICorrections");
-
+  // fill_histograms(event, "PUPPICorrections");
 
   // GEN ME quark-flavor selection
   if(!event.isRealData){
@@ -359,22 +452,21 @@ bool ZprimePreselectionModule_EFT::process(uhh2::Event& event){
   // cout << "pass_lep1: " << pass_lep1 << endl;
   if(!pass_lep1) return false;
   if(debug) cout << "≥1 leptons: ok" << endl;
-  fill_histograms(event, "Lepton1");
+  // fill_histograms(event, "Lepton1");
 
   jet_IDcleaner->process(event);
-  fill_histograms(event, "JetID");
+  // fill_histograms(event, "JetID");
   if(debug) cout << "JetCleaner ID: ok" << endl;
 
   jet_cleaner1->process(event);
   sort_by_pt<Jet>(*event.jets);
-  fill_histograms(event, "JetCleaner1");
+  // fill_histograms(event, "JetCleaner1");
   if(debug) cout << "JetCleaner1: ok" << endl;
 
   // Lepton-2Dcut variables
   for(auto& muo : *event.muons){
     float    dRmin, pTrel;
     std::tie(dRmin, pTrel) = drmin_pTrel(muo, *event.jets);
-
     muo.set_tag(Muon::twodcut_dRmin, dRmin);
     muo.set_tag(Muon::twodcut_pTrel, pTrel);
   }
@@ -382,15 +474,13 @@ bool ZprimePreselectionModule_EFT::process(uhh2::Event& event){
   for(auto& ele : *event.electrons){
     float    dRmin, pTrel;
     std::tie(dRmin, pTrel) = drmin_pTrel(ele, *event.jets);
-
     ele.set_tag(Electron::twodcut_dRmin, dRmin);
     ele.set_tag(Electron::twodcut_pTrel, pTrel);
   }
 
-
   jet_cleaner2->process(event);
   sort_by_pt<Jet>(*event.jets);
-  fill_histograms(event, "JetCleaner2");
+  // fill_histograms(event, "JetCleaner2");   
   if(debug) cout << "JetCleaner2: ok" << endl;
 
   hotvrjet_cleaner->process(event);
@@ -400,26 +490,27 @@ bool ZprimePreselectionModule_EFT::process(uhh2::Event& event){
   topjet_puppi_cleaner->process(event);
   sort_by_pt<TopJet>(*event.toppuppijets);
 
-  fill_histograms(event, "TopjetCleaner");
+  // fill_histograms(event, "TopjetCleaner");
   if(debug) cout << "TopJetCleaner: ok" << endl;
 
   // 1st AK4 jet selection
   const bool pass_jet1 = jet1_sel->passes(event);
   if(!pass_jet1) return false;
   if(debug) cout << "NJetSelection1: ok" << endl;
-  fill_histograms(event, "Jet1");
+  // fill_histograms(event, "Jet1");
 
   // 2nd AK4 jet selection
   const bool pass_jet2 = jet2_sel->passes(event);
   if(!pass_jet2) return false;
   if(debug) cout << "NJetSelection2: ok" << endl;
-  fill_histograms(event, "Jet2");
+  // fill_histograms(event, "Jet2");
 
   // MET selection
   const bool pass_met = met_sel->passes(event);
   if(!pass_met) return false;
   if(debug) cout << "METCut: ok" << endl;
   fill_histograms(event, "MET");
+
 
   return true;
 }

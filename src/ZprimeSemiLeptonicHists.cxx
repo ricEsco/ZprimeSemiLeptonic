@@ -252,12 +252,13 @@ Hists(ctx, dirname) {
   h_xi_gen     = ctx.get_handle<float>("xi_gen");
   h_DeltaY_gen = ctx.get_handle<float>("DeltaY_gen");
   h_mtt_gen    = ctx.get_handle<float>("mtt_gen");
-
-  // if(is_tt && dataset_version.find("EFT") == std::string::npos) {
-  //   // Only try to get handle for nonEFT TTbar samples
-  //   // Note: This handle may not exist in all samples.
-  //   h_ttbargen = ctx.get_handle<TTbarGen>("ttbargen");
-  // }
+  // Initialize h_ttbargen only if not EFT (EFT samples may not have proper ttbar gen info)
+  // Use same check as is_tt to determine if this is an EFT sample
+  // Only initialize the handle for non-EFT TTbar samples to avoid UHH2 complaining about unset handles
+  if(is_tt && dataset_version.find("EFT") == std::string::npos) {
+    // Only try to get handle for non-EFT TTbar samples
+    h_ttbargen = ctx.get_handle<TTbarGen>("ttbargen");
+  }
   //  h_chi2 = ctx.get_handle<float>("chi2");
 
   // ------------------------------------------------------------

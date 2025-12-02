@@ -250,7 +250,7 @@ bool ZprimePreselectionModule::process(uhh2::Event& event){
   if(debug) cout << "first plots input: ok" << endl;
 
   // Calculate mttbar and fill appropriate bin histograms
-  if (isMC) {
+  if (isMC && event.is_valid(h_ttbargen)) {
     // set defaults first, every event
     event.set(h_xi_gen,     std::numeric_limits<float>::quiet_NaN());
     event.set(h_mtt_gen,    std::numeric_limits<float>::quiet_NaN());
@@ -281,7 +281,7 @@ bool ZprimePreselectionModule::process(uhh2::Event& event){
   bool commonResult = common->process(event);
   if (!commonResult) return false;
   if(debug) cout << "CommonModules: ok" << endl;
-  fill_histograms(event, "CommonModules");
+  // fill_histograms(event, "CommonModules");
 
   sort_by_pt<Muon>(*event.muons);
   sort_by_pt<Electron>(*event.electrons);
@@ -291,12 +291,12 @@ bool ZprimePreselectionModule::process(uhh2::Event& event){
 
   if(isHOTVR){
     hotvrjetCorr->process(event);
-    fill_histograms(event, "HOTVRCorrections");
+    // fill_histograms(event, "HOTVRCorrections");
   }
 
   toppuppijetCorr->process(event);
   if(debug) cout << "TopPuppiJetCorrections: ok" << endl;
-  fill_histograms(event, "PUPPICorrections");
+  // fill_histograms(event, "PUPPICorrections");
 
   // GEN ME quark-flavor selection
   if(!event.isRealData){
@@ -310,15 +310,15 @@ bool ZprimePreselectionModule::process(uhh2::Event& event){
   // cout << "pass_lep1: " << pass_lep1 << endl;
   if(!pass_lep1) return false;
   if(debug) cout << "≥1 leptons: ok" << endl;
-  fill_histograms(event, "Lepton1");
+  // fill_histograms(event, "Lepton1");
 
   jet_IDcleaner->process(event);
-  fill_histograms(event, "JetID");
+  // fill_histograms(event, "JetID");
   if(debug) cout << "JetCleaner ID: ok" << endl;
 
   jet_cleaner1->process(event);
   sort_by_pt<Jet>(*event.jets);
-  fill_histograms(event, "JetCleaner1");
+  // fill_histograms(event, "JetCleaner1");
   if(debug) cout << "JetCleaner1: ok" << endl;
 
   // Lepton-2Dcut variables
@@ -338,7 +338,7 @@ bool ZprimePreselectionModule::process(uhh2::Event& event){
 
   jet_cleaner2->process(event);
   sort_by_pt<Jet>(*event.jets);
-  fill_histograms(event, "JetCleaner2");
+  // fill_histograms(event, "JetCleaner2");
   if(debug) cout << "JetCleaner2: ok" << endl;
 
   hotvrjet_cleaner->process(event);
@@ -348,20 +348,20 @@ bool ZprimePreselectionModule::process(uhh2::Event& event){
   topjet_puppi_cleaner->process(event);
   sort_by_pt<TopJet>(*event.toppuppijets);
 
-  fill_histograms(event, "TopjetCleaner");
+  // fill_histograms(event, "TopjetCleaner");
   if(debug) cout << "TopJetCleaner: ok" << endl;
 
   // 1st AK4 jet selection
   const bool pass_jet1 = jet1_sel->passes(event);
   if(!pass_jet1) return false;
   if(debug) cout << "NJetSelection1: ok" << endl;
-  fill_histograms(event, "Jet1");
+  // fill_histograms(event, "Jet1");
 
   // 2nd AK4 jet selection
   const bool pass_jet2 = jet2_sel->passes(event);
   if(!pass_jet2) return false;
   if(debug) cout << "NJetSelection2: ok" << endl;
-  fill_histograms(event, "Jet2");
+  // fill_histograms(event, "Jet2");
 
   // MET selection
   const bool pass_met = met_sel->passes(event);

@@ -1005,12 +1005,10 @@ ZprimeAnalysisModule_applyNN::ZprimeAnalysisModule_applyNN(uhh2::Context& ctx){
   sel_1btag.reset(new NJetSelection(1, -1, id_btag));
   sel_2btag.reset(new NJetSelection(2,-1, id_btag));
 
-  if (debug) cout << "[DEBUG] About to create DeltaY_reco_SystVariations_Inclusive_SR..." << endl;
+  
   h_DeltaY_reco_SystVariations_Inclusive_SR.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "DeltaY_reco_SystVariations_Inclusive_SR"));
-  if (debug) cout << "[DEBUG] DeltaY_reco_SystVariations_Inclusive_SR created successfully!" << endl;
   h_DeltaY_reco_PDFVariations_Inclusive_SR.reset(new ZprimeSemiLeptonicPDFHists(ctx, "DeltaY_reco_PDFVariations_Inclusive_SR"));
-  if (debug) cout << "[DEBUG] DeltaY_reco_PDFVariations_Inclusive_SR created successfully!" << endl;
-
+  
   // ================ SR ==================================================================================================================================================================================================================
   
   // h_DeltaY_reco_SystVariations_0_500_SR.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "DeltaY_reco_SystVariations_0_500_SR"));
@@ -1026,6 +1024,7 @@ ZprimeAnalysisModule_applyNN::ZprimeAnalysisModule_applyNN(uhh2::Context& ctx){
 
   if(debug) cout << "[DEBUG] DeltaY_reco_SystVariations_0_500_SR created successfully!" << endl;
 
+  // Commented out PDF histograms for different mass bins - not needed
   // h_DeltaY_reco_PDFVariations_0_500_SR.reset(new ZprimeSemiLeptonicPDFHists(ctx, "DeltaY_reco_PDFVariations_0_500_SR"));
   // h_DeltaY_reco_PDFVariations_0_350_SR.reset(new ZprimeSemiLeptonicPDFHists(ctx, "DeltaY_reco_PDFVariations_0_350_SR"));
   // h_DeltaY_reco_PDFVariations_350_500_SR.reset(new ZprimeSemiLeptonicPDFHists(ctx, "DeltaY_reco_PDFVariations_350_500_SR"));
@@ -1054,6 +1053,7 @@ ZprimeAnalysisModule_applyNN::ZprimeAnalysisModule_applyNN(uhh2::Context& ctx){
   // h_DeltaY_reco_SystVariations_900Inf_CR1.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "DeltaY_reco_SystVariations_900Inf_CR1"));
   
   
+  // Commented out PDF histograms for different mass bins - not needed
   // h_DeltaY_reco_PDFVariations_0_500_CR1.reset(new ZprimeSemiLeptonicPDFHists(ctx, "DeltaY_reco_PDFVariations_0_500_CR1"));
   // h_DeltaY_reco_PDFVariations_0_350_CR1.reset(new ZprimeSemiLeptonicPDFHists(ctx, "DeltaY_reco_PDFVariations_0_350_CR1"));
   // h_DeltaY_reco_PDFVariations_350_500_CR1.reset(new ZprimeSemiLeptonicPDFHists(ctx, "DeltaY_reco_PDFVariations_350_500_CR1"));
@@ -1070,6 +1070,8 @@ ZprimeAnalysisModule_applyNN::ZprimeAnalysisModule_applyNN(uhh2::Context& ctx){
 
 
   // ================ CR2 ==================================================================================================================================================================================================================
+
+  if(debug) cout << "[DEBUG] About to create DeltaY_reco_SystVariations_0_500_CR2..." << endl;
   // h_DeltaY_reco_SystVariations_0_500_CR2.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "DeltaY_reco_SystVariations_0_500_CR2"));
   // h_DeltaY_reco_SystVariations_0_350_CR2.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "DeltaY_reco_SystVariations_0_350_CR2"));
   // h_DeltaY_reco_SystVariations_350_500_CR2.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "DeltaY_reco_SystVariations_350_500_CR2"));
@@ -1082,6 +1084,7 @@ ZprimeAnalysisModule_applyNN::ZprimeAnalysisModule_applyNN(uhh2::Context& ctx){
   // h_DeltaY_reco_SystVariations_900Inf_CR2.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "DeltaY_reco_SystVariations_900Inf_CR2"));
 
 
+  // Commented out PDF histograms for different mass bins - not needed
   // h_DeltaY_reco_PDFVariations_0_500_CR2.reset(new ZprimeSemiLeptonicPDFHists(ctx, "DeltaY_reco_PDFVariations_0_500_CR2"));
   // h_DeltaY_reco_PDFVariations_0_350_CR2.reset(new ZprimeSemiLeptonicPDFHists(ctx, "DeltaY_reco_PDFVariations_0_350_CR2"));
   // h_DeltaY_reco_PDFVariations_350_500_CR2.reset(new ZprimeSemiLeptonicPDFHists(ctx, "DeltaY_reco_PDFVariations_350_500_CR2"));
@@ -1597,8 +1600,49 @@ bool ZprimeAnalysisModule_applyNN::process(uhh2::Event& event){
   // fill_histograms(event, "Weights_HEM");
 
   // pileup weight
+  // Check for corrupted pileup values BEFORE calling the module to avoid warnings
+  bool has_corrupted_pileup = false;
+  if(isMC && event.genInfo) {
+    try {
+      double trueNumInteractions = event.genInfo->pileup_TrueNumInteractions();
+      // Check for corrupted values (normal pileup is 0-100, values like 4.7e+27 indicate corruption)
+      if (!std::isfinite(trueNumInteractions) || trueNumInteractions < -10.0 || trueNumInteractions > 500.0) {
+        has_corrupted_pileup = true;
+        // Set weights to 1.0 (no reweighting) and skip the module to avoid warnings
+        event.set(h_weight_pu, 1.0f);
+        event.set(h_weight_pu_up, 1.0f);
+        event.set(h_weight_pu_down, 1.0f);
+      }
+    } catch(...) {
+      has_corrupted_pileup = true;
+      event.set(h_weight_pu, 1.0f);
+      event.set(h_weight_pu_up, 1.0f);
+      event.set(h_weight_pu_down, 1.0f);
+    }
+  }
+  
+  if(!has_corrupted_pileup) {
+    // Normal processing - only call module if pileup is valid
     PUWeight_module->process(event);
-
+    
+    // Double-check: fix any weights that ended up as 0/NaN/Inf (safety net)
+    if(isMC) {
+      float pu_weight = event.get(h_weight_pu);
+      float pu_weight_up = event.get(h_weight_pu_up);
+      float pu_weight_down = event.get(h_weight_pu_down);
+      
+      if(!std::isfinite(pu_weight) || pu_weight == 0.0f) {
+        event.set(h_weight_pu, 1.0f);
+      }
+      if(!std::isfinite(pu_weight_up) || pu_weight_up == 0.0f) {
+        event.set(h_weight_pu_up, 1.0f);
+      }
+      if(!std::isfinite(pu_weight_down) || pu_weight_down == 0.0f) {
+        event.set(h_weight_pu_down, 1.0f);
+      }
+    }
+  }
+  
   if(debug)  cout<<"PUWeight ok"<<endl;
   // fill_histograms(event, "Weights_PU");
   // lumihists_Weights_PU->fill(event);

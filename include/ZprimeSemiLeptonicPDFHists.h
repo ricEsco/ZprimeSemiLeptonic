@@ -35,7 +35,7 @@ namespace uhh2 {
     std::string hist_names_dy_d2[100];
     std::string hist_names_sigma_1[100];
     std::string hist_names_sigma_2[100];
-    
+
     std::string hist_names_xi[100];
     std::string hist_names_xi_RM[100];
     
@@ -63,20 +63,20 @@ namespace uhh2 {
     uhh2::Event::Handle<bool> h_is_zprime_reconstructed_chi2;
     uhh2::Event::Handle<ZprimeCandidate*> h_BestZprimeCandidateChi2;
     uhh2::Event::Handle<std::vector<ReconstructionHypothesis>> h_ttbar_hyps;
-     
+    
     // NoAC weight support for TTbar
-     uhh2::Event::Handle<float> h_xi_gen;
-     bool use_noac_evtweights_;
-     std::string noac_gen_file_;
-     std::string noac_gen_hist_;
-     std::map<float, std::unique_ptr<TH1D>> noac_weights_map;
-     std::vector<float> f_values;
-     
-     // Helper functions for NoAC weights
-     static std::unique_ptr<TH1D> mirror_hist_1d(const TH1* H);
-     static std::unique_ptr<TH1D> build_noac_weights_from_gen(const TH1D& Hgen_in, float f_noac);
-     static double lookup_noac_weight(double xi, const TH1* W);
-     
+    uhh2::Event::Handle<float> h_xi_gen;
+    bool use_noac_evtweights_;
+    std::string noac_gen_file_;
+    std::string noac_gen_hist_;
+    std::map<float, std::unique_ptr<TH1D>> noac_weights_map;
+    std::vector<float> f_values;
+    
+    // Helper functions for NoAC weights
+    static std::unique_ptr<TH1D> mirror_hist_1d(const TH1* H);
+    static std::unique_ptr<TH1D> build_noac_weights_from_gen(const TH1D& Hgen_in, float f_noac);
+    static double lookup_noac_weight(double xi, const TH1* W);
+    
     virtual ~ZprimeSemiLeptonicPDFHists();
   };
 }

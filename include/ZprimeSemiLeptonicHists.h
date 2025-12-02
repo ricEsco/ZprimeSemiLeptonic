@@ -7,6 +7,7 @@
 #include <UHH2/common/include/TTbarGen.h>
 #include <UHH2/common/include/TTbarReconstruction.h>
 #include <UHH2/common/include/ReconstructionHypothesisDiscriminators.h>
+
 #include <map>
 #include <string>
 #include <vector>
@@ -73,7 +74,7 @@ protected:
   TH1F *h_N_Ak4; //*h_N_Ak4_SR, *h_N_Ak4_CR1, *h_N_Ak4_CR2;
  // TH1F *h_M_tt_SR, *h_chi2_SR, *h_M_tt_CR1, *h_chi2_CR1, *h_M_tt_CR2, *h_chi2_CR2; 
 
- TH2F *N_Jets_vs_HT, *mttbar_vs_costhetastar, *costhetastar_vs_mttbar, *response_matrix;
+  TH2F *N_Jets_vs_HT, *mttbar_vs_costhetastar, *costhetastar_vs_mttbar, *response_matrix;
 
   uhh2::Event::Handle< std::vector<TopJet> > h_AK8TopTags;
   uhh2::Event::Handle< std::vector<Jet> > h_CHSjets_matched;
@@ -98,16 +99,16 @@ protected:
 
   //template method
   struct NoACHistBundle {
-     TH1F *deltaY = nullptr;
-     std::map<int, TH1F*> xi_histograms; // key: number of bins
-   };
-   // configuration for template method variations
-   std::vector<std::pair<std::string, double>> noac_points_;  // suffix, f value
-   std::vector<int> xi_template_binnings_;                    // e.g. 50, 36, 20, 18, 12, 10, 6
-   std::map<std::string, NoACHistBundle> noac_histograms_;    // suffix -> booked histograms
-   // Persisted NoAC weight shapes
-   std::map<std::string, TH1F*> noac_weight_shapes_;          // suffix -> TH1F for monitoring
-   TH1F *NoAC_W_cfg = nullptr;
+    TH1F *deltaY = nullptr;
+    std::map<int, TH1F*> xi_histograms; // key: number of bins
+  };
+  // configuration for template method variations
+  std::vector<std::pair<std::string, double>> noac_points_;  // suffix, f value
+  std::vector<int> xi_template_binnings_;                    // e.g. 50, 36, 20, 18, 12, 10, 6
+  std::map<std::string, NoACHistBundle> noac_histograms_;    // suffix -> booked histograms
+  // Persisted NoAC weight shapes
+  std::map<std::string, TH1F*> noac_weight_shapes_;          // suffix -> TH1F for monitoring
+  TH1F *NoAC_W_cfg = nullptr;
   // --- NoAC from GEN preselection hist ---
   bool use_noac_evtweights_ = false;
   std::string noac_gen_file_;
@@ -116,7 +117,6 @@ protected:
   std::unique_ptr<TH1D> noac_weights_;  // W(xi; f)
   // Multi-f weights keyed by suffix
   std::map<std::string, std::unique_ptr<TH1D>> noac_weight_map_;
-  // suffix -> W(xi; f)
   //template method end
 
   //uhh2::Event::Handle<float> h_chi2;
