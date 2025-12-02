@@ -146,7 +146,7 @@ namespace {
 
 ZprimeSemiLeptonicPDFHists::ZprimeSemiLeptonicPDFHists(uhh2::Context & ctx, const std::string& dirname): 
 Hists(ctx, dirname){
- 
+  // dataset type flags
   is_mc = ctx.get("dataset_type") == "MC";
   is_dy = ctx.get("dataset_version").find("DYJets") == 0;
   std::string dataset_version = ctx.get("dataset_version");
@@ -158,12 +158,16 @@ Hists(ctx, dirname){
   is_htott_scalar = ctx.get("dataset_version").find("HscalarToTTTo") == 0;
   is_htott_pseudo = ctx.get("dataset_version").find("HpseudoToTTTo") == 0;
   is_zprimetott = ctx.get("dataset_version").find("ZPrimeToTT_") == 0;
+
+  // handle for best reconstructed candidate and reconstruction flag
   h_BestZprimeCandidateChi2 = ctx.get_handle<ZprimeCandidate*>("ZprimeCandidateBestChi2");
   h_is_zprime_reconstructed_chi2 = ctx.get_handle<bool>("is_zprime_reconstructed_chi2");
+
+  // top tagging algorithm flag
   ishotvr = (ctx.get("is_hotvr") == "true");
   isdeepAK8 = (ctx.get("is_deepAK8") == "true");
  
-
+  // lepton channel flag
   isMuon = false; isElectron = false;
   if(ctx.get("channel") == "muon") isMuon = true;
   if(ctx.get("channel") == "electron") isElectron = true;
@@ -228,18 +232,20 @@ Hists(ctx, dirname){
     std::stringstream ss_name_dy_d2;
     std::stringstream ss_name_sigma_1;
     std::stringstream ss_name_sigma_2;
+    std::stringstream ss_name_delta_1;
+    std::stringstream ss_name_delta_2;
     std::stringstream ss_name_xi;
 
 
-
-    ss_name << "DeltaY_PDF_" << i+1;
-    ss_name_tt << "DeltaY_PDF_RM_" << i+1;
-    ss_name_dy_d1 << "DeltaY_reco_d1_PDF_" << i+1;
-    ss_name_dy_d2 << "DeltaY_reco_d2_PDF_" << i+1;
+    ss_name         << "DeltaY_PDF_" << i+1;
+    ss_name_tt      << "DeltaY_PDF_RM_" << i+1;
+    ss_name_dy_d1   << "DeltaY_reco_d1_PDF_" << i+1;
+    ss_name_dy_d2   << "DeltaY_reco_d2_PDF_" << i+1;
     ss_name_sigma_1 << "Sigma_phi_1_PDF_" << i+1;
     ss_name_sigma_2 << "Sigma_phi_2_PDF_" << i+1;
-
-    ss_name_xi    << "DeltaY_xi_reco_6_PDF_" << i+1;
+    ss_name_delta_1 << "Delta_phi_1_PDF_" << i+1;
+    ss_name_delta_2 << "Delta_phi_2_PDF_" << i+1;
+    ss_name_xi      << "DeltaY_xi_reco_6_PDF_" << i+1;
 
 
     stringstream ss_title;

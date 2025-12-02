@@ -820,6 +820,9 @@ void ZprimeSemiLeptonicHists::init(){
   ditop_absDeltaEta = book<TH1F>("ditop_absDeltaEta", "|#Delta#eta(t,#bar{t})|", 60, 0, 6.0);
   ditop_deltaR      = book<TH1F>("ditop_deltaR", "#DeltaR(t,#bar{t})", 100, 0, 10.0);
   
+  // ttbar system
+  beta_ttbar    = book<TH1F>("beta_ttbar", "beta_{t#bar{t}}", 50, 0, 1);
+
   // // Spin correlation variables
   // top polarizations
   cos_theta1k       = book<TH1F>("cos_theta1k", "cos(#theta_{1}^{k})",24, -1, 1);
@@ -854,8 +857,16 @@ void ZprimeSemiLeptonicHists::init(){
   Cnk_minus = book<TH1F>("Cnk_minus", "C_{nk} - C_{kn}",24, -1, 1);
 
   // entanglement variables
-  cHel      = book<TH1F>("cHel", "cos(#phi^{hel})",24, -1, 1);
-  cHel_P3n  = book<TH1F>("cHel_P3n", "cos(#phi^{hel}_{P3n})",24, -1, 1);
+  cHel      = book<TH1F>("cHel", "cos(#phi_{lb})",24, -1, 1);
+  cHel_P3n  = book<TH1F>("cHel_P3n", "cos(#phi_{(P3n)lb})",24, -1, 1);
+
+  // // phase-space selection enhanced entanglement variables
+  // near-threshold and "slow"
+  cHel_Mtt300_400           = book<TH1F>("cHel_Mtt300_400",           "cos(#phi_{lb}) (M_{tt} [300,400] GeV)",24, -1, 1);
+  cHel_Mtt300_400_betaLT0p9 = book<TH1F>("cHel_Mtt300_400_betaLT0p9", "cos(#phi_{lb}) (M_{tt} [300,400] GeV, #beta_{tt} < 0.9)",24, -1, 1);
+  // boosted and central
+  cHel_P3n_Mtt800_Inf               = book<TH1F>("cHel_P3n_Mtt800_Inf",               "cos(#phi_{(P3n)lb}) (M_{tt} > 800 GeV)",24, -1, 1);
+  cHel_P3n_Mtt800_Inf_cosThetaLT0p4 = book<TH1F>("cHel_P3n_Mtt800_Inf_cosThetaLT0p4", "cos(#phi_{(P3n)lb}) (M_{tt} > 800 GeV, |cos(#theta)| < 0.4)",24, -1, 1);
 
   // Baumgart angular variables
   Sigma_phi             = book<TH1F>("Sigma_phi", "#Sigma #phi ",16, -3.2, 3.2);
@@ -1968,8 +1979,6 @@ void ZprimeSemiLeptonicHists::fill(const Event & event){
       }
     }
 
-
-
     for (const auto& pair_lep : deltaR_leptonic_values) {
       if (pair_lep.first > 0 && pair_lep.first < deltaR_min_leptonic) {
         // deltaR_min_leptonic = pair_lep.first;
@@ -1984,7 +1993,6 @@ void ZprimeSemiLeptonicHists::fill(const Event & event){
         sec_best_gen_for_leptop = pair_lep.second;
       }
     }
-
 
     for (const auto& pair_had : deltaR_hadronic_values) {
       if (pair_had.first > 0 && pair_had.first < deltaR_min_hadronic) {
@@ -2003,8 +2011,6 @@ void ZprimeSemiLeptonicHists::fill(const Event & event){
 
     if(debug) cout << "after dR matching" << endl;
 
-
-
     if (best_gen_for_hadtop == best_gen_for_leptop){
       if(debug) cout << "same index for matched gen" << endl;
       if (deltaR_min_leptonic <= deltaR_min_hadronic){
@@ -2020,7 +2026,6 @@ void ZprimeSemiLeptonicHists::fill(const Event & event){
     }
     if(debug) cout << "after the same index statement" << endl;
 
-
     GenParticle best_matched_gen_leptop;
     GenParticle best_matched_gen_hadtop;
     
@@ -2028,13 +2033,10 @@ void ZprimeSemiLeptonicHists::fill(const Event & event){
     if(debug) cout << static_cast<std::size_t>(best_gen_for_leptop) << endl;
     if(debug) cout << "leptop index: " << best_gen_for_leptop << endl;
     if(debug) cout << "hadtop index :" << best_gen_for_hadtop << endl;
-    
-    
 
     float_t DeltaY_gen_best = 99.0;
     float_t DeltaY_reco_best = 99.0;
    
-
     if(debug) cout << "now will check dR " << endl;
     if(debug) cout << deltaR_min_leptonic << endl;
     if(debug) cout << deltaR_min_hadronic << endl;
@@ -2304,9 +2306,11 @@ if (is_zprime_reconstructed_chi2 ){
                           BestZprimeCandidate->top_leptonic_v4().energy());
     }
     TLorentzVector ttbar = PosTop + NegTop; // ttbar 4vector
-    
+    float beta = TMath::Abs(PosTop.Pz() + NegTop.Pz()) / (PosTop.E() + NegTop.E()); // relativistic beta of ttbar system in lab-frame
+    beta_ttbar->Fill(beta, weight);
 
-    //---------------------- Boost into ttbar CoM-Frame ----------------------//
+
+    //--------- Boost into ttbar CoM-Frame ---------//
     // Center of Mass frame copies of 4vectors
     TLorentzVector PosTop_CoM = PosTop;
     TLorentzVector NegTop_CoM = NegTop;
@@ -2321,14 +2325,14 @@ if (is_zprime_reconstructed_chi2 ){
 
     //-------------------------------------------------------------- Build Bernreuther basis --------------------------------------------------------------//
     // Required axes from CoM frame
-    TVector3 beam_axis(0,0,1); // Beam unit vector
+    TVector3 beam_axis(0,0,1);                                                                      // Beam unit vector
     TVector3 k_axis = PosTop_CoM.Vect().Unit();                                                     // direction of top quark momentum in ttbar CoM frame
     double cos_PosTop_beam = PosTop_CoM.Vect().Unit().Dot(beam_axis);                               // Cosine of scattering angle, "y" in Bernreuther et al.
-    double abs_sin_PosTop_beam = sqrt(1 - cos_PosTop_beam*cos_PosTop_beam);                         // Sine of scattering angle, "r" in Bernreuther et al.
+    double abs_sin_PosTop_beam = sqrt(1 - cos_PosTop_beam*cos_PosTop_beam);                         // Sine of scattering angle,   "r" in Bernreuther et al.
     TVector3 r_axis = ( (1./abs_sin_PosTop_beam) * (beam_axis - cos_PosTop_beam * k_axis) ).Unit(); // orthogonal to k_axis and lies in production plane
     TVector3 n_axis = ( (1./abs_sin_PosTop_beam) * beam_axis.Cross(k_axis) ).Unit();                // orthogonal to production plane
     double sign_cos_PosTop_beam = (cos_PosTop_beam > 0.) ? 1. : -1.;                                // Bose symmetry factor
-    double sign_rapidity = (PosTop.Rapidity() >= NegTop.Rapidity()) ? 1. : -1.;                     // Charge asymmetry factor
+    double sign_rapidity = (dyreco > 0.) ? 1. : -1.;                                                // Charge asymmetry (in lab-frame) factor
 
     // Basis vectors
     TVector3 kbase = k_axis;
@@ -2339,9 +2343,7 @@ if (is_zprime_reconstructed_chi2 ){
     TVector3 rStar = sign_rapidity * sign_cos_PosTop_beam * r_axis;
 
     
-    //-------------------------- Boost into top quark Rest-Frames --------------------------//
-    TLorentzVector PosTop_Rest = PosTop_CoM;
-    TLorentzVector NegTop_Rest = NegTop_CoM;
+    //------------------- Boost spin-analyzers into top quark Rest-Frames -------------------//
     TLorentzVector lep_top_lep_Rest = lep_top_lep_CoM;
     TLorentzVector had_top_b_Rest   = had_top_b_CoM;
     
@@ -2367,6 +2369,8 @@ if (is_zprime_reconstructed_chi2 ){
     float cosTheta2n = 99.;
     float cosTheta2kStar = 99.;
     float cosTheta2rStar = 99.;
+    float CHel = 99.;
+    float CHel_P3n = 99.;
 
     if(BestZprimeCandidate->lepton().charge() > 0){
       // top quark spin-analyzer is lepton
@@ -2409,6 +2413,7 @@ if (is_zprime_reconstructed_chi2 ){
     cos_theta2n->Fill(cosTheta2n, weight);
     cos_theta2kStar->Fill(cosTheta2kStar, weight);
     cos_theta2rStar->Fill(cosTheta2rStar, weight);
+
     // correlation matrix elements
     Cnn->Fill(cosTheta1n * cosTheta2n, weight);
     Cnr->Fill(cosTheta1n * cosTheta2r, weight);
@@ -2426,9 +2431,24 @@ if (is_zprime_reconstructed_chi2 ){
     Cnr_minus->Fill(cosTheta1n * cosTheta2r - cosTheta1r * cosTheta2n, weight);
     Cnk_plus->Fill(cosTheta1n * cosTheta2k + cosTheta1k * cosTheta2n, weight);
     Cnk_minus->Fill(cosTheta1n * cosTheta2k - cosTheta1k * cosTheta2n, weight);
+
     // entanglement variables
-    cHel->Fill( (lep_top_lep_Rest.Vect().Unit().Dot(had_top_b_Rest.Vect().Unit())), weight);
-    cHel_P3n->Fill(cosTheta1k * cosTheta2k + cosTheta1r * cosTheta2r - cosTheta1n * cosTheta2n, weight);
+    CHel = lep_top_lep_Rest.Vect().Unit().Dot(had_top_b_Rest.Vect().Unit());
+    CHel_P3n = cosTheta1k * cosTheta2k + cosTheta1r * cosTheta2r - cosTheta1n * cosTheta2n;
+    cHel->Fill(CHel, weight);
+    cHel_P3n->Fill(CHel_P3n, weight);
+
+    // near-threshold
+    if(ttbar.M() < 400.){cHel_Mtt300_400->Fill(CHel, weight);
+      // near-threshold and "slow"
+      if(beta < 0.9){cHel_Mtt300_400_betaLT0p9->Fill(CHel, weight);}
+    }
+
+    // boosted
+    if(ttbar.M() > 800.){cHel_P3n_Mtt800_Inf->Fill(CHel_P3n, weight);
+      // boosted and central
+      if(TMath::Abs(cos_PosTop_beam) < 0.4){cHel_P3n_Mtt800_Inf_cosThetaLT0p4->Fill(CHel_P3n, weight);}
+    }
 
     // Baumgart et al. angles depend on phi wrt Bernreuther nbase
     float lep_top_lep_phi = atan2(lep_top_lep_Rest.Vect().Unit().Dot(rbase), lep_top_lep_Rest.Vect().Unit().Dot(nbase));
