@@ -820,36 +820,55 @@ void ZprimeSemiLeptonicHists::init(){
   ditop_absDeltaEta = book<TH1F>("ditop_absDeltaEta", "|#Delta#eta(t,#bar{t})|", 60, 0, 6.0);
   ditop_deltaR      = book<TH1F>("ditop_deltaR", "#DeltaR(t,#bar{t})", 100, 0, 10.0);
   
-  // DeltaY
-  // DeltaY_reco            = book<TH1F>("DeltaY_reco", "#Delta Y_{(t,#bar{t})}",2,-2.5,2.5);
-  DeltaY_reco_high       = book<TH1F>("DeltaY_reco_high", "#Delta Y_{(t,#bar{t})}",2,-2.5,2.5);
-  DeltaY_reco_low        = book<TH1F>("DeltaY_reco_low", "#Delta Y_{(t,#bar{t})}",2,-2.5,2.5);
-  DeltaY_reco_d1         = book<TH1F>("DeltaY_reco_d1", "#Delta Y_{(t,#bar{t})}",2,-2.5,2.5);
-  DeltaY_reco_d2         = book<TH1F>("DeltaY_reco_d2", "#Delta Y_{(t,#bar{t})}",2,-2.5,2.5);
-  DeltaY_reco_s1         = book<TH1F>("DeltaY_reco_s1", "#Delta Y_{(t,#bar{t})}",2,-2.5,2.5);
-  DeltaY_reco_s2         = book<TH1F>("DeltaY_reco_s2", "#Delta Y_{(t,#bar{t})}",2,-2.5,2.5);
+  // // Spin correlation variables
+  // top polarizations
+  cos_theta1k       = book<TH1F>("cos_theta1k", "cos(#theta_{1}^{k})",24, -1, 1);
+  cos_theta1r       = book<TH1F>("cos_theta1r", "cos(#theta_{1}^{r})",24, -1, 1);
+  cos_theta1n       = book<TH1F>("cos_theta1n", "cos(#theta_{1}^{n})",24, -1, 1);
+  cos_theta1kStar   = book<TH1F>("cos_theta1kStar", "cos(#theta_{1}^{k*})",24, -1, 1);
+  cos_theta1rStar   = book<TH1F>("cos_theta1rStar", "cos(#theta_{1}^{r*})",24, -1, 1);
+  // antitop polarizations
+  cos_theta2k       = book<TH1F>("cos_theta2k", "cos(#theta_{2}^{k})",24, -1, 1);
+  cos_theta2r       = book<TH1F>("cos_theta2r", "cos(#theta_{2}^{r})",24, -1, 1);
+  cos_theta2n       = book<TH1F>("cos_theta2n", "cos(#theta_{2}^{n})",24, -1, 1);
+  cos_theta2kStar   = book<TH1F>("cos_theta2kStar", "cos(#theta_{2}^{k*})",24, -1, 1);
+  cos_theta2rStar   = book<TH1F>("cos_theta2rStar", "cos(#theta_{2}^{r*})",24, -1, 1);
 
+  // Correlation matrix elements: C_ij
+  Cnn      = book<TH1F>("Cnn", "C_{nn}",24, -1, 1);
+  Cnr      = book<TH1F>("Cnr", "C_{nr}",24, -1, 1);
+  Cnk      = book<TH1F>("Cnk", "C_{nk}",24, -1, 1);
+  Crn      = book<TH1F>("Crn", "C_{rn}",24, -1, 1);
+  Crr      = book<TH1F>("Crr", "C_{rr}",24, -1, 1);
+  Crk      = book<TH1F>("Crk", "C_{rk}",24, -1, 1);
+  Ckn      = book<TH1F>("Ckn", "C_{kn}",24, -1, 1);
+  Ckr      = book<TH1F>("Ckr", "C_{kr}",24, -1, 1);
+  Ckk      = book<TH1F>("Ckk", "C_{kk}",24, -1, 1);
+  trC      = book<TH1F>("trC", "Tr(C)", 24, -3, 3);
+  // sum and difference of cross correlations
+  Crk_plus  = book<TH1F>("Crk_plus",  "C_{rk} + C_{kr}",24, -1, 1);
+  Crk_minus = book<TH1F>("Crk_minus", "C_{rk} - C_{kr}",24, -1, 1);
+  Cnr_plus  = book<TH1F>("Cnr_plus",  "C_{nr} + C_{rn}",24, -1, 1);
+  Cnr_minus = book<TH1F>("Cnr_minus", "C_{nr} - C_{rn}",24, -1, 1);
+  Cnk_plus  = book<TH1F>("Cnk_plus",  "C_{nk} + C_{kn}",24, -1, 1);
+  Cnk_minus = book<TH1F>("Cnk_minus", "C_{nk} - C_{kn}",24, -1, 1);
 
+  // entanglement variables
+  cHel      = book<TH1F>("cHel", "cos(#phi^{hel})",24, -1, 1);
+  cHel_P3n  = book<TH1F>("cHel_P3n", "cos(#phi^{hel}_{P3n})",24, -1, 1);
 
-  DeltaY_reco_high_match       = book<TH1F>("DeltaY_reco_high_match", "#Delta Y_{(t,#bar{t})}",2,-2.5,2.5);
-  DeltaY_reco_low_match        = book<TH1F>("DeltaY_reco_low_match", "#Delta Y_{(t,#bar{t})}",2,-2.5,2.5);
-  DeltaY_reco_d1_match         = book<TH1F>("DeltaY_reco_d1_match", "#Delta Y_{(t,#bar{t})}",2,-2.5,2.5);
-  DeltaY_reco_d2_match         = book<TH1F>("DeltaY_reco_d2_match", "#Delta Y_{(t,#bar{t})}",2,-2.5,2.5);
-  DeltaY_reco_s1_match         = book<TH1F>("DeltaY_reco_s1_match", "#Delta Y_{(t,#bar{t})}",2,-2.5,2.5);
-  DeltaY_reco_s2_match         = book<TH1F>("DeltaY_reco_s2_match", "#Delta Y_{(t,#bar{t})}",2,-2.5,2.5);
-   //SpinCorr
-  Sigma_phi             = book<TH1F>("Sigma_phi", "#Sigma #phi ",16,-3.2,3.2);
-  Sigma_phi_high        = book<TH1F>("Sigma_phi_high", "#Sigma #phi ",16,-3.2,3.2);
-  Sigma_phi_low         = book<TH1F>("Sigma_phi_low", "#Sigma #phi ",16,-3.2,3.2);
-  Sigma_phi_1           = book<TH1F>("Sigma_phi_1", "#Sigma #phi ",16,-3.2,3.2);
-  Sigma_phi_2           = book<TH1F>("Sigma_phi_2", "#Sigma #phi ",16,-3.2,3.2);
+  // Baumgart angular variables
+  Sigma_phi             = book<TH1F>("Sigma_phi", "#Sigma #phi ",16, -3.2, 3.2);
+  Sigma_phi_high        = book<TH1F>("Sigma_phi_high", "#Sigma #phi ",16, -3.2, 3.2);
+  Sigma_phi_low         = book<TH1F>("Sigma_phi_low", "#Sigma #phi ",16, -3.2, 3.2);
+  Sigma_phi_1           = book<TH1F>("Sigma_phi_1", "#Sigma #phi ",16, -3.2, 3.2);
+  Sigma_phi_2           = book<TH1F>("Sigma_phi_2", "#Sigma #phi ",16, -3.2, 3.2);
 
-  Sigma_phi_match       = book<TH1F>("Sigma_phi_match", "#Sigma #phi ",16,-3.2,3.2);
-  Sigma_phi_high_match  = book<TH1F>("Sigma_phi_high_match", "#Sigma #phi ",16,-3.2,3.2);
+  Sigma_phi_match       = book<TH1F>("Sigma_phi_match", "#Sigma #phi ",16, -3.2, 3.2);
+  Sigma_phi_high_match  = book<TH1F>("Sigma_phi_high_match", "#Sigma #phi ",16, -3.2, 3.2);
   Sigma_phi_low_match   = book<TH1F>("Sigma_phi_low_match", "#Sigma #phi ",16,-3.2,3.2);
-  Sigma_phi_1_match     = book<TH1F>("Sigma_phi_1_match", "#Sigma #phi ",16,-3.2,3.2);
-  Sigma_phi_2_match     = book<TH1F>("Sigma_phi_2_match", "#Sigma #phi ",16,-3.2,3.2);
-
+  Sigma_phi_1_match     = book<TH1F>("Sigma_phi_1_match", "#Sigma #phi ",16, -3.2, 3.2);
+  Sigma_phi_2_match     = book<TH1F>("Sigma_phi_2_match", "#Sigma #phi ",16, -3.2, 3.2);
 
   Delta_phi             = book<TH1F>("Delta_phi", "#Delta #phi ",16,-3.2,3.2);
   Delta_phi_high        = book<TH1F>("Delta_phi_high", "#Delta #phi ",16,-3.2,3.2);
@@ -864,6 +883,22 @@ void ZprimeSemiLeptonicHists::init(){
   Delta_phi_2_match     = book<TH1F>("Delta_phi_2_match", "#Delta #phi ",16,-3.2,3.2);
 
 
+  // DeltaY
+  // DeltaY_reco            = book<TH1F>("DeltaY_reco", "#Delta Y_{(t,#bar{t})}",2,-2.5,2.5);
+  DeltaY_reco_high       = book<TH1F>("DeltaY_reco_high", "#Delta Y_{(t,#bar{t})}",2,-2.5,2.5);
+  DeltaY_reco_low        = book<TH1F>("DeltaY_reco_low", "#Delta Y_{(t,#bar{t})}",2,-2.5,2.5);
+  DeltaY_reco_d1         = book<TH1F>("DeltaY_reco_d1", "#Delta Y_{(t,#bar{t})}",2,-2.5,2.5);
+  DeltaY_reco_d2         = book<TH1F>("DeltaY_reco_d2", "#Delta Y_{(t,#bar{t})}",2,-2.5,2.5);
+  DeltaY_reco_s1         = book<TH1F>("DeltaY_reco_s1", "#Delta Y_{(t,#bar{t})}",2,-2.5,2.5);
+  DeltaY_reco_s2         = book<TH1F>("DeltaY_reco_s2", "#Delta Y_{(t,#bar{t})}",2,-2.5,2.5);
+
+  DeltaY_reco_high_match       = book<TH1F>("DeltaY_reco_high_match", "#Delta Y_{(t,#bar{t})}",2,-2.5,2.5);
+  DeltaY_reco_low_match        = book<TH1F>("DeltaY_reco_low_match", "#Delta Y_{(t,#bar{t})}",2,-2.5,2.5);
+  DeltaY_reco_d1_match         = book<TH1F>("DeltaY_reco_d1_match", "#Delta Y_{(t,#bar{t})}",2,-2.5,2.5);
+  DeltaY_reco_d2_match         = book<TH1F>("DeltaY_reco_d2_match", "#Delta Y_{(t,#bar{t})}",2,-2.5,2.5);
+  DeltaY_reco_s1_match         = book<TH1F>("DeltaY_reco_s1_match", "#Delta Y_{(t,#bar{t})}",2,-2.5,2.5);
+  DeltaY_reco_s2_match         = book<TH1F>("DeltaY_reco_s2_match", "#Delta Y_{(t,#bar{t})}",2,-2.5,2.5);
+
   // DeltaY_reco_0_500     = book<TH1F>("DeltaY_reco_0_500", "#Delta Y_{(t,#bar{t})} 0<Mtt<500",2,-2.5,2.5);
   // DeltaY_reco_500_750   = book<TH1F>("DeltaY_reco_500_750", "#Delta Y_{(t,#bar{t})} 500<Mtt<750",2,-2.5,2.5);
   // DeltaY_reco_750_1000  = book<TH1F>("DeltaY_reco_750_1000", "#Delta Y_{(t,#bar{t})} 750<Mtt<1000",2,-2.5,2.5);
@@ -876,6 +911,7 @@ void ZprimeSemiLeptonicHists::init(){
   // Mtt_gen               = book<TH1F>("Mtt_gen", "M_{t#bar{t}} GEN [GeV]", 100, 0, 2000);
   // DeltaY_gen            = book<TH1F>("DeltaY_gen", "#Delta|Y|_{(t,#bar{t})} GEN ", 50, -2.5, 2.5);
   
+
   //template method
   
   DeltaY_reco           = book<TH1F>("DeltaY_reco", "#Delta|Y|_{(t,#bar{t})} RECO ", 50, -2.5, 2.5);
@@ -919,8 +955,8 @@ void ZprimeSemiLeptonicHists::init(){
     }
     noac_histograms_[suffix] = bundle;
   }
-
   //template method ending
+
   
   vector<float> bins_Zprime4 = {0,400,600,800,1000,1200,1400,1600,1800,2000,2200,2400,2600,2800,3000,3200,3400,3600,3800,4000,4400,4800,5200,5600,6000,6100};
   vector<float> bins_Zprime5 = {0,200,400,600,800,1000,1200,1400,1600,1800,2000,2200,2400,2600,2800,3000,3300,3600,3900,4200,4500,5000,5100};
@@ -2320,10 +2356,83 @@ if (is_zprime_reconstructed_chi2 ){
     }
 
   
-    //------------------------------------- Define angular variables -------------------------------------//
+    //------------------------------------------- Spin Correlation variables -------------------------------------------//
+    float cosTheta1k = 99.;
+    float cosTheta1r = 99.;
+    float cosTheta1n = 99.;
+    float cosTheta1kStar = 99.;
+    float cosTheta1rStar = 99.;
+    float cosTheta2k = 99.;
+    float cosTheta2r = 99.;
+    float cosTheta2n = 99.;
+    float cosTheta2kStar = 99.;
+    float cosTheta2rStar = 99.;
+
+    if(BestZprimeCandidate->lepton().charge() > 0){
+      // top quark spin-analyzer is lepton
+      cosTheta1k = lep_top_lep_Rest.Vect().Unit().Dot(kbase);
+      cosTheta1r = lep_top_lep_Rest.Vect().Unit().Dot(rbase);
+      cosTheta1n = lep_top_lep_Rest.Vect().Unit().Dot(nbase);
+      cosTheta1kStar = lep_top_lep_Rest.Vect().Unit().Dot(kStar);
+      cosTheta1rStar = lep_top_lep_Rest.Vect().Unit().Dot(rStar);
+      // antitop spin-analyzer is b-jet
+      cosTheta2k = had_top_b_Rest.Vect().Unit().Dot(kbase);
+      cosTheta2r = had_top_b_Rest.Vect().Unit().Dot(rbase);
+      cosTheta2n = had_top_b_Rest.Vect().Unit().Dot(nbase);
+      cosTheta2kStar = had_top_b_Rest.Vect().Unit().Dot(kStar);
+      cosTheta2rStar = had_top_b_Rest.Vect().Unit().Dot(rStar);
+    }
+    else if (BestZprimeCandidate->lepton().charge() < 0){
+      // top quark spin-analyzer is b-jet
+      cosTheta1k = had_top_b_Rest.Vect().Unit().Dot(kbase);
+      cosTheta1r = had_top_b_Rest.Vect().Unit().Dot(rbase);
+      cosTheta1n = had_top_b_Rest.Vect().Unit().Dot(nbase);
+      cosTheta1kStar = had_top_b_Rest.Vect().Unit().Dot(kStar);
+      cosTheta1rStar = had_top_b_Rest.Vect().Unit().Dot(rStar);
+      // antitop spin-analyzer is lepton
+      cosTheta2k = lep_top_lep_Rest.Vect().Unit().Dot(kbase);
+      cosTheta2r = lep_top_lep_Rest.Vect().Unit().Dot(rbase);
+      cosTheta2n = lep_top_lep_Rest.Vect().Unit().Dot(nbase);
+      cosTheta2kStar = lep_top_lep_Rest.Vect().Unit().Dot(kStar);
+      cosTheta2rStar = lep_top_lep_Rest.Vect().Unit().Dot(rStar);
+    }
+
+    // top polarizations
+    cos_theta1k->Fill(cosTheta1k, weight);
+    cos_theta1r->Fill(cosTheta1r weight);
+    cos_theta1n->Fill(cosTheta1n, weight);
+    cos_theta1kStar->Fill(cosTheta1kStar, weight);
+    cos_theta1rStar->Fill(cosTheta1rStar, weight);
+    // antitop polarizations
+    cos_theta2k->Fill(cosTheta2k, weight);
+    cos_theta2r->Fill(cosTheta2r, weight);
+    cos_theta2n->Fill(cosTheta2n, weight);
+    cos_theta2kStar->Fill(cosTheta2kStar, weight);
+    cos_theta2rStar->Fill(cosTheta2rStar, weight);
+    // correlation matrix elements
+    Cnn->Fill(cosTheta1n * cosTheta2n, weight);
+    Cnr->Fill(cosTheta1n * cosTheta2r, weight);
+    Cnk->Fill(cosTheta1n * cosTheta2k, weight);
+    Crn->Fill(cosTheta1r * cosTheta2n, weight);
+    Crr->Fill(cosTheta1r * cosTheta2r, weight);
+    Crk->Fill(cosTheta1r * cosTheta2k, weight);
+    Ckn->Fill(cosTheta1k * cosTheta2n, weight);
+    Ckr->Fill(cosTheta1k * cosTheta2r, weight);
+    Ckk->Fill(cosTheta1k * cosTheta2k, weight);
+    // sum and differences of cross correlations
+    Crk_plus->Fill(cosTheta1r * cosTheta2k + cosTheta1k * cosTheta2r, weight);
+    Crk_minus->Fill(cosTheta1r * cosTheta2k - cosTheta1k * cosTheta2r, weight);
+    Cnr_plus->Fill(cosTheta1n * cosTheta2r + cosTheta1r * cosTheta2n, weight);
+    Cnr_minus->Fill(cosTheta1n * cosTheta2r - cosTheta1r * cosTheta2n, weight);
+    Cnk_plus->Fill(cosTheta1n * cosTheta2k + cosTheta1k * cosTheta2n, weight);
+    Cnk_minus->Fill(cosTheta1n * cosTheta2k - cosTheta1k * cosTheta2n, weight);
+    // entanglement variables
+    cHel->Fill( (lep_top_lep_Rest.Vect().Unit().Dot(had_top_b_Rest.Vect().Unit())), weight);
+    cHel_P3n->Fill(cosTheta1k * cosTheta2k + cosTheta1r * cosTheta2r - cosTheta1n * cosTheta2n, weight);
+
     // Baumgart et al. angles depend on phi wrt Bernreuther nbase
-    float lep_top_lep_phi = atan2(lep_top_lep_Rest.Vect().Dot(rbase), lep_top_lep_Rest.Vect().Dot(nbase));
-    float had_top_b_phi   = atan2(had_top_b_Rest.Vect().Dot(rbase),   had_top_b_Rest.Vect().Dot(nbase));
+    float lep_top_lep_phi = atan2(lep_top_lep_Rest.Vect().Unit().Dot(rbase), lep_top_lep_Rest.Vect().Unit().Dot(nbase));
+    float had_top_b_phi   = atan2(had_top_b_Rest.Vect().Unit().Dot(rbase),   had_top_b_Rest.Vect().Unit().Dot(nbase));
 
     // sphi and dphi = PosTopDecayProd_phi +- NegTopDecayProd_phi
     float sphi = lep_top_lep_phi + had_top_b_phi;   // sum is independent of order
