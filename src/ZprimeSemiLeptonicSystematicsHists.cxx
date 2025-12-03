@@ -256,7 +256,6 @@ Hists(ctx, dirname) {
         
         glob_t gl; memset(&gl, 0, sizeof(gl));
         int r = glob(noac_gen_file_.c_str(), 0, nullptr, &gl);
-        bool read_from_tree = false;
         int files_processed = 0;
         int files_with_tree = 0;
         int files_with_branch = 0;
@@ -317,7 +316,6 @@ Hists(ctx, dirname) {
                 total_nan_count += (nentries - nselected);  // Approximate
                 
                 delete tempH;
-                read_from_tree = true;
               } else {
                 cout << "WARNING: TTree found in " << fp << " but 'xi_gen' branch not found!" << endl;
               }

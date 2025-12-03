@@ -848,7 +848,6 @@ void ZprimeSemiLeptonicHists::init(){
   Ckn      = book<TH1F>("Ckn", "C_{kn}",24, -1, 1);
   Ckr      = book<TH1F>("Ckr", "C_{kr}",24, -1, 1);
   Ckk      = book<TH1F>("Ckk", "C_{kk}",24, -1, 1);
-  trC      = book<TH1F>("trC", "Tr(C)", 24, -3, 3);
   // sum and difference of cross correlations
   Crk_plus  = book<TH1F>("Crk_plus",  "C_{rk} + C_{kr}",24, -1, 1);
   Crk_minus = book<TH1F>("Crk_minus", "C_{rk} - C_{kr}",24, -1, 1);
@@ -2404,7 +2403,7 @@ if (is_zprime_reconstructed_chi2 ){
 
     // top polarizations
     cos_theta1k->Fill(cosTheta1k, weight);
-    cos_theta1r->Fill(cosTheta1r weight);
+    cos_theta1r->Fill(cosTheta1r, weight);
     cos_theta1n->Fill(cosTheta1n, weight);
     cos_theta1kStar->Fill(cosTheta1kStar, weight);
     cos_theta1rStar->Fill(cosTheta1rStar, weight);
