@@ -46,7 +46,7 @@ protected:
   TH1F *DeltaY_reco_high, *DeltaY_reco_low, *DeltaY_reco_s1, *DeltaY_reco_s2,*DeltaY_reco_d1, *DeltaY_reco_d2, *Sigma_phi_1, *Sigma_phi_2, *Sigma_phi_high, *Sigma_phi_low, *Sigma_phi, *Delta_phi,*Delta_phi_1, *Delta_phi_2, *Delta_phi_high, *Delta_phi_low;
   TH1F *DeltaY_reco_high_match, *DeltaY_reco_low_match, *DeltaY_reco_s1_match, *DeltaY_reco_s2_match, *DeltaY_reco_d1_match, *DeltaY_reco_d2_match, *Sigma_phi_1_match, *Sigma_phi_2_match, *Sigma_phi_match, *Sigma_phi_high_match, *Sigma_phi_low_match, *Delta_phi_1_match, *Delta_phi_2_match, *Delta_phi_match, *Delta_phi_high_match, *Delta_phi_low_match;
   TH1F *beta_ttbar;
-  TH1F *cos_theta1k, *cos_theta1r, *cos_theta1n, *cos_theta1kStar, *cos_theta1rStar, *cos_theta2k, *cos_theta2r, *cos_theta2n, *cos_theta2kStar, *cos_theta2rStar;
+  TH1F *cos_theta1k, *cos_theta1r, *cos_theta1n, *cos_theta1kStar, *cos_theta1rStar, *cos_theta1k_antiLep, *cos_theta1r_antiLep, *cos_theta1n_antiLep, *cos_theta1kStar_antiLep, *cos_theta1rStar_antiLep, *cos_theta2k, *cos_theta2r, *cos_theta2n, *cos_theta2kStar, *cos_theta2rStar, *cos_theta2k_Lep, *cos_theta2r_Lep, *cos_theta2n_Lep, *cos_theta2kStar_Lep, *cos_theta2rStar_Lep;
   TH1F *Cnn, *Cnr, *Cnk, *Crn, *Crr, *Crk, *Ckn, *Ckr, *Ckk, *Crk_plus, *Crk_minus, *Cnr_plus, *Cnr_minus, *Cnk_plus, *Cnk_minus;
   TH1F *cHel, *cHel_Mtt300_400, *cHel_Mtt300_400_betaLT0p9;
   TH1F *cHel_P3n, *cHel_P3n_Mtt800_Inf, *cHel_P3n_Mtt800_Inf_cosThetaLT0p4;

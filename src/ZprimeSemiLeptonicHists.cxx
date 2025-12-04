@@ -824,14 +824,27 @@ void ZprimeSemiLeptonicHists::init(){
   // ttbar system
   beta_ttbar    = book<TH1F>("beta_ttbar", "beta_{t#bar{t}}", 50, 0, 1);
 
-  // // Spin correlation variables
-  // top polarizations
+  //------------------------------------- Spin correlation variables -------------------------------------//
+  // antiLepton exclusive
+  cos_theta1k_antiLep = book<TH1F>("cos_theta1k_antiLep", "cos(#theta_{antilep}^{k})",24, -1, 1);
+  cos_theta1r_antiLep = book<TH1F>("cos_theta1r_antiLep", "cos(#theta_{antilep}^{r})",24, -1, 1);
+  cos_theta1n_antiLep = book<TH1F>("cos_theta1n_antiLep", "cos(#theta_{antilep}^{n})",24, -1, 1);
+  cos_theta1kStar_antiLep = book<TH1F>("cos_theta1kStar_antiLep", "cos(#theta_{antilep}^{k*})",24, -1, 1);
+  cos_theta1rStar_antiLep = book<TH1F>("cos_theta1rStar_antiLep", "cos(#theta_{antilep}^{r*})",24, -1, 1);
+  // top daughter polarizations
   cos_theta1k       = book<TH1F>("cos_theta1k", "cos(#theta_{1}^{k})",24, -1, 1);
   cos_theta1r       = book<TH1F>("cos_theta1r", "cos(#theta_{1}^{r})",24, -1, 1);
   cos_theta1n       = book<TH1F>("cos_theta1n", "cos(#theta_{1}^{n})",24, -1, 1);
   cos_theta1kStar   = book<TH1F>("cos_theta1kStar", "cos(#theta_{1}^{k*})",24, -1, 1);
   cos_theta1rStar   = book<TH1F>("cos_theta1rStar", "cos(#theta_{1}^{r*})",24, -1, 1);
-  // antitop polarizations
+  
+  // Lepton exclusive
+  cos_theta2k_Lep = book<TH1F>("cos_theta2k_Lep", "cos(#theta_{lep}^{k})",24, -1, 1);
+  cos_theta2r_Lep = book<TH1F>("cos_theta2r_Lep", "cos(#theta_{lep}^{r})",24, -1, 1);
+  cos_theta2n_Lep = book<TH1F>("cos_theta2n_Lep", "cos(#theta_{lep}^{n})",24, -1, 1);
+  cos_theta2kStar_Lep = book<TH1F>("cos_theta2kStar_Lep", "cos(#theta_{lep}^{k*})",24, -1, 1);
+  cos_theta2rStar_Lep = book<TH1F>("cos_theta2rStar_Lep", "cos(#theta_{lep}^{r*})",24, -1, 1);
+  // antitop daughter polarizations
   cos_theta2k       = book<TH1F>("cos_theta2k", "cos(#theta_{2}^{k})",24, -1, 1);
   cos_theta2r       = book<TH1F>("cos_theta2r", "cos(#theta_{2}^{r})",24, -1, 1);
   cos_theta2n       = book<TH1F>("cos_theta2n", "cos(#theta_{2}^{n})",24, -1, 1);
@@ -2351,19 +2364,62 @@ if (is_zprime_reconstructed_chi2 ){
 
   
     //------------------------------------------- Spin Correlation variables -------------------------------------------//
+    float cosTheta1k_antiLep = 99.;
+    float cosTheta1r_antiLep = 99.;
+    float cosTheta1n_antiLep = 99.;
+    float cosTheta1kStar_antiLep = 99.;
+    float cosTheta1rStar_antiLep = 99.;
     float cosTheta1k = 99.;
     float cosTheta1r = 99.;
     float cosTheta1n = 99.;
     float cosTheta1kStar = 99.;
     float cosTheta1rStar = 99.;
+    
+    float cosTheta2k_Lep = 99.;
+    float cosTheta2r_Lep = 99.;
+    float cosTheta2n_Lep = 99.;
+    float cosTheta2kStar_Lep = 99.;
+    float cosTheta2rStar_Lep = 99.;
     float cosTheta2k = 99.;
     float cosTheta2r = 99.;
     float cosTheta2n = 99.;
     float cosTheta2kStar = 99.;
     float cosTheta2rStar = 99.;
+
     float CHel = 99.;
     float CHel_P3n = 99.;
 
+    // Use only leptons as spin-analyzers
+    if(BestZprimeCandidate->lepton().charge() > 0){
+      // anti-lepton is spin-analyzer for top
+      cosTheta1k_antiLep = lep_top_lep_Rest.Vect().Unit().Dot(kbase);
+      cosTheta1r_antiLep = lep_top_lep_Rest.Vect().Unit().Dot(rbase);
+      cosTheta1n_antiLep = lep_top_lep_Rest.Vect().Unit().Dot(nbase);
+      cosTheta1kStar_antiLep = lep_top_lep_Rest.Vect().Unit().Dot(kStar);
+      cosTheta1rStar_antiLep = lep_top_lep_Rest.Vect().Unit().Dot(rStar);
+    }
+    else if (BestZprimeCandidate->lepton().charge() < 0){
+      // lepton is spin-analyzer for antitop
+      cosTheta2k_Lep = lep_top_lep_Rest.Vect().Unit().Dot(kbase);
+      cosTheta2r_Lep = lep_top_lep_Rest.Vect().Unit().Dot(rbase);
+      cosTheta2n_Lep = lep_top_lep_Rest.Vect().Unit().Dot(nbase);
+      cosTheta2kStar_Lep = lep_top_lep_Rest.Vect().Unit().Dot(kStar);
+      cosTheta2rStar_Lep = lep_top_lep_Rest.Vect().Unit().Dot(rStar);
+    }
+    // top polarization via anti-leptons only
+    cos_theta1k_antiLep->Fill(cosTheta1k_antiLep, weight);
+    cos_theta1r_antiLep->Fill(cosTheta1r_antiLep, weight);
+    cos_theta1n_antiLep->Fill(cosTheta1n_antiLep, weight);
+    cos_theta1kStar_antiLep->Fill(cosTheta1kStar_antiLep, weight);
+    cos_theta1rStar_antiLep->Fill(cosTheta1rStar_antiLep, weight);
+    // antitop polarization via leptons only
+    cos_theta2k_Lep->Fill(cosTheta2k_Lep, weight);
+    cos_theta2r_Lep->Fill(cosTheta2r_Lep, weight);
+    cos_theta2n_Lep->Fill(cosTheta2n_Lep, weight);
+    cos_theta2kStar_Lep->Fill(cosTheta2kStar_Lep, weight);
+    cos_theta2rStar_Lep->Fill(cosTheta2rStar_Lep, weight);
+
+    // Assign spin-analyzers depending on lepton charge
     if(BestZprimeCandidate->lepton().charge() > 0){
       // top quark spin-analyzer is lepton
       cosTheta1k = lep_top_lep_Rest.Vect().Unit().Dot(kbase);
@@ -2392,14 +2448,13 @@ if (is_zprime_reconstructed_chi2 ){
       cosTheta2kStar = lep_top_lep_Rest.Vect().Unit().Dot(kStar);
       cosTheta2rStar = lep_top_lep_Rest.Vect().Unit().Dot(rStar);
     }
-
-    // top polarizations
+    // top daughter polarizations
     cos_theta1k->Fill(cosTheta1k, weight);
     cos_theta1r->Fill(cosTheta1r, weight);
     cos_theta1n->Fill(cosTheta1n, weight);
     cos_theta1kStar->Fill(cosTheta1kStar, weight);
     cos_theta1rStar->Fill(cosTheta1rStar, weight);
-    // antitop polarizations
+    // antitop daughter polarizations
     cos_theta2k->Fill(cosTheta2k, weight);
     cos_theta2r->Fill(cosTheta2r, weight);
     cos_theta2n->Fill(cosTheta2n, weight);

@@ -262,7 +262,6 @@ Hists(ctx, dirname) {
         Long64_t total_events = 0;
         Long64_t total_nan_count = 0;
         Long64_t total_valid_count = 0;
-        Long64_t total_out_of_range_count = 0;
 
         // STEP 1: Sum all of the DeltaY_xi_gen histograms from ttree which was carried from preselection
         // Reads gen-level tanh(delta|y|) histograms from all TTbar files
@@ -991,10 +990,6 @@ void ZprimeSemiLeptonicSystematicsHists::init(){
 void ZprimeSemiLeptonicSystematicsHists::fill(const Event & event){
 
   double weight = event.weight;
-  
-  // Debug: Check for NaN/Inf in event weight
-  static int weight_debug_count = 0;
-  const int max_weight_debug = 10;
   
   float ele_reco_nominal   = event.get(h_ele_reco);
   float ele_reco_up        = event.get(h_ele_reco_up);
