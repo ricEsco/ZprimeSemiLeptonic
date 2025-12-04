@@ -35,9 +35,29 @@ namespace uhh2 {
     std::string hist_names_dy_d2[100];
     std::string hist_names_sigma_1[100];
     std::string hist_names_sigma_2[100];
+    std::string hist_names_delta_1[100];
+    std::string hist_names_delta_2[100];
 
     std::string hist_names_xi[100];
     std::string hist_names_xi_RM[100];
+
+    std::string hist_names_cos_theta1kStar[100];
+    std::string hist_names_cos_theta1rStar[100];
+    std::string hist_names_cos_theta2kStar[100];
+    std::string hist_names_cos_theta2rStar[100];
+    std::string hist_names_Cnn[100];
+    std::string hist_names_Crr[100];
+    std::string hist_names_Ckk[100];
+    std::string hist_names_Crk_plus[100];
+    std::string hist_names_Crk_minus[100];
+    std::string hist_names_Cnr_plus[100];
+    std::string hist_names_Cnr_minus[100];
+    std::string hist_names_Cnk_plus[100];
+    std::string hist_names_Cnk_minus[100];
+    std::string hist_names_cHel_Mtt300_400[100];
+    std::string hist_names_cHel_Mtt300_400_betaLT0p9[100];
+    std::string hist_names_cHel_P3n_Mtt800_Inf[100];
+    std::string hist_names_cHel_P3n_Mtt800_Inf_cosThetaLT0p4[100];
     
     // Map to store PDF histograms for all binning schemes and f-values
     std::map<std::string, TH1F*> h_pdf_xi_reco_map;

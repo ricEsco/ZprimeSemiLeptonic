@@ -2203,27 +2203,19 @@ if (is_zprime_reconstructed_chi2 ){
     // end of template method
     // ------------------------------------------------------------
   
-  // Start angular variable definitions -------------------------------------------------------------------------------------------------------//
+    // Start angular variable definitions -------------------------------------------------------------------------------------------------------//
 
-    // is_zprime_reconstructed_chi2 defined above 
     // BestZprimeCandidate defined above
     bool is_toptag_reconstruction = BestZprimeCandidate->is_toptag_reconstruction(); // Reconstruction process id
     vector <Jet> AK4CHSjets_matched = event.get(h_CHSjets_matched);                  // AK4Puppijets that have been matched to CHSjets
     vector <TopJet> TopTaggedJets = event.get(h_AK8TopTags);                         // AK8Puppi jets TopTagged by DeepAK8TopTagger
     vector <float> jets_hadronic_bscores;                                            // bScores vector for resolved hadronic jets
     float pt_hadTop_thresh = 150;                                                    // Define cut-variable as pt of hadTop for low/high regions
-    // float btag_WP=0.2783;  
-    // if (isUL16preVFP) btag_WP = 0.2598;                                              // medium WP for UL16preVFP DeepJet
-    // if (isUL16postVFP) btag_WP = 0.3657;                                             // medium WP for UL16postVFP DeepJet
-    // if (isUL17) btag_WP = 0.3040;                                                    // medium WP for UL17 DeepJet
-    // if (isUL18) btag_WP = 0.2783;                                                    // medium WP for UL18 DeepJet
-    // see https://btv-wiki.docs.cern.ch/ScaleFactors/ for btag WPs                     // NO LONGER USING THIS AS AN EVENT CUT
-    float pt_hadTop = BestZprimeCandidate->top_hadronic_v4().pt();                      // pT of hadronic-top jet
+    float pt_hadTop = BestZprimeCandidate->top_hadronic_v4().pt();                   // pT of hadronic-top jet
+
     
-
-
-    float bscore_max = -2;
     //-------------- Extracting highest b-tag score in Resolved topology, i.e. no top-tagged jet in event --------------//
+    float bscore_max = -2;
     if(!is_toptag_reconstruction){
         // Loop over resolved hadronic jets to find their bscore via CHS jets
       for(unsigned int i=0; i<BestZprimeCandidate->jets_hadronic().size(); i++){
