@@ -236,13 +236,29 @@ Hists(ctx, dirname){
     std::stringstream ss_name_delta_1;
     std::stringstream ss_name_delta_2;
     std::stringstream ss_name_xi;
+    std::stringstream ss_name_cos_theta1k_antiLep;
+    std::stringstream ss_name_cos_theta1r_antiLep;
+    std::stringstream ss_name_cos_theta1n_antiLep;
+    std::stringstream ss_name_cos_theta1kStar_antiLep;
+    std::stringstream ss_name_cos_theta1rStar_antiLep;
+    std::stringstream ss_name_cos_theta2k_Lep;
+    std::stringstream ss_name_cos_theta2r_Lep;
+    std::stringstream ss_name_cos_theta2n_Lep;
+    std::stringstream ss_name_cos_theta2kStar_Lep;
+    std::stringstream ss_name_cos_theta2rStar_Lep;
+    std::stringstream ss_name_cos_theta1k;
+    std::stringstream ss_name_cos_theta1r;
+    std::stringstream ss_name_cos_theta1n;
     std::stringstream ss_name_cos_theta1kStar;
     std::stringstream ss_name_cos_theta1rStar;
+    std::stringstream ss_name_cos_theta2k;
+    std::stringstream ss_name_cos_theta2r;
+    std::stringstream ss_name_cos_theta2n;
     std::stringstream ss_name_cos_theta2kStar;
     std::stringstream ss_name_cos_theta2rStar;
-    std::stringstream ss_name_Cnn;
-    std::stringstream ss_name_Crr;
     std::stringstream ss_name_Ckk;
+    std::stringstream ss_name_Crr;
+    std::stringstream ss_name_Cnn;
     std::stringstream ss_name_Crk_plus;
     std::stringstream ss_name_Crk_minus;
     std::stringstream ss_name_Cnr_plus;
@@ -263,13 +279,29 @@ Hists(ctx, dirname){
     ss_name_delta_1 << "Delta_phi_1_PDF_" << i+1;
     ss_name_delta_2 << "Delta_phi_2_PDF_" << i+1;
     ss_name_xi      << "DeltaY_xi_reco_6_PDF_" << i+1;
+    ss_name_cos_theta1k_antiLep << "cos_theta1k_antiLep_PDF_" << i+1;
+    ss_name_cos_theta1r_antiLep << "cos_theta1r_antiLep_PDF_" << i+1;
+    ss_name_cos_theta1n_antiLep << "cos_theta1n_antiLep_PDF_" << i+1;
+    ss_name_cos_theta1kStar_antiLep << "cos_theta1kStar_antiLep_PDF_" << i+1;
+    ss_name_cos_theta1rStar_antiLep << "cos_theta1rStar_antiLep_PDF_" << i+1;
+    ss_name_cos_theta2k_Lep << "cos_theta2k_Lep_PDF_" << i+1;
+    ss_name_cos_theta2r_Lep << "cos_theta2r_Lep_PDF_" << i+1;
+    ss_name_cos_theta2n_Lep << "cos_theta2n_Lep_PDF_" << i+1;
+    ss_name_cos_theta2kStar_Lep << "cos_theta2kStar_Lep_PDF_" << i+1;
+    ss_name_cos_theta2rStar_Lep << "cos_theta2rStar_Lep_PDF_" << i+1;
+    ss_name_cos_theta1k << "cos_theta1k_PDF_" << i+1;
+    ss_name_cos_theta1r << "cos_theta1r_PDF_" << i+1;
+    ss_name_cos_theta1n << "cos_theta1n_PDF_" << i+1;
     ss_name_cos_theta1kStar << "cos_theta1kStar_PDF_" << i+1;
     ss_name_cos_theta1rStar << "cos_theta1rStar_PDF_" << i+1;
+    ss_name_cos_theta2k << "cos_theta2k_PDF_" << i+1;
+    ss_name_cos_theta2r << "cos_theta2r_PDF_" << i+1;
+    ss_name_cos_theta2n << "cos_theta2n_PDF_" << i+1;
     ss_name_cos_theta2kStar << "cos_theta2kStar_PDF_" << i+1;
     ss_name_cos_theta2rStar << "cos_theta2rStar_PDF_" << i+1;
-    ss_name_Cnn << "Cnn_PDF_" << i+1;
-    ss_name_Crr << "Crr _PDF_" << i+1;
     ss_name_Ckk << "Ckk_PDF_" << i+1;
+    ss_name_Crr << "Crr _PDF_" << i+1;
+    ss_name_Cnn << "Cnn_PDF_" << i+1;
     ss_name_Crk_plus << "Crk_plus_PDF_" << i+1;
     ss_name_Crk_minus << "Crk_minus_PDF_" << i+1;
     ss_name_Cnr_plus << "Cnr_plus_PDF_" << i+1;
@@ -292,13 +324,29 @@ Hists(ctx, dirname){
     stringstream ss_title_delta_1;
     stringstream ss_title_delta_2;
     stringstream ss_title_xi;
+    stringstream ss_title_cos_theta1k_antiLep;
+    stringstream ss_title_cos_theta1r_antiLep;
+    stringstream ss_title_cos_theta1n_antiLep;
+    stringstream ss_title_cos_theta1kStar_antiLep;
+    stringstream ss_title_cos_theta1rStar_antiLep;
+    stringstream ss_title_cos_theta2k_Lep;
+    stringstream ss_title_cos_theta2r_Lep;
+    stringstream ss_title_cos_theta2n_Lep;
+    stringstream ss_title_cos_theta2kStar_Lep;
+    stringstream ss_title_cos_theta2rStar_Lep;
+    stringstream ss_title_cos_theta1k;
+    stringstream ss_title_cos_theta1r;
+    stringstream ss_title_cos_theta1n;
     stringstream ss_title_cos_theta1kStar;
     stringstream ss_title_cos_theta1rStar;
+    stringstream ss_title_cos_theta2k;
+    stringstream ss_title_cos_theta2r;
+    stringstream ss_title_cos_theta2n;
     stringstream ss_title_cos_theta2kStar;
     stringstream ss_title_cos_theta2rStar;
-    stringstream ss_title_Cnn;
-    stringstream ss_title_Crr;
     stringstream ss_title_Ckk;
+    stringstream ss_title_Crr;
+    stringstream ss_title_Cnn;
     stringstream ss_title_Crk_plus;
     stringstream ss_title_Crk_minus;
     stringstream ss_title_Cnr_plus;
@@ -319,13 +367,29 @@ Hists(ctx, dirname){
     ss_title_delta_1 << "#Delta #phi for #DeltaY >0 for PDF No. "<< i+1 << " out of 100" ;
     ss_title_delta_2 << "#Delta #phi for #DeltaY <0 for PDF No. "<< i+1 << " out of 100" ;
     ss_title_xi      << "tanh(#Delta y)_{reco} for PDF No. " << i+1 << " out of 100";
+    ss_title_cos_theta1k_antiLep << "cos(#theta_{antilep}^{k}) for PDF No. " <<  i+1 << " out of 100";
+    ss_title_cos_theta1r_antiLep << "cos(#theta_{antilep}^{r}) for PDF No. " <<  i+1 << " out of 100";
+    ss_title_cos_theta1n_antiLep << "cos(#theta_{antilep}^{n}) for PDF No. " <<  i+1 << " out of 100";
+    ss_title_cos_theta1kStar_antiLep << "cos(#theta_{antilep}^{k*}) for PDF No. " <<  i+1 << " out of 100";
+    ss_title_cos_theta1rStar_antiLep << "cos(#theta_{antilep}^{r*}) for PDF No. " <<  i+1 << " out of 100";
+    ss_title_cos_theta2k_Lep << "cos(#theta_{lep}^{k}) for PDF No. " <<  i+1 << " out of 100";
+    ss_title_cos_theta2r_Lep << "cos(#theta_{lep}^{r}) for PDF No. " <<  i+1 << " out of 100";
+    ss_title_cos_theta2n_Lep << "cos(#theta_{lep}^{n}) for PDF No. " <<  i+1 << " out of 100";
+    ss_title_cos_theta2kStar_Lep << "cos(#theta_{lep}^{k*}) for PDF No. " <<  i+1 << " out of 100";
+    ss_title_cos_theta2rStar_Lep << "cos(#theta_{lep}^{r*}) for PDF No. " <<  i+1 << " out of 100";
+    ss_title_cos_theta1k << "cos(#theta_{1}^{k}) for PDF No. " <<  i+1 << " out of 100";
+    ss_title_cos_theta1r << "cos(#theta_{1}^{r}) for PDF No. " <<  i+1 << " out of 100";
+    ss_title_cos_theta1n << "cos(#theta_{1}^{n}) for PDF No. " <<  i+1 << " out of 100";
     ss_title_cos_theta1kStar << "cos(#theta_{1}^{k*}) for PDF No. " <<  i+1 << " out of 100";
     ss_title_cos_theta1rStar << "cos(#theta_{1}^{r*}) for PDF No. " <<  i+1 << " out of 100";
+    ss_title_cos_theta2k << "cos(#theta_{2}^{k}) for PDF No. " <<  i+1 << " out of 100";
+    ss_title_cos_theta2r << "cos(#theta_{2}^{r}) for PDF No. " <<  i+1 << " out of 100";
+    ss_title_cos_theta2n << "cos(#theta_{2}^{n}) for PDF No. " <<  i+1 << " out of 100";
     ss_title_cos_theta2kStar << "cos(#theta_{2}^{k*}) for PDF No. " <<  i+1 << " out of 100";
     ss_title_cos_theta2rStar << "cos(#theta_{2}^{r*}) for PDF No. " <<  i+1 << " out of 100";
-    ss_title_Cnn << "C_{nn} for PDF No. " <<  i+1 << " out of 100";
-    ss_title_Crr << "C_{rr} for PDF No. " <<  i+1 << " out of 100";
     ss_title_Ckk << "C_{kk} for PDF No. " <<  i+1 << " out of 100";
+    ss_title_Crr << "C_{rr} for PDF No. " <<  i+1 << " out of 100";
+    ss_title_Cnn << "C_{nn} for PDF No. " <<  i+1 << " out of 100";
     ss_title_Crk_plus << "C_{rk} + C_{kr} for PDF No. " <<  i+1 << " out of 100";
     ss_title_Crk_minus << "C_{rk} - C_{kr} for PDF No. " <<  i+1 << " out of 100";
     ss_title_Cnr_plus << "C_{nr} + C_{rn} for PDF No. " <<  i+1 << " out of 100";
@@ -348,13 +412,29 @@ Hists(ctx, dirname){
     std::string s_name_delta_1 = ss_name_delta_1.str();
     std::string s_name_delta_2 = ss_name_delta_2.str();
     std::string s_name_xi    = ss_name_xi.str();
+    std::string s_name_cos_theta1k_antiLep = ss_name_cos_theta1k_antiLep.str();
+    std::string s_name_cos_theta1r_antiLep = ss_name_cos_theta1r_antiLep.str();
+    std::string s_name_cos_theta1n_antiLep = ss_name_cos_theta1n_antiLep.str();
+    std::string s_name_cos_theta1kStar_antiLep = ss_name_cos_theta1kStar_antiLep.str();
+    std::string s_name_cos_theta1rStar_antiLep = ss_name_cos_theta1rStar_antiLep.str();
+    std::string s_name_cos_theta2k_Lep = ss_name_cos_theta2k_Lep.str();
+    std::string s_name_cos_theta2r_Lep = ss_name_cos_theta2r_Lep.str();
+    std::string s_name_cos_theta2n_Lep = ss_name_cos_theta2n_Lep.str();
+    std::string s_name_cos_theta2kStar_Lep = ss_name_cos_theta2kStar_Lep.str();
+    std::string s_name_cos_theta2rStar_Lep = ss_name_cos_theta2rStar_Lep.str();
+    std::string s_name_cos_theta1k = ss_name_cos_theta1k.str();
+    std::string s_name_cos_theta1r = ss_name_cos_theta1r.str();
+    std::string s_name_cos_theta1n = ss_name_cos_theta1n.str();
     std::string s_name_cos_theta1kStar = ss_name_cos_theta1kStar.str();
     std::string s_name_cos_theta1rStar = ss_name_cos_theta1rStar.str();
+    std::string s_name_cos_theta2k = ss_name_cos_theta2k.str();
+    std::string s_name_cos_theta2r = ss_name_cos_theta2r.str();
+    std::string s_name_cos_theta2n = ss_name_cos_theta2n.str();
     std::string s_name_cos_theta2kStar = ss_name_cos_theta2kStar.str();
     std::string s_name_cos_theta2rStar = ss_name_cos_theta2rStar.str();
-    std::string s_name_Cnn = ss_name_Cnn.str();
-    std::string s_name_Crr = ss_name_Crr.str();
     std::string s_name_Ckk = ss_name_Ckk.str();
+    std::string s_name_Crr = ss_name_Crr.str();
+    std::string s_name_Cnn = ss_name_Cnn.str();
     std::string s_name_Crk_plus = ss_name_Crk_plus.str();
     std::string s_name_Crk_minus = ss_name_Crk_minus.str();
     std::string s_name_Cnr_plus = ss_name_Cnr_plus.str();
@@ -375,13 +455,29 @@ Hists(ctx, dirname){
     std::string s_title_delta_1 = ss_title_delta_1.str();
     std::string s_title_delta_2 = ss_title_delta_2.str();
     std::string s_title_xi    = ss_title_xi.str();
+    std::string s_title_cos_theta1k_antiLep = ss_title_cos_theta1k_antiLep.str();
+    std::string s_title_cos_theta1r_antiLep = ss_title_cos_theta1r_antiLep.str();
+    std::string s_title_cos_theta1n_antiLep = ss_title_cos_theta1n_antiLep.str();
+    std::string s_title_cos_theta1kStar_antiLep = ss_title_cos_theta1kStar_antiLep.str();
+    std::string s_title_cos_theta1rStar_antiLep = ss_title_cos_theta1rStar_antiLep.str();
+    std::string s_title_cos_theta2k_Lep = ss_title_cos_theta2k_Lep.str();
+    std::string s_title_cos_theta2r_Lep = ss_title_cos_theta2r_Lep.str();
+    std::string s_title_cos_theta2n_Lep = ss_title_cos_theta2n_Lep.str();
+    std::string s_title_cos_theta2kStar_Lep = ss_title_cos_theta2kStar_Lep.str();
+    std::string s_title_cos_theta2rStar_Lep = ss_title_cos_theta2rStar_Lep.str();
+    std::string s_title_cos_theta1k = ss_title_cos_theta1k.str();
+    std::string s_title_cos_theta1r = ss_title_cos_theta1r.str();
+    std::string s_title_cos_theta1n = ss_title_cos_theta1n.str();
     std::string s_title_cos_theta1kStar = ss_title_cos_theta1kStar.str();
     std::string s_title_cos_theta1rStar = ss_title_cos_theta1rStar.str();
+    std::string s_title_cos_theta2k = ss_title_cos_theta2k.str();
+    std::string s_title_cos_theta2r = ss_title_cos_theta2r.str();
+    std::string s_title_cos_theta2n = ss_title_cos_theta2n.str();
     std::string s_title_cos_theta2kStar = ss_title_cos_theta2kStar.str();
     std::string s_title_cos_theta2rStar = ss_title_cos_theta2rStar.str();
-    std::string s_title_Cnn = ss_title_Cnn.str();
-    std::string s_title_Crr = ss_title_Crr.str();
     std::string s_title_Ckk = ss_title_Ckk.str();
+    std::string s_title_Crr = ss_title_Crr.str();
+    std::string s_title_Cnn = ss_title_Cnn.str();
     std::string s_title_Crk_plus = ss_title_Crk_plus.str();
     std::string s_title_Crk_minus = ss_title_Crk_minus.str();
     std::string s_title_Cnr_plus = ss_title_Cnr_plus.str();
@@ -403,13 +499,29 @@ Hists(ctx, dirname){
     const char* char_name_sigma_2 = s_name_sigma_2.c_str();
     const char* char_name_delta_1 = s_name_delta_1.c_str();
     const char* char_name_delta_2 = s_name_delta_2.c_str();
+    const char* char_name_cos_theta1k_antiLep = s_name_cos_theta1k_antiLep.c_str();
+    const char* char_name_cos_theta1r_antiLep = s_name_cos_theta1r_antiLep.c_str();
+    const char* char_name_cos_theta1n_antiLep = s_name_cos_theta1n_antiLep.c_str();
+    const char* char_name_cos_theta1kStar_antiLep = s_name_cos_theta1kStar_antiLep.c_str();
+    const char* char_name_cos_theta1rStar_antiLep = s_name_cos_theta1rStar_antiLep.c_str();
+    const char* char_name_cos_theta2k_Lep = s_name_cos_theta2k_Lep.c_str();
+    const char* char_name_cos_theta2r_Lep = s_name_cos_theta2r_Lep.c_str();
+    const char* char_name_cos_theta2n_Lep = s_name_cos_theta2n_Lep.c_str();
+    const char* char_name_cos_theta2kStar_Lep = s_name_cos_theta2kStar_Lep.c_str();
+    const char* char_name_cos_theta2rStar_Lep = s_name_cos_theta2rStar_Lep.c_str();
+    const char* char_name_cos_theta1k = s_name_cos_theta1k.c_str();
+    const char* char_name_cos_theta1r = s_name_cos_theta1r.c_str();
+    const char* char_name_cos_theta1n = s_name_cos_theta1n.c_str();
     const char* char_name_cos_theta1kStar = s_name_cos_theta1kStar.c_str();
     const char* char_name_cos_theta1rStar = s_name_cos_theta1rStar.c_str();
+    const char* char_name_cos_theta2k = s_name_cos_theta2k.c_str();
+    const char* char_name_cos_theta2r = s_name_cos_theta2r.c_str();
+    const char* char_name_cos_theta2n = s_name_cos_theta2n.c_str();
     const char* char_name_cos_theta2kStar = s_name_cos_theta2kStar.c_str();
     const char* char_name_cos_theta2rStar = s_name_cos_theta2rStar.c_str();
-    const char* char_name_Cnn = s_name_Cnn.c_str();
-    const char* char_name_Crr = s_name_Crr.c_str();
     const char* char_name_Ckk = s_name_Ckk.c_str();
+    const char* char_name_Crr = s_name_Crr.c_str();
+    const char* char_name_Cnn = s_name_Cnn.c_str();
     const char* char_name_Crk_plus = s_name_Crk_plus.c_str();
     const char* char_name_Crk_minus = s_name_Crk_minus.c_str();
     const char* char_name_Cnr_plus = s_name_Cnr_plus.c_str();
@@ -429,13 +541,29 @@ Hists(ctx, dirname){
     const char* char_title_sigma_2 = s_title_sigma_2.c_str();
     const char* char_title_delta_1 = s_title_delta_1.c_str();
     const char* char_title_delta_2 = s_title_delta_2.c_str();
+    const char* char_title_cos_theta1k_antiLep = s_title_cos_theta1k_antiLep.c_str();
+    const char* char_title_cos_theta1r_antiLep = s_title_cos_theta1r_antiLep.c_str();
+    const char* char_title_cos_theta1n_antiLep = s_title_cos_theta1n_antiLep.c_str();
+    const char* char_title_cos_theta1kStar_antiLep = s_title_cos_theta1kStar_antiLep.c_str();
+    const char* char_title_cos_theta1rStar_antiLep = s_title_cos_theta1rStar_antiLep.c_str();
+    const char* char_title_cos_theta2k_Lep = s_title_cos_theta2k_Lep.c_str();
+    const char* char_title_cos_theta2r_Lep = s_title_cos_theta2r_Lep.c_str();
+    const char* char_title_cos_theta2n_Lep = s_title_cos_theta2n_Lep.c_str();
+    const char* char_title_cos_theta2kStar_Lep = s_title_cos_theta2kStar_Lep.c_str();
+    const char* char_title_cos_theta2rStar_Lep = s_title_cos_theta2rStar_Lep.c_str();
+    const char* char_title_cos_theta1k = s_title_cos_theta1k.c_str();
+    const char* char_title_cos_theta1r = s_title_cos_theta1r.c_str();
+    const char* char_title_cos_theta1n = s_title_cos_theta1n.c_str();
     const char* char_title_cos_theta1kStar = s_title_cos_theta1kStar.c_str();
     const char* char_title_cos_theta1rStar = s_title_cos_theta1rStar.c_str();
+    const char* char_title_cos_theta2k = s_title_cos_theta2k.c_str();
+    const char* char_title_cos_theta2r = s_title_cos_theta2r.c_str();
+    const char* char_title_cos_theta2n = s_title_cos_theta2n.c_str();
     const char* char_title_cos_theta2kStar = s_title_cos_theta2kStar.c_str();
     const char* char_title_cos_theta2rStar = s_title_cos_theta2rStar.c_str();
-    const char* char_title_Cnn = s_title_Cnn.c_str();
-    const char* char_title_Crr = s_title_Crr.c_str();
     const char* char_title_Ckk = s_title_Ckk.c_str();
+    const char* char_title_Crr = s_title_Crr.c_str();
+    const char* char_title_Cnn = s_title_Cnn.c_str();
     const char* char_title_Crk_plus = s_title_Crk_plus.c_str();
     const char* char_title_Crk_minus = s_title_Crk_minus.c_str();
     const char* char_title_Cnr_plus = s_title_Cnr_plus.c_str();
@@ -458,13 +586,29 @@ Hists(ctx, dirname){
     hist_names_delta_1[i] = s_name_delta_1;
     hist_names_delta_2[i] = s_name_delta_2;
     hist_names_xi[i]    = s_name_xi;
+    hist_names_cos_theta1k_antiLep[i] = s_name_cos_theta1k_antiLep;
+    hist_names_cos_theta1r_antiLep[i] = s_name_cos_theta1r_antiLep;
+    hist_names_cos_theta1n_antiLep[i] = s_name_cos_theta1n_antiLep;
+    hist_names_cos_theta1kStar_antiLep[i] = s_name_cos_theta1kStar_antiLep;
+    hist_names_cos_theta1rStar_antiLep[i] = s_name_cos_theta1rStar_antiLep;
+    hist_names_cos_theta2k_Lep[i] = s_name_cos_theta2k_Lep;
+    hist_names_cos_theta2r_Lep[i] = s_name_cos_theta2r_Lep;
+    hist_names_cos_theta2n_Lep[i] = s_name_cos_theta2n_Lep;
+    hist_names_cos_theta2kStar_Lep[i] = s_name_cos_theta2kStar_Lep;
+    hist_names_cos_theta2rStar_Lep[i] = s_name_cos_theta2rStar_Lep;
+    hist_names_cos_theta1k[i] = s_name_cos_theta1k;
+    hist_names_cos_theta1r[i] = s_name_cos_theta1r;
+    hist_names_cos_theta1n[i] = s_name_cos_theta1n;
     hist_names_cos_theta1kStar[i] = s_name_cos_theta1kStar;
     hist_names_cos_theta1rStar[i] = s_name_cos_theta1rStar;
+    hist_names_cos_theta2k[i] = s_name_cos_theta2k;
+    hist_names_cos_theta2r[i] = s_name_cos_theta2r;
+    hist_names_cos_theta2n[i] = s_name_cos_theta2n;
     hist_names_cos_theta2kStar[i] = s_name_cos_theta2kStar;
     hist_names_cos_theta2rStar[i] = s_name_cos_theta2rStar;
-    hist_names_Cnn[i] = s_name_Cnn;
-    hist_names_Crr[i] = s_name_Crr;
     hist_names_Ckk[i] = s_name_Ckk;
+    hist_names_Crr[i] = s_name_Crr;
+    hist_names_Cnn[i] = s_name_Cnn;
     hist_names_Crk_plus[i]  = s_name_Crk_plus;
     hist_names_Crk_minus[i] = s_name_Crk_minus;
     hist_names_Cnr_plus[i]  = s_name_Cnr_plus;
@@ -487,23 +631,39 @@ Hists(ctx, dirname){
     book<TH1F>(char_name_delta_1, char_title_delta_1,  16, -3.2, 3.2);
     book<TH1F>(char_name_delta_2, char_title_delta_2,  16, -3.2, 3.2);
     book<TH1F>(s_name_xi.c_str(),    s_title_xi.c_str(),    /*nbins*/ 6,  -1.0,  1.0);
+    book<TH1F>(char_name_cos_theta1k_antiLep, char_title_cos_theta1k_antiLep, 24, -1.0, 1.0);
+    book<TH1F>(char_name_cos_theta1r_antiLep, char_title_cos_theta1r_antiLep, 24, -1.0, 1.0);
+    book<TH1F>(char_name_cos_theta1n_antiLep, char_title_cos_theta1n_antiLep, 24, -1.0, 1.0);
+    book<TH1F>(char_name_cos_theta1kStar_antiLep, char_title_cos_theta1kStar_antiLep, 24, -1.0, 1.0);
+    book<TH1F>(char_name_cos_theta1rStar_antiLep, char_title_cos_theta1rStar_antiLep, 24, -1.0, 1.0);
+    book<TH1F>(char_name_cos_theta2k_Lep, char_title_cos_theta2k_Lep, 24, -1.0, 1.0);
+    book<TH1F>(char_name_cos_theta2r_Lep, char_title_cos_theta2r_Lep, 24, -1.0, 1.0);
+    book<TH1F>(char_name_cos_theta2n_Lep, char_title_cos_theta2n_Lep, 24, -1.0, 1.0);
+    book<TH1F>(char_name_cos_theta2kStar_Lep, char_title_cos_theta2kStar_Lep, 24, -1.0, 1.0);
+    book<TH1F>(char_name_cos_theta2rStar_Lep, char_title_cos_theta2rStar_Lep, 24, -1.0, 1.0);
+    book<TH1F>(char_name_cos_theta1k, char_title_cos_theta1k, 24, -1.0, 1.0);
+    book<TH1F>(char_name_cos_theta1r, char_title_cos_theta1r, 24, -1.0, 1.0);
+    book<TH1F>(char_name_cos_theta1n, char_title_cos_theta1n, 24, -1.0, 1.0);
     book<TH1F>(char_name_cos_theta1kStar, char_title_cos_theta1kStar,  24, -1.0, 1.0);
     book<TH1F>(char_name_cos_theta1rStar, char_title_cos_theta1rStar,  24, -1.0, 1.0);
+    book<TH1F>(char_name_cos_theta2k, char_title_cos_theta2k, 24, -1.0, 1.0);
+    book<TH1F>(char_name_cos_theta2r, char_title_cos_theta2r, 24, -1.0, 1.0);
+    book<TH1F>(char_name_cos_theta2n, char_title_cos_theta2n, 24, -1.0, 1.0);
     book<TH1F>(char_name_cos_theta2kStar, char_title_cos_theta2kStar,  24, -1.0, 1.0);
     book<TH1F>(char_name_cos_theta2rStar, char_title_cos_theta2rStar,  24, -1.0, 1.0);
-    book<TH1F>(char_name_Cnn, char_title_Cnn,  24, -1.0, 1.0);
-    book<TH1F>(char_name_Crr, char_title_Crr,  24, -1.0, 1.0);
     book<TH1F>(char_name_Ckk, char_title_Ckk,  24, -1.0, 1.0);
+    book<TH1F>(char_name_Crr, char_title_Crr,  24, -1.0, 1.0);
+    book<TH1F>(char_name_Cnn, char_title_Cnn,  24, -1.0, 1.0);
     book<TH1F>(char_name_Crk_plus, char_title_Crk_plus,  24, -1.0, 1.0);
     book<TH1F>(char_name_Crk_minus, char_title_Crk_minus,  24, -1.0, 1.0);
     book<TH1F>(char_name_Cnr_plus, char_title_Cnr_plus,  24, -1.0, 1.0);
     book<TH1F>(char_name_Cnr_minus, char_title_Cnr_minus,  24, -1.0, 1.0);
     book<TH1F>(char_name_Cnk_plus, char_title_Cnk_plus,  24, -1.0, 1.0);
     book<TH1F>(char_name_Cnk_minus, char_title_Cnk_minus,  24, -1.0, 1.0);
-    book<TH1F>(char_name_cHel_Mtt300_400, char_title_cHel_Mtt300_400,  20, -1.0, 1.0);
-    book<TH1F>(char_name_cHel_Mtt300_400_betaLT0p9, char_title_cHel_Mtt300_400_betaLT0p9,  20, -1.0, 1.0);
-    book<TH1F>(char_name_cHel_P3n_Mtt800_Inf, char_title_cHel_P3n_Mtt800_Inf,  20, -1.0, 1.0);
-    book<TH1F>(char_name_cHel_P3n_Mtt800_Inf_cosThetaLT0p4, char_title_cHel_P3n_Mtt800_Inf_cosThetaLT0p4,  20, -1.0, 1.0);
+    book<TH1F>(char_name_cHel_Mtt300_400, char_title_cHel_Mtt300_400,  24, -1.0, 1.0);
+    book<TH1F>(char_name_cHel_Mtt300_400_betaLT0p9, char_title_cHel_Mtt300_400_betaLT0p9,  24, -1.0, 1.0);
+    book<TH1F>(char_name_cHel_P3n_Mtt800_Inf, char_title_cHel_P3n_Mtt800_Inf,  24, -1.0, 1.0);
+    book<TH1F>(char_name_cHel_P3n_Mtt800_Inf_cosThetaLT0p4, char_title_cHel_P3n_Mtt800_Inf_cosThetaLT0p4,  24, -1.0, 1.0);
     
   }
   
@@ -902,26 +1062,32 @@ void ZprimeSemiLeptonicPDFHists::fill(const Event & event){
 
   
     //------------------------------------------- Spin Correlation variables -------------------------------------------//
+    float cosTheta1k_antiLep = 99.;
+    float cosTheta1r_antiLep = 99.;
+    float cosTheta1n_antiLep = 99.;
+    float cosTheta1kStar_antiLep = 99.;
+    float cosTheta1rStar_antiLep = 99.;
     float cosTheta1k = 99.;
     float cosTheta1r = 99.;
     float cosTheta1n = 99.;
     float cosTheta1kStar = 99.;
     float cosTheta1rStar = 99.;
+    
+    float cosTheta2k_Lep = 99.;
+    float cosTheta2r_Lep = 99.;
+    float cosTheta2n_Lep = 99.;
+    float cosTheta2kStar_Lep = 99.;
+    float cosTheta2rStar_Lep = 99.;
     float cosTheta2k = 99.;
     float cosTheta2r = 99.;
     float cosTheta2n = 99.;
     float cosTheta2kStar = 99.;
     float cosTheta2rStar = 99.;
 
-    float C_nn = 99.;
-    // float C_nr = 99.;
-    // float C_nk = 99.;
-    // float C_rn = 99.;
-    float C_rr = 99.;
-    // float C_rk = 99.;
-    // float C_kn = 99.;
-    // float C_kr = 99.;
     float C_kk = 99.;
+    float C_rr = 99.;
+    float C_nn = 99.;
+    
     float C_rk_plus = 99.;
     float C_rk_minus = 99.;
     float C_nr_plus = 99.;
@@ -937,6 +1103,25 @@ void ZprimeSemiLeptonicPDFHists::fill(const Event & event){
     float CHel_P3n_Mtt800_Inf = 99.;
     float CHel_P3n_Mtt800_Inf_cosThetaLT0p4 = 99.;
 
+    // Use only leptons as spin-analyzers
+    if(BestZprimeCandidate->lepton().charge() > 0){
+      // anti-lepton is spin-analyzer fo top quark
+      cosTheta1k_antiLep = lep_top_lep_Rest.Vect().Unit().Dot(kbase);
+      cosTheta1r_antiLep = lep_top_lep_Rest.Vect().Unit().Dot(rbase);
+      cosTheta1n_antiLep = lep_top_lep_Rest.Vect().Unit().Dot(nbase);
+      cosTheta1kStar_antiLep = lep_top_lep_Rest.Vect().Unit().Dot(kStar);
+      cosTheta1rStar_antiLep = lep_top_lep_Rest.Vect().Unit().Dot(rStar);
+    }
+    else if (BestZprimeCandidate->lepton().charge() < 0){
+      // lepton is spin-analyzer for antitop quark
+      cosTheta2k_Lep = lep_top_lep_Rest.Vect().Unit().Dot(kbase);
+      cosTheta2r_Lep = lep_top_lep_Rest.Vect().Unit().Dot(rbase);
+      cosTheta2n_Lep = lep_top_lep_Rest.Vect().Unit().Dot(nbase);
+      cosTheta2kStar_Lep = lep_top_lep_Rest.Vect().Unit().Dot(kStar);
+      cosTheta2rStar_Lep = lep_top_lep_Rest.Vect().Unit().Dot(rStar);
+    }
+
+    // Assign spin-analyzers depending on lepton charge
     if(BestZprimeCandidate->lepton().charge() > 0){
       // top quark spin-analyzer is lepton
       cosTheta1k = lep_top_lep_Rest.Vect().Unit().Dot(kbase);
@@ -968,13 +1153,7 @@ void ZprimeSemiLeptonicPDFHists::fill(const Event & event){
 
     // correlation matrix elements
     C_nn = cosTheta1n * cosTheta2n;
-    // C_nr = cosTheta1n * cosTheta2r;
-    // C_nk = cosTheta1n * cosTheta2k;
-    // C_rn = cosTheta1r * cosTheta2n;
     C_rr = cosTheta1r * cosTheta2r;
-    // C_rk = cosTheta1r * cosTheta2k;
-    // C_kn = cosTheta1k * cosTheta2n;
-    // C_kr = cosTheta1k * cosTheta2r;
     C_kk = cosTheta1k * cosTheta2k;
     // sum and differences of cross correlations
     C_rk_plus = cosTheta1r * cosTheta2k + cosTheta1k * cosTheta2r;
@@ -1025,7 +1204,7 @@ void ZprimeSemiLeptonicPDFHists::fill(const Event & event){
 
   
     
-    
+    // Fill PDF systematic histograms for all MC samples ----------------------------------------------------------------------------------------//
     int MY_FIRST_INDEX = 9;
     if ( is_dy || is_wjets || is_qcd_HTbinned || is_alps || is_azh || is_htott_scalar || is_htott_pseudo || is_zprimetott ) MY_FIRST_INDEX = 47;
     if(event.genInfo->systweights().size() > (unsigned int) 100 + MY_FIRST_INDEX){
@@ -1040,13 +1219,29 @@ void ZprimeSemiLeptonicPDFHists::fill(const Event & event){
         const char* name_sigma_2 = hist_names_sigma_2[i].c_str();
         const char* name_delta_1 = hist_names_delta_1[i].c_str();
         const char* name_delta_2 = hist_names_delta_2[i].c_str();
+        const char* name_cos_theta1k_antiLep = hist_names_cos_theta1k_antiLep[i].c_str();
+        const char* name_cos_theta1r_antiLep = hist_names_cos_theta1r_antiLep[i].c_str();
+        const char* name_cos_theta1n_antiLep = hist_names_cos_theta1n_antiLep[i].c_str();
+        const char* name_cos_theta1kStar_antiLep = hist_names_cos_theta1kStar_antiLep[i].c_str();
+        const char* name_cos_theta1rStar_antiLep = hist_names_cos_theta1rStar_antiLep[i].c_str();
+        const char* name_cos_theta2k_Lep = hist_names_cos_theta2k_Lep[i].c_str();
+        const char* name_cos_theta2r_Lep = hist_names_cos_theta2r_Lep[i].c_str();
+        const char* name_cos_theta2n_Lep = hist_names_cos_theta2n_Lep[i].c_str();
+        const char* name_cos_theta2kStar_Lep = hist_names_cos_theta2kStar_Lep[i].c_str();
+        const char* name_cos_theta2rStar_Lep = hist_names_cos_theta2rStar_Lep[i].c_str();
+        const char* name_cos_theta1k = hist_names_cos_theta1k[i].c_str();
+        const char* name_cos_theta1r = hist_names_cos_theta1r[i].c_str();
+        const char* name_cos_theta1n = hist_names_cos_theta1n[i].c_str();
         const char* name_cos_theta1kStar = hist_names_cos_theta1kStar[i].c_str();
         const char* name_cos_theta1rStar = hist_names_cos_theta1rStar[i].c_str();
+        const char* name_cos_theta2k = hist_names_cos_theta2k[i].c_str();
+        const char* name_cos_theta2r = hist_names_cos_theta2r[i].c_str();
+        const char* name_cos_theta2n = hist_names_cos_theta2n[i].c_str();
         const char* name_cos_theta2kStar = hist_names_cos_theta2kStar[i].c_str();
         const char* name_cos_theta2rStar = hist_names_cos_theta2rStar[i].c_str();
-        const char* name_Cnn = hist_names_Cnn[i].c_str();
-        const char* name_Crr = hist_names_Crr[i].c_str();
         const char* name_Ckk = hist_names_Ckk[i].c_str();
+        const char* name_Crr = hist_names_Crr[i].c_str();
+        const char* name_Cnn = hist_names_Cnn[i].c_str();
         const char* name_Crk_plus = hist_names_Crk_plus[i].c_str();
         const char* name_Crk_minus = hist_names_Crk_minus[i].c_str();
         const char* name_Cnr_plus = hist_names_Cnr_plus[i].c_str();
@@ -1088,19 +1283,35 @@ void ZprimeSemiLeptonicPDFHists::fill(const Event & event){
           if (debug)cout <<" done with delta 1" <<endl;
         }
         
-        hist(name_cos_theta1kStar)->Fill(cosTheta1kStar,weight * pdf_weight / orig_weight);
-        hist(name_cos_theta1rStar)->Fill(cosTheta1rStar,weight * pdf_weight / orig_weight);
-        hist(name_cos_theta2kStar)->Fill(cosTheta2kStar,weight * pdf_weight / orig_weight);
-        hist(name_cos_theta2rStar)->Fill(cosTheta2rStar,weight * pdf_weight / orig_weight);
-        hist(name_Cnn)->Fill(C_nn,weight * pdf_weight / orig_weight);
-        hist(name_Crr)->Fill(C_rr,weight * pdf_weight / orig_weight);
-        hist(name_Ckk)->Fill(C_kk,weight * pdf_weight / orig_weight);
-        hist(name_Crk_plus)->Fill(C_rk_plus,weight * pdf_weight / orig_weight);
-        hist(name_Crk_minus)->Fill(C_rk_minus,weight * pdf_weight / orig_weight);
-        hist(name_Cnr_plus)->Fill(C_nr_plus,weight * pdf_weight / orig_weight);
-        hist(name_Cnr_minus)->Fill(C_nr_minus,weight * pdf_weight / orig_weight);
-        hist(name_Cnk_plus)->Fill(C_nk_plus,weight * pdf_weight / orig_weight);
-        hist(name_Cnk_minus)->Fill(C_nk_minus,weight * pdf_weight / orig_weight);
+        hist(name_cos_theta1k_antiLep)->Fill(cosTheta1k_antiLep, weight * pdf_weight / orig_weight);
+        hist(name_cos_theta1r_antiLep)->Fill(cosTheta1r_antiLep, weight * pdf_weight / orig_weight);
+        hist(name_cos_theta1n_antiLep)->Fill(cosTheta1n_antiLep, weight * pdf_weight / orig_weight);
+        hist(name_cos_theta1kStar_antiLep)->Fill(cosTheta1kStar_antiLep, weight * pdf_weight / orig_weight);
+        hist(name_cos_theta1rStar_antiLep)->Fill(cosTheta1rStar_antiLep, weight * pdf_weight / orig_weight);
+        hist(name_cos_theta2k_Lep)->Fill(cosTheta2k_Lep, weight * pdf_weight / orig_weight);
+        hist(name_cos_theta2r_Lep)->Fill(cosTheta2r_Lep, weight * pdf_weight / orig_weight);
+        hist(name_cos_theta2n_Lep)->Fill(cosTheta2n_Lep, weight * pdf_weight / orig_weight);
+        hist(name_cos_theta2kStar_Lep)->Fill(cosTheta2kStar_Lep, weight * pdf_weight / orig_weight);
+        hist(name_cos_theta2rStar_Lep)->Fill(cosTheta2rStar_Lep, weight * pdf_weight / orig_weight);
+        hist(name_cos_theta1k)->Fill(cosTheta1k, weight * pdf_weight / orig_weight);
+        hist(name_cos_theta1r)->Fill(cosTheta1r, weight * pdf_weight / orig_weight);
+        hist(name_cos_theta1n)->Fill(cosTheta1n, weight * pdf_weight / orig_weight);
+        hist(name_cos_theta1kStar)->Fill(cosTheta1kStar, weight * pdf_weight / orig_weight);
+        hist(name_cos_theta1rStar)->Fill(cosTheta1rStar, weight * pdf_weight / orig_weight);
+        hist(name_cos_theta2k)->Fill(cosTheta2k, weight * pdf_weight / orig_weight);
+        hist(name_cos_theta2r)->Fill(cosTheta2r, weight * pdf_weight / orig_weight);
+        hist(name_cos_theta2n)->Fill(cosTheta2n, weight * pdf_weight / orig_weight);
+        hist(name_cos_theta2kStar)->Fill(cosTheta2kStar, weight * pdf_weight / orig_weight);
+        hist(name_cos_theta2rStar)->Fill(cosTheta2rStar, weight * pdf_weight / orig_weight);
+        hist(name_Ckk)->Fill(C_kk, weight * pdf_weight / orig_weight);
+        hist(name_Crr)->Fill(C_rr, weight * pdf_weight / orig_weight);
+        hist(name_Cnn)->Fill(C_nn, weight * pdf_weight / orig_weight);
+        hist(name_Crk_plus)->Fill(C_rk_plus, weight * pdf_weight / orig_weight);
+        hist(name_Crk_minus)->Fill(C_rk_minus, weight * pdf_weight / orig_weight);
+        hist(name_Cnr_plus)->Fill(C_nr_plus, weight * pdf_weight / orig_weight);
+        hist(name_Cnr_minus)->Fill(C_nr_minus, weight * pdf_weight / orig_weight);
+        hist(name_Cnk_plus)->Fill(C_nk_plus, weight * pdf_weight / orig_weight);
+        hist(name_Cnk_minus)->Fill(C_nk_minus, weight * pdf_weight / orig_weight);
         if(CHel_Mtt300_400 != 99.){
           hist(name_cHel_Mtt300_400)->Fill(CHel_Mtt300_400,weight * pdf_weight / orig_weight);
         }
@@ -1115,8 +1326,9 @@ void ZprimeSemiLeptonicPDFHists::fill(const Event & event){
         }
 
       }
-    }
-  }
+    }// Fill PDF systematic histograms
+
+  }// is_zprime_reconstructed_chi2 && is_mc
 }
 
 ZprimeSemiLeptonicPDFHists::~ZprimeSemiLeptonicPDFHists(){}
