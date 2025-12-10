@@ -23,8 +23,8 @@
 
 <!-- TTbar -->
 <!ENTITY TTToSemiLeptonic SYSTEM "../data/Skimming_datasets_UL18_electron/MC_TTToSemiLeptonic_UL18.xml">
-<!ENTITY TTToHadronic SYSTEM "../data/Skimming_datasets_UL18_electron/MC_TTToHadronic_UL18.xml">
-<!ENTITY TTTo2L2Nu SYSTEM "../data/Skimming_datasets_UL18_electron/MC_TTTo2L2Nu_UL18.xml">
+<!ENTITY TTToHadronic SYSTEM     "../data/Skimming_datasets_UL18_electron/MC_TTToHadronic_UL18.xml">
+<!ENTITY TTTo2L2Nu SYSTEM        "../data/Skimming_datasets_UL18_electron/MC_TTTo2L2Nu_UL18.xml">
 <!-- WJets -->
 <!ENTITY WJetsToLNu_HT-70To100 SYSTEM "../data/Skimming_datasets_UL18_electron/MC_WJetsToLNu_HT-70To100_UL18.xml">
 <!ENTITY WJetsToLNu_HT-100To200 SYSTEM "../data/Skimming_datasets_UL18_electron/MC_WJetsToLNu_HT-100To200_UL18.xml">
@@ -48,11 +48,11 @@
 <!ENTITY WZ SYSTEM "../data/Skimming_datasets_UL18_electron/MC_WZ_UL18.xml">
 <!ENTITY ZZ SYSTEM "../data/Skimming_datasets_UL18_electron/MC_ZZ_UL18.xml">
 <!-- ST -->
-<!ENTITY ST_tW_antitop_5f_NoFullyHadronicDecays SYSTEM "../data/Skimming_datasets_UL18_electron/MC_ST_tW_antitop_5f_NoFullyHadronicDecays_UL18.xml">
-<!ENTITY ST_tW_top_5f_NoFullyHadronicDecays SYSTEM "../data/Skimming_datasets_UL18_electron/MC_ST_tW_top_5f_NoFullyHadronicDecays_UL18.xml">
+<!ENTITY ST_tW_antitop_5f_NoFullyHadronicDecays SYSTEM  "../data/Skimming_datasets_UL18_electron/MC_ST_tW_antitop_5f_NoFullyHadronicDecays_UL18.xml">
+<!ENTITY ST_tW_top_5f_NoFullyHadronicDecays SYSTEM      "../data/Skimming_datasets_UL18_electron/MC_ST_tW_top_5f_NoFullyHadronicDecays_UL18.xml">
 <!ENTITY ST_t-channel_antitop_4f_InclusiveDecays SYSTEM "../data/Skimming_datasets_UL18_electron/MC_ST_t-channel_antitop_4f_InclusiveDecays_UL18.xml">
-<!ENTITY ST_t-channel_top_4f_InclusiveDecays SYSTEM "../data/Skimming_datasets_UL18_electron/MC_ST_t-channel_top_4f_InclusiveDecays_UL18.xml">
-<!ENTITY ST_s-channel_4f_leptonDecays SYSTEM "../data/Skimming_datasets_UL18_electron/MC_ST_s-channel_4f_leptonDecays_UL18.xml">
+<!ENTITY ST_t-channel_top_4f_InclusiveDecays SYSTEM     "../data/Skimming_datasets_UL18_electron/MC_ST_t-channel_top_4f_InclusiveDecays_UL18.xml">
+<!ENTITY ST_s-channel_4f_leptonDecays SYSTEM            "../data/Skimming_datasets_UL18_electron/MC_ST_s-channel_4f_leptonDecays_UL18.xml">
 <!-- QCD -->
 <!ENTITY QCD_HT50to100 SYSTEM "../data/Skimming_datasets_UL18_electron/MC_QCD_HT50to100_UL18.xml">
 <!ENTITY QCD_HT100to200 SYSTEM "../data/Skimming_datasets_UL18_electron/MC_QCD_HT100to200_UL18.xml">
@@ -77,16 +77,10 @@
   <Cycle Name="uhh2::AnalysisModuleRunner" OutputDirectory="&OUTPUTdir;/" PostFix="" TargetLumi="&TargetLumi;">
 
     <!-- SingleElectron Data -->
-    <InputData Lumi="1.0" NEventsMax="&NEVT;" Type="DATA" Version="SingleElectron_RunB&YEARsuffix;" Cacheable="&b_Cacheable;"> &SingleElectron_RunB; <InputTree Name="AnalysisTree"/> </InputData>
-    <InputData Lumi="1.0" NEventsMax="&NEVT;" Type="DATA" Version="SingleElectron_RunC&YEARsuffix;" Cacheable="&b_Cacheable;"> &SingleElectron_RunC; <InputTree Name="AnalysisTree"/> </InputData>
-    <InputData Lumi="1.0" NEventsMax="&NEVT;" Type="DATA" Version="SingleElectron_RunD&YEARsuffix;" Cacheable="&b_Cacheable;"> &SingleElectron_RunD; <InputTree Name="AnalysisTree"/> </InputData>
-    <InputData Lumi="1.0" NEventsMax="&NEVT;" Type="DATA" Version="SingleElectron_RunE&YEARsuffix;" Cacheable="&b_Cacheable;"> &SingleElectron_RunE; <InputTree Name="AnalysisTree"/> </InputData>
-    <InputData Lumi="1.0" NEventsMax="&NEVT;" Type="DATA" Version="SingleElectron_RunF&YEARsuffix;" Cacheable="&b_Cacheable;"> &SingleElectron_RunF; <InputTree Name="AnalysisTree"/> </InputData>
-    <InputData Lumi="1.0" NEventsMax="&NEVT;" Type="DATA" Version="SinglePhoton_RunB&YEARsuffix;"   Cacheable="&b_Cacheable;"> &SinglePhoton_RunB;   <InputTree Name="AnalysisTree"/> </InputData>
-    <InputData Lumi="1.0" NEventsMax="&NEVT;" Type="DATA" Version="SinglePhoton_RunC&YEARsuffix;"   Cacheable="&b_Cacheable;"> &SinglePhoton_RunC;   <InputTree Name="AnalysisTree"/> </InputData>
-    <InputData Lumi="1.0" NEventsMax="&NEVT;" Type="DATA" Version="SinglePhoton_RunD&YEARsuffix;"   Cacheable="&b_Cacheable;"> &SinglePhoton_RunD;   <InputTree Name="AnalysisTree"/> </InputData>
-    <InputData Lumi="1.0" NEventsMax="&NEVT;" Type="DATA" Version="SinglePhoton_RunE&YEARsuffix;"   Cacheable="&b_Cacheable;"> &SinglePhoton_RunE;   <InputTree Name="AnalysisTree"/> </InputData>
-    <InputData Lumi="1.0" NEventsMax="&NEVT;" Type="DATA" Version="SinglePhoton_RunF&YEARsuffix;"   Cacheable="&b_Cacheable;"> &SinglePhoton_RunF;   <InputTree Name="AnalysisTree"/> </InputData>
+    <InputData Lumi="1.0" NEventsMax="&NEVT;" Type="DATA" Version="EGamma_RunA&YEARsuffix;" Cacheable="&b_Cacheable;"> &EGamma_RunA; <InputTree Name="AnalysisTree"/> </InputData>
+    <InputData Lumi="1.0" NEventsMax="&NEVT;" Type="DATA" Version="EGamma_RunB&YEARsuffix;" Cacheable="&b_Cacheable;"> &EGamma_RunB; <InputTree Name="AnalysisTree"/> </InputData>
+    <InputData Lumi="1.0" NEventsMax="&NEVT;" Type="DATA" Version="EGamma_RunC&YEARsuffix;" Cacheable="&b_Cacheable;"> &EGamma_RunC; <InputTree Name="AnalysisTree"/> </InputData>
+    <InputData Lumi="1.0" NEventsMax="&NEVT;" Type="DATA" Version="EGamma_RunD&YEARsuffix;" Cacheable="&b_Cacheable;"> &EGamma_RunD; <InputTree Name="AnalysisTree"/> </InputData>
 
     <!-- TTbar -->
     <InputData Lumi="287297864.34871227" NEventsMax="&NEVT;" Type="MC" Version="TTToSemiLeptonic&YEARsuffix;" Cacheable="&b_Cacheable;"> &TTToSemiLeptonic;<InputTree Name="AnalysisTree"/><OutputTree Name="AnalysisTree" /></InputData>
