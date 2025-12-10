@@ -831,19 +831,19 @@ void ZprimeSemiLeptonicHists::init(){
   cos_theta1n_antiLep = book<TH1F>("cos_theta1n_antiLep", "cos(#theta_{antilep}^{n})",24, -1, 1);
   cos_theta1kStar_antiLep = book<TH1F>("cos_theta1kStar_antiLep", "cos(#theta_{antilep}^{k*})",24, -1, 1);
   cos_theta1rStar_antiLep = book<TH1F>("cos_theta1rStar_antiLep", "cos(#theta_{antilep}^{r*})",24, -1, 1);
-  // top daughter polarizations
-  cos_theta1k       = book<TH1F>("cos_theta1k", "cos(#theta_{1}^{k})",24, -1, 1);
-  cos_theta1r       = book<TH1F>("cos_theta1r", "cos(#theta_{1}^{r})",24, -1, 1);
-  cos_theta1n       = book<TH1F>("cos_theta1n", "cos(#theta_{1}^{n})",24, -1, 1);
-  cos_theta1kStar   = book<TH1F>("cos_theta1kStar", "cos(#theta_{1}^{k*})",24, -1, 1);
-  cos_theta1rStar   = book<TH1F>("cos_theta1rStar", "cos(#theta_{1}^{r*})",24, -1, 1);
-  
   // Lepton exclusive
   cos_theta2k_Lep = book<TH1F>("cos_theta2k_Lep", "cos(#theta_{lep}^{k})",24, -1, 1);
   cos_theta2r_Lep = book<TH1F>("cos_theta2r_Lep", "cos(#theta_{lep}^{r})",24, -1, 1);
   cos_theta2n_Lep = book<TH1F>("cos_theta2n_Lep", "cos(#theta_{lep}^{n})",24, -1, 1);
   cos_theta2kStar_Lep = book<TH1F>("cos_theta2kStar_Lep", "cos(#theta_{lep}^{k*})",24, -1, 1);
   cos_theta2rStar_Lep = book<TH1F>("cos_theta2rStar_Lep", "cos(#theta_{lep}^{r*})",24, -1, 1);
+
+  // top daughter polarizations
+  cos_theta1k       = book<TH1F>("cos_theta1k", "cos(#theta_{1}^{k})",24, -1, 1);
+  cos_theta1r       = book<TH1F>("cos_theta1r", "cos(#theta_{1}^{r})",24, -1, 1);
+  cos_theta1n       = book<TH1F>("cos_theta1n", "cos(#theta_{1}^{n})",24, -1, 1);
+  cos_theta1kStar   = book<TH1F>("cos_theta1kStar", "cos(#theta_{1}^{k*})",24, -1, 1);
+  cos_theta1rStar   = book<TH1F>("cos_theta1rStar", "cos(#theta_{1}^{r*})",24, -1, 1);
   // antitop daughter polarizations
   cos_theta2k       = book<TH1F>("cos_theta2k", "cos(#theta_{2}^{k})",24, -1, 1);
   cos_theta2r       = book<TH1F>("cos_theta2r", "cos(#theta_{2}^{r})",24, -1, 1);

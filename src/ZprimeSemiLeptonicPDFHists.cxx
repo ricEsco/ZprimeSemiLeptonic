@@ -233,8 +233,6 @@ Hists(ctx, dirname){
     std::stringstream ss_name_dy_d2;
     std::stringstream ss_name_sigma_1;
     std::stringstream ss_name_sigma_2;
-    std::stringstream ss_name_delta_1;
-    std::stringstream ss_name_delta_2;
     std::stringstream ss_name_xi;
     std::stringstream ss_name_cos_theta1k_antiLep;
     std::stringstream ss_name_cos_theta1r_antiLep;
@@ -276,8 +274,6 @@ Hists(ctx, dirname){
     ss_name_dy_d2   << "DeltaY_reco_d2_PDF_" << i+1;
     ss_name_sigma_1 << "Sigma_phi_1_PDF_" << i+1;
     ss_name_sigma_2 << "Sigma_phi_2_PDF_" << i+1;
-    ss_name_delta_1 << "Delta_phi_1_PDF_" << i+1;
-    ss_name_delta_2 << "Delta_phi_2_PDF_" << i+1;
     ss_name_xi      << "DeltaY_xi_reco_6_PDF_" << i+1;
     ss_name_cos_theta1k_antiLep << "cos_theta1k_antiLep_PDF_" << i+1;
     ss_name_cos_theta1r_antiLep << "cos_theta1r_antiLep_PDF_" << i+1;
@@ -409,8 +405,6 @@ Hists(ctx, dirname){
     std::string s_name_dy_d2 = ss_name_dy_d2.str();
     std::string s_name_sigma_1 = ss_name_sigma_1.str();
     std::string s_name_sigma_2 = ss_name_sigma_2.str();
-    std::string s_name_delta_1 = ss_name_delta_1.str();
-    std::string s_name_delta_2 = ss_name_delta_2.str();
     std::string s_name_xi    = ss_name_xi.str();
     std::string s_name_cos_theta1k_antiLep = ss_name_cos_theta1k_antiLep.str();
     std::string s_name_cos_theta1r_antiLep = ss_name_cos_theta1r_antiLep.str();
@@ -497,8 +491,6 @@ Hists(ctx, dirname){
     const char* char_name_dy_d2 = s_name_dy_d2.c_str();
     const char* char_name_sigma_1 = s_name_sigma_1.c_str();
     const char* char_name_sigma_2 = s_name_sigma_2.c_str();
-    const char* char_name_delta_1 = s_name_delta_1.c_str();
-    const char* char_name_delta_2 = s_name_delta_2.c_str();
     const char* char_name_cos_theta1k_antiLep = s_name_cos_theta1k_antiLep.c_str();
     const char* char_name_cos_theta1r_antiLep = s_name_cos_theta1r_antiLep.c_str();
     const char* char_name_cos_theta1n_antiLep = s_name_cos_theta1n_antiLep.c_str();
@@ -583,8 +575,6 @@ Hists(ctx, dirname){
     hist_names_dy_d2[i] = s_name_dy_d2;
     hist_names_sigma_1[i] = s_name_sigma_1;
     hist_names_sigma_2[i] = s_name_sigma_2;
-    hist_names_delta_1[i] = s_name_delta_1;
-    hist_names_delta_2[i] = s_name_delta_2;
     hist_names_xi[i]    = s_name_xi;
     hist_names_cos_theta1k_antiLep[i] = s_name_cos_theta1k_antiLep;
     hist_names_cos_theta1r_antiLep[i] = s_name_cos_theta1r_antiLep;
@@ -628,8 +618,6 @@ Hists(ctx, dirname){
     book<TH1F>(char_name_dy_d2, char_title_dy_d2,  2, -2.5, 2.5);
     book<TH1F>(char_name_sigma_1, char_title_sigma_1,  16, -3.2, 3.2);
     book<TH1F>(char_name_sigma_2, char_title_sigma_2,  16, -3.2, 3.2);
-    book<TH1F>(char_name_delta_1, char_title_delta_1,  16, -3.2, 3.2);
-    book<TH1F>(char_name_delta_2, char_title_delta_2,  16, -3.2, 3.2);
     book<TH1F>(s_name_xi.c_str(),    s_title_xi.c_str(),    /*nbins*/ 6,  -1.0,  1.0);
     book<TH1F>(char_name_cos_theta1k_antiLep, char_title_cos_theta1k_antiLep, 24, -1.0, 1.0);
     book<TH1F>(char_name_cos_theta1r_antiLep, char_title_cos_theta1r_antiLep, 24, -1.0, 1.0);
@@ -1217,8 +1205,6 @@ void ZprimeSemiLeptonicPDFHists::fill(const Event & event){
         const char* name_dy_d2 = hist_names_dy_d2[i].c_str();
         const char* name_sigma_1 = hist_names_sigma_1[i].c_str();
         const char* name_sigma_2 = hist_names_sigma_2[i].c_str();
-        const char* name_delta_1 = hist_names_delta_1[i].c_str();
-        const char* name_delta_2 = hist_names_delta_2[i].c_str();
         const char* name_cos_theta1k_antiLep = hist_names_cos_theta1k_antiLep[i].c_str();
         const char* name_cos_theta1r_antiLep = hist_names_cos_theta1r_antiLep[i].c_str();
         const char* name_cos_theta1n_antiLep = hist_names_cos_theta1n_antiLep[i].c_str();
@@ -1273,14 +1259,6 @@ void ZprimeSemiLeptonicPDFHists::fill(const Event & event){
         if (pt_hadTop > pt_hadTop_thresh && deltay >0){
           hist(name_sigma_1)->Fill(sphi,weight * pdf_weight / orig_weight);
           if (debug)cout <<" done with sigma 1" <<endl;
-        }
-        if (pt_hadTop > pt_hadTop_thresh && dphi <0){
-          hist(name_delta_2)->Fill(dphi,weight * pdf_weight / orig_weight);
-          if (debug)cout <<" done with delta 2" <<endl;
-        }
-        if (pt_hadTop > pt_hadTop_thresh && dphi >0){
-          hist(name_delta_1)->Fill(dphi,weight * pdf_weight / orig_weight);
-          if (debug)cout <<" done with delta 1" <<endl;
         }
         
         hist(name_cos_theta1k_antiLep)->Fill(cosTheta1k_antiLep, weight * pdf_weight / orig_weight);
