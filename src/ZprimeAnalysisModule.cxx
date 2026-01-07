@@ -764,6 +764,8 @@ bool ZprimeAnalysisModule::process(uhh2::Event& event){
   if(debug) cout << "Weights_TopMistag_SF: ok" << endl;
   fill_histograms(event, "Weights_TopMistag_SF");
   if(debug) cout << "TopMistag_SF filled" << endl;
+
+
   //Clean muon collection with ID based on muon pT
   double muon_pt_high(55.);
   bool muon_is_low = false;
@@ -773,12 +775,8 @@ bool ZprimeAnalysisModule::process(uhh2::Event& event){
     vector<Muon>* muons = event.muons;
     for(unsigned int i=0; i<muons->size(); i++){
       if(event.muons->at(i).pt()<muon_pt_high){
-        muon_is_low = true;
-      }
-      
-      else{
-        muon_is_high = true;
-      }
+        muon_is_low = true;}
+      else{muon_is_high = true;}
     }
   }
   sort_by_pt<Muon>(*event.muons);
@@ -804,6 +802,7 @@ bool ZprimeAnalysisModule::process(uhh2::Event& event){
     fill_histograms(event, "Muon1_Tot");
   }
 
+
   //Clean ele collection with ID based on ele pT
   double electron_pt_high(120.);
   bool ele_is_low = false;
@@ -814,11 +813,8 @@ bool ZprimeAnalysisModule::process(uhh2::Event& event){
     for(unsigned int i=0; i<electrons->size(); i++){
       if(abs(event.electrons->at(i).eta()) > 1.44 && abs(event.electrons->at(i).eta()) < 1.57) return false; // remove gap electrons in transition region between the barrel and endcaps of ECAL
       if(event.electrons->at(i).pt()<=electron_pt_high){
-        ele_is_low = true;
-      }
-      else{
-        ele_is_high = true;
-      }
+        ele_is_low = true;}
+      else{ele_is_high = true;}
     }
   }
   sort_by_pt<Electron>(*event.electrons);
@@ -1124,6 +1120,9 @@ bool ZprimeAnalysisModule::process(uhh2::Event& event){
   if(isMuon && isEleTriggerMeasurement && (muon_is_high || ele_is_high)){
     if(!TwoDCut_selection->passes(event)) return false;
   }
+
+
+
   if(debug) cout << "before matching" << endl;
   fill_histograms(event,"CHS_Before");
   if(debug) cout << "filled" << endl;

@@ -1638,6 +1638,9 @@ bool ZprimeAnalysisModule_applyNN::process(uhh2::Event& event){
   if(debug) cout << "Weights_TopTag_SF: ok" << endl;
   // fill_histograms(event, "Weights_TopTag_SF");
   if(isdeepAK8) sf_topmistag->process(event);
+
+
+
   double muon_pt_high(55.);
   bool muon_is_low = false;
   bool muon_is_high = false;
@@ -1646,10 +1649,8 @@ bool ZprimeAnalysisModule_applyNN::process(uhh2::Event& event){
     vector<Muon>* muons = event.muons;
     for(unsigned int i=0; i<muons->size(); i++){
       if(event.muons->at(i).pt()<=muon_pt_high){
-        muon_is_low = true;
-      }else{
-        muon_is_high = true;
-      }
+        muon_is_low = true;}
+      else{muon_is_high = true;}
     }
   }
   sort_by_pt<Muon>(*event.muons);
@@ -1662,10 +1663,8 @@ bool ZprimeAnalysisModule_applyNN::process(uhh2::Event& event){
     vector<Electron>* electrons = event.electrons;
     for(unsigned int i=0; i<electrons->size(); i++){
       if(event.electrons->at(i).pt()<=electron_pt_high){
-        ele_is_low = true;
-      }else{
-        ele_is_high = true;
-      }
+        ele_is_low = true;}
+      else{ele_is_high = true;}
     }
     if(debug && event_counter <= 5) cout << "[DEBUG] Finished looping over electrons" << endl;
   }
@@ -1685,13 +1684,9 @@ bool ZprimeAnalysisModule_applyNN::process(uhh2::Event& event){
   //   if (debug)cout <<"two d for ele"<<endl;
   //   if(!TwoDCut_selection_low1->passes(event)) return false;
   // }
-  
-  
   // fill_histograms(event, "TwoDCut_low1");
   
     
-
-  
   if(debug)  cout<<"done 2D low cut"<<endl;
 
 
@@ -1872,6 +1867,14 @@ bool ZprimeAnalysisModule_applyNN::process(uhh2::Event& event){
   ZprimeCandidate* BestZprimeCandidate = event.get(h_BestZprimeCandidateChi2);
   // bool is_zprime_reconstructed_chi2 = event.get(h_is_zprime_reconstructed_chi2); 
   float Mass_tt = BestZprimeCandidate->Zprime_v4().M();
+
+
+
+
+
+
+
+
 
   if(debug) cout << "starting DNN" << endl;
   //float Mttbar_reco =inv_mass(BestZprimeCandidate->BestZprimeCandidate->top_leptonic_v4()+BestZprimeCandidate->BestZprimeCandidate->top_hadronic_v4());
