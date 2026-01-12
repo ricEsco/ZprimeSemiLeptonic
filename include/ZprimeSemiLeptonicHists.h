@@ -50,6 +50,7 @@ protected:
   TH1F *Cnn, *Cnr, *Cnk, *Crn, *Crr, *Crk, *Ckn, *Ckr, *Ckk, *Crk_plus, *Crk_minus, *Cnr_plus, *Cnr_minus, *Cnk_plus, *Cnk_minus;
   TH1F *cHel, *cHel_Mtt300_400, *cHel_Mtt300_400_betaLT0p9;
   TH1F *cHel_P3n, *cHel_P3n_Mtt800_Inf, *cHel_P3n_Mtt800_Inf_cosThetaLT0p4;
+  TH1F *eventweight;
 
   TH1F *N_lep_charge;
   TH1F *TOP_20_001_ditopmass_Fig19, *TOP_20_001_ditopmass_Fig25;
