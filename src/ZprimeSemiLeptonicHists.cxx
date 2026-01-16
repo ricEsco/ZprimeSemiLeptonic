@@ -2212,6 +2212,11 @@ void ZprimeSemiLeptonicHists::fill(const Event & event){
     vector <float> jets_hadronic_bscores;                                            // bScores vector for resolved hadronic jets
     float pt_hadTop_thresh = 150;                                                    // Define cut-variable as pt of hadTop for low/high regions
     float pt_hadTop = BestZprimeCandidate->top_hadronic_v4().pt();                   // pT of hadronic-top jet
+    float btag_WP;                                                                   // see https://btv-wiki.docs.cern.ch/ScaleFactors/ for btag WP specs
+    if (isUL16preVFP) btag_WP = 0.2598;                                              // medium WP for UL16preVFP DeepJet
+    if (isUL16postVFP) btag_WP = 0.3657;                                             // medium WP for UL16postVFP DeepJet
+    if (isUL17) btag_WP = 0.3040;                                                    // medium WP for UL17 DeepJet
+    if (isUL18) btag_WP = 0.2783;                                                    // medium WP for UL18 DeepJet
 
     
     //-------------- Extracting highest b-tag score in Resolved topology, i.e. no top-tagged jet in event --------------//
@@ -2250,300 +2255,304 @@ void ZprimeSemiLeptonicHists::fill(const Event & event){
 
     //------------------------------------Define 4vectors of top quarks and spin analyzers------------------------------------//
     TLorentzVector had_top_b(0, 0, 0, 0); // b-jet 4-vector
-    // Resolved topology
-    if(!is_toptag_reconstruction){ // Define hadronic b-jet as hadronic AK4-jet with highest bscore
-      for(unsigned int i=0; i< BestZprimeCandidate->jets_hadronic().size(); i++){
-        float bscore = jets_hadronic_bscores.at(i);
-        if(bscore == bscore_max) had_top_b.SetPtEtaPhiE(BestZprimeCandidate->jets_hadronic().at(i).pt(), 
-                                                        BestZprimeCandidate->jets_hadronic().at(i).eta(), 
-                                                        BestZprimeCandidate->jets_hadronic().at(i).phi(), 
-                                                        BestZprimeCandidate->jets_hadronic().at(i).energy());
+    if(bscore_max >= btag_WP){
+      // Resolved topology
+      if(!is_toptag_reconstruction){ // Define hadronic b-jet as hadronic AK4-jet with highest bscore
+        for(unsigned int i=0; i< BestZprimeCandidate->jets_hadronic().size(); i++){
+          float bscore = jets_hadronic_bscores.at(i);
+          if(bscore == bscore_max) had_top_b.SetPtEtaPhiE(BestZprimeCandidate->jets_hadronic().at(i).pt(), 
+                                                          BestZprimeCandidate->jets_hadronic().at(i).eta(), 
+                                                          BestZprimeCandidate->jets_hadronic().at(i).phi(), 
+                                                          BestZprimeCandidate->jets_hadronic().at(i).energy());
+        }
       }
-    }
-    // Merged topology
-    if(is_toptag_reconstruction){ // Define hadronic b-jet as hadronic AK8-subjet with highest bscore
-      for(unsigned int j=0; j < BestZprimeCandidate->tophad_topjet_ptr()->subjets().size(); j++){
-        float bscore = BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).btag_DeepJet();
-        if(bscore == bscore_max) had_top_b.SetPtEtaPhiE(BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).pt(), 
-                                                        BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).eta(), 
-                                                        BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).phi(), 
-                                                        BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).energy());
+      // Merged topology
+      if(is_toptag_reconstruction){ // Define hadronic b-jet as hadronic AK8-subjet with highest bscore
+        for(unsigned int j=0; j < BestZprimeCandidate->tophad_topjet_ptr()->subjets().size(); j++){
+          float bscore = BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).btag_DeepJet();
+          if(bscore == bscore_max) had_top_b.SetPtEtaPhiE(BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).pt(), 
+                                                          BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).eta(), 
+                                                          BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).phi(), 
+                                                          BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).energy());
+        }
       }
-    }
+    
 
-    TLorentzVector lep_top_lep(0, 0, 0, 0); // Lepton 4-vector
-    LorentzVector lep = BestZprimeCandidate->lepton().v4();
-    lep_top_lep.SetPtEtaPhiE(lep.pt(), lep.eta(), lep.phi(), lep.E());
+      TLorentzVector lep_top_lep(0, 0, 0, 0); // Lepton 4-vector
+      LorentzVector lep = BestZprimeCandidate->lepton().v4();
+      lep_top_lep.SetPtEtaPhiE(lep.pt(), lep.eta(), lep.phi(), lep.E());
 
-    TLorentzVector PosTop(0, 0, 0, 0); // top quark 4vector
-    TLorentzVector NegTop(0, 0, 0, 0); // top antiquark 4vector
-    if(BestZprimeCandidate->lepton().charge() > 0){ // Positively charged Lepton => Positively charged top QUARK mother
-      PosTop.SetPtEtaPhiE(BestZprimeCandidate->top_leptonic_v4().pt(), 
-                          BestZprimeCandidate->top_leptonic_v4().eta(), 
-                          BestZprimeCandidate->top_leptonic_v4().phi(), 
-                          BestZprimeCandidate->top_leptonic_v4().energy());
-      NegTop.SetPtEtaPhiE(BestZprimeCandidate->top_hadronic_v4().pt(), 
-                          BestZprimeCandidate->top_hadronic_v4().eta(), 
-                          BestZprimeCandidate->top_hadronic_v4().phi(), 
-                          BestZprimeCandidate->top_hadronic_v4().energy());
-    }
-    else if (BestZprimeCandidate->lepton().charge() < 0){ // Negatively charged Lepton => Positively charged top ANTIQUARK mother
-      PosTop.SetPtEtaPhiE(BestZprimeCandidate->top_hadronic_v4().pt(), 
-                          BestZprimeCandidate->top_hadronic_v4().eta(), 
-                          BestZprimeCandidate->top_hadronic_v4().phi(), 
-                          BestZprimeCandidate->top_hadronic_v4().energy());
-      NegTop.SetPtEtaPhiE(BestZprimeCandidate->top_leptonic_v4().pt(), 
-                          BestZprimeCandidate->top_leptonic_v4().eta(), 
-                          BestZprimeCandidate->top_leptonic_v4().phi(), 
-                          BestZprimeCandidate->top_leptonic_v4().energy());
-    }
-    TLorentzVector ttbar = PosTop + NegTop; // ttbar 4vector
-    float beta = TMath::Abs(PosTop.Pz() + NegTop.Pz()) / (PosTop.E() + NegTop.E()); // relativistic beta of ttbar system in lab-frame
-    beta_ttbar->Fill(beta, weight);
-
-
-    //--------- Boost into ttbar CoM-Frame ---------//
-    // Center of Mass frame copies of 4vectors
-    TLorentzVector PosTop_CoM = PosTop;
-    TLorentzVector NegTop_CoM = NegTop;
-    TLorentzVector lep_top_lep_CoM = lep_top_lep;
-    TLorentzVector had_top_b_CoM = had_top_b;
-    // Boost with negative of ttbar boost vector
-    PosTop_CoM.Boost(-1*ttbar.BoostVector());
-    NegTop_CoM.Boost(-1*ttbar.BoostVector());
-    lep_top_lep_CoM.Boost(-1*ttbar.BoostVector());
-    had_top_b_CoM.Boost(-1*ttbar.BoostVector());
+      TLorentzVector PosTop(0, 0, 0, 0); // top quark 4vector
+      TLorentzVector NegTop(0, 0, 0, 0); // top antiquark 4vector
+      if(BestZprimeCandidate->lepton().charge() > 0){ // Positively charged Lepton => Positively charged top QUARK mother
+        PosTop.SetPtEtaPhiE(BestZprimeCandidate->top_leptonic_v4().pt(), 
+                            BestZprimeCandidate->top_leptonic_v4().eta(), 
+                            BestZprimeCandidate->top_leptonic_v4().phi(), 
+                            BestZprimeCandidate->top_leptonic_v4().energy());
+        NegTop.SetPtEtaPhiE(BestZprimeCandidate->top_hadronic_v4().pt(), 
+                            BestZprimeCandidate->top_hadronic_v4().eta(), 
+                            BestZprimeCandidate->top_hadronic_v4().phi(), 
+                            BestZprimeCandidate->top_hadronic_v4().energy());
+      }
+      else if (BestZprimeCandidate->lepton().charge() < 0){ // Negatively charged Lepton => Positively charged top ANTIQUARK mother
+        PosTop.SetPtEtaPhiE(BestZprimeCandidate->top_hadronic_v4().pt(), 
+                            BestZprimeCandidate->top_hadronic_v4().eta(), 
+                            BestZprimeCandidate->top_hadronic_v4().phi(), 
+                            BestZprimeCandidate->top_hadronic_v4().energy());
+        NegTop.SetPtEtaPhiE(BestZprimeCandidate->top_leptonic_v4().pt(), 
+                            BestZprimeCandidate->top_leptonic_v4().eta(), 
+                            BestZprimeCandidate->top_leptonic_v4().phi(), 
+                            BestZprimeCandidate->top_leptonic_v4().energy());
+      }
+      TLorentzVector ttbar = PosTop + NegTop; // ttbar 4vector
+      float beta = TMath::Abs(PosTop.Pz() + NegTop.Pz()) / (PosTop.E() + NegTop.E()); // relativistic beta of ttbar system in lab-frame
+      beta_ttbar->Fill(beta, weight);
 
 
-    //-------------------------------------------------------------- Build Bernreuther basis --------------------------------------------------------------//
-    // Required axes from CoM frame
-    TVector3 beam_axis(0,0,1);                                                                      // Beam unit vector
-    TVector3 k_axis = PosTop_CoM.Vect().Unit();                                                     // direction of top quark momentum in ttbar CoM frame
-    double cos_PosTop_beam = PosTop_CoM.Vect().Unit().Dot(beam_axis);                               // Cosine of scattering angle, "y" in Bernreuther et al.
-    double abs_sin_PosTop_beam = sqrt(1 - cos_PosTop_beam*cos_PosTop_beam);                         // Sine of scattering angle,   "r" in Bernreuther et al.
-    TVector3 r_axis = ( (1./abs_sin_PosTop_beam) * (beam_axis - cos_PosTop_beam * k_axis) ).Unit(); // orthogonal to k_axis and lies in production plane
-    TVector3 n_axis = ( (1./abs_sin_PosTop_beam) * beam_axis.Cross(k_axis) ).Unit();                // orthogonal to production plane
-    double sign_cos_PosTop_beam = (cos_PosTop_beam > 0.) ? 1. : -1.;                                // Bose symmetry factor
-    double sign_rapidity = (dyreco > 0.) ? 1. : -1.;                                                // Charge asymmetry (in lab-frame) factor
+      //--------- Boost into ttbar CoM-Frame ---------//
+      // Center of Mass frame copies of 4vectors
+      TLorentzVector PosTop_CoM = PosTop;
+      TLorentzVector NegTop_CoM = NegTop;
+      TLorentzVector lep_top_lep_CoM = lep_top_lep;
+      TLorentzVector had_top_b_CoM = had_top_b;
+      // Boost with negative of ttbar boost vector
+      PosTop_CoM.Boost(-1*ttbar.BoostVector());
+      NegTop_CoM.Boost(-1*ttbar.BoostVector());
+      lep_top_lep_CoM.Boost(-1*ttbar.BoostVector());
+      had_top_b_CoM.Boost(-1*ttbar.BoostVector());
 
-    // Basis vectors
-    TVector3 kbase = k_axis;
-    TVector3 rbase = sign_cos_PosTop_beam * r_axis;
-    TVector3 nbase = sign_cos_PosTop_beam * n_axis;
-    // CA-corrected basis vectors
-    TVector3 kStar = sign_rapidity * k_axis;
-    TVector3 rStar = sign_rapidity * sign_cos_PosTop_beam * r_axis;
+
+      //-------------------------------------------------------------- Build Bernreuther basis --------------------------------------------------------------//
+      // Required axes from CoM frame
+      TVector3 beam_axis(0,0,1);                                                                      // Beam unit vector
+      TVector3 k_axis = PosTop_CoM.Vect().Unit();                                                     // direction of top quark momentum in ttbar CoM frame
+      double cos_PosTop_beam = PosTop_CoM.Vect().Unit().Dot(beam_axis);                               // Cosine of scattering angle, "y" in Bernreuther et al.
+      double abs_sin_PosTop_beam = sqrt(1 - cos_PosTop_beam*cos_PosTop_beam);                         // Sine of scattering angle,   "r" in Bernreuther et al.
+      TVector3 r_axis = ( (1./abs_sin_PosTop_beam) * (beam_axis - cos_PosTop_beam * k_axis) ).Unit(); // orthogonal to k_axis and lies in production plane
+      TVector3 n_axis = ( (1./abs_sin_PosTop_beam) * beam_axis.Cross(k_axis) ).Unit();                // orthogonal to production plane
+      double sign_cos_PosTop_beam = (cos_PosTop_beam > 0.) ? 1. : -1.;                                // Bose symmetry factor
+      double sign_rapidity = (dyreco > 0.) ? 1. : -1.;                                                // Charge asymmetry (in lab-frame) factor
+
+      // Basis vectors
+      TVector3 kbase = k_axis;
+      TVector3 rbase = sign_cos_PosTop_beam * r_axis;
+      TVector3 nbase = sign_cos_PosTop_beam * n_axis;
+      // CA-corrected basis vectors
+      TVector3 kStar = sign_rapidity * k_axis;
+      TVector3 rStar = sign_rapidity * sign_cos_PosTop_beam * r_axis;
+
+      
+      //------------------- Boost spin-analyzers into top quark Rest-Frames -------------------//
+      TLorentzVector lep_top_lep_Rest = lep_top_lep_CoM;
+      TLorentzVector had_top_b_Rest   = had_top_b_CoM;
+      
+      // Mother depends on lepton charge
+      if(BestZprimeCandidate->lepton().charge() > 0){
+        lep_top_lep_Rest.Boost(-1.*PosTop_CoM.BoostVector()); // lepton has Positive Top mother
+        had_top_b_Rest.Boost(-1.*NegTop_CoM.BoostVector());   // b-jet has Negative Top mother
+      }
+      else if (BestZprimeCandidate->lepton().charge() < 0){
+        lep_top_lep_Rest.Boost(-1.*NegTop_CoM.BoostVector()); // lepton has Negative Top mother
+        had_top_b_Rest.Boost(-1.*PosTop_CoM.BoostVector());   // b-jet has Positive Top mother
+      }
 
     
-    //------------------- Boost spin-analyzers into top quark Rest-Frames -------------------//
-    TLorentzVector lep_top_lep_Rest = lep_top_lep_CoM;
-    TLorentzVector had_top_b_Rest   = had_top_b_CoM;
-    
-    // Mother depends on lepton charge
-    if(BestZprimeCandidate->lepton().charge() > 0){
-      lep_top_lep_Rest.Boost(-1.*PosTop_CoM.BoostVector()); // lepton has Positive Top mother
-      had_top_b_Rest.Boost(-1.*NegTop_CoM.BoostVector());   // b-jet has Negative Top mother
-    }
-    else if (BestZprimeCandidate->lepton().charge() < 0){
-      lep_top_lep_Rest.Boost(-1.*NegTop_CoM.BoostVector()); // lepton has Negative Top mother
-      had_top_b_Rest.Boost(-1.*PosTop_CoM.BoostVector());   // b-jet has Positive Top mother
-    }
+      //------------------------------------------- Spin Correlation variables -------------------------------------------//
+      float cosTheta1k_antiLep = 99.;
+      float cosTheta1r_antiLep = 99.;
+      float cosTheta1n_antiLep = 99.;
+      float cosTheta1kStar_antiLep = 99.;
+      float cosTheta1rStar_antiLep = 99.;
+      float cosTheta1k = 99.;
+      float cosTheta1r = 99.;
+      float cosTheta1n = 99.;
+      float cosTheta1kStar = 99.;
+      float cosTheta1rStar = 99.;
+      
+      float cosTheta2k_Lep = 99.;
+      float cosTheta2r_Lep = 99.;
+      float cosTheta2n_Lep = 99.;
+      float cosTheta2kStar_Lep = 99.;
+      float cosTheta2rStar_Lep = 99.;
+      float cosTheta2k = 99.;
+      float cosTheta2r = 99.;
+      float cosTheta2n = 99.;
+      float cosTheta2kStar = 99.;
+      float cosTheta2rStar = 99.;
 
-  
-    //------------------------------------------- Spin Correlation variables -------------------------------------------//
-    float cosTheta1k_antiLep = 99.;
-    float cosTheta1r_antiLep = 99.;
-    float cosTheta1n_antiLep = 99.;
-    float cosTheta1kStar_antiLep = 99.;
-    float cosTheta1rStar_antiLep = 99.;
-    float cosTheta1k = 99.;
-    float cosTheta1r = 99.;
-    float cosTheta1n = 99.;
-    float cosTheta1kStar = 99.;
-    float cosTheta1rStar = 99.;
-    
-    float cosTheta2k_Lep = 99.;
-    float cosTheta2r_Lep = 99.;
-    float cosTheta2n_Lep = 99.;
-    float cosTheta2kStar_Lep = 99.;
-    float cosTheta2rStar_Lep = 99.;
-    float cosTheta2k = 99.;
-    float cosTheta2r = 99.;
-    float cosTheta2n = 99.;
-    float cosTheta2kStar = 99.;
-    float cosTheta2rStar = 99.;
+      float CHel = 99.;
+      float CHel_P3n = 99.;
 
-    float CHel = 99.;
-    float CHel_P3n = 99.;
+      // Use only leptons as spin-analyzers
+      if(BestZprimeCandidate->lepton().charge() > 0){
+        // anti-lepton is spin-analyzer for top
+        cosTheta1k_antiLep = lep_top_lep_Rest.Vect().Unit().Dot(kbase);
+        cosTheta1r_antiLep = lep_top_lep_Rest.Vect().Unit().Dot(rbase);
+        cosTheta1n_antiLep = lep_top_lep_Rest.Vect().Unit().Dot(nbase);
+        cosTheta1kStar_antiLep = lep_top_lep_Rest.Vect().Unit().Dot(kStar);
+        cosTheta1rStar_antiLep = lep_top_lep_Rest.Vect().Unit().Dot(rStar);
+      }
+      else if (BestZprimeCandidate->lepton().charge() < 0){
+        // lepton is spin-analyzer for antitop
+        cosTheta2k_Lep = lep_top_lep_Rest.Vect().Unit().Dot(kbase);
+        cosTheta2r_Lep = lep_top_lep_Rest.Vect().Unit().Dot(rbase);
+        cosTheta2n_Lep = lep_top_lep_Rest.Vect().Unit().Dot(nbase);
+        cosTheta2kStar_Lep = lep_top_lep_Rest.Vect().Unit().Dot(kStar);
+        cosTheta2rStar_Lep = lep_top_lep_Rest.Vect().Unit().Dot(rStar);
+      }
+      // top polarization via anti-leptons only
+      cos_theta1k_antiLep->Fill(cosTheta1k_antiLep, weight);
+      cos_theta1r_antiLep->Fill(cosTheta1r_antiLep, weight);
+      cos_theta1n_antiLep->Fill(cosTheta1n_antiLep, weight);
+      cos_theta1kStar_antiLep->Fill(cosTheta1kStar_antiLep, weight);
+      cos_theta1rStar_antiLep->Fill(cosTheta1rStar_antiLep, weight);
+      // antitop polarization via leptons only
+      cos_theta2k_Lep->Fill(cosTheta2k_Lep, weight);
+      cos_theta2r_Lep->Fill(cosTheta2r_Lep, weight);
+      cos_theta2n_Lep->Fill(cosTheta2n_Lep, weight);
+      cos_theta2kStar_Lep->Fill(cosTheta2kStar_Lep, weight);
+      cos_theta2rStar_Lep->Fill(cosTheta2rStar_Lep, weight);
 
-    // Use only leptons as spin-analyzers
-    if(BestZprimeCandidate->lepton().charge() > 0){
-      // anti-lepton is spin-analyzer for top
-      cosTheta1k_antiLep = lep_top_lep_Rest.Vect().Unit().Dot(kbase);
-      cosTheta1r_antiLep = lep_top_lep_Rest.Vect().Unit().Dot(rbase);
-      cosTheta1n_antiLep = lep_top_lep_Rest.Vect().Unit().Dot(nbase);
-      cosTheta1kStar_antiLep = lep_top_lep_Rest.Vect().Unit().Dot(kStar);
-      cosTheta1rStar_antiLep = lep_top_lep_Rest.Vect().Unit().Dot(rStar);
-    }
-    else if (BestZprimeCandidate->lepton().charge() < 0){
-      // lepton is spin-analyzer for antitop
-      cosTheta2k_Lep = lep_top_lep_Rest.Vect().Unit().Dot(kbase);
-      cosTheta2r_Lep = lep_top_lep_Rest.Vect().Unit().Dot(rbase);
-      cosTheta2n_Lep = lep_top_lep_Rest.Vect().Unit().Dot(nbase);
-      cosTheta2kStar_Lep = lep_top_lep_Rest.Vect().Unit().Dot(kStar);
-      cosTheta2rStar_Lep = lep_top_lep_Rest.Vect().Unit().Dot(rStar);
-    }
-    // top polarization via anti-leptons only
-    cos_theta1k_antiLep->Fill(cosTheta1k_antiLep, weight);
-    cos_theta1r_antiLep->Fill(cosTheta1r_antiLep, weight);
-    cos_theta1n_antiLep->Fill(cosTheta1n_antiLep, weight);
-    cos_theta1kStar_antiLep->Fill(cosTheta1kStar_antiLep, weight);
-    cos_theta1rStar_antiLep->Fill(cosTheta1rStar_antiLep, weight);
-    // antitop polarization via leptons only
-    cos_theta2k_Lep->Fill(cosTheta2k_Lep, weight);
-    cos_theta2r_Lep->Fill(cosTheta2r_Lep, weight);
-    cos_theta2n_Lep->Fill(cosTheta2n_Lep, weight);
-    cos_theta2kStar_Lep->Fill(cosTheta2kStar_Lep, weight);
-    cos_theta2rStar_Lep->Fill(cosTheta2rStar_Lep, weight);
+      // Assign spin-analyzers depending on lepton charge
+      if(BestZprimeCandidate->lepton().charge() > 0){
+        // top quark spin-analyzer is lepton
+        cosTheta1k = lep_top_lep_Rest.Vect().Unit().Dot(kbase);
+        cosTheta1r = lep_top_lep_Rest.Vect().Unit().Dot(rbase);
+        cosTheta1n = lep_top_lep_Rest.Vect().Unit().Dot(nbase);
+        cosTheta1kStar = lep_top_lep_Rest.Vect().Unit().Dot(kStar);
+        cosTheta1rStar = lep_top_lep_Rest.Vect().Unit().Dot(rStar);
+        // antitop spin-analyzer is b-jet
+        cosTheta2k = had_top_b_Rest.Vect().Unit().Dot(kbase);
+        cosTheta2r = had_top_b_Rest.Vect().Unit().Dot(rbase);
+        cosTheta2n = had_top_b_Rest.Vect().Unit().Dot(nbase);
+        cosTheta2kStar = had_top_b_Rest.Vect().Unit().Dot(kStar);
+        cosTheta2rStar = had_top_b_Rest.Vect().Unit().Dot(rStar);
+      }
+      else if (BestZprimeCandidate->lepton().charge() < 0){
+        // top quark spin-analyzer is b-jet
+        cosTheta1k = had_top_b_Rest.Vect().Unit().Dot(kbase);
+        cosTheta1r = had_top_b_Rest.Vect().Unit().Dot(rbase);
+        cosTheta1n = had_top_b_Rest.Vect().Unit().Dot(nbase);
+        cosTheta1kStar = had_top_b_Rest.Vect().Unit().Dot(kStar);
+        cosTheta1rStar = had_top_b_Rest.Vect().Unit().Dot(rStar);
+        // antitop spin-analyzer is lepton
+        cosTheta2k = lep_top_lep_Rest.Vect().Unit().Dot(kbase);
+        cosTheta2r = lep_top_lep_Rest.Vect().Unit().Dot(rbase);
+        cosTheta2n = lep_top_lep_Rest.Vect().Unit().Dot(nbase);
+        cosTheta2kStar = lep_top_lep_Rest.Vect().Unit().Dot(kStar);
+        cosTheta2rStar = lep_top_lep_Rest.Vect().Unit().Dot(rStar);
+      }
+      // top daughter polarizations
+      cos_theta1k->Fill(cosTheta1k, weight);
+      cos_theta1r->Fill(cosTheta1r, weight);
+      cos_theta1n->Fill(cosTheta1n, weight);
+      cos_theta1kStar->Fill(cosTheta1kStar, weight);
+      cos_theta1rStar->Fill(cosTheta1rStar, weight);
+      // antitop daughter polarizations
+      cos_theta2k->Fill(cosTheta2k, weight);
+      cos_theta2r->Fill(cosTheta2r, weight);
+      cos_theta2n->Fill(cosTheta2n, weight);
+      cos_theta2kStar->Fill(cosTheta2kStar, weight);
+      cos_theta2rStar->Fill(cosTheta2rStar, weight);
 
-    // Assign spin-analyzers depending on lepton charge
-    if(BestZprimeCandidate->lepton().charge() > 0){
-      // top quark spin-analyzer is lepton
-      cosTheta1k = lep_top_lep_Rest.Vect().Unit().Dot(kbase);
-      cosTheta1r = lep_top_lep_Rest.Vect().Unit().Dot(rbase);
-      cosTheta1n = lep_top_lep_Rest.Vect().Unit().Dot(nbase);
-      cosTheta1kStar = lep_top_lep_Rest.Vect().Unit().Dot(kStar);
-      cosTheta1rStar = lep_top_lep_Rest.Vect().Unit().Dot(rStar);
-      // antitop spin-analyzer is b-jet
-      cosTheta2k = had_top_b_Rest.Vect().Unit().Dot(kbase);
-      cosTheta2r = had_top_b_Rest.Vect().Unit().Dot(rbase);
-      cosTheta2n = had_top_b_Rest.Vect().Unit().Dot(nbase);
-      cosTheta2kStar = had_top_b_Rest.Vect().Unit().Dot(kStar);
-      cosTheta2rStar = had_top_b_Rest.Vect().Unit().Dot(rStar);
-    }
-    else if (BestZprimeCandidate->lepton().charge() < 0){
-      // top quark spin-analyzer is b-jet
-      cosTheta1k = had_top_b_Rest.Vect().Unit().Dot(kbase);
-      cosTheta1r = had_top_b_Rest.Vect().Unit().Dot(rbase);
-      cosTheta1n = had_top_b_Rest.Vect().Unit().Dot(nbase);
-      cosTheta1kStar = had_top_b_Rest.Vect().Unit().Dot(kStar);
-      cosTheta1rStar = had_top_b_Rest.Vect().Unit().Dot(rStar);
-      // antitop spin-analyzer is lepton
-      cosTheta2k = lep_top_lep_Rest.Vect().Unit().Dot(kbase);
-      cosTheta2r = lep_top_lep_Rest.Vect().Unit().Dot(rbase);
-      cosTheta2n = lep_top_lep_Rest.Vect().Unit().Dot(nbase);
-      cosTheta2kStar = lep_top_lep_Rest.Vect().Unit().Dot(kStar);
-      cosTheta2rStar = lep_top_lep_Rest.Vect().Unit().Dot(rStar);
-    }
-    // top daughter polarizations
-    cos_theta1k->Fill(cosTheta1k, weight);
-    cos_theta1r->Fill(cosTheta1r, weight);
-    cos_theta1n->Fill(cosTheta1n, weight);
-    cos_theta1kStar->Fill(cosTheta1kStar, weight);
-    cos_theta1rStar->Fill(cosTheta1rStar, weight);
-    // antitop daughter polarizations
-    cos_theta2k->Fill(cosTheta2k, weight);
-    cos_theta2r->Fill(cosTheta2r, weight);
-    cos_theta2n->Fill(cosTheta2n, weight);
-    cos_theta2kStar->Fill(cosTheta2kStar, weight);
-    cos_theta2rStar->Fill(cosTheta2rStar, weight);
+      // correlation matrix elements
+      Cnn->Fill(cosTheta1n * cosTheta2n, weight);
+      Cnr->Fill(cosTheta1n * cosTheta2r, weight);
+      Cnk->Fill(cosTheta1n * cosTheta2k, weight);
+      Crn->Fill(cosTheta1r * cosTheta2n, weight);
+      Crr->Fill(cosTheta1r * cosTheta2r, weight);
+      Crk->Fill(cosTheta1r * cosTheta2k, weight);
+      Ckn->Fill(cosTheta1k * cosTheta2n, weight);
+      Ckr->Fill(cosTheta1k * cosTheta2r, weight);
+      Ckk->Fill(cosTheta1k * cosTheta2k, weight);
+      // sum and differences of cross correlations
+      Crk_plus->Fill(cosTheta1r * cosTheta2k + cosTheta1k * cosTheta2r, weight);
+      Crk_minus->Fill(cosTheta1r * cosTheta2k - cosTheta1k * cosTheta2r, weight);
+      Cnr_plus->Fill(cosTheta1n * cosTheta2r + cosTheta1r * cosTheta2n, weight);
+      Cnr_minus->Fill(cosTheta1n * cosTheta2r - cosTheta1r * cosTheta2n, weight);
+      Cnk_plus->Fill(cosTheta1n * cosTheta2k + cosTheta1k * cosTheta2n, weight);
+      Cnk_minus->Fill(cosTheta1n * cosTheta2k - cosTheta1k * cosTheta2n, weight);
 
-    // correlation matrix elements
-    Cnn->Fill(cosTheta1n * cosTheta2n, weight);
-    Cnr->Fill(cosTheta1n * cosTheta2r, weight);
-    Cnk->Fill(cosTheta1n * cosTheta2k, weight);
-    Crn->Fill(cosTheta1r * cosTheta2n, weight);
-    Crr->Fill(cosTheta1r * cosTheta2r, weight);
-    Crk->Fill(cosTheta1r * cosTheta2k, weight);
-    Ckn->Fill(cosTheta1k * cosTheta2n, weight);
-    Ckr->Fill(cosTheta1k * cosTheta2r, weight);
-    Ckk->Fill(cosTheta1k * cosTheta2k, weight);
-    // sum and differences of cross correlations
-    Crk_plus->Fill(cosTheta1r * cosTheta2k + cosTheta1k * cosTheta2r, weight);
-    Crk_minus->Fill(cosTheta1r * cosTheta2k - cosTheta1k * cosTheta2r, weight);
-    Cnr_plus->Fill(cosTheta1n * cosTheta2r + cosTheta1r * cosTheta2n, weight);
-    Cnr_minus->Fill(cosTheta1n * cosTheta2r - cosTheta1r * cosTheta2n, weight);
-    Cnk_plus->Fill(cosTheta1n * cosTheta2k + cosTheta1k * cosTheta2n, weight);
-    Cnk_minus->Fill(cosTheta1n * cosTheta2k - cosTheta1k * cosTheta2n, weight);
+      // entanglement variables
+      CHel = lep_top_lep_Rest.Vect().Unit().Dot(had_top_b_Rest.Vect().Unit());
+      CHel_P3n = cosTheta1k * cosTheta2k + cosTheta1r * cosTheta2r - cosTheta1n * cosTheta2n;
+      cHel->Fill(CHel, weight);
+      cHel_P3n->Fill(CHel_P3n, weight);
 
-    // entanglement variables
-    CHel = lep_top_lep_Rest.Vect().Unit().Dot(had_top_b_Rest.Vect().Unit());
-    CHel_P3n = cosTheta1k * cosTheta2k + cosTheta1r * cosTheta2r - cosTheta1n * cosTheta2n;
-    cHel->Fill(CHel, weight);
-    cHel_P3n->Fill(CHel_P3n, weight);
+      // near-threshold
+      if(ttbar.M() < 400.){cHel_Mtt300_400->Fill(CHel, weight);
+        // near-threshold and "slow"
+        if(beta < 0.9){cHel_Mtt300_400_betaLT0p9->Fill(CHel, weight);}
+      }
 
-    // near-threshold
-    if(ttbar.M() < 400.){cHel_Mtt300_400->Fill(CHel, weight);
-      // near-threshold and "slow"
-      if(beta < 0.9){cHel_Mtt300_400_betaLT0p9->Fill(CHel, weight);}
-    }
+      // boosted
+      if(ttbar.M() > 800.){cHel_P3n_Mtt800_Inf->Fill(CHel_P3n, weight);
+        // boosted and central
+        if(TMath::Abs(cos_PosTop_beam) < 0.4){cHel_P3n_Mtt800_Inf_cosThetaLT0p4->Fill(CHel_P3n, weight);}
+      }
 
-    // boosted
-    if(ttbar.M() > 800.){cHel_P3n_Mtt800_Inf->Fill(CHel_P3n, weight);
-      // boosted and central
-      if(TMath::Abs(cos_PosTop_beam) < 0.4){cHel_P3n_Mtt800_Inf_cosThetaLT0p4->Fill(CHel_P3n, weight);}
-    }
+      // Baumgart et al. angles depend on phi wrt Bernreuther nbase
+      float lep_top_lep_phi = atan2(lep_top_lep_Rest.Vect().Unit().Dot(rbase), lep_top_lep_Rest.Vect().Unit().Dot(nbase));
+      float had_top_b_phi   = atan2(had_top_b_Rest.Vect().Unit().Dot(rbase),   had_top_b_Rest.Vect().Unit().Dot(nbase));
 
-    // Baumgart et al. angles depend on phi wrt Bernreuther nbase
-    float lep_top_lep_phi = atan2(lep_top_lep_Rest.Vect().Unit().Dot(rbase), lep_top_lep_Rest.Vect().Unit().Dot(nbase));
-    float had_top_b_phi   = atan2(had_top_b_Rest.Vect().Unit().Dot(rbase),   had_top_b_Rest.Vect().Unit().Dot(nbase));
+      // sphi and dphi = PosTopDecayProd_phi +- NegTopDecayProd_phi
+      float sphi = lep_top_lep_phi + had_top_b_phi;   // sum is independent of order
+      float dphi = -99.;                              // initialize with dummy value
+      if(BestZprimeCandidate->lepton().charge() > 0){ // lepton is Positive Top's Decay Product
+        dphi = lep_top_lep_phi - had_top_b_phi;
+      }
+      if(BestZprimeCandidate->lepton().charge() < 0){ // b-jet is Positive Top's Decay Product
+        dphi = had_top_b_phi - lep_top_lep_phi;
+      }
+      
+      // Map back into original domain if necessary
+      if(sphi > TMath::Pi()) sphi = sphi - 2*TMath::Pi();
+      if(sphi < -TMath::Pi()) sphi = sphi + 2*TMath::Pi();
+      if(dphi > TMath::Pi()) dphi = dphi - 2*TMath::Pi();
+      if(dphi < -TMath::Pi()) dphi = dphi + 2*TMath::Pi();
+      Sigma_phi->Fill(sphi, weight);
+      Delta_phi->Fill(dphi, weight);
 
-    // sphi and dphi = PosTopDecayProd_phi +- NegTopDecayProd_phi
-    float sphi = lep_top_lep_phi + had_top_b_phi;   // sum is independent of order
-    float dphi = -99.;                              // initialize with dummy value
-    if(BestZprimeCandidate->lepton().charge() > 0){ // lepton is Positive Top's Decay Product
-      dphi = lep_top_lep_phi - had_top_b_phi;
-    }
-    if(BestZprimeCandidate->lepton().charge() < 0){ // b-jet is Positive Top's Decay Product
-      dphi = had_top_b_phi - lep_top_lep_phi;
-    }
-    
-    // Map back into original domain if necessary
-    if(sphi > TMath::Pi()) sphi = sphi - 2*TMath::Pi();
-    if(sphi < -TMath::Pi()) sphi = sphi + 2*TMath::Pi();
-    if(dphi > TMath::Pi()) dphi = dphi - 2*TMath::Pi();
-    if(dphi < -TMath::Pi()) dphi = dphi + 2*TMath::Pi();
-    Sigma_phi->Fill(sphi, weight);
-    Delta_phi->Fill(dphi, weight);
+      // Plot dphi and sphi for high-pt range && positive dy_reco
+      if(pt_hadTop > pt_hadTop_thresh && dyreco >0){
+        Sigma_phi_1->Fill(sphi, weight);
+        Delta_phi_1->Fill(dphi, weight);
+      }
+      // Plot dphi and sphi for high-pt range && negative dy_reco
+      if(pt_hadTop > pt_hadTop_thresh && dyreco <0){
+        Sigma_phi_2->Fill(sphi, weight);
+        Delta_phi_2->Fill(dphi, weight);
+      }
+      // Plot dy_reco for low-pt ranges && positive sphi
+      if(pt_hadTop < pt_hadTop_thresh && sphi >0){
+        DeltaY_reco_s1->Fill(dyreco, weight);
+      }
+      // Plot dy_reco for low-pt ranges && negative sphi
+      if(pt_hadTop < pt_hadTop_thresh && sphi <0){
+        DeltaY_reco_s2->Fill(dyreco, weight);
+      }
+      // Plot dy_reco for low-pt ranges && positive dphi
+      if(pt_hadTop < pt_hadTop_thresh && dphi >0){
+        DeltaY_reco_d1->Fill(dyreco, weight);
+      }
+      // Plot dy_reco for low-pt ranges && negative dphi
+      if(pt_hadTop < pt_hadTop_thresh && dphi <0){
+        DeltaY_reco_d2->Fill(dyreco, weight);
+      }
 
-    // Plot dphi and sphi for high-pt range && positive dy_reco
-    if(pt_hadTop > pt_hadTop_thresh && dyreco >0){
-      Sigma_phi_1->Fill(sphi, weight);
-      Delta_phi_1->Fill(dphi, weight);
-    }
-    // Plot dphi and sphi for high-pt range && negative dy_reco
-    if(pt_hadTop > pt_hadTop_thresh && dyreco <0){
-      Sigma_phi_2->Fill(sphi, weight);
-      Delta_phi_2->Fill(dphi, weight);
-    }
-    // Plot dy_reco for low-pt ranges && positive sphi
-    if(pt_hadTop < pt_hadTop_thresh && sphi >0){
-      DeltaY_reco_s1->Fill(dyreco, weight);
-    }
-    // Plot dy_reco for low-pt ranges && negative sphi
-    if(pt_hadTop < pt_hadTop_thresh && sphi <0){
-      DeltaY_reco_s2->Fill(dyreco, weight);
-    }
-    // Plot dy_reco for low-pt ranges && positive dphi
-    if(pt_hadTop < pt_hadTop_thresh && dphi >0){
-      DeltaY_reco_d1->Fill(dyreco, weight);
-    }
-    // Plot dy_reco for low-pt ranges && negative dphi
-    if(pt_hadTop < pt_hadTop_thresh && dphi <0){
-      DeltaY_reco_d2->Fill(dyreco, weight);
-    }
+      // Plot all for high-pt ranges
+      if(pt_hadTop > pt_hadTop_thresh){
+        Sigma_phi_high->Fill(sphi, weight);
+        Delta_phi_high->Fill(dphi, weight);
+        DeltaY_reco_high->Fill(dyreco, weight);
+      }
+      // Plot all for low-pt ranges
+      if(pt_hadTop < pt_hadTop_thresh){
+        Sigma_phi_low->Fill(sphi, weight);
+        Delta_phi_low->Fill(dphi, weight);
+        DeltaY_reco_low->Fill(dyreco, weight);
+      }
 
-    // Plot all for high-pt ranges
-    if(pt_hadTop > pt_hadTop_thresh){
-      Sigma_phi_high->Fill(sphi, weight);
-      Delta_phi_high->Fill(dphi, weight);
-      DeltaY_reco_high->Fill(dyreco, weight);
-    }
-    // Plot all for low-pt ranges
-    if(pt_hadTop < pt_hadTop_thresh){
-      Sigma_phi_low->Fill(sphi, weight);
-      Delta_phi_low->Fill(dphi, weight);
-      DeltaY_reco_low->Fill(dyreco, weight);
     }
 
 
