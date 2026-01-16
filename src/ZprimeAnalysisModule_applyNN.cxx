@@ -268,18 +268,15 @@ void NeuralNetworkModule::CreateInputs(Event & event){
     }
     normfile.close();
   }
-
   NNInputs.push_back( tensorflow::Tensor(tensorflow::DT_FLOAT, {1, 59}));
 
   //Only Ele or Mu variables!! DON'T FORGET TO CHANGE!
-
   // /Muon
   // vector<uhh2::Event::Handle<float>> inputs = {h_Ak4_j1_E, h_Ak4_j1_deepjetbscore, h_Ak4_j1_eta, h_Ak4_j1_m, h_Ak4_j1_phi, h_Ak4_j1_pt, h_Ak4_j2_E, h_Ak4_j2_deepjetbscore, h_Ak4_j2_eta, h_Ak4_j2_m, h_Ak4_j2_phi, h_Ak4_j2_pt, h_Ak4_j3_E, h_Ak4_j3_deepjetbscore, h_Ak4_j3_eta, h_Ak4_j3_m, h_Ak4_j3_phi, h_Ak4_j3_pt, h_Ak4_j4_E, h_Ak4_j4_deepjetbscore, h_Ak4_j4_eta, h_Ak4_j4_m, h_Ak4_j4_phi, h_Ak4_j4_pt, h_Ak4_j5_E, h_Ak4_j5_deepjetbscore, h_Ak4_j5_eta, h_Ak4_j5_m, h_Ak4_j5_phi, h_Ak4_j5_pt, h_Ak8_j1_E, h_Ak8_j1_eta, h_Ak8_j1_mSD, h_Ak8_j1_phi, h_Ak8_j1_pt, h_Ak8_j1_tau21, h_Ak8_j1_tau32, h_Ak8_j2_E, h_Ak8_j2_eta, h_Ak8_j2_mSD, h_Ak8_j2_phi, h_Ak8_j2_pt, h_Ak8_j2_tau21, h_Ak8_j2_tau32, h_Ak8_j3_E, h_Ak8_j3_eta, h_Ak8_j3_mSD, h_Ak8_j3_phi, h_Ak8_j3_pt, h_Ak8_j3_tau21, h_Ak8_j3_tau32, h_MET_phi, h_MET_pt, h_Mu_E, h_Mu_eta, h_Mu_phi, h_Mu_pt, h_N_Ak4, h_N_Ak8}; // in alphabetical order to match NormInfo.txt
   //Electron
   vector<uhh2::Event::Handle<float>> inputs = {h_Ak4_j1_E, h_Ak4_j1_deepjetbscore, h_Ak4_j1_eta, h_Ak4_j1_m, h_Ak4_j1_phi, h_Ak4_j1_pt, h_Ak4_j2_E, h_Ak4_j2_deepjetbscore, h_Ak4_j2_eta, h_Ak4_j2_m, h_Ak4_j2_phi, h_Ak4_j2_pt, h_Ak4_j3_E, h_Ak4_j3_deepjetbscore, h_Ak4_j3_eta, h_Ak4_j3_m, h_Ak4_j3_phi, h_Ak4_j3_pt, h_Ak4_j4_E, h_Ak4_j4_deepjetbscore, h_Ak4_j4_eta, h_Ak4_j4_m, h_Ak4_j4_phi, h_Ak4_j4_pt, h_Ak4_j5_E, h_Ak4_j5_deepjetbscore, h_Ak4_j5_eta, h_Ak4_j5_m, h_Ak4_j5_phi, h_Ak4_j5_pt, h_Ak8_j1_E, h_Ak8_j1_eta, h_Ak8_j1_mSD, h_Ak8_j1_phi, h_Ak8_j1_pt, h_Ak8_j1_tau21, h_Ak8_j1_tau32, h_Ak8_j2_E, h_Ak8_j2_eta, h_Ak8_j2_mSD, h_Ak8_j2_phi, h_Ak8_j2_pt, h_Ak8_j2_tau21, h_Ak8_j2_tau32, h_Ak8_j3_E, h_Ak8_j3_eta, h_Ak8_j3_mSD, h_Ak8_j3_phi, h_Ak8_j3_pt, h_Ak8_j3_tau21, h_Ak8_j3_tau32, h_Ele_E, h_Ele_eta, h_Ele_phi, h_Ele_pt, h_MET_phi, h_MET_pt, h_N_Ak4, h_N_Ak8}; // in alphabetical order to match NormInfo.txt
   for(int i = 0; i < 59; ++i){
     // cout<<"looping over NN inputs "<< i <<endl;
-
     NNInputs.at(0).tensor<float, 2>()(0,i)  = (event.get(inputs.at(i))   - mean_val[i]) / (std_val[i]);
   }
   // cout <<"NNinputs size : "<< NNInputs.size()<< " Layer: "<<LayerInputs.size()<<endl;
@@ -791,7 +788,7 @@ ZprimeAnalysisModule_applyNN::ZprimeAnalysisModule_applyNN(uhh2::Context& ctx){
   VariablesEFTCR2_module.reset(new Variables_EFT_CR2(ctx, mode)); // variables for EFT CR2
 
 
- //  if(!isEleTriggerMeasurement) SystematicsModule.reset(new ZprimeSemiLeptonicSystematicsModule(ctx));
+  // if(!isEleTriggerMeasurement) SystematicsModule.reset(new ZprimeSemiLeptonicSystematicsModule(ctx));
 
   // Top Taggers
   TopTaggerHOTVR.reset(new HOTVRTopTagger(ctx));
@@ -1102,7 +1099,7 @@ ZprimeAnalysisModule_applyNN::ZprimeAnalysisModule_applyNN(uhh2::Context& ctx){
   "Weights_Init", 
   "Weights_HEM", "Weights_PU", "Weights_Lumi", "Weights_TopPt", "Weights_MCScale", "Weights_Prefiring", "Weights_PS", 
   "Weights_TopTag_SF", "Weights_TopMistag_SF",
-  "TwoDCut_low1","IdEle_SF", "IsoMuon_SF", "IdMuon_SF", "RecoEle_SF", "MuonReco_SF", "TriggerMuon_SF", 
+  "TwoDCut_Muon_low1", "IdEle_SF", "IsoMuon_SF", "IdMuon_SF", "RecoEle_SF", "MuonReco_SF", "TriggerMuon_SF", 
   "BeforeBtagSF", "AfterBtagSF", "AfterCustomBtagSF",
   "NLOCorrections",
   "TriggerEle_SF", 
@@ -1110,15 +1107,15 @@ ZprimeAnalysisModule_applyNN::ZprimeAnalysisModule_applyNN(uhh2::Context& ctx){
   "Chi2_passes", "Chi2_withTopTag", "Chi2_noTopTag", "Chi2_inverse",
   "TopTagVeto", "DeltaEtaCut",
   "AfterChi2", 
-  "DNN_output0","DNN_output0_nochi2", 
-  "SRevtwtcut_2000", "SRevtwtcut_1600", "SRevtwtcut_1400", "SRevtwtcut_1200", "SRevtwtcut_1000", "SRevtwtcut_650", "SRevtwtcut_450", "SRevtwtcut_100",
+  "DNN_output0_nochi2", "DNN_output0",
+  "SRevtwtcut_2000", "SRevtwtcut_1600", "SRevtwtcut_1400", "SRevtwtcut_1200", "SRevtwtcut_1000", "SRevtwtcut_650", "SRevtwtcut_450", "SRevtwtcut_100", "SRevtwtcut_2",
   "DNN_output0_TopTag", "DNN_output0_NoTopTag",
   "DNN_output1","DNN_output1_chi2",
   "DNN_output2","DNN_output2_chi2",
   // "DeltaY_reco_1500Inf_SR" ,"DeltaY_reco_1000_1500_SR" ,"DeltaY_reco_750_1000_SR" ,"DeltaY_reco_500_750_SR", "DeltaY_reco_0_350_SR", "DeltaY_reco_350_500_SR","DeltaY_reco_0_500_SR", "DeltaY_reco_0_700_SR", "DeltaY_reco_700_900_SR", "DeltaY_reco_900Inf_SR",
   // "DeltaY_reco_1500Inf_CR1" ,"DeltaY_reco_1000_1500_CR1" ,"DeltaY_reco_750_1000_CR1" ,"DeltaY_reco_500_750_CR1","DeltaY_reco_0_350_CR1", "DeltaY_reco_350_500_CR1", "DeltaY_reco_0_500_CR1","DeltaY_reco_0_700_CR1", "DeltaY_reco_700_900_CR1", "DeltaY_reco_900Inf_CR1", 
   // "DeltaY_reco_1500Inf_CR2" ,"DeltaY_reco_1000_1500_CR2" ,"DeltaY_reco_750_1000_CR2" ,"DeltaY_reco_500_750_CR2", "DeltaY_reco_0_350_CR2", "DeltaY_reco_350_500_CR2","DeltaY_reco_0_500_CR2", "DeltaY_reco_0_700_CR2", "DeltaY_reco_700_900_CR2", "DeltaY_reco_900Inf_CR2",
-};
+  };
 
   if(debug) cout << "[DEBUG] About to book histograms..." << endl;
   book_histograms(ctx, histogram_tags);
@@ -1894,66 +1891,79 @@ bool ZprimeAnalysisModule_applyNN::process(uhh2::Event& event){
       else{fill_histograms(event, "DNN_output0_NoTopTag");}
       // if(debug) cout << "done with output0" << endl;
 
+      // "SRevtwtcut_2000", "SRevtwtcut_1600", "SRevtwtcut_1400", "SRevtwtcut_1200", 
+      // "SRevtwtcut_1000", "SRevtwtcut_650", "SRevtwtcut_450", "SRevtwtcut_100", "SRevtwtcut_2"
+
+      if (event.weight < 2000.0) {fill_histograms(event, "SRevtwtcut_2000");}
+      if (event.weight < 1600.0) {fill_histograms(event, "SRevtwtcut_1600");}
+      if (event.weight < 1400.0) {fill_histograms(event, "SRevtwtcut_1400");}
+      if (event.weight < 1200.0) {fill_histograms(event, "SRevtwtcut_1200");}
+      if (event.weight < 1000.0) {fill_histograms(event, "SRevtwtcut_1000");}
+      if (event.weight < 650.0 ) {fill_histograms(event, "SRevtwtcut_650");}
+      if (event.weight < 450.0 ) {fill_histograms(event, "SRevtwtcut_450");}
+      if (event.weight < 100.0 ) {fill_histograms(event, "SRevtwtcut_100");}
+      if (event.weight < 2.0   ) {fill_histograms(event, "SRevtwtcut_2");}
+
     }//Chi2
   }//out0
 
 
   if( out1 == max_score ){
-  //   if(debug) cout << "inside ST node, about to process EFT vars" << endl;
-  //   VariablesEFTCR1_module->process(event);
+    //   if(debug) cout << "inside ST node, about to process EFT vars" << endl;
+    //   VariablesEFTCR1_module->process(event);
     fill_histograms(event, "DNN_output1");
-  //   if (debug)cout<<"processed CR1"<<endl;
+    //   if (debug)cout<<"processed CR1"<<endl;
 
-  //   if(Mass_tt>=0 && Mass_tt < 500){
-  //     fill_histograms(event, "DeltaY_reco_0_500_CR1");
-  //     //h_DeltaY_reco_SystVariations_0_500_CR1->fill(event);
-  //     // h_DeltaY_reco_PDFVariations_0_500_CR1->fill(event);  
-  //   }
-  //   if (Mass_tt>=0 && Mass_tt < 350){
-  //     fill_histograms(event, "DeltaY_reco_0_350_CR1");
-  //     //h_DeltaY_reco_SystVariations_0_350_CR1->fill(event);
-  //     // h_DeltaY_reco_PDFVariations_0_350_CR1->fill(event);
-  //   }
-  //   if(Mass_tt>=350 && Mass_tt < 500){
-  //     fill_histograms(event, "DeltaY_reco_350_500_CR1");
-  //     //h_DeltaY_reco_SystVariations_350_500_CR1->fill(event);
-  //     // h_DeltaY_reco_PDFVariations_350_500_CR1->fill(event);
-  //   }
-  //   if (Mass_tt>=0 && Mass_tt < 700){
-  //     fill_histograms(event, "DeltaY_reco_0_700_CR1");
-  //     //h_DeltaY_reco_SystVariations_0_700_CR1->fill(event);
-  //     // h_DeltaY_reco_PDFVariations_0_700_CR1->fill(event);
-  //   }
-  //   if(Mass_tt>=700 && Mass_tt < 900){
-  //     fill_histograms(event, "DeltaY_reco_700_900_CR1");
-  //     //h_DeltaY_reco_SystVariations_700_900_CR1->fill(event);
-  //     // h_DeltaY_reco_PDFVariations_700_900_CR1->fill(event);
-  //   }
-  //   if(Mass_tt>=900 ){
-  //     fill_histograms(event, "DeltaY_reco_900Inf_CR1");
-  //     //h_DeltaY_reco_SystVariations_900Inf_CR1->fill(event);
-  //     // h_DeltaY_reco_PDFVariations_900Inf_CR1->fill(event);
-  //   }
-  //   if(Mass_tt>=500 && Mass_tt < 750){
-  //     fill_histograms(event, "DeltaY_reco_500_750_CR1");
-  //     //h_DeltaY_reco_SystVariations_500_750_CR1->fill(event);
-  //     // h_DeltaY_reco_PDFVariations_500_750_CR1->fill(event);
-  //   }
-  //   if(Mass_tt>=750 && Mass_tt < 1000){
-  //     fill_histograms(event, "DeltaY_reco_750_1000_CR1");
-  //     //h_DeltaY_reco_SystVariations_750_1000_CR1->fill(event);
-  //     // h_DeltaY_reco_PDFVariations_750_1000_CR1->fill(event);
-  //   }
-  //   if(Mass_tt>=1000 && Mass_tt < 1500){
-  //     fill_histograms(event, "DeltaY_reco_1000_1500_CR1");
-  //     //h_DeltaY_reco_SystVariations_1000_1500_CR1->fill(event);
-  //     // h_DeltaY_reco_PDFVariations_1000_1500_CR1->fill(event);
-  //   }
-  //   if(Mass_tt>=1500){
-  //     fill_histograms(event, "DeltaY_reco_1500Inf_CR1");
-  //     //h_DeltaY_reco_SystVariations_1500Inf_CR1->fill(event);
-  //     // h_DeltaY_reco_PDFVariations_1500Inf_CR1->fill(event);
-  //   }
+    //   if(Mass_tt>=0 && Mass_tt < 500){
+    //     fill_histograms(event, "DeltaY_reco_0_500_CR1");
+    //     //h_DeltaY_reco_SystVariations_0_500_CR1->fill(event);
+    //     // h_DeltaY_reco_PDFVariations_0_500_CR1->fill(event);  
+    //   }
+    //   if (Mass_tt>=0 && Mass_tt < 350){
+    //     fill_histograms(event, "DeltaY_reco_0_350_CR1");
+    //     //h_DeltaY_reco_SystVariations_0_350_CR1->fill(event);
+    //     // h_DeltaY_reco_PDFVariations_0_350_CR1->fill(event);
+    //   }
+    //   if(Mass_tt>=350 && Mass_tt < 500){
+    //     fill_histograms(event, "DeltaY_reco_350_500_CR1");
+    //     //h_DeltaY_reco_SystVariations_350_500_CR1->fill(event);
+    //     // h_DeltaY_reco_PDFVariations_350_500_CR1->fill(event);
+    //   }
+    //   if (Mass_tt>=0 && Mass_tt < 700){
+    //     fill_histograms(event, "DeltaY_reco_0_700_CR1");
+    //     //h_DeltaY_reco_SystVariations_0_700_CR1->fill(event);
+    //     // h_DeltaY_reco_PDFVariations_0_700_CR1->fill(event);
+    //   }
+    //   if(Mass_tt>=700 && Mass_tt < 900){
+    //     fill_histograms(event, "DeltaY_reco_700_900_CR1");
+    //     //h_DeltaY_reco_SystVariations_700_900_CR1->fill(event);
+    //     // h_DeltaY_reco_PDFVariations_700_900_CR1->fill(event);
+    //   }
+    //   if(Mass_tt>=900 ){
+    //     fill_histograms(event, "DeltaY_reco_900Inf_CR1");
+    //     //h_DeltaY_reco_SystVariations_900Inf_CR1->fill(event);
+    //     // h_DeltaY_reco_PDFVariations_900Inf_CR1->fill(event);
+    //   }
+    //   if(Mass_tt>=500 && Mass_tt < 750){
+    //     fill_histograms(event, "DeltaY_reco_500_750_CR1");
+    //     //h_DeltaY_reco_SystVariations_500_750_CR1->fill(event);
+    //     // h_DeltaY_reco_PDFVariations_500_750_CR1->fill(event);
+    //   }
+    //   if(Mass_tt>=750 && Mass_tt < 1000){
+    //     fill_histograms(event, "DeltaY_reco_750_1000_CR1");
+    //     //h_DeltaY_reco_SystVariations_750_1000_CR1->fill(event);
+    //     // h_DeltaY_reco_PDFVariations_750_1000_CR1->fill(event);
+    //   }
+    //   if(Mass_tt>=1000 && Mass_tt < 1500){
+    //     fill_histograms(event, "DeltaY_reco_1000_1500_CR1");
+    //     //h_DeltaY_reco_SystVariations_1000_1500_CR1->fill(event);
+    //     // h_DeltaY_reco_PDFVariations_1000_1500_CR1->fill(event);
+    //   }
+    //   if(Mass_tt>=1500){
+    //     fill_histograms(event, "DeltaY_reco_1500Inf_CR1");
+    //     //h_DeltaY_reco_SystVariations_1500Inf_CR1->fill(event);
+    //     // h_DeltaY_reco_PDFVariations_1500Inf_CR1->fill(event);
+    //   }
     if(Chi2_selection->passes(event)){ 
       fill_histograms(event,"DNN_output1_chi2");
     }
@@ -1961,59 +1971,59 @@ bool ZprimeAnalysisModule_applyNN::process(uhh2::Event& event){
  
   // if(debug) cout << "check for WJets node" << endl;
   if( out2 == max_score ){
-  //   if (debug)cout<<"inside WJets node about to process EFT vars"<<endl;
-  //   VariablesEFTCR2_module->process(event);
+    //   if (debug)cout<<"inside WJets node about to process EFT vars"<<endl;
+    //   VariablesEFTCR2_module->process(event);
     fill_histograms(event, "DNN_output2");
-  //   if(Mass_tt>=0 && Mass_tt < 500){
-  //     fill_histograms(event, "DeltaY_reco_0_500_CR2");
-  //     //h_DeltaY_reco_SystVariations_0_500_CR2->fill(event);
-  //     // h_DeltaY_reco_PDFVariations_0_500_CR2->fill(event);
-  //   }
-  //   if (Mass_tt>=0 && Mass_tt < 350){
-  //     fill_histograms(event, "DeltaY_reco_0_350_CR2");
-  //     //h_DeltaY_reco_SystVariations_0_350_CR2->fill(event);
-  //     // h_DeltaY_reco_PDFVariations_0_350_CR2->fill(event);
-  //   }
-  //   if(Mass_tt>=350 && Mass_tt < 500){
-  //     fill_histograms(event, "DeltaY_reco_350_500_CR2");
-  //     //h_DeltaY_reco_SystVariations_350_500_CR2->fill(event);
-  //     // h_DeltaY_reco_PDFVariations_350_500_CR2->fill(event);
-  //   }
-  //   if (Mass_tt>=0 && Mass_tt < 700){
-  //     fill_histograms(event, "DeltaY_reco_0_700_CR2");
-  //     //h_DeltaY_reco_SystVariations_0_700_CR2->fill(event);
-  //     // h_DeltaY_reco_PDFVariations_0_700_CR2->fill(event);
-  //   }
-  //   if(Mass_tt>=700 && Mass_tt < 900){
-  //     fill_histograms(event, "DeltaY_reco_700_900_CR2");
-  //     //h_DeltaY_reco_SystVariations_700_900_CR2->fill(event);
-  //     // h_DeltaY_reco_PDFVariations_700_900_CR2->fill(event);
-  //   }
-  //   if(Mass_tt>=900 ){
-  //     fill_histograms(event, "DeltaY_reco_900Inf_CR2");
-  //     //h_DeltaY_reco_SystVariations_900Inf_CR2->fill(event);
-  //     // h_DeltaY_reco_PDFVariations_900Inf_CR2->fill(event);
-  //   }
-  //   if(Mass_tt>=500 && Mass_tt < 750){
-  //     fill_histograms(event, "DeltaY_reco_500_750_CR2");
-  //     //h_DeltaY_reco_SystVariations_500_750_CR2->fill(event);
-  //     // h_DeltaY_reco_PDFVariations_500_750_CR2->fill(event);
-  //   }
-  //   if(Mass_tt>=750 && Mass_tt < 1000){
-  //     fill_histograms(event, "DeltaY_reco_750_1000_CR2");
-  //     //h_DeltaY_reco_SystVariations_750_1000_CR2->fill(event);
-  //     // h_DeltaY_reco_PDFVariations_750_1000_CR2->fill(event);
-  //   }
-  //   if(Mass_tt>=1000 && Mass_tt < 1500){
-  //     fill_histograms(event, "DeltaY_reco_1000_1500_CR2");
-  //     //h_DeltaY_reco_SystVariations_1000_1500_CR2->fill(event);
-  //     // h_DeltaY_reco_PDFVariations_1000_1500_CR2->fill(event);
-  //   }
-  //   if(Mass_tt>=1500){
-  //     fill_histograms(event, "DeltaY_reco_1500Inf_CR2");
-  //     // h_DeltaY_reco_SystVariations_1500Inf_CR2->fill(event);
-  //     // h_DeltaY_reco_PDFVariations_1500Inf_CR2->fill(event);
-  //   }
+    //   if(Mass_tt>=0 && Mass_tt < 500){
+    //     fill_histograms(event, "DeltaY_reco_0_500_CR2");
+    //     //h_DeltaY_reco_SystVariations_0_500_CR2->fill(event);
+    //     // h_DeltaY_reco_PDFVariations_0_500_CR2->fill(event);
+    //   }
+    //   if (Mass_tt>=0 && Mass_tt < 350){
+    //     fill_histograms(event, "DeltaY_reco_0_350_CR2");
+    //     //h_DeltaY_reco_SystVariations_0_350_CR2->fill(event);
+    //     // h_DeltaY_reco_PDFVariations_0_350_CR2->fill(event);
+    //   }
+    //   if(Mass_tt>=350 && Mass_tt < 500){
+    //     fill_histograms(event, "DeltaY_reco_350_500_CR2");
+    //     //h_DeltaY_reco_SystVariations_350_500_CR2->fill(event);
+    //     // h_DeltaY_reco_PDFVariations_350_500_CR2->fill(event);
+    //   }
+    //   if (Mass_tt>=0 && Mass_tt < 700){
+    //     fill_histograms(event, "DeltaY_reco_0_700_CR2");
+    //     //h_DeltaY_reco_SystVariations_0_700_CR2->fill(event);
+    //     // h_DeltaY_reco_PDFVariations_0_700_CR2->fill(event);
+    //   }
+    //   if(Mass_tt>=700 && Mass_tt < 900){
+    //     fill_histograms(event, "DeltaY_reco_700_900_CR2");
+    //     //h_DeltaY_reco_SystVariations_700_900_CR2->fill(event);
+    //     // h_DeltaY_reco_PDFVariations_700_900_CR2->fill(event);
+    //   }
+    //   if(Mass_tt>=900 ){
+    //     fill_histograms(event, "DeltaY_reco_900Inf_CR2");
+    //     //h_DeltaY_reco_SystVariations_900Inf_CR2->fill(event);
+    //     // h_DeltaY_reco_PDFVariations_900Inf_CR2->fill(event);
+    //   }
+    //   if(Mass_tt>=500 && Mass_tt < 750){
+    //     fill_histograms(event, "DeltaY_reco_500_750_CR2");
+    //     //h_DeltaY_reco_SystVariations_500_750_CR2->fill(event);
+    //     // h_DeltaY_reco_PDFVariations_500_750_CR2->fill(event);
+    //   }
+    //   if(Mass_tt>=750 && Mass_tt < 1000){
+    //     fill_histograms(event, "DeltaY_reco_750_1000_CR2");
+    //     //h_DeltaY_reco_SystVariations_750_1000_CR2->fill(event);
+    //     // h_DeltaY_reco_PDFVariations_750_1000_CR2->fill(event);
+    //   }
+    //   if(Mass_tt>=1000 && Mass_tt < 1500){
+    //     fill_histograms(event, "DeltaY_reco_1000_1500_CR2");
+    //     //h_DeltaY_reco_SystVariations_1000_1500_CR2->fill(event);
+    //     // h_DeltaY_reco_PDFVariations_1000_1500_CR2->fill(event);
+    //   }
+    //   if(Mass_tt>=1500){
+    //     fill_histograms(event, "DeltaY_reco_1500Inf_CR2");
+    //     // h_DeltaY_reco_SystVariations_1500Inf_CR2->fill(event);
+    //     // h_DeltaY_reco_PDFVariations_1500Inf_CR2->fill(event);
+    //   }
     if(Chi2_selection->passes(event)){ 
       fill_histograms(event,"DNN_output2_chi2");
     }

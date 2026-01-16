@@ -76,9 +76,9 @@ protected:
   TH1F *deepjet_TvsQCD_Taggedjet,*deepjet_TvsQCD_Taggedjet1,*deepjet_TvsQCD_Taggedjet2,*deepjet_TvsQCD_Taggedjet3;
   TH1F *massdecordeepjet_TvsQCD_Taggedjet,*massdecordeepjet_TvsQCD_Taggedjet1,*massdecordeepjet_TvsQCD_Taggedjet2,*massdecordeepjet_TvsQCD_Taggedjet3;
   TH1F *cos_hadtop_thetastar, *cos_leptop_thetastar, *abs_cos_leptop_thetastar;
- // TH1F *h_lep1_pt_SR, *h_lep1_pt_CR1, *h_lep1_pt_CR2, *h_lep1_eta_CR1, *h_lep1_eta_CR1, *h_lep1_eta_CR1;
-  TH1F *h_N_Ak4; //*h_N_Ak4_SR, *h_N_Ak4_CR1, *h_N_Ak4_CR2;
- // TH1F *h_M_tt_SR, *h_chi2_SR, *h_M_tt_CR1, *h_chi2_CR1, *h_M_tt_CR2, *h_chi2_CR2; 
+  TH1F *h_lep1_pt_SR, *h_lep1_pt_CR1, *h_lep1_pt_CR2, *h_lep1_eta_CR1;
+  TH1F *h_N_Ak4, *h_N_Ak4_SR, *h_N_Ak4_CR1, *h_N_Ak4_CR2;
+  TH1F *h_M_tt_SR, *h_chi2_SR, *h_M_tt_CR1, *h_chi2_CR1, *h_M_tt_CR2, *h_chi2_CR2; 
 
   TH2F *N_Jets_vs_HT, *mttbar_vs_costhetastar, *costhetastar_vs_mttbar, *response_matrix;
 
