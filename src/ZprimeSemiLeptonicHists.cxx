@@ -2213,41 +2213,41 @@ void ZprimeSemiLeptonicHists::fill(const Event & event){
     float pt_hadTop_thresh = 150;                                                    // Define cut-variable as pt of hadTop for low/high regions
     float pt_hadTop = BestZprimeCandidate->top_hadronic_v4().pt();                   // pT of hadronic-top jet
     // Working points for DeepJet b-tagging
-    float noTopTag_btag_WP_L;                                                                   // Loose working point for AK4 jets
-    float noTopTag_btag_WP_M;                                                                   // Medium working point for AK4 jets
-    float noTopTag_btag_WP_T;                                                                   // Tight working point for AK4 jets
+    float noTopTag_btag_WP_L;               // Loose working point for AK4 jets
+    float noTopTag_btag_WP_M;               // Medium working point for AK4 jets
+    float noTopTag_btag_WP_T;               // Tight working point for AK4 jets
     // see https://btv-wiki.docs.cern.ch/ScaleFactors/Run2UL2016preVFP/#ak4-b-tagging for UL16preVFP DeepJet WPs
-    if (isUL16preVFP) noTopTag_btag_WP_L = 0.0508;                                              // loose WP for UL16preVFP DeepJet ->  87.3% efficiency
-    if (isUL16preVFP) noTopTag_btag_WP_M = 0.2598;                                              // medium WP for UL16preVFP DeepJet -> 73.3% efficiency
-    if (isUL16preVFP) noTopTag_btag_WP_T = 0.6502;                                              // tight WP for UL16preVFP DeepJet  -> 57.5% efficiency
+    if (isUL16preVFP) noTopTag_btag_WP_L = 0.0508;                                                                // loose WP for UL16preVFP DeepJet ->  87.3% efficiency
+    if (isUL16preVFP) noTopTag_btag_WP_M = 0.2598;                                                                // medium WP for UL16preVFP DeepJet -> 73.3% efficiency
+    if (isUL16preVFP) noTopTag_btag_WP_T = 0.6502;                                                                // tight WP for UL16preVFP DeepJet  -> 57.5% efficiency
     // see https://btv-wiki.docs.cern.ch/ScaleFactors/Run2UL2016postVFP/#ak4-b-tagging for UL16postVFP DeepJet WPs
-    if (isUL16postVFP) noTopTag_btag_WP_L = 0.0480;                                             // loose WP for UL16postVFP DeepJet ->  86.3% efficiency
-    if (isUL16postVFP) noTopTag_btag_WP_M = 0.3657;                                             // medium WP for UL16postVFP DeepJet -> 71.4% efficiency
-    if (isUL16postVFP) noTopTag_btag_WP_T = 0.6377;                                             // tight WP for UL16postVFP DeepJet  -> 54.7% efficiency
+    if (isUL16postVFP) noTopTag_btag_WP_L = 0.0480;                                                               // loose WP for UL16postVFP DeepJet ->  86.3% efficiency
+    if (isUL16postVFP) noTopTag_btag_WP_M = 0.3657;                                                               // medium WP for UL16postVFP DeepJet -> 71.4% efficiency
+    if (isUL16postVFP) noTopTag_btag_WP_T = 0.6377;                                                               // tight WP for UL16postVFP DeepJet  -> 54.7% efficiency
     // see https://btv-wiki.docs.cern.ch/ScaleFactors/Run2UL2017/#ak4-b-tagging for UL17 DeepJet WPs
-    if (isUL17) noTopTag_btag_WP_L = 0.0532;                                                    // loose WP for UL17 DeepJet ->  91.0% efficiency
-    if (isUL17) noTopTag_btag_WP_M = 0.3040;                                                    // medium WP for UL17 DeepJet -> 79.1% efficiency
-    if (isUL17) noTopTag_btag_WP_T = 0.7476;                                                    // tight WP for UL17 DeepJet  -> 61.6% efficiency
+    if (isUL17) noTopTag_btag_WP_L = 0.0532;                                                                      // loose WP for UL17 DeepJet ->  91.0% efficiency
+    if (isUL17) noTopTag_btag_WP_M = 0.3040;                                                                      // medium WP for UL17 DeepJet -> 79.1% efficiency
+    if (isUL17) noTopTag_btag_WP_T = 0.7476;                                                                      // tight WP for UL17 DeepJet  -> 61.6% efficiency
     // see https://btv-wiki.docs.cern.ch/ScaleFactors/Run2UL2018/#ak4-b-tagging for UL18 DeepJet WPs
-    if (isUL18) noTopTag_btag_WP_L = 0.0490;                                                    // loose WP for UL18 DeepJet  -> 91.5% efficiency
-    if (isUL18) noTopTag_btag_WP_M = 0.2783;                                                    // medium WP for UL18 DeepJet -> 80.7% efficiency
-    if (isUL18) noTopTag_btag_WP_T = 0.7100;                                                    // tight WP for UL18 DeepJet  -> 65.1% efficiency
+    if (isUL18) noTopTag_btag_WP_L = 0.0490;                                                                      // loose WP for UL18 DeepJet  -> 91.5% efficiency
+    if (isUL18) noTopTag_btag_WP_M = 0.2783;                                                                      // medium WP for UL18 DeepJet -> 80.7% efficiency
+    if (isUL18) noTopTag_btag_WP_T = 0.7100;                                                                      // tight WP for UL18 DeepJet  -> 65.1% efficiency
     // Working points for DeepCSV subjet b-tagging
-    float TopTag_btag_WP_L;                                                                 // Loose working point for AK8-subjets
-    float TopTag_btag_WP_M;                                                                 // Medium working point for AK8-subjets
+    float TopTag_btag_WP_L;                       // Loose working point for AK8-subjets
+    float TopTag_btag_WP_M;                       // Medium working point for AK8-subjets
     // see https://btv-wiki.docs.cern.ch/ScaleFactors/Run2UL2016preVFP/#subjet-b-tagging for UL16preVFP DeepCSV subjet WPs
-    if (isUL16preVFP) TopTag_btag_WP_L = 0.2027;                                              // loose WP for UL16preVFP DeepCSV 
-    if (isUL16preVFP) TopTag_btag_WP_M = 0.6001;                                              // medium WP for UL16preVFP DeepCSV
-    // see https://btv-wiki.docs.cern.ch/ScaleFactors/Run2UL2016postVFP/#subjet-b-tagging for UL16postVFP DeepCSVsubjet  WPs
-    if (isUL16postVFP) TopTag_btag_WP_L = 0.1918;                                             // loose WP for UL16postVFP DeepCSV
-    if (isUL16postVFP) TopTag_btag_WP_M = 0.5847;                                             // medium WP for UL16postVFP DeepCSV
+    if (isUL16preVFP) TopTag_btag_WP_L = 0.2027;                                                                            // loose WP for UL16preVFP DeepCSV 
+    if (isUL16preVFP) TopTag_btag_WP_M = 0.6001;                                                                            // medium WP for UL16preVFP DeepCSV
+    // see https://btv-wiki.docs.cern.ch/ScaleFactors/Run2UL2016postVFP/#subjet-b-tagging for UL16postVFP DeepCSVsubjet WPs
+    if (isUL16postVFP) TopTag_btag_WP_L = 0.1918;                                                                           // loose WP for UL16postVFP DeepCSV
+    if (isUL16postVFP) TopTag_btag_WP_M = 0.5847;                                                                           // medium WP for UL16postVFP DeepCSV
     // see https://btv-wiki.docs.cern.ch/ScaleFactors/Run2UL2017/#subjet-b-tagging for UL17 DeepCSV subjet WPs
-    if (isUL17) TopTag_btag_WP_L = 0.1355;                                                    // loose WP for UL17 DeepCSV
-    if (isUL17) TopTag_btag_WP_M = 0.4506;                                                    // medium WP for UL17 DeepCSV
+    if (isUL17) TopTag_btag_WP_L = 0.1355;                                                                                  // loose WP for UL17 DeepCSV
+    if (isUL17) TopTag_btag_WP_M = 0.4506;                                                                                  // medium WP for UL17 DeepCSV
     // see https://btv-wiki.docs.cern.ch/ScaleFactors/Run2UL2018/#subjet-b-tagging for UL18 DeepCSV subjet WPs
-    if (isUL18) TopTag_btag_WP_L = 0.1208;                                                    // loose WP for UL18 DeepCSV
-    if (isUL18) TopTag_btag_WP_M = 0.4506;                                                    // medium WP for UL18 DeepCSV
-    bool passes_btagging = false;                                                      // Variable to check if event passes b-tagging condition
+    if (isUL18) TopTag_btag_WP_L = 0.1208;                                                                                  // loose WP for UL18 DeepCSV
+    if (isUL18) TopTag_btag_WP_M = 0.4506;                                                                                  // medium WP for UL18 DeepCSV
+    bool passes_btagging = false;         // Variable to check if event passes b-tagging condition
     
     float bscore_max = -2;
     //-------------- Extracting highest b-tag score in Resolved topology, i.e. no top-tagged jet in event --------------//
@@ -2284,13 +2284,12 @@ void ZprimeSemiLeptonicHists::fill(const Event & event){
       if(bscore_max >= TopTag_btag_WP_L) passes_btagging = true; // Event passes b-tagging condition
     }
 
-
     //------------------------------------Define 4vectors of top quarks and spin analyzers------------------------------------//
     TLorentzVector had_top_b(0, 0, 0, 0); // b-jet 4-vector
     // only define angular variables if event passes b-tagging condition
     if(passes_btagging){
       // Resolved topology
-      if(!is_toptag_reconstruction){ // Define hadronic b-jet as hadronic AK4-jet with highest bscore
+      if(!is_toptag_reconstruction){ // Define hadronic b-jet as hadronic AK4-jet with highest deepJet bscore
         for(unsigned int i=0; i< BestZprimeCandidate->jets_hadronic().size(); i++){
           float bscore = jets_hadronic_bscores.at(i);
           if(bscore == bscore_max) had_top_b.SetPtEtaPhiE(BestZprimeCandidate->jets_hadronic().at(i).pt(), 
@@ -2300,9 +2299,9 @@ void ZprimeSemiLeptonicHists::fill(const Event & event){
         }
       }
       // Merged topology
-      if(is_toptag_reconstruction){ // Define hadronic b-jet as hadronic AK8-subjet with highest bscore
+      if(is_toptag_reconstruction){ // Define hadronic b-jet as hadronic AK8-SDsubjet with highest deepCSV bscore
         for(unsigned int j=0; j < BestZprimeCandidate->tophad_topjet_ptr()->subjets().size(); j++){
-          float bscore = BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).btag_DeepJet();
+          float bscore = BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).btag_DeepCSV();
           if(bscore == bscore_max) had_top_b.SetPtEtaPhiE(BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).pt(), 
                                                           BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).eta(), 
                                                           BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).phi(), 
