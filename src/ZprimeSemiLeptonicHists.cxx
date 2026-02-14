@@ -258,7 +258,7 @@ Hists(ctx, dirname) {
   // Only initialize the handle for non-EFT TTbar samples to avoid UHH2 complaining about unset handles
   if(is_tt && dataset_version.find("EFT") == std::string::npos) {
     // Only try to get handle for non-EFT TTbar samples
-    if(debug) std::cout << "ZprimeSemiLeptonicHists: inside is_tt check, trying to get ttbargen handle" << std::endl;
+    if(debug) std::cout << "[ZprimeSemiLeptonicHists - DEBUG] Inside is_tt check, trying to get ttbargen handle" << std::endl;
     h_ttbargen = ctx.get_handle<TTbarGen>("ttbargen");
   }
   //  h_chi2 = ctx.get_handle<float>("chi2");
@@ -1885,229 +1885,16 @@ void ZprimeSemiLeptonicHists::fill(const Event & event){
 
   eventweight->Fill(weight, 1);
 
-  // Zprime reco
+  // Zprime reco method bools
   bool is_zprime_reconstructed_chi2 = event.get(h_is_zprime_reconstructed_chi2);
   bool is_zprime_reconstructed_correctmatch = event.get(h_is_zprime_reconstructed_correctmatch);
-  // added "is_mc" to blind data in mttbar hists
   
-  if(debug) cout << "Before dY lines:" << endl;
-
-  // ================== GEN-level DeltaY for ALL ttbar events using TTbarGen (template method) =========================================================  
-  
-  // Fill generator-level histograms for ALL ttbar MC events using TTbarGen
-  // if(is_tt && is_mc) {
-  //   const auto& ttbargen = event.get(h_ttbargen);
-    
-  //   // Only process semileptonic decays (e+jets, mu+jets) - includes tau->e/mu
-  //   if(ttbargen.IsSemiLeptonicDecay()) {
-  //     const int lepId = std::abs(ttbargen.ChargedLepton().pdgId());
-  //     if(lepId == 11 || lepId == 13) {
-        
-  //       const GenParticle& gen_top = ttbargen.Top();
-  //       const GenParticle& gen_antitop = ttbargen.Antitop();
-        
-  //       // Calculate DeltaY at gen level
-  //       double gen_top_rapidity = gen_top.v4().Rapidity();
-  //       double gen_antitop_rapidity = gen_antitop.v4().Rapidity();
-        
-  //       double DeltaY_gen_val = std::abs(gen_top_rapidity) - std::abs(gen_antitop_rapidity);
-  //       double xi_gen_val = std::tanh(DeltaY_gen_val);
-  //       double mtt_gen_val = (gen_top.v4() + gen_antitop.v4()).M();
-
-  //       DeltaY_gen->Fill(DeltaY_gen_val, weight);
-  //       DeltaY_xi_gen->Fill(xi_gen_val, weight);
-  //       Mtt_gen->Fill(mtt_gen_val, weight);
-  //     }
-  //   }
-  // }
-
-  
-  // ================== DY new check gen matching for ttbar =========================================================
-  
-  // if(is_zprime_reconstructed_chi2 && is_tt){
-  //   // cout << "inside dY lines" << endl;
-  //   if(debug)cout << "should not be matching " << endl;
-  //   const auto& genparticles = event.genparticles;
-  //   ZprimeCandidate* BestZprimeCandidate = event.get(h_BestZprimeCandidateChi2);
-  //   float Mreco = BestZprimeCandidate->Zprime_v4().M();
-  //   // float chi2 = BestZprimeCandidate->discriminator("chi2_total");
-  //   ditop_mass->Fill(Mreco, weight);
-  //   M_Zprime->Fill(Mreco, weight);
-  //   M_Zprime_rebin->Fill(Mreco, weight);
-  //   M_Zprime_rebin2->Fill(Mreco, weight);
-  //   M_Zprime_rebin3->Fill(Mreco, weight);
-
-  //   GenParticle top, antitop;
-  //   for(const GenParticle & gp : *genparticles){
-  //     if(gp.pdgId() == 6){
-  //         top = gp;
-  //     }
-  //     else if(gp.pdgId() == -6){
-  //         antitop = gp;
-  //     }
-  //   }
-  //   if(debug) cout << "after gen 1:" << endl;
-  //   // The Lorentz vectors represent the 4-momenta (energy, and three spatial momentum components) for the leptonic and hadronic tops from the "BestZprimeCandidate" object
-  //   LorentzVector lep_top = BestZprimeCandidate->top_leptonic_v4();
-  //   LorentzVector had_top = BestZprimeCandidate->top_hadronic_v4();
-
-  //   // vectors to store the deltaR values for the leptonic and hadronic tops with each gen particle
-  //   // this part initializes vectors to store deltaR values with a default of 99.0 and fills in the actual deltaR values by looping over the gen particles (top)
-  //   std::vector<std::pair<double, int>> deltaR_leptonic_values; // ((dR, index), (dR, index), ...)
-  //   std::vector<std::pair<double, int>> deltaR_hadronic_values;
-
-  //   double deltaR_min_leptonic = 99.0;
-  //   double deltaR_sec_min_leptonic = 99.0;
-  //   int best_gen_for_leptop = -1;
-  //   int sec_best_gen_for_leptop = -1;
-  //   // bool is_leptop_matched = false;
-
-  //   double deltaR_min_hadronic = 99.0;
-  //   double deltaR_sec_min_hadronic = 99.0;
-  //   int best_gen_for_hadtop = -1;
-  //   int sec_best_gen_for_hadtop = -1;
-  //   // bool is_hadtop_matched = false;
-
-  //   if(debug) cout << "before gen loop in matching" << endl;
-    
-  //   for(unsigned int j=0; j<genparticles->size(); ++j) {
-  //     if(abs(genparticles->at(j).pdgId()) == 6 ){
-  //       if (genparticles->at(j).index() == 2 || genparticles->at(j).index() == 3){
-  //         LorentzVector genparticle_p4(genparticles->at(j).pt(), genparticles->at(j).eta(), genparticles->at(j).phi(), genparticles->at(j).energy());
-  //         deltaR_leptonic_values.push_back(std::make_pair(deltaR(lep_top, genparticle_p4),genparticles->at(j).index() ));
-  //         deltaR_hadronic_values.push_back(std::make_pair(deltaR(had_top, genparticle_p4), genparticles->at(j).index()));
-  //         // cout << "deltaR: " << deltaR(lep_top, genparticle_p4) << j << endl;
-  //       }
-  //     }
-  //   }
-
-  //   for (const auto& pair_lep : deltaR_leptonic_values) {
-  //     if (pair_lep.first > 0 && pair_lep.first < deltaR_min_leptonic) {
-  //       // deltaR_min_leptonic = pair_lep.first;
-  //       deltaR_sec_min_leptonic = deltaR_min_leptonic;
-  //       deltaR_min_leptonic = pair_lep.first;
-  //       sec_best_gen_for_leptop = best_gen_for_leptop;
-  //       best_gen_for_leptop = pair_lep.second;
-  //       // is_leptop_matched = true;
-  //     }
-  //     else if (pair_lep.first > 0 && pair_lep.first < deltaR_sec_min_leptonic && pair_lep.first != deltaR_min_leptonic && pair_lep.second != best_gen_for_leptop) {
-  //       deltaR_sec_min_leptonic = pair_lep.first;
-  //       sec_best_gen_for_leptop = pair_lep.second;
-  //     }
-  //   }
-
-  //   for (const auto& pair_had : deltaR_hadronic_values) {
-  //     if (pair_had.first > 0 && pair_had.first < deltaR_min_hadronic) {
-  //       // deltaR_min_hadronic = pair_had.first;
-  //       deltaR_sec_min_hadronic = deltaR_min_hadronic;
-  //       deltaR_min_hadronic = pair_had.first;
-  //       sec_best_gen_for_hadtop = best_gen_for_hadtop;
-  //       best_gen_for_hadtop = pair_had.second;
-  //       // is_hadtop_matched = true;
-  //     }
-  //     else if (pair_had.first > 0 && pair_had.first < deltaR_sec_min_hadronic && pair_had.first != deltaR_min_hadronic && pair_had.second != best_gen_for_hadtop) {
-  //       deltaR_sec_min_hadronic = pair_had.first;
-  //       sec_best_gen_for_hadtop = pair_had.second;
-  //     }
-  //   }
-
-  //   if(debug) cout << "after dR matching" << endl;
-
-  //   if (best_gen_for_hadtop == best_gen_for_leptop){
-  //     if(debug) cout << "same index for matched gen" << endl;
-  //     if (deltaR_min_leptonic <= deltaR_min_hadronic){
-  //       if(debug) cout << "deltaR_min_leptonic <= deltaR_min_hadronic" << endl;
-  //       best_gen_for_hadtop = sec_best_gen_for_hadtop;
-  //       deltaR_min_hadronic = deltaR_sec_min_hadronic;
-  //     } else {
-  //       if(debug) cout << "deltaR_min_hadronic <= deltaR_min_leptonic" << endl;
-  //       best_gen_for_leptop = sec_best_gen_for_leptop;
-  //       deltaR_min_leptonic = deltaR_sec_min_leptonic;
-  //     }
-  //     if(debug) cout << "same index for matched gen - done" << endl;
-  //   }
-  //   if(debug) cout << "after the same index statement" << endl;
-
-  //   GenParticle best_matched_gen_leptop;
-  //   GenParticle best_matched_gen_hadtop;
-    
-  //   if(debug) cout <<  genparticles->size() << endl;
-  //   if(debug) cout << static_cast<std::size_t>(best_gen_for_leptop) << endl;
-  //   if(debug) cout << "leptop index: " << best_gen_for_leptop << endl;
-  //   if(debug) cout << "hadtop index :" << best_gen_for_hadtop << endl;
-
-  //   float_t DeltaY_gen_best = 99.0;
-  //   float_t DeltaY_reco_best = 99.0;
-   
-  //   if(debug) cout << "now will check dR " << endl;
-  //   if(debug) cout << deltaR_min_leptonic << endl;
-  //   if(debug) cout << deltaR_min_hadronic << endl;
-  //   if(debug) cout << best_gen_for_leptop << endl;
-  //   if(debug) cout << best_gen_for_hadtop << endl;
-
-  //   if (deltaR_min_leptonic < 0.4 && deltaR_min_hadronic < 0.4 && best_gen_for_leptop >= 0 && best_gen_for_hadtop >= 0) {
-  //     if(debug) cout << "in dR loop " << endl;
-  //     if(static_cast<std::size_t>(best_gen_for_leptop) < genparticles->size()) {
-  //       if(debug) cout << "looking for lep match " << endl;
-  //       best_matched_gen_leptop = genparticles->at(best_gen_for_leptop);
-  //     }
-  //     if(debug) cout << "lepton match done" << endl;
-      
-  //     if(static_cast<std::size_t>(best_gen_for_hadtop) < genparticles->size()) {
-  //         best_matched_gen_hadtop = genparticles->at(best_gen_for_hadtop);
-  //         if(debug) cout << "hadtop match done" << endl;
-  //     }
-
-  //     if(debug) cout << "after genparticles->at(best_gen_for_leptop)" << endl;
-
-  //     N_lep_charge->Fill(BestZprimeCandidate->lepton().charge(),weight);
-  //     // cout <<"Lepton candidate charge is: "<< BestZprimeCandidate->lepton().charge()<<endl;
-  //     // cout << "Lepton candidate pdg ID: " << BestZprimeCandidate->lepton().pdgId() << endl;
-  //     // Calculates the delta y (with reco particles) values for the leptonic and hadronic tops depending on the charge of the lepton
-  //     if (BestZprimeCandidate->lepton().charge()>0) {
-  //       DeltaY_reco_best = TMath::Abs(BestZprimeCandidate->top_leptonic_v4().Rapidity()) - TMath::Abs(BestZprimeCandidate->top_hadronic_v4().Rapidity()); 
-
-  //       // DeltaY_reco_best = TMath::Abs(0.5*TMath::Log((lep_top.energy() + lep_top.pt()*TMath::SinH(lep_top.eta()))/(lep_top.energy() - lep_top.pt()*TMath::SinH(lep_top.eta())))) - TMath::Abs(0.5*TMath::Log((had_top.energy() + had_top.pt()*TMath::SinH(had_top.eta()))/(had_top.energy() - had_top.pt()*TMath::SinH(had_top.eta()))));
-  //       DeltaY_gen_best = TMath::Abs(0.5*TMath::Log((best_matched_gen_leptop.energy() + best_matched_gen_leptop.pt()*TMath::SinH(best_matched_gen_leptop.eta()))/(best_matched_gen_leptop.energy() - best_matched_gen_leptop.pt()*TMath::SinH(best_matched_gen_leptop.eta())))) - TMath::Abs(0.5*TMath::Log((best_matched_gen_hadtop.energy() + best_matched_gen_hadtop.pt()*TMath::SinH(best_matched_gen_hadtop.eta()))/(best_matched_gen_hadtop.energy() - best_matched_gen_hadtop.pt()*TMath::SinH(best_matched_gen_hadtop.eta()))));
-
-  //     } else {
-  //       DeltaY_reco_best = TMath::Abs(BestZprimeCandidate->top_hadronic_v4().Rapidity()) - TMath::Abs(BestZprimeCandidate->top_leptonic_v4().Rapidity()); 
-
-  //       // DeltaY_reco_best = TMath::Abs(0.5*TMath::Log((had_top.energy() + had_top.pt()*TMath::SinH(had_top.eta()))/(had_top.energy() - had_top.pt()*TMath::SinH(had_top.eta())))) - TMath::Abs(0.5*TMath::Log((lep_top.energy() + lep_top.pt()*TMath::SinH(lep_top.eta()))/(lep_top.energy() - lep_top.pt()*TMath::SinH(lep_top.eta()))));
-  //       DeltaY_gen_best = TMath::Abs(0.5*TMath::Log((best_matched_gen_hadtop.energy() + best_matched_gen_hadtop.pt()*TMath::SinH(best_matched_gen_hadtop.eta()))/(best_matched_gen_hadtop.energy() - best_matched_gen_hadtop.pt()*TMath::SinH(best_matched_gen_hadtop.eta())))) - TMath::Abs(0.5*TMath::Log((best_matched_gen_leptop.energy() + best_matched_gen_leptop.pt()*TMath::SinH(best_matched_gen_leptop.eta()))/(best_matched_gen_leptop.energy() - best_matched_gen_leptop.pt()*TMath::SinH(best_matched_gen_leptop.eta()))));
-
-  //     }
-  //   }
-  //   else {
-  //     if(debug) cout << "not matched" << endl;
-  //     DeltaY_notMatched->Fill(1);
-  //   }
-
-  //   if(debug) cout << "about to fill response matrix" << endl;
-  //   // bool matched = (deltaR_min_leptonic < 0.4 && deltaR_min_hadronic < 0.4 &&
-  //   //             best_gen_for_leptop >= 0 && best_gen_for_hadtop >= 0);
-
-  //   // if (matched) {
-  //   //   response_matrix->Fill(DeltaY_reco_best, DeltaY_gen_best, weight);
-  //   //   DeltaY_reco_best_plot->Fill(DeltaY_reco_best, weight);
-  //   //   DeltaY_gen_best_plot->Fill(DeltaY_gen_best, weight);
-  //   // } else {
-  //   //   DeltaY_notMatched->Fill(1., weight);
-  //   // }
-
-  //   response_matrix->Fill(DeltaY_reco_best, DeltaY_gen_best, weight);
-  //   DeltaY_reco_best_plot->Fill(DeltaY_reco_best, weight);
-  //   DeltaY_gen_best_plot->Fill(DeltaY_gen_best, weight);
-  
-  // }//end of gen matching and deltay reco gen vars
-  //   if(debug) cout << "after filling dY hists" << endl;
+  if(debug) cout << "[ZprimeSemiLeptonicHists - DEBUG] In General section" << endl;
   
   //begin spin correlation with matching and deltay for all else(all MC and data)---------------->
   // for all MC and DATA
   if (is_zprime_reconstructed_chi2 ){
-   
-    // if (debug) cout << "shouldnt be here if ttbar : " << endl;
-    // const auto& genparticles = event.genparticles;
+
     ZprimeCandidate* BestZprimeCandidate = event.get(h_BestZprimeCandidateChi2);
     float Mreco = BestZprimeCandidate->Zprime_v4().M();
     float chi2 = BestZprimeCandidate->discriminator("chi2_total");
@@ -2131,7 +1918,6 @@ void ZprimeSemiLeptonicHists::fill(const Event & event){
     chi2_Zprime->Fill(chi2, weight);
     chi2_Zprime_rebin->Fill(chi2, weight);
     chi2_Zprime_rebin2->Fill(chi2, weight);
-    // cout << "the boolean is: "<< isLeptonPositive << endl;
     
     float_t dyreco = 0.0;
     if (BestZprimeCandidate->lepton().charge()>0) {
@@ -2139,71 +1925,13 @@ void ZprimeSemiLeptonicHists::fill(const Event & event){
     } else {
       dyreco = TMath::Abs(BestZprimeCandidate->top_hadronic_v4().Rapidity()) - TMath::Abs(BestZprimeCandidate->top_leptonic_v4().Rapidity()); 
     }
-    N_lep_charge->Fill(BestZprimeCandidate->lepton().charge(),weight);
-    // cout <<"Lepton charge is: "<< BestZprimeCandidate->lepton().charge()<<endl;
-    
-    // ------------------------------------------------------------
-    // template method
+    N_lep_charge->Fill(BestZprimeCandidate->lepton().charge(),weight);    
 
     // Unweighted base copies (no NoAC)
     const double w_nom = weight;
     DeltaY_reco_unw->Fill(dyreco, w_nom);
     float xi_reco = std::tanh(dyreco);
     DeltaY_xi_reco_unw->Fill(xi_reco, w_nom);
-
-    // // single configured f-value: fill base set weighted, else fill base unweighted
-    // if(use_noac_evtweights_ && noac_weights_ && event.is_valid(h_xi_gen)){
-    //   const double xi_gen_evt = event.get(h_xi_gen);
-    //   const double w_cfg = lookup_noac_weight(xi_gen_evt, noac_weights_.get());
-    //   const double w_fill = w_nom * w_cfg;
-    //   DeltaY_reco->Fill(dyreco, w_fill);
-    //   DeltaY_xi_reco->Fill(xi_reco, w_fill);
-    //   DeltaY_xi_reco_36->Fill(xi_reco, w_fill);
-    //   DeltaY_xi_reco_30->Fill(xi_reco, w_fill);
-    //   DeltaY_xi_reco_24->Fill(xi_reco, w_fill);
-    //   DeltaY_xi_reco_20->Fill(xi_reco, w_fill);
-    //   DeltaY_xi_reco_18->Fill(xi_reco, w_fill);
-    //   DeltaY_xi_reco_12->Fill(xi_reco, w_fill);
-    //   DeltaY_xi_reco_10->Fill(xi_reco, w_fill);
-    //   DeltaY_xi_reco_6->Fill(xi_reco, w_fill);
-    // } else {
-    //   DeltaY_reco->Fill(dyreco, w_nom);
-    //   DeltaY_xi_reco->Fill(xi_reco, w_nom);
-    //   DeltaY_xi_reco_36->Fill(xi_reco, w_nom);
-    //   DeltaY_xi_reco_30->Fill(xi_reco, w_nom);
-    //   DeltaY_xi_reco_24->Fill(xi_reco, w_nom);
-    //   DeltaY_xi_reco_20->Fill(xi_reco, w_nom);
-    //   DeltaY_xi_reco_18->Fill(xi_reco, w_nom);
-    //   DeltaY_xi_reco_12->Fill(xi_reco, w_nom);
-    //   DeltaY_xi_reco_10->Fill(xi_reco, w_nom);
-    //   DeltaY_xi_reco_6->Fill(xi_reco, w_nom);
-    // }
-
-    // // Always fill f-value histograms (separate suffixed sets)
-    // // Fill with NoAC weights if available, otherwise fill unweighted
-    // for(const auto &spec : noac_points_){
-    //   auto bundle_it = noac_histograms_.find(spec.first);
-    //   if(bundle_it == noac_histograms_.end()) continue;
-    //   auto &bundle = bundle_it->second;
-      
-    //   double w_fill = w_nom; // Default: unweighted
-    //   if(use_noac_evtweights_ && event.is_valid(h_xi_gen)){
-    //     const double xi_gen_evt = event.get(h_xi_gen);
-    //     auto weight_it = noac_weight_map_.find(spec.first);
-    //     if(weight_it != noac_weight_map_.end() && weight_it->second){
-    //       const double w = lookup_noac_weight(xi_gen_evt, weight_it->second.get());
-    //       w_fill = w_nom * w;
-    //     }
-    //   }
-      
-    //   if(bundle.deltaY) bundle.deltaY->Fill(dyreco, w_fill);
-    //   for(const auto &xi_entry : bundle.xi_histograms){
-    //     if(xi_entry.second) xi_entry.second->Fill(xi_reco, w_fill);
-    //   }
-    // }
-
-    // end of template method
-    // ------------------------------------------------------------
   
     // Start angular variable definitions -------------------------------------------------------------------------------------------------------//
 
@@ -2314,8 +2042,8 @@ void ZprimeSemiLeptonicHists::fill(const Event & event){
         }
 
         // dR between AK8-subjet to gen b-quark
-        if (is_tt && is_mc && event.is_valid(h_ttbargen)){ // only use for TTToSemileptonic samples
-          if(debug) cout << "inside Merged topology deltaR gen b loop" << endl;
+        if (is_tt && is_mc){ // only use for TTToSemileptonic samples
+          if(debug) cout << "[ZprimeSemiLeptonicHists - DEBUG] inside Merged topology deltaR gen b loop" << endl;
           const auto& ttbargen = event.get(h_ttbargen);
           if(ttbargen.IsSemiLeptonicDecay()){
             if(debug) cout << "is semileptonic decay" << endl;
@@ -2780,9 +2508,9 @@ void ZprimeSemiLeptonicHists::fill(const Event & event){
   ██   ████ ██   ████
   */
 
-  if(debug) cout << "before NN in hists" << endl;
+  if(debug) cout << "[ZprimeSemiLeptonicHists - DEBUG] before NN in hists" << endl;
   if(NN){
-    if(debug) cout << "is it going inside NN" << endl;
+    if(debug) cout << "... inside NN" << endl;
     for(int i=0; i<Nmuons; i++){
       NN_Mu_pt->Fill(muons->at(i).pt(),weight);
       NN_Mu_eta->Fill(muons->at(i).eta(),weight);
@@ -2943,7 +2671,7 @@ void ZprimeSemiLeptonicHists::fill(const Event & event){
     }
   //NN
   }
-  if(debug) cout << "after NN in hists" << endl;
+  if(debug) cout << "... after NN in hists" << endl;
  
   
 

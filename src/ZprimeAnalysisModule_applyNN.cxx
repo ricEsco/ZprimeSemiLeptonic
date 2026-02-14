@@ -999,104 +999,18 @@ ZprimeAnalysisModule_applyNN::ZprimeAnalysisModule_applyNN(uhh2::Context& ctx){
 
 
   
-  if(debug) cout << "[DEBUG] About to create CHSMatchHists..." << endl;
+  if(debug) cout << "[ZprimeAnalysisModule_applyNN - DEBUG] About to create CHSMatchHists..." << endl;
   h_CHSMatchHists.reset(new ZprimeSemiLeptonicCHSMatchHists(ctx, "CHSMatch"));
-  if(debug) cout << "[DEBUG] CHSMatchHists created successfully!" << endl;
+  if(debug) cout << "[ZprimeAnalysisModule_applyNN - DEBUG] CHSMatchHists created successfully!" << endl;
 
   sel_1btag.reset(new NJetSelection(1, -1, id_btag));
   sel_2btag.reset(new NJetSelection(2, -1, id_btag));
 
-  if (debug) cout << "[DEBUG] About to create DeltaY_reco_SystVariations_Inclusive_SR..." << endl;
+  if (debug) cout << "[ZprimeAnalysisModule_applyNN - DEBUG] About to create DeltaY_reco_SystVariations_Inclusive_SR..." << endl;
   h_DeltaY_reco_SystVariations_Inclusive_SR.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "DeltaY_reco_SystVariations_Inclusive_SR"));
-  if (debug) cout << "[DEBUG] DeltaY_reco_SystVariations_Inclusive_SR created successfully!" << endl;
+  if (debug) cout << "[ZprimeAnalysisModule_applyNN - DEBUG] DeltaY_reco_SystVariations_Inclusive_SR created successfully!" << endl;
   h_DeltaY_reco_PDFVariations_Inclusive_SR.reset(new ZprimeSemiLeptonicPDFHists(ctx, "DeltaY_reco_PDFVariations_Inclusive_SR"));
-  if (debug) cout << "[DEBUG] DeltaY_reco_PDFVariations_Inclusive_SR created successfully!" << endl;
-
-  // ================ SR ==================================================================================================================================================================================================================
-  
-  // h_DeltaY_reco_SystVariations_0_500_SR.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "DeltaY_reco_SystVariations_0_500_SR"));
-  // h_DeltaY_reco_SystVariations_0_350_SR.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "DeltaY_reco_SystVariations_0_350_SR"));
-  // h_DeltaY_reco_SystVariations_350_500_SR.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "DeltaY_reco_SystVariations_350_500_SR"));
-  // h_DeltaY_reco_SystVariations_500_750_SR.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "DeltaY_reco_SystVariations_500_750_SR"));
-  // h_DeltaY_reco_SystVariations_750_1000_SR.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "DeltaY_reco_SystVariations_750_1000_SR"));
-  // h_DeltaY_reco_SystVariations_1000_1500_SR.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "DeltaY_reco_SystVariations_1000_1500_SR"));
-  // h_DeltaY_reco_SystVariations_1500Inf_SR.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "DeltaY_reco_SystVariations_1500Inf_SR"));
-  // h_DeltaY_reco_SystVariations_0_700_SR.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "DeltaY_reco_SystVariations_0_700_SR"));
-  // h_DeltaY_reco_SystVariations_700_900_SR.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "DeltaY_reco_SystVariations_700_900_SR"));
-  // h_DeltaY_reco_SystVariations_900Inf_SR.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "DeltaY_reco_SystVariations_900Inf_SR"));
-
-  if(debug) cout << "[DEBUG] DeltaY_reco_SystVariations_0_500_SR created successfully!" << endl;
-
-  // h_DeltaY_reco_PDFVariations_0_500_SR.reset(new ZprimeSemiLeptonicPDFHists(ctx, "DeltaY_reco_PDFVariations_0_500_SR"));
-  // h_DeltaY_reco_PDFVariations_0_350_SR.reset(new ZprimeSemiLeptonicPDFHists(ctx, "DeltaY_reco_PDFVariations_0_350_SR"));
-  // h_DeltaY_reco_PDFVariations_350_500_SR.reset(new ZprimeSemiLeptonicPDFHists(ctx, "DeltaY_reco_PDFVariations_350_500_SR"));
-  // h_DeltaY_reco_PDFVariations_500_750_SR.reset(new ZprimeSemiLeptonicPDFHists(ctx, "DeltaY_reco_PDFVariations_500_750_SR"));
-  // h_DeltaY_reco_PDFVariations_750_1000_SR.reset(new ZprimeSemiLeptonicPDFHists(ctx, "DeltaY_reco_PDFVariations_750_1000_SR"));
-  // h_DeltaY_reco_PDFVariations_1000_1500_SR.reset(new ZprimeSemiLeptonicPDFHists(ctx, "DeltaY_reco_PDFVariations_1000_1500_SR"));
-  // h_DeltaY_reco_PDFVariations_1500Inf_SR.reset(new ZprimeSemiLeptonicPDFHists(ctx, "DeltaY_reco_PDFVariations_1500Inf_SR"));
-  // h_DeltaY_reco_PDFVariations_0_700_SR.reset(new ZprimeSemiLeptonicPDFHists(ctx, "DeltaY_reco_PDFVariations_0_700_SR"));
-  // h_DeltaY_reco_PDFVariations_700_900_SR.reset(new ZprimeSemiLeptonicPDFHists(ctx, "DeltaY_reco_PDFVariations_700_900_SR"));
-  // h_DeltaY_reco_PDFVariations_900Inf_SR.reset(new ZprimeSemiLeptonicPDFHists(ctx, "DeltaY_reco_PDFVariations_900Inf_SR"));
-  // ================ SR ends ==================================================================================================================================================================================================================
-  
-  if(debug) cout << "[DEBUG] DeltaY_reco_SystVariations_0_500_CR1 created successfully!" << endl;
-
-  // ================ CR1 ==================================================================================================================================================================================================================
-  
-  // h_DeltaY_reco_SystVariations_0_500_CR1.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "DeltaY_reco_SystVariations_0_500_CR1"));
-  // h_DeltaY_reco_SystVariations_0_350_CR1.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "DeltaY_reco_SystVariations_0_350_CR1"));
-  // h_DeltaY_reco_SystVariations_350_500_CR1.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "DeltaY_reco_SystVariations_350_500_CR1"));
-  // h_DeltaY_reco_SystVariations_500_750_CR1.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "DeltaY_reco_SystVariations_500_750_CR1"));
-  // h_DeltaY_reco_SystVariations_750_1000_CR1.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "DeltaY_reco_SystVariations_750_1000_CR1"));
-  // h_DeltaY_reco_SystVariations_1000_1500_CR1.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "DeltaY_reco_SystVariations_1000_1500_CR1"));
-  // h_DeltaY_reco_SystVariations_1500Inf_CR1.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "DeltaY_reco_SystVariations_1500Inf_CR1"));
-  // h_DeltaY_reco_SystVariations_0_700_CR1.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "DeltaY_reco_SystVariations_0_700_CR1"));
-  // h_DeltaY_reco_SystVariations_700_900_CR1.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "DeltaY_reco_SystVariations_700_900_CR1"));
-  // h_DeltaY_reco_SystVariations_900Inf_CR1.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "DeltaY_reco_SystVariations_900Inf_CR1"));
-  
-  
-  // h_DeltaY_reco_PDFVariations_0_500_CR1.reset(new ZprimeSemiLeptonicPDFHists(ctx, "DeltaY_reco_PDFVariations_0_500_CR1"));
-  // h_DeltaY_reco_PDFVariations_0_350_CR1.reset(new ZprimeSemiLeptonicPDFHists(ctx, "DeltaY_reco_PDFVariations_0_350_CR1"));
-  // h_DeltaY_reco_PDFVariations_350_500_CR1.reset(new ZprimeSemiLeptonicPDFHists(ctx, "DeltaY_reco_PDFVariations_350_500_CR1"));
-  // h_DeltaY_reco_PDFVariations_500_750_CR1.reset(new ZprimeSemiLeptonicPDFHists(ctx, "DeltaY_reco_PDFVariations_500_750_CR1"));
-  // h_DeltaY_reco_PDFVariations_750_1000_CR1.reset(new ZprimeSemiLeptonicPDFHists(ctx, "DeltaY_reco_PDFVariations_750_1000_CR1"));
-  // h_DeltaY_reco_PDFVariations_1000_1500_CR1.reset(new ZprimeSemiLeptonicPDFHists(ctx, "DeltaY_reco_PDFVariations_1000_1500_CR1"));
-  // h_DeltaY_reco_PDFVariations_1500Inf_CR1.reset(new ZprimeSemiLeptonicPDFHists(ctx, "DeltaY_reco_PDFVariations_1500Inf_CR1"));
-  // h_DeltaY_reco_PDFVariations_0_700_CR1.reset(new ZprimeSemiLeptonicPDFHists(ctx, "DeltaY_reco_PDFVariations_0_700_CR1"));
-  // h_DeltaY_reco_PDFVariations_700_900_CR1.reset(new ZprimeSemiLeptonicPDFHists(ctx, "DeltaY_reco_PDFVariations_700_900_CR1"));
-  // h_DeltaY_reco_PDFVariations_900Inf_CR1.reset(new ZprimeSemiLeptonicPDFHists(ctx, "DeltaY_reco_PDFVariations_900Inf_CR1"));
-
-
-  // ================ CR1 ends ==================================================================================================================================================================================================================
-
-
-  // ================ CR2 ==================================================================================================================================================================================================================
-  // h_DeltaY_reco_SystVariations_0_500_CR2.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "DeltaY_reco_SystVariations_0_500_CR2"));
-  // h_DeltaY_reco_SystVariations_0_350_CR2.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "DeltaY_reco_SystVariations_0_350_CR2"));
-  // h_DeltaY_reco_SystVariations_350_500_CR2.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "DeltaY_reco_SystVariations_350_500_CR2"));
-  // h_DeltaY_reco_SystVariations_500_750_CR2.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "DeltaY_reco_SystVariations_500_750_CR2"));
-  // h_DeltaY_reco_SystVariations_750_1000_CR2.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "DeltaY_reco_SystVariations_750_1000_CR2"));
-  // h_DeltaY_reco_SystVariations_1000_1500_CR2.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "DeltaY_reco_SystVariations_1000_1500_CR2"));
-  // h_DeltaY_reco_SystVariations_1500Inf_CR2.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "DeltaY_reco_SystVariations_1500Inf_CR2"));
-  // h_DeltaY_reco_SystVariations_0_700_CR2.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "DeltaY_reco_SystVariations_0_700_CR2"));
-  // h_DeltaY_reco_SystVariations_700_900_CR2.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "DeltaY_reco_SystVariations_700_900_CR2"));
-  // h_DeltaY_reco_SystVariations_900Inf_CR2.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "DeltaY_reco_SystVariations_900Inf_CR2"));
-
-
-  // h_DeltaY_reco_PDFVariations_0_500_CR2.reset(new ZprimeSemiLeptonicPDFHists(ctx, "DeltaY_reco_PDFVariations_0_500_CR2"));
-  // h_DeltaY_reco_PDFVariations_0_350_CR2.reset(new ZprimeSemiLeptonicPDFHists(ctx, "DeltaY_reco_PDFVariations_0_350_CR2"));
-  // h_DeltaY_reco_PDFVariations_350_500_CR2.reset(new ZprimeSemiLeptonicPDFHists(ctx, "DeltaY_reco_PDFVariations_350_500_CR2"));
-  // h_DeltaY_reco_PDFVariations_500_750_CR2.reset(new ZprimeSemiLeptonicPDFHists(ctx, "DeltaY_reco_PDFVariations_500_750_CR2"));
-  // h_DeltaY_reco_PDFVariations_750_1000_CR2.reset(new ZprimeSemiLeptonicPDFHists(ctx, "DeltaY_reco_PDFVariations_750_1000_CR2"));
-  // h_DeltaY_reco_PDFVariations_1000_1500_CR2.reset(new ZprimeSemiLeptonicPDFHists(ctx, "DeltaY_reco_PDFVariations_1000_1500_CR2"));
-  // h_DeltaY_reco_PDFVariations_1500Inf_CR2.reset(new ZprimeSemiLeptonicPDFHists(ctx, "DeltaY_reco_PDFVariations_1500Inf_CR2"));
-  // h_DeltaY_reco_PDFVariations_0_700_CR2.reset(new ZprimeSemiLeptonicPDFHists(ctx, "DeltaY_reco_PDFVariations_0_700_CR2"));
-  // h_DeltaY_reco_PDFVariations_700_900_CR2.reset(new ZprimeSemiLeptonicPDFHists(ctx, "DeltaY_reco_PDFVariations_700_900_CR2"));
-  // h_DeltaY_reco_PDFVariations_900Inf_CR2.reset(new ZprimeSemiLeptonicPDFHists(ctx, "DeltaY_reco_PDFVariations_900Inf_CR2"));
-
-
-  // ================ CR2 ends ==================================================================================================================================================================================================================
-
+  if (debug) cout << "[ZprimeAnalysisModule_applyNN - DEBUG] DeltaY_reco_PDFVariations_Inclusive_SR created successfully!" << endl;
   
   
   vector<string> histogram_tags = {
@@ -1115,17 +1029,14 @@ ZprimeAnalysisModule_applyNN::ZprimeAnalysisModule_applyNN(uhh2::Context& ctx){
   "DNN_output0_TopTag", "DNN_output0_NoTopTag",
   "DNN_output1","DNN_output1_chi2",
   "DNN_output2","DNN_output2_chi2",
-  // "DeltaY_reco_1500Inf_SR" ,"DeltaY_reco_1000_1500_SR" ,"DeltaY_reco_750_1000_SR" ,"DeltaY_reco_500_750_SR", "DeltaY_reco_0_350_SR", "DeltaY_reco_350_500_SR","DeltaY_reco_0_500_SR", "DeltaY_reco_0_700_SR", "DeltaY_reco_700_900_SR", "DeltaY_reco_900Inf_SR",
-  // "DeltaY_reco_1500Inf_CR1" ,"DeltaY_reco_1000_1500_CR1" ,"DeltaY_reco_750_1000_CR1" ,"DeltaY_reco_500_750_CR1","DeltaY_reco_0_350_CR1", "DeltaY_reco_350_500_CR1", "DeltaY_reco_0_500_CR1","DeltaY_reco_0_700_CR1", "DeltaY_reco_700_900_CR1", "DeltaY_reco_900Inf_CR1", 
-  // "DeltaY_reco_1500Inf_CR2" ,"DeltaY_reco_1000_1500_CR2" ,"DeltaY_reco_750_1000_CR2" ,"DeltaY_reco_500_750_CR2", "DeltaY_reco_0_350_CR2", "DeltaY_reco_350_500_CR2","DeltaY_reco_0_500_CR2", "DeltaY_reco_0_700_CR2", "DeltaY_reco_700_900_CR2", "DeltaY_reco_900Inf_CR2",
   };
 
-  if(debug) cout << "[DEBUG] About to book histograms..." << endl;
+  if(debug) cout << "[ZprimeAnalysisModule_applyNN - DEBUG] About to book histograms..." << endl;
   book_histograms(ctx, histogram_tags);
-  if (debug) cout << "[DEBUG] After book histograms" << endl;
+  if (debug) cout << "[ZprimeAnalysisModule_applyNN - DEBUG] After book histograms" << endl;
 
   h_MulticlassNN_output.reset(new ZprimeSemiLeptonicMulticlassNNHists(ctx, "MulticlassNN"));
-  if(debug) cout << "[DEBUG] MulticlassNNHists created successfully!" << endl;
+  if(debug) cout << "[ZprimeAnalysisModule_applyNN - DEBUG] MulticlassNNHists created successfully!" << endl;
 
   // lumihists_Weights_Init.reset(new LuminosityHists(ctx, "Lumi_Weights_Init"));
   // lumihists_Weights_PU.reset(new LuminosityHists(ctx, "Lumi_Weights_PU"));
@@ -1192,7 +1103,7 @@ ZprimeAnalysisModule_applyNN::ZprimeAnalysisModule_applyNN(uhh2::Context& ctx){
     }
   }
 
-  if(debug) cout << "[DEBUG] About to get handles..." << endl;
+  if(debug) cout << "[ZprimeAnalysisModule_applyNN - DEBUG] About to get handles..." << endl;
   h_Ak4_j1_E   = ctx.get_handle<float>("Ak4_j1_E");
   h_Ak4_j1_eta = ctx.get_handle<float>("Ak4_j1_eta");
   h_Ak4_j1_m   = ctx.get_handle<float>("Ak4_j1_m");
@@ -1308,7 +1219,7 @@ ZprimeAnalysisModule_applyNN::ZprimeAnalysisModule_applyNN(uhh2::Context& ctx){
     h_mtt_gen    = ctx.declare_event_input<float>("mtt_gen");
   }
 
-  if(debug) cout << "[DEBUG] Handles created successfully!" << endl;
+  if(debug) cout << "[ZprimeAnalysisModule_applyNN - DEBUG] Handles created successfully!" << endl;
 }
 
 /*
@@ -1529,7 +1440,7 @@ bool ZprimeAnalysisModule_applyNN::process(uhh2::Event& event){
     TopTaggerDeepAK8->process(event);
     hadronic_top->process(event);
   }
-  if(debug) cout<<"Top Tagger ok"<<endl;
+  if(debug) cout<<"[ZprimeAnalysisModule_applyNN - DEBUG] Top Tagger ok"<<endl;
 
   // Fill ZprimeSemiLeptonicHists in Weights_Init folder with initial weight
   fill_histograms(event, "Weights_Init");
@@ -1604,7 +1515,7 @@ bool ZprimeAnalysisModule_applyNN::process(uhh2::Event& event){
         ele_is_low = true;}
       else{ele_is_high = true;}
     }
-    if(debug && event_counter <= 5) cout << "[DEBUG] Finished looping over electrons" << endl;
+    if(debug && event_counter <= 5) cout << "[ZprimeAnalysisModule_applyNN - DEBUG] Finished looping over electrons" << endl;
   }
   sort_by_pt<Electron>(*event.electrons);
   
@@ -1623,7 +1534,7 @@ bool ZprimeAnalysisModule_applyNN::process(uhh2::Event& event){
   // }
   // fill_histograms(event, "TwoDCut_low1");
 
-  if(debug)  cout<<"done 2D low cut"<<endl;
+  if(debug)  cout<<"[ZprimeAnalysisModule_applyNN - DEBUG] done 2D low cut"<<endl;
 
 
 
@@ -1770,12 +1681,10 @@ bool ZprimeAnalysisModule_applyNN::process(uhh2::Event& event){
   NNModule->process(event);
   std::vector<tensorflow::Tensor> NNoutputs = NNModule->GetOutputs();
   ZprimeCandidate* BestZprimeCandidate = event.get(h_BestZprimeCandidateChi2);
-  // bool is_zprime_reconstructed_chi2 = event.get(h_is_zprime_reconstructed_chi2); 
   float Mass_tt = BestZprimeCandidate->Zprime_v4().M();
 
 
   if(debug) cout << "starting DNN" << endl;
-  //float Mttbar_reco =inv_mass(BestZprimeCandidate->BestZprimeCandidate->top_leptonic_v4()+BestZprimeCandidate->BestZprimeCandidate->top_hadronic_v4());
   event.set(h_NNoutput0, (double)(NNoutputs[0].tensor<float, 2>()(0,0)));
   event.set(h_NNoutput1, (double)(NNoutputs[0].tensor<float, 2>()(0,1)));
   event.set(h_NNoutput2, (double)(NNoutputs[0].tensor<float, 2>()(0,2)));
@@ -1813,213 +1722,31 @@ bool ZprimeAnalysisModule_applyNN::process(uhh2::Event& event){
   // VariablesEFTCR2_module->process(event);
   // if(debug) cout << "done EFT CR2" << endl;
 
-
-
   // DNN categories: out0=TTbar, out1=ST, out2=WJets
   if( out0 == max_score ){
-    // if(debug) cout << "inside signal node, about to process EFT vars" << endl;
-    // VariablesEFTSR_module->process(event);
-
     fill_histograms(event, "DNN_output0_nochi2");
     if(debug) cout << "signal DNN output0" << endl;
 
     if(Chi2_selection->passes(event)){  // cut on chi2<30 - only in SR == out0)
       // cout << "signal DNN output0 chi2" << endl;
-      fill_histograms(event, "DNN_output0");
-      // cout << "signal DNN output0 chi2 fill syst vars" << endl;
-      // h_DeltaY_reco_SystVariations_Inclusive_SR->fill(event);
-      // cout << "signal DNN output0 chi2 fill pdf vars" << endl;
-      // h_DeltaY_reco_PDFVariations_Inclusive_SR->fill(event);
-      // cout << "signal DNN output0 chi2 fill mass bins" << endl;
-      // if(Mass_tt>=0 && Mass_tt < 500){
-      //   fill_histograms(event, "DeltaY_reco_0_500_SR");
-      //   if(debug) cout << "signal DNN output0 chi2 0_500" << endl;
-      //   // h_DeltaY_reco_PDFVariations_0_500_SR->fill(event);
-      //   if(debug) cout << "signal PDF 0_500" << endl;
-      //   //h_DeltaY_reco_SystVariations_0_500_SR->fill(event);
-      //   if(debug) cout << "signal all syst vars" << endl;
-      // }
-      // if(Mass_tt>=0 && Mass_tt < 350){
-      //   if(debug) cout << "signal DNN output0 chi2 0_350" << endl;
-      //   fill_histograms(event, "DeltaY_reco_0_350_SR");
-      //   //h_DeltaY_reco_SystVariations_0_350_SR->fill(event);
-      //   // h_DeltaY_reco_PDFVariations_0_350_SR->fill(event);
-      // }
-      // if(Mass_tt>=350 && Mass_tt < 500){
-      //   if(debug) cout << "signal DNN output0 chi2 350_500" << endl;
-      //   fill_histograms(event, "DeltaY_reco_350_500_SR");
-      //   //h_DeltaY_reco_SystVariations_350_500_SR->fill(event);
-      //   // h_DeltaY_reco_PDFVariations_350_500_SR->fill(event);
-      // }
-      // if (Mass_tt>=0 && Mass_tt < 700){
-      //   if(debug) cout << "signal DNN output0 chi2 0_700" << endl;
-      //   fill_histograms(event, "DeltaY_reco_0_700_SR");
-      //   //h_DeltaY_reco_SystVariations_0_700_SR->fill(event);
-      //   // h_DeltaY_reco_PDFVariations_0_700_SR->fill(event);
-      // }
-      // if(Mass_tt>=700 && Mass_tt < 900){
-      //   if(debug) cout << "signal DNN output0 chi2 700_900" << endl;
-      //   fill_histograms(event, "DeltaY_reco_700_900_SR");
-      //   //h_DeltaY_reco_SystVariations_700_900_SR->fill(event);
-      //   // h_DeltaY_reco_PDFVariations_700_900_SR->fill(event);
-      // }
-      // if(Mass_tt>=900 ){
-      //   if(debug) cout << "signal DNN output0 chi2 900_1500" << endl;
-      //   fill_histograms(event, "DeltaY_reco_900Inf_SR");
-      //   //h_DeltaY_reco_SystVariations_900Inf_SR->fill(event);
-      //   // h_DeltaY_reco_PDFVariations_900Inf_SR->fill(event);
-      // }
-      // if(Mass_tt>=500 && Mass_tt < 750){
-      //   if(debug) cout << "signal DNN output0 chi2 500_750" << endl;
-      //   fill_histograms(event, "DeltaY_reco_500_750_SR");
-      //   //h_DeltaY_reco_SystVariations_500_750_SR->fill(event);
-      //   // h_DeltaY_reco_PDFVariations_500_750_SR->fill(event);
-      // }
-      // if(Mass_tt>=750 && Mass_tt < 1000){
-      //   if(debug) cout << "signal DNN output0 chi2 750_1000" << endl;
-      //   fill_histograms(event, "DeltaY_reco_750_1000_SR");
-      //   //h_DeltaY_reco_SystVariations_750_1000_SR->fill(event);
-      //   // h_DeltaY_reco_PDFVariations_750_1000_SR->fill(event);
-      // }
-      // if(Mass_tt>=1000 && Mass_tt < 1500){
-      //   if(debug) cout << "signal DNN output0 chi2 1000_1500" << endl;
-      //   fill_histograms(event, "DeltaY_reco_1000_1500_SR");
-      //   //h_DeltaY_reco_SystVariations_1000_1500_SR->fill(event);
-      //   // h_DeltaY_reco_PDFVariations_1000_1500_SR->fill(event);
-      // }
-      // if(Mass_tt>=1500){
-      //   if(debug) cout << "signal DNN output0 chi2 1500_1000" << endl;
-      //   fill_histograms(event, "DeltaY_reco_1500Inf_SR");
-      //   //h_DeltaY_reco_SystVariations_1500Inf_SR->fill(event);
-      //   // h_DeltaY_reco_PDFVariations_1500Inf_SR->fill(event);
-      // }
-     
+      fill_histograms(event, "DNN_output0");     
       if(ZprimeTopTag_selection->passes(event)){
         fill_histograms(event, "DNN_output0_TopTag");
       }
       else{fill_histograms(event, "DNN_output0_NoTopTag");}
       // if(debug) cout << "done with output0" << endl;
-
     }//Chi2
   }//out0
 
-
   if( out1 == max_score ){
-    //   if(debug) cout << "inside ST node, about to process EFT vars" << endl;
-    //   VariablesEFTCR1_module->process(event);
     fill_histograms(event, "DNN_output1");
-    //   if (debug)cout<<"processed CR1"<<endl;
-
-    //   if(Mass_tt>=0 && Mass_tt < 500){
-    //     fill_histograms(event, "DeltaY_reco_0_500_CR1");
-    //     //h_DeltaY_reco_SystVariations_0_500_CR1->fill(event);
-    //     // h_DeltaY_reco_PDFVariations_0_500_CR1->fill(event);  
-    //   }
-    //   if (Mass_tt>=0 && Mass_tt < 350){
-    //     fill_histograms(event, "DeltaY_reco_0_350_CR1");
-    //     //h_DeltaY_reco_SystVariations_0_350_CR1->fill(event);
-    //     // h_DeltaY_reco_PDFVariations_0_350_CR1->fill(event);
-    //   }
-    //   if(Mass_tt>=350 && Mass_tt < 500){
-    //     fill_histograms(event, "DeltaY_reco_350_500_CR1");
-    //     //h_DeltaY_reco_SystVariations_350_500_CR1->fill(event);
-    //     // h_DeltaY_reco_PDFVariations_350_500_CR1->fill(event);
-    //   }
-    //   if (Mass_tt>=0 && Mass_tt < 700){
-    //     fill_histograms(event, "DeltaY_reco_0_700_CR1");
-    //     //h_DeltaY_reco_SystVariations_0_700_CR1->fill(event);
-    //     // h_DeltaY_reco_PDFVariations_0_700_CR1->fill(event);
-    //   }
-    //   if(Mass_tt>=700 && Mass_tt < 900){
-    //     fill_histograms(event, "DeltaY_reco_700_900_CR1");
-    //     //h_DeltaY_reco_SystVariations_700_900_CR1->fill(event);
-    //     // h_DeltaY_reco_PDFVariations_700_900_CR1->fill(event);
-    //   }
-    //   if(Mass_tt>=900 ){
-    //     fill_histograms(event, "DeltaY_reco_900Inf_CR1");
-    //     //h_DeltaY_reco_SystVariations_900Inf_CR1->fill(event);
-    //     // h_DeltaY_reco_PDFVariations_900Inf_CR1->fill(event);
-    //   }
-    //   if(Mass_tt>=500 && Mass_tt < 750){
-    //     fill_histograms(event, "DeltaY_reco_500_750_CR1");
-    //     //h_DeltaY_reco_SystVariations_500_750_CR1->fill(event);
-    //     // h_DeltaY_reco_PDFVariations_500_750_CR1->fill(event);
-    //   }
-    //   if(Mass_tt>=750 && Mass_tt < 1000){
-    //     fill_histograms(event, "DeltaY_reco_750_1000_CR1");
-    //     //h_DeltaY_reco_SystVariations_750_1000_CR1->fill(event);
-    //     // h_DeltaY_reco_PDFVariations_750_1000_CR1->fill(event);
-    //   }
-    //   if(Mass_tt>=1000 && Mass_tt < 1500){
-    //     fill_histograms(event, "DeltaY_reco_1000_1500_CR1");
-    //     //h_DeltaY_reco_SystVariations_1000_1500_CR1->fill(event);
-    //     // h_DeltaY_reco_PDFVariations_1000_1500_CR1->fill(event);
-    //   }
-    //   if(Mass_tt>=1500){
-    //     fill_histograms(event, "DeltaY_reco_1500Inf_CR1");
-    //     //h_DeltaY_reco_SystVariations_1500Inf_CR1->fill(event);
-    //     // h_DeltaY_reco_PDFVariations_1500Inf_CR1->fill(event);
-    //   }
     if(Chi2_selection->passes(event)){ 
       fill_histograms(event,"DNN_output1_chi2");
     }
   }//out1
  
-  // if(debug) cout << "check for WJets node" << endl;
   if( out2 == max_score ){
-    //   if (debug)cout<<"inside WJets node about to process EFT vars"<<endl;
-    //   VariablesEFTCR2_module->process(event);
     fill_histograms(event, "DNN_output2");
-    //   if(Mass_tt>=0 && Mass_tt < 500){
-    //     fill_histograms(event, "DeltaY_reco_0_500_CR2");
-    //     //h_DeltaY_reco_SystVariations_0_500_CR2->fill(event);
-    //     // h_DeltaY_reco_PDFVariations_0_500_CR2->fill(event);
-    //   }
-    //   if (Mass_tt>=0 && Mass_tt < 350){
-    //     fill_histograms(event, "DeltaY_reco_0_350_CR2");
-    //     //h_DeltaY_reco_SystVariations_0_350_CR2->fill(event);
-    //     // h_DeltaY_reco_PDFVariations_0_350_CR2->fill(event);
-    //   }
-    //   if(Mass_tt>=350 && Mass_tt < 500){
-    //     fill_histograms(event, "DeltaY_reco_350_500_CR2");
-    //     //h_DeltaY_reco_SystVariations_350_500_CR2->fill(event);
-    //     // h_DeltaY_reco_PDFVariations_350_500_CR2->fill(event);
-    //   }
-    //   if (Mass_tt>=0 && Mass_tt < 700){
-    //     fill_histograms(event, "DeltaY_reco_0_700_CR2");
-    //     //h_DeltaY_reco_SystVariations_0_700_CR2->fill(event);
-    //     // h_DeltaY_reco_PDFVariations_0_700_CR2->fill(event);
-    //   }
-    //   if(Mass_tt>=700 && Mass_tt < 900){
-    //     fill_histograms(event, "DeltaY_reco_700_900_CR2");
-    //     //h_DeltaY_reco_SystVariations_700_900_CR2->fill(event);
-    //     // h_DeltaY_reco_PDFVariations_700_900_CR2->fill(event);
-    //   }
-    //   if(Mass_tt>=900 ){
-    //     fill_histograms(event, "DeltaY_reco_900Inf_CR2");
-    //     //h_DeltaY_reco_SystVariations_900Inf_CR2->fill(event);
-    //     // h_DeltaY_reco_PDFVariations_900Inf_CR2->fill(event);
-    //   }
-    //   if(Mass_tt>=500 && Mass_tt < 750){
-    //     fill_histograms(event, "DeltaY_reco_500_750_CR2");
-    //     //h_DeltaY_reco_SystVariations_500_750_CR2->fill(event);
-    //     // h_DeltaY_reco_PDFVariations_500_750_CR2->fill(event);
-    //   }
-    //   if(Mass_tt>=750 && Mass_tt < 1000){
-    //     fill_histograms(event, "DeltaY_reco_750_1000_CR2");
-    //     //h_DeltaY_reco_SystVariations_750_1000_CR2->fill(event);
-    //     // h_DeltaY_reco_PDFVariations_750_1000_CR2->fill(event);
-    //   }
-    //   if(Mass_tt>=1000 && Mass_tt < 1500){
-    //     fill_histograms(event, "DeltaY_reco_1000_1500_CR2");
-    //     //h_DeltaY_reco_SystVariations_1000_1500_CR2->fill(event);
-    //     // h_DeltaY_reco_PDFVariations_1000_1500_CR2->fill(event);
-    //   }
-    //   if(Mass_tt>=1500){
-    //     fill_histograms(event, "DeltaY_reco_1500Inf_CR2");
-    //     // h_DeltaY_reco_SystVariations_1500Inf_CR2->fill(event);
-    //     // h_DeltaY_reco_PDFVariations_1500Inf_CR2->fill(event);
-    //   }
     if(Chi2_selection->passes(event)){ 
       fill_histograms(event,"DNN_output2_chi2");
     }
