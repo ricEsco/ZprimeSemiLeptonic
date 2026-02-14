@@ -126,6 +126,7 @@ namespace {
     }
     return dst;
   }
+}
   
 
 ZprimeSemiLeptonicPDFHists::ZprimeSemiLeptonicPDFHists(uhh2::Context & ctx, const std::string& dirname): 

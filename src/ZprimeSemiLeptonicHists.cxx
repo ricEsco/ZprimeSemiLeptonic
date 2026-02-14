@@ -184,7 +184,9 @@ std::unique_ptr<TH1D> ZprimeSemiLeptonicHists::build_noac_weights_from_gen(const
     sumW_check += wi * hi;
     sumH_check += hi;
   }
-
+  
+  return W;
+}
 
 
 double ZprimeSemiLeptonicHists::lookup_noac_weight(double xi, const TH1* W){

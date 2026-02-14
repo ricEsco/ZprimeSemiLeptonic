@@ -1680,8 +1680,6 @@ bool ZprimeAnalysisModule_applyNN::process(uhh2::Event& event){
   // NN module
   NNModule->process(event);
   std::vector<tensorflow::Tensor> NNoutputs = NNModule->GetOutputs();
-  ZprimeCandidate* BestZprimeCandidate = event.get(h_BestZprimeCandidateChi2);
-
 
   if(debug) cout << "starting DNN" << endl;
   event.set(h_NNoutput0, (double)(NNoutputs[0].tensor<float, 2>()(0,0)));
