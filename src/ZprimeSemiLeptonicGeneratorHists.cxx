@@ -78,11 +78,7 @@ void ZprimeSemiLeptonicGeneratorHists::fill(const Event & event){
     M_Zprime_rebin3->Fill(m_zprime, weight);
     Pt_Zprime->Fill(zprime.pt());
   }
-  float m_ttbar = inv_mass(top.v4() + antitop.v4());
-  // // M_ttbar->Fill(m_ttbar, weight);
-  // M_ttbar_rebin->Fill(m_ttbar, weight);
-  // M_ttbar_rebin2->Fill(m_ttbar, weight);
-  // M_ttbar_rebin3->Fill(m_ttbar, weight);
+
   M_top->Fill(inv_mass(top.v4()), weight);
   M_antitop->Fill(inv_mass(antitop.v4()), weight);
   Pt_ttbar->Fill((top.v4() + antitop.v4()).Pt());

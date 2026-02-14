@@ -185,17 +185,6 @@ std::unique_ptr<TH1D> ZprimeSemiLeptonicHists::build_noac_weights_from_gen(const
     sumH_check += hi;
   }
 
-  const double meanW = (sumH_check > 0.0 ? sumW_check / sumH_check : 0.0);
-  // std::cout << std::fixed << std::setprecision(6)
-  //           << "[NoAC] Built W(xi; f=" << f_noac << ")\n"
-  //           << "       bins=" << nb
-  //           << "  bad=" << n_bad
-  //           << "  <W>_Hgen=" << meanW
-  //           << "  min(W)=" << minW
-  //           << "  max(W)=" << maxW << std::endl;
-  // // ------------------------------------------------------------
-  return W;
-}
 
 
 double ZprimeSemiLeptonicHists::lookup_noac_weight(double xi, const TH1* W){
@@ -1889,7 +1878,7 @@ void ZprimeSemiLeptonicHists::fill(const Event & event){
   bool is_zprime_reconstructed_chi2 = event.get(h_is_zprime_reconstructed_chi2);
   bool is_zprime_reconstructed_correctmatch = event.get(h_is_zprime_reconstructed_correctmatch);
   
-  if(debug) cout << "[ZprimeSemiLeptonicHists - DEBUG] In General section" << endl;
+  cout << "[ZprimeSemiLeptonicHists - DEBUG] In General section" << endl;
   
   //begin spin correlation with matching and deltay for all else(all MC and data)---------------->
   // for all MC and DATA
@@ -2043,22 +2032,22 @@ void ZprimeSemiLeptonicHists::fill(const Event & event){
 
         // dR between AK8-subjet to gen b-quark
         if (is_tt && is_mc){ // only use for TTToSemileptonic samples
-          if(debug) cout << "[ZprimeSemiLeptonicHists - DEBUG] inside Merged topology deltaR gen b loop" << endl;
+          cout << "[ZprimeSemiLeptonicHists - DEBUG] inside Merged topology deltaR gen b loop" << endl;
           const auto& ttbargen = event.get(h_ttbargen);
           if(ttbargen.IsSemiLeptonicDecay()){
-            if(debug) cout << "is semileptonic decay" << endl;
+            cout << "is semileptonic decay" << endl;
             // TLorentzVector hadTop_b;
             LorentzVector Gen_b = ttbargen.BHad().v4();
-            if(debug) cout << "Gen b quark pT, eta, phi, E: " << Gen_b.Pt() << ", " << Gen_b.Eta() << ", " << Gen_b.Phi() << ", " << Gen_b.E() << endl;
+            cout << "Gen b quark pT, eta, phi, E: " << Gen_b.Pt() << ", " << Gen_b.Eta() << ", " << Gen_b.Phi() << ", " << Gen_b.E() << endl;
             // Type-cast had_top_b into a LorentzVector for deltaR calculation
             LorentzVector Reco_b;
             Reco_b.SetPt(had_top_b.Pt());
             Reco_b.SetEta(had_top_b.Eta());
             Reco_b.SetPhi(had_top_b.Phi());
             Reco_b.SetE(had_top_b.E());
-            if(debug) cout << "Reco b quark pT, eta, phi, E: " << Reco_b.Pt() << ", " << Reco_b.Eta() << ", " << Reco_b.Phi() << ", " << Reco_b.E() << endl;
+            cout << "Reco b quark pT, eta, phi, E: " << Reco_b.Pt() << ", " << Reco_b.Eta() << ", " << Reco_b.Phi() << ", " << Reco_b.E() << endl;
             float deltaR_Genb_Recob = deltaR(Gen_b, Reco_b);
-            if(debug) cout << "deltaR between gen b and reco b: " << deltaR_Genb_Recob << endl;
+            cout << "deltaR between gen b and reco b: " << deltaR_Genb_Recob << endl;
             deltaR_hadTop_bGen->Fill(deltaR_Genb_Recob, weight);
           }
         }

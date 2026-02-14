@@ -127,22 +127,6 @@ namespace {
     return dst;
   }
   
-  // Map f values to exact suffixes from kNoACSpecs
-  std::string get_noac_suffix(float fv) {
-    static const std::map<float, std::string> f_to_suffix = {
-      {-100.0f, "noacm100"}, {-12.0f, "noacm12"}, {-8.0f, "noacm8"}, {-4.0f, "noacm4"}, {-2.0f, "noacm2"},
-      {-1.0f, "noacm1"}, {-0.8f, "noacm08"}, {-0.6f, "noacm06"}, {-0.4f, "noacm04"}, {-0.2f, "noacm02"},
-      {0.0f, "noac0"},
-      {0.2f, "noac02"}, {0.4f, "noac04"}, {0.6f, "noac06"}, {0.8f, "noac08"},
-      {1.0f, "noac1"}, {2.0f, "noac2"}, {4.0f, "noac4"}, {8.0f, "noac8"}, {12.0f, "noac12"}, {100.0f, "noac100"}
-    };
-    auto it = f_to_suffix.find(fv);
-    if(it != f_to_suffix.end()) return it->second;
-    if(std::abs(fv) < 0.01f) return "noac0";
-    else if(fv < 0) return "noacm" + std::to_string(static_cast<int>(std::abs(fv)));
-    else return "noac" + std::to_string(static_cast<int>(fv));
-  }
-}
 
 ZprimeSemiLeptonicPDFHists::ZprimeSemiLeptonicPDFHists(uhh2::Context & ctx, const std::string& dirname): 
 Hists(ctx, dirname){
@@ -531,8 +515,6 @@ Hists(ctx, dirname){
     const char* char_title_dy_d2 = s_title_dy_d2.c_str();
     const char* char_title_sigma_1 = s_title_sigma_1.c_str();
     const char* char_title_sigma_2 = s_title_sigma_2.c_str();
-    const char* char_title_delta_1 = s_title_delta_1.c_str();
-    const char* char_title_delta_2 = s_title_delta_2.c_str();
     const char* char_title_cos_theta1k_antiLep = s_title_cos_theta1k_antiLep.c_str();
     const char* char_title_cos_theta1r_antiLep = s_title_cos_theta1r_antiLep.c_str();
     const char* char_title_cos_theta1n_antiLep = s_title_cos_theta1n_antiLep.c_str();
