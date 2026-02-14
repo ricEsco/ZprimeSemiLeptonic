@@ -226,7 +226,8 @@ Hists(ctx, dirname) {
   isUL17        = (ctx.get("dataset_version").find("UL17")        != std::string::npos);
   isUL18        = (ctx.get("dataset_version").find("UL18")        != std::string::npos);
 
-  // debug = true;
+  bool debug = true;
+  // bool debug = false;
   NN = false;
   isMuon = false; isElectron = false;
   if(ctx.get("channel") == "muon") isMuon = true;
@@ -257,6 +258,7 @@ Hists(ctx, dirname) {
   // Only initialize the handle for non-EFT TTbar samples to avoid UHH2 complaining about unset handles
   if(is_tt && dataset_version.find("EFT") == std::string::npos) {
     // Only try to get handle for non-EFT TTbar samples
+    if(debug) std::cout << "ZprimeSemiLeptonicHists: inside is_tt check, trying to get ttbargen handle" << std::endl;
     h_ttbargen = ctx.get_handle<TTbarGen>("ttbargen");
   }
   //  h_chi2 = ctx.get_handle<float>("chi2");
@@ -817,7 +819,7 @@ void ZprimeSemiLeptonicHists::init(){
   
   // ttbar system
   beta_ttbar    = book<TH1F>("beta_ttbar", "beta_{t#bar{t}}", 50, 0, 1);
-
+  deltaR_hadTop_bGen = book<TH1F>("deltaR_hadTop_bGen", "#DeltaR(hadronic top, b quark from hadronic top)", 60, 0, 3);
   //------------------------------------- Spin correlation variables -------------------------------------//
   // antiLepton exclusive
   cos_theta1k_antiLep = book<TH1F>("cos_theta1k_antiLep", "cos(#theta_{antilep}^{k})",24, -1, 1);
@@ -2274,7 +2276,7 @@ void ZprimeSemiLeptonicHists::fill(const Event & event){
         float bscore = jets_hadronic_bscores.at(i);
         if(bscore > bscore_max) bscore_max = bscore;
       }
-      if(bscore_max >= noTopTag_btag_WP_L) passes_btagging = true; // Event passes b-tagging condition
+      if(bscore_max >= noTopTag_btag_WP_M) passes_btagging = true; // Event passes b-tagging condition
     }
     
     //--------------- Extracting highest b-tag score in Merged topology, i.e. with top-tagged jet in event ---------------//
@@ -2284,7 +2286,7 @@ void ZprimeSemiLeptonicHists::fill(const Event & event){
         float bscore = BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(i).btag_DeepCSV(); // Using DeepCSV btag score
         if(bscore > bscore_max) bscore_max = bscore;
       }
-      if(bscore_max >= TopTag_btag_WP_L) passes_btagging = true; // Event passes b-tagging condition
+      if(bscore_max >= TopTag_btag_WP_M) passes_btagging = true; // Event passes b-tagging condition
     }
 
     //------------------------------------Define 4vectors of top quarks and spin analyzers------------------------------------//
@@ -2310,6 +2312,29 @@ void ZprimeSemiLeptonicHists::fill(const Event & event){
                                                           BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).phi(), 
                                                           BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).energy());
         }
+
+        // dR between AK8-subjet to gen b-quark
+        if (is_tt && is_mc && event.is_valid(h_ttbargen)){ // only use for TTToSemileptonic samples
+          if(debug) cout << "inside Merged topology deltaR gen b loop" << endl;
+          const auto& ttbargen = event.get(h_ttbargen);
+          if(ttbargen.IsSemiLeptonicDecay()){
+            if(debug) cout << "is semileptonic decay" << endl;
+            // TLorentzVector hadTop_b;
+            LorentzVector Gen_b = ttbargen.BHad().v4();
+            if(debug) cout << "Gen b quark pT, eta, phi, E: " << Gen_b.Pt() << ", " << Gen_b.Eta() << ", " << Gen_b.Phi() << ", " << Gen_b.E() << endl;
+            // Type-cast had_top_b into a LorentzVector for deltaR calculation
+            LorentzVector Reco_b;
+            Reco_b.SetPt(had_top_b.Pt());
+            Reco_b.SetEta(had_top_b.Eta());
+            Reco_b.SetPhi(had_top_b.Phi());
+            Reco_b.SetE(had_top_b.E());
+            if(debug) cout << "Reco b quark pT, eta, phi, E: " << Reco_b.Pt() << ", " << Reco_b.Eta() << ", " << Reco_b.Phi() << ", " << Reco_b.E() << endl;
+            float deltaR_Genb_Recob = deltaR(Gen_b, Reco_b);
+            if(debug) cout << "deltaR between gen b and reco b: " << deltaR_Genb_Recob << endl;
+            deltaR_hadTop_bGen->Fill(deltaR_Genb_Recob, weight);
+          }
+        }
+
       }
 
       TLorentzVector lep_top_lep(0, 0, 0, 0); // Lepton 4-vector

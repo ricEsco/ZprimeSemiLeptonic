@@ -16,10 +16,10 @@
 <!ENTITY OUTPUTdir           "/data/dust/user/ricardo/output_uhh2_Entanglement_Reco/UL18/btag/&CHANNEL;/">
 
 <!-- SingleElectron Data -->
-<!ENTITY EGamma_RunA SYSTEM "../data/Skimming_datasets_UL18_electron/DATA_EGamma_RunA_UL18.xml">
+<!-- <!ENTITY EGamma_RunA SYSTEM "../data/Skimming_datasets_UL18_electron/DATA_EGamma_RunA_UL18.xml">
 <!ENTITY EGamma_RunB SYSTEM "../data/Skimming_datasets_UL18_electron/DATA_EGamma_RunB_UL18.xml">
 <!ENTITY EGamma_RunC SYSTEM "../data/Skimming_datasets_UL18_electron/DATA_EGamma_RunC_UL18.xml">
-<!ENTITY EGamma_RunD SYSTEM "../data/Skimming_datasets_UL18_electron/DATA_EGamma_RunD_UL18.xml">
+<!ENTITY EGamma_RunD SYSTEM "../data/Skimming_datasets_UL18_electron/DATA_EGamma_RunD_UL18.xml"> -->
 
 <!-- TTbar -->
 <!ENTITY TTToSemiLeptonic SYSTEM "../data/Skimming_datasets_UL18_electron/MC_TTToSemiLeptonic_UL18.xml">
@@ -77,10 +77,10 @@
   <Cycle Name="uhh2::AnalysisModuleRunner" OutputDirectory="&OUTPUTdir;/" PostFix="" TargetLumi="&TargetLumi;">
 
     <!-- SingleElectron Data -->
-    <InputData Lumi="1.0" NEventsMax="&NEVT;" Type="DATA" Version="EGamma_RunA&YEARsuffix;" Cacheable="&b_Cacheable;"> &EGamma_RunA; <InputTree Name="AnalysisTree"/> </InputData>
+    <!-- <InputData Lumi="1.0" NEventsMax="&NEVT;" Type="DATA" Version="EGamma_RunA&YEARsuffix;" Cacheable="&b_Cacheable;"> &EGamma_RunA; <InputTree Name="AnalysisTree"/> </InputData>
     <InputData Lumi="1.0" NEventsMax="&NEVT;" Type="DATA" Version="EGamma_RunB&YEARsuffix;" Cacheable="&b_Cacheable;"> &EGamma_RunB; <InputTree Name="AnalysisTree"/> </InputData>
     <InputData Lumi="1.0" NEventsMax="&NEVT;" Type="DATA" Version="EGamma_RunC&YEARsuffix;" Cacheable="&b_Cacheable;"> &EGamma_RunC; <InputTree Name="AnalysisTree"/> </InputData>
-    <InputData Lumi="1.0" NEventsMax="&NEVT;" Type="DATA" Version="EGamma_RunD&YEARsuffix;" Cacheable="&b_Cacheable;"> &EGamma_RunD; <InputTree Name="AnalysisTree"/> </InputData>
+    <InputData Lumi="1.0" NEventsMax="&NEVT;" Type="DATA" Version="EGamma_RunD&YEARsuffix;" Cacheable="&b_Cacheable;"> &EGamma_RunD; <InputTree Name="AnalysisTree"/> </InputData> -->
 
     <!-- TTbar -->
     <InputData Lumi="385941905.855241"   NEventsMax="&NEVT;" Type="MC" Version="TTToSemiLeptonic&YEARsuffix;" Cacheable="&b_Cacheable;"> &TTToSemiLeptonic; <InputTree Name="AnalysisTree"/> </InputData>
