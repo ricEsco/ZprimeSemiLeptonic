@@ -232,9 +232,9 @@ ZprimePreselectionModule::ZprimePreselectionModule(uhh2::Context& ctx) {
 bool ZprimePreselectionModule::process(uhh2::Event& event){
   
   // Process TTbarGen first
-  if (isMC && ttgenprod) {
-    ttgenprod->process(event);
-  }
+  // if (isMC && ttgenprod) {
+  //   ttgenprod->process(event);
+  // }
   
   if(debug) cout << "++++++++++++ NEW EVENT ++++++++++++++" << endl;
   if(debug) cout << " run.event: " << event.run << ". " << event.event << endl;
@@ -249,34 +249,34 @@ bool ZprimePreselectionModule::process(uhh2::Event& event){
   fill_histograms(event, "Input");
   if(debug) cout << "first plots input: ok" << endl;
 
-  // Calculate mttbar and fill appropriate bin histograms
-  if (isMC && event.is_valid(h_ttbargen)) {
-    // set defaults first, every event
-    event.set(h_xi_gen,     std::numeric_limits<float>::quiet_NaN());
-    event.set(h_mtt_gen,    std::numeric_limits<float>::quiet_NaN());
-    event.set(h_DeltaY_gen, std::numeric_limits<float>::quiet_NaN());
-    const auto& ttbargen = event.get(h_ttbargen);
-    if (ttbargen.IsSemiLeptonicDecay()) {
-      int lepId = std::abs(ttbargen.ChargedLepton().pdgId());
-      if (lepId == 11 || lepId == 13) { 
-        const auto& top  = ttbargen.Top();
-        const auto& atop = ttbargen.Antitop();
-        double mtt = (top.v4() + atop.v4()).M();
-        double dy  = std::abs(top.v4().Rapidity()) - std::abs(atop.v4().Rapidity());
-        event.set(h_xi_gen,     std::tanh(dy));
-        event.set(h_mtt_gen,    static_cast<float>(mtt));
-        event.set(h_DeltaY_gen, static_cast<float>(dy));
+  // // Calculate mttbar and fill appropriate bin histograms
+  // if (isMC && event.is_valid(h_ttbargen)) {
+  //   // set defaults first, every event
+  //   event.set(h_xi_gen,     std::numeric_limits<float>::quiet_NaN());
+  //   event.set(h_mtt_gen,    std::numeric_limits<float>::quiet_NaN());
+  //   event.set(h_DeltaY_gen, std::numeric_limits<float>::quiet_NaN());
+  //   const auto& ttbargen = event.get(h_ttbargen);
+  //   if (ttbargen.IsSemiLeptonicDecay()) {
+  //     int lepId = std::abs(ttbargen.ChargedLepton().pdgId());
+  //     if (lepId == 11 || lepId == 13) { 
+  //       const auto& top  = ttbargen.Top();
+  //       const auto& atop = ttbargen.Antitop();
+  //       double mtt = (top.v4() + atop.v4()).M();
+  //       double dy  = std::abs(top.v4().Rapidity()) - std::abs(atop.v4().Rapidity());
+  //       event.set(h_xi_gen,     std::tanh(dy));
+  //       event.set(h_mtt_gen,    static_cast<float>(mtt));
+  //       event.set(h_DeltaY_gen, static_cast<float>(dy));
 
-        // Only fill histograms if e/muon semileptonic
-        fill_histograms(event, "mtt_gen_inclusive");
-        const int ibin = find_mtt_bin(mtt);
-        if (ibin >= 0) {
-          const string bin_tag = "mtt_gen_" + to_string((int)mttbar_bin_edges[ibin]) + "_" + to_string((int)mttbar_bin_edges[ibin+1]);
-          fill_histograms(event, bin_tag);
-        }
-      }
-    }
-  }
+  //       // Only fill histograms if e/muon semileptonic
+  //       fill_histograms(event, "mtt_gen_inclusive");
+  //       const int ibin = find_mtt_bin(mtt);
+  //       if (ibin >= 0) {
+  //         const string bin_tag = "mtt_gen_" + to_string((int)mttbar_bin_edges[ibin]) + "_" + to_string((int)mttbar_bin_edges[ibin+1]);
+  //         fill_histograms(event, bin_tag);
+  //       }
+  //     }
+  //   }
+  // }
 
   bool commonResult = common->process(event);
   if (!commonResult) return false;

@@ -184,7 +184,7 @@ std::unique_ptr<TH1D> ZprimeSemiLeptonicHists::build_noac_weights_from_gen(const
     sumW_check += wi * hi;
     sumH_check += hi;
   }
-  
+
   return W;
 }
 
@@ -2033,7 +2033,7 @@ void ZprimeSemiLeptonicHists::fill(const Event & event){
         }
 
         // dR between AK8-subjet to gen b-quark
-        if (is_tt && is_mc){ // only use for TTToSemileptonic samples
+        if (is_tt && is_mc && event.is_valid(h_ttbargen)){ // only use for TTToSemileptonic samples
           cout << "[ZprimeSemiLeptonicHists - DEBUG] inside Merged topology deltaR gen b loop" << endl;
           const auto& ttbargen = event.get(h_ttbargen);
           if(ttbargen.IsSemiLeptonicDecay()){

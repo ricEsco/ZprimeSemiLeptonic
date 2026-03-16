@@ -5,24 +5,25 @@
 <!ENTITY PREFIX      "uhh2.AnalysisModuleRunner.">
 <!ENTITY b_Cacheable "False">
 <!ENTITY NEVT        "-1">
+<!ENTITY YEARsuffix  "_UL17">
 
 <!ENTITY IS_HOTVR            "false">
 <!ENTITY IS_DEEPAK8          "true">
 <!ENTITY IS_LOOSER_SELECTION "false">
 <!ENTITY IS_ELE_TRIGGER      "false">
 <!ENTITY CHANNEL             "muon">
-<!ENTITY SAMPLE "eft">
-<!ENTITY OUTPUTdir           "/data/dust/group/cms/zprime-uhh/AnalysisDNN_EFT_UL17/&CHANNEL;">
+<!ENTITY SAMPLE               "eft">
+<!ENTITY OUTPUTdir           "/data/dust/user/ricardo/SMEFToutput/UL17/&CHANNEL;">
 
-<!-- TTbar -->
-<!ENTITY MC_EFT_Mttbar_0-700_UL17 SYSTEM "/data/dust/user/beozek/uuh2-106X_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/data/Skimming_datasets_UL17_EFT_muon_analysisDNN_semilepton/MC_MC_EFT_Mttbar_0-700_UL17.xml">
-<!ENTITY MC_EFT_Mttbar_700-900_UL17 SYSTEM "/data/dust/user/beozek/uuh2-106X_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/data/Skimming_datasets_UL17_EFT_muon_analysisDNN_semilepton/MC_MC_EFT_Mttbar_700-900_UL17.xml">
-<!ENTITY MC_EFT_Mttbar_900-Inf_UL17 SYSTEM "/data/dust/user/beozek/uuh2-106X_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/data/Skimming_datasets_UL17_EFT_muon_analysisDNN_semilepton/MC_MC_EFT_Mttbar_900-Inf_UL17.xml">
+<!-- TTbar EFT-->
+<!ENTITY MC_EFT_Mttbar_0-700_UL17 SYSTEM   "/data/dust/user/ricardo/uhh2-106X_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/data/Skimming_datasets_forAnalysisDNN_muon_UL17_EFT/MC_MC_EFT_Mttbar_0-700_UL17.xml">
+<!ENTITY MC_EFT_Mttbar_700-900_UL17 SYSTEM "/data/dust/user/ricardo/uhh2-106X_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/data/Skimming_datasets_forAnalysisDNN_muon_UL17_EFT/MC_MC_EFT_Mttbar_700-900_UL17.xml">
+<!ENTITY MC_EFT_Mttbar_900-Inf_UL17 SYSTEM "/data/dust/user/ricardo/uhh2-106X_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/data/Skimming_datasets_forAnalysisDNN_muon_UL17_EFT/MC_MC_EFT_Mttbar_900-Inf_UL17.xml">
 ]>
 
 <!--
-<ConfigParse NEventsBreak="0" LastBreak="0" FileSplit="1" AutoResubmit="0"/>
-<ConfigSGE RAM="2" DISK="2" Mail="bozek3@uic.edu" Notification="as" Workdir="workdir_AnalysisDNN_UL17_EFT_muon_semilepton"/>
+<ConfigParse NEventsBreak="0" LastBreak="0" FileSplit="4" AutoResubmit="0"/>
+<ConfigSGE RAM="2" DISK="2" Mail="rescob8@uic.edu" Notification="as" Workdir="workdir_AnalysisDNN_UL17_EFT_muon"/>
 -->
 
 <JobConfiguration JobName="ZprimePreselectionJob" OutputLevel="INFO">
@@ -32,20 +33,19 @@
   <Cycle Name="uhh2::AnalysisModuleRunner" OutputDirectory="&OUTPUTdir;/" PostFix="" TargetLumi="&TargetLumi;">
 
     <!-- EFT samples -->
-
-    <InputData Lumi="20062.54" NEventsMax="&NEVT;" Type="MC" Version="MC_EFT_Mttbar_0-700_UL17" Cacheable="&b_Cacheable;">
+    <InputData Lumi="20690.45" NEventsMax="&NEVT;" Type="MC" Version="MC_EFT_Mttbar_0-700_UL17" Cacheable="&b_Cacheable;">
       &MC_EFT_Mttbar_0-700_UL17;
       <InputTree Name="AnalysisTree" />
       <OutputTree Name="AnalysisTree" />
     </InputData>
 
-    <InputData Lumi="52879.35" NEventsMax="&NEVT;" Type="MC" Version="MC_EFT_Mttbar_700-900_UL17" Cacheable="&b_Cacheable;">
+    <InputData Lumi="102521.49" NEventsMax="&NEVT;" Type="MC" Version="MC_EFT_Mttbar_700-900_UL17" Cacheable="&b_Cacheable;">
       &MC_EFT_Mttbar_700-900_UL17;
       <InputTree Name="AnalysisTree" />
       <OutputTree Name="AnalysisTree" />
     </InputData>
 
-    <InputData Lumi="91527.92" NEventsMax="&NEVT;" Type="MC" Version="MC_EFT_Mttbar_900-Inf_UL17" Cacheable="&b_Cacheable;">
+    <InputData Lumi="106838.32" NEventsMax="&NEVT;" Type="MC" Version="MC_EFT_Mttbar_900-Inf_UL17" Cacheable="&b_Cacheable;">
       &MC_EFT_Mttbar_900-Inf_UL17;
       <InputTree Name="AnalysisTree" />
       <OutputTree Name="AnalysisTree" />
@@ -53,30 +53,29 @@
 
     <UserConfig>
       <Item Name="PrimaryVertexCollection" Value="offlineSlimmedPrimaryVertices"/>
-      <Item Name="GenParticleCollection" Value="GenParticles"/>
-      <Item Name="ElectronCollection" Value="slimmedElectronsUSER"/>
-      <Item Name="MuonCollection" Value="slimmedMuonsUSER"/>
-      <Item Name="JetCollection" Value="jetsAk4Puppi"/>
-      <Item Name="GenJetCollection" Value="slimmedGenJets"/>
-      <Item Name="TopJetCollection" Value="hotvrPuppi"/>
-      <Item Name="GenTopJetCollection" Value="genjetsAk8SubstructureSoftDrop"/>
-      <Item Name="TopPuppiJetCollection" Value="jetsAk8PuppiSubstructure_SoftDropPuppi"/>
-      <Item Name="METName" Value="slimmedMETsPuppi"/>
+      <Item Name="GenParticleCollection"   Value="GenParticles"/>
+      <Item Name="ElectronCollection"      Value="slimmedElectronsUSER"/>
+      <Item Name="MuonCollection"          Value="slimmedMuonsUSER"/>
+      <Item Name="JetCollection"           Value="jetsAk4Puppi"/>
+      <Item Name="GenJetCollection"        Value="slimmedGenJets"/>
+      <Item Name="TopJetCollection"        Value="hotvrPuppi"/>
+      <Item Name="GenTopJetCollection"     Value="genjetsAk8SubstructureSoftDrop"/>
+      <Item Name="TopPuppiJetCollection"   Value="jetsAk8PuppiSubstructure_SoftDropPuppi"/>
+      <Item Name="METName"    Value="slimmedMETsPuppi"/>
       <Item Name="genMETName" Value="slimmedMETs_GenMET"/>
-      <Item Name="sample" Value="&SAMPLE;"/>
 
-      <Item Name="lumi_file" Value="/data/dust/user/deleokse/RunII_106_v2/CMSSW_10_6_28/src/UHH2/common/UHH2-data/UL17/Cert_294927-306462_13TeV_UL2017_Collisions17_GoldenJSON_normtag.root"/>
+      <Item Name="lumi_file" Value="/data/dust/user/ricardo/uhh2-106X_v2/CMSSW_10_6_28/src/UHH2/common/UHH2-data/UL17/Cert_294927-306462_13TeV_UL2017_Collisions17_GoldenJSON_normtag.root"/>
       <Item Name="lumihists_lumi_per_bin" Value="500.0"/>
 
-      <Item Name="pileup_directory" Value="/data/dust/user/deleokse/RunII_106_v2/CMSSW_10_6_28/src/UHH2/common/UHH2-data/UL17/MyMCPileupHistogram_UL17.root" />
-      <Item Name="pileup_directory_data" Value="/data/dust/user/deleokse/RunII_106_v2/CMSSW_10_6_28/src/UHH2/common/UHH2-data/UL17/MyDataPileupHistogram_UL17.root" />
-      <Item Name="pileup_directory_data_up" Value="/data/dust/user/deleokse/RunII_106_v2/CMSSW_10_6_28/src/UHH2/common/UHH2-data/UL17/MyDataPileupHistogram_UL17_72383.root" />
-      <Item Name="pileup_directory_data_down" Value="/data/dust/user/deleokse/RunII_106_v2/CMSSW_10_6_28/src/UHH2/common/UHH2-data/UL17/MyDataPileupHistogram_UL17_66017.root" />
+      <Item Name="pileup_directory"           Value="/data/dust/user/ricardo/uhh2-106X_v2/CMSSW_10_6_28/src/UHH2/common/UHH2-data/UL17/MyMCPileupHistogram_UL17.root" />
+      <Item Name="pileup_directory_data"      Value="/data/dust/user/ricardo/uhh2-106X_v2/CMSSW_10_6_28/src/UHH2/common/UHH2-data/UL17/MyDataPileupHistogram_UL17.root" />
+      <Item Name="pileup_directory_data_up"   Value="/data/dust/user/ricardo/uhh2-106X_v2/CMSSW_10_6_28/src/UHH2/common/UHH2-data/UL17/MyDataPileupHistogram_UL17_72383.root" />
+      <Item Name="pileup_directory_data_down" Value="/data/dust/user/ricardo/uhh2-106X_v2/CMSSW_10_6_28/src/UHH2/common/UHH2-data/UL17/MyDataPileupHistogram_UL17_66017.root" />
 
-      <Item Name="BTagCalibration" Value="/data/dust/user/beozek/uuh2-106X_v2/CMSSW_10_6_28/src/UHH2/common/UHH2-data/btagging_SFs_UL/UL17/reshaping_deepJet_v3.csv"/>
-      <Item Name="NLOCorrections" Value="/data/dust/user/deleokse/RunII_106_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/data/" />
+      <Item Name="BTagCalibration" Value="/data/dust/user/ricardo/uhh2-106X_v2/CMSSW_10_6_28/src/UHH2/common/UHH2-data/btagging_SFs_UL/UL17/reshaping_deepJet_v3.csv"/>
+      <Item Name="NLOCorrections"  Value="/data/dust/user/ricardo/uhh2-106X_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/data/" />
 
-      <Item Name="is_hotvr" Value="&IS_HOTVR;"/>
+      <Item Name="is_hotvr"   Value="&IS_HOTVR;"/>
       <Item Name="is_deepAK8" Value="&IS_DEEPAK8;"/>
       <Item Name="is_looser_selection" Value="&IS_LOOSER_SELECTION;"/>
 
@@ -93,23 +92,23 @@
         Mu_E Mu_eta Mu_phi Mu_pt
         N_Ak4 N_Ak8" />
 
-      <Item Name="use_sframe_weight" Value="false"/>
-      <Item Name="jersmear_direction" Value="nominal"/>
-      <Item Name="jecsmear_direction" Value="nominal"/>
-      <Item Name="ScaleVariationMuR" Value="nominal"/>
-      <Item Name="ScaleVariationMuF" Value="nominal"/>
-      <Item Name="SystDirection_MuonId" Value="nominal"/>
-      <Item Name="SystDirection_MuonIso" Value="nominal"/>
-      <Item Name="SystDirection_MuonTrigger" Value="nominal"/>
-      <Item Name="SystDirection_ElectronId" Value="nominal"/>
-      <Item Name="SystDirection_ElectronReco" Value="nominal"/>
-      <Item Name="Sys_PU" Value="central"/>
+      <Item Name="use_sframe_weight"           Value="false"/>
+      <Item Name="jecsmear_direction"          Value="nominal"/>
+      <Item Name="ScaleVariationMuR"           Value="nominal"/>
+      <Item Name="ScaleVariationMuF"           Value="nominal"/>
+      <Item Name="SystDirection_MuonId"        Value="nominal"/>
+      <Item Name="SystDirection_MuonIso"       Value="nominal"/>
+      <Item Name="SystDirection_MuonTrigger"   Value="nominal"/>
+      <Item Name="SystDirection_ElectronId"    Value="nominal"/>
+      <Item Name="SystDirection_ElectronReco"  Value="nominal"/>
+      <Item Name="Sys_PU"                      Value="central"/>
       <Item Name="SystDirection_BTaggingShape" Value="central"/>
-      <Item Name="Sys_prefiring" Value="nominal"/>
-      <Item Name="Sys_TopTag" Value="nominal"/>
-      <Item Name="Systematic_TopPt_a" Value="nominal"/>
-      <Item Name="Systematic_TopPt_b" Value="nominal"/>
-      <Item Name="channel" Value="&CHANNEL;"/>
+      <Item Name="Sys_prefiring"               Value="nominal"/>
+      <Item Name="Sys_TopTag"                  Value="nominal"/>
+      <Item Name="Systematic_TopPt_a"          Value="nominal"/>
+      <Item Name="Systematic_TopPt_b"          Value="nominal"/>
+      <Item Name="channel"                     Value="&CHANNEL;"/>
+      <Item Name="sample"                      Value="&SAMPLE;"/>
 
       <Item Name="AnalysisModule" Value="ZprimeAnalysisModule_applyNN"/>
     </UserConfig>

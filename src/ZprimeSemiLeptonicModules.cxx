@@ -870,9 +870,9 @@ bool MEPartonFinder::process(uhh2::Event& evt){
   return true;
 }
 
-//////////////////////////////////////////////////////////////
-/////////////// Variables for NN
-//////////////////////////////////////////////////////////////
+////////////////////////////////////////////////
+/////////////// Variables for NN ///////////////
+////////////////////////////////////////////////
 
 Variables_NN::Variables_NN(uhh2::Context& ctx, TString mode): mode_(mode){
   h_BestZprimeCandidateChi2 = ctx.get_handle<ZprimeCandidate*>("ZprimeCandidateBestChi2");
@@ -1001,25 +1001,98 @@ Variables_NN::Variables_NN(uhh2::Context& ctx, TString mode): mode_(mode){
     h_HOTVR_j3_tau32 = ctx.declare_event_output<float>("HOTVR_j3_tau32");
   }
 
-  ///  M ttbar
-  h_M_tt = ctx.declare_event_output<float>("M_tt");
-  //Ac and spic corr
-  h_dyreco = ctx.declare_event_output<float>("dyreco");
-  h_dyreco_1 = ctx.declare_event_output<float>("dyreco_1");
-  h_dyreco_2 = ctx.declare_event_output<float>("dyreco_2");
-
-  h_Sigma_phi_1=ctx.declare_event_output<float>("Sigma_phi_1");
-  h_Sigma_phi_2=ctx.declare_event_output<float>("Sigma_phi_2");
-  h_Sigma_phi = ctx.declare_event_output<float>("Sigma_phi");
-  h_Delta_phi = ctx.declare_event_output<float>("Delta_phi");
-
-  
-  // chi^2
-  h_chi2 = ctx.declare_event_output<float>("chi2");
-
   // random number for k-fold validation
   h_uniform_random = ctx.declare_event_output<float>("uniform_random");
 
+  ///////////
+  /// EFT ///
+  ///////////
+  // Booleans to identify era
+  isUL16preVFP=false; isUL16postVFP=false; isUL17=false; isUL18 =false;
+  isUL16preVFP  = (ctx.get("dataset_version").find("UL16preVFP")  != std::string::npos);
+  isUL16postVFP = (ctx.get("dataset_version").find("UL16postVFP") != std::string::npos);
+  isUL17        = (ctx.get("dataset_version").find("UL17")        != std::string::npos);
+  isUL18        = (ctx.get("dataset_version").find("UL18")        != std::string::npos);
+  // ttbar system variables
+  h_chi2 = ctx.declare_event_output<float>("chi2");
+  h_M_tt = ctx.declare_event_output<float>("M_tt");
+  h_beta = ctx.declare_event_output<float>("beta");
+  h_dyreco = ctx.declare_event_output<float>("dyreco"); // charge asymmetry
+
+  // spin-analyzer (leptons-only) projections
+  h_cosTheta1k_antiLep = ctx.declare_event_output<float>("cosTheta1k_antiLep");
+  h_cosTheta1r_antiLep = ctx.declare_event_output<float>("cosTheta1r_antiLep");
+  h_cosTheta1n_antiLep = ctx.declare_event_output<float>("cosTheta1n_antiLep");
+  h_cosTheta1kStar_antiLep = ctx.declare_event_output<float>("cosTheta1kStar_antiLep");
+  h_cosTheta1rStar_antiLep = ctx.declare_event_output<float>("cosTheta1rStar_antiLep");
+  h_cosTheta2k_Lep = ctx.declare_event_output<float>("cosTheta2k_Lep");
+  h_cosTheta2r_Lep = ctx.declare_event_output<float>("cosTheta2r_Lep");
+  h_cosTheta2n_Lep = ctx.declare_event_output<float>("cosTheta2n_Lep");
+  h_cosTheta2kStar_Lep = ctx.declare_event_output<float>("cosTheta2kStar_Lep");
+  h_cosTheta2rStar_Lep = ctx.declare_event_output<float>("cosTheta2rStar_Lep");
+
+  // spin-analyzer projections
+  h_cosTheta1k = ctx.declare_event_output<float>("cosTheta1k");
+  h_cosTheta1r = ctx.declare_event_output<float>("cosTheta1r");
+  h_cosTheta1n = ctx.declare_event_output<float>("cosTheta1n");
+  h_cosTheta1kStar = ctx.declare_event_output<float>("cosTheta1kStar");
+  h_cosTheta1rStar = ctx.declare_event_output<float>("cosTheta1rStar");
+  h_cosTheta2k = ctx.declare_event_output<float>("cosTheta2k");
+  h_cosTheta2r = ctx.declare_event_output<float>("cosTheta2r");
+  h_cosTheta2n = ctx.declare_event_output<float>("cosTheta2n");
+  h_cosTheta2kStar = ctx.declare_event_output<float>("cosTheta2kStar");
+  h_cosTheta2rStar = ctx.declare_event_output<float>("cosTheta2rStar");
+
+  // Correlation elements
+  h_Cnn = ctx.declare_event_output<float>("Cnn");
+  h_Cnr = ctx.declare_event_output<float>("Cnr");
+  h_Cnk = ctx.declare_event_output<float>("Cnk");
+  h_Crn = ctx.declare_event_output<float>("Crn");
+  h_Crr = ctx.declare_event_output<float>("Crr");
+  h_Crk = ctx.declare_event_output<float>("Crk");
+  h_Ckn = ctx.declare_event_output<float>("Ckn");
+  h_Ckr = ctx.declare_event_output<float>("Ckr");
+  h_Ckk = ctx.declare_event_output<float>("Ckk");
+  // linear combinations
+  h_Crk_plus = ctx.declare_event_output<float>("Crk_plus");
+  h_Crk_minus = ctx.declare_event_output<float>("Crk_minus");
+  h_Cnr_plus = ctx.declare_event_output<float>("Cnr_plus");
+  h_Cnr_minus = ctx.declare_event_output<float>("Cnr_minus");
+  h_Cnk_plus = ctx.declare_event_output<float>("Cnk_plus");
+  h_Cnk_minus = ctx.declare_event_output<float>("Cnk_minus");
+
+  // Entanglement witnesses
+  h_cHel = ctx.declare_event_output<float>("cHel");
+  h_cHel_Mtt300_400 = ctx.declare_event_output<float>("cHel_Mtt300_400");
+  h_cHel_Mtt300_400_betaLT0p9 = ctx.declare_event_output<float>("cHel_Mtt300_400_betaLT0p9");
+
+  h_cHel_P3n = ctx.declare_event_output<float>("cHel_P3n");
+  h_cHel_P3n_Mtt800_Inf = ctx.declare_event_output<float>("cHel_P3n_Mtt800_Inf");
+  h_cHel_P3n_Mtt800_Inf_cosThetaLT0p4 = ctx.declare_event_output<float>("cHel_P3n_Mtt800_Inf_cosThetaLT0p4");
+
+  // Baumgart et al. variables
+  h_Sigma_phi = ctx.declare_event_output<float>("Sigma_phi");
+  h_Delta_phi = ctx.declare_event_output<float>("Delta_phi");
+
+  // Baumgart variables with cut on charge asymmetry
+  h_Sigma_phi_1=ctx.declare_event_output<float>("Sigma_phi_1");
+  h_Sigma_phi_2=ctx.declare_event_output<float>("Sigma_phi_2");
+  h_Delta_phi_1=ctx.declare_event_output<float>("Delta_phi_1");
+  h_Delta_phi_2=ctx.declare_event_output<float>("Delta_phi_2");
+  // Charge asymmetry with cut on Baumgart variables
+  h_dyreco_s1 = ctx.declare_event_output<float>("dyreco_s1");
+  h_dyreco_s2 = ctx.declare_event_output<float>("dyreco_s2");
+  h_dyreco_d1 = ctx.declare_event_output<float>("dyreco_d1");
+  h_dyreco_d2 = ctx.declare_event_output<float>("dyreco_d2");
+
+  // all three variables in high/low pt cuts
+  h_Sigma_phi_high = ctx.declare_event_output<float>("Sigma_phi_high");
+  h_Delta_phi_high = ctx.declare_event_output<float>("Delta_phi_high");
+  h_dyreco_high    = ctx.declare_event_output<float>("dyreco_high");
+  h_Sigma_phi_low = ctx.declare_event_output<float>("Sigma_phi_low");
+  h_Delta_phi_low = ctx.declare_event_output<float>("Delta_phi_low");
+  h_dyreco_low    = ctx.declare_event_output<float>("dyreco_low");
+  
 }
 
 bool Variables_NN::process(uhh2::Event& evt){
@@ -1326,274 +1399,398 @@ bool Variables_NN::process(uhh2::Event& evt){
     }
   } // end hotvr mode
 
-  // ttbar mass
-  evt.set(h_M_tt, -10);
-  evt.set(h_chi2, -10);
-  bool is_zprime_reconstructed_chi2 = evt.get(h_is_zprime_reconstructed_chi2);
-  ZprimeCandidate* BestZprimeCandidate = evt.get(h_BestZprimeCandidateChi2);
-  bool is_toptag_reconstruction = BestZprimeCandidate->is_toptag_reconstruction(); // Reconstruction process id
-  // vector <Jet> AK4CHSjets_matched = event.get(h_CHSjets_matched);  
-  //                 // AK4Puppijets that have been matched to CHSjets
- 
-  // vector <TopJet> TopTaggedJets = evt.get(h_AK8TopTags);                     // AK8Puppi jets TopTagged by DeepAK8TopTagger
-  vector <float> jets_hadronic_bscores;                                            // bScores vector for resolved hadronic jets
-  float pt_hadTop_thresh = 150;                                                    // Define cut-variable as pt of hadTop for low/high regions                                                   // medium WP for UL18 DeepJet
-
-  if(is_zprime_reconstructed_chi2){
-    // ZprimeCandidate* BestZprimeCandidate = evt.get(h_BestZprimeCandidateChi2);
-    float Mass_tt = BestZprimeCandidate->Zprime_v4().M();
-    float chi2 = BestZprimeCandidate->discriminator("chi2_total");
-    evt.set(h_M_tt, Mass_tt);
-    evt.set(h_chi2, chi2);
-  }
-  // EFT Ac and spin correlation variables:
-  // Plot pt of hadronic Top jet
-  float pt_hadTop = BestZprimeCandidate->top_hadronic_v4().pt();
-  
-  float bscore_max = -2;
-  if(!is_toptag_reconstruction){
-      // Loop over resolved hadronic jets to find their bscore via CHS jets
-    for(unsigned int i=0; i<BestZprimeCandidate->jets_hadronic().size(); i++){
-      double deltaR_min = 99;
-      // Match resolved hadronic jets to CHS jets (which have bscores)
-      for(unsigned int j=0; j<AK4CHSjets_matched.size(); j++){
-        double deltaR_CHS = deltaR(BestZprimeCandidate->jets_hadronic().at(i), AK4CHSjets_matched.at(j));
-        if(deltaR_CHS < deltaR_min) deltaR_min = deltaR_CHS;
-        }
-      // Build bScore-vector for resolved hadronic jets whose bscore will correspond by index
-      for(unsigned int k=0; k<AK4CHSjets_matched.size(); k++){
-        if(deltaR(BestZprimeCandidate->jets_hadronic().at(i), AK4CHSjets_matched.at(k)) == deltaR_min) 
-        jets_hadronic_bscores.emplace_back(AK4CHSjets_matched.at(k).btag_DeepJet());
-        } // Using DeepJet btag score
-    }
-    // Loop over bScores-vector to extract highest bscor
-    for(unsigned int i=0; i<jets_hadronic_bscores.size(); i++){
-      float bscore = jets_hadronic_bscores.at(i);
-      if(bscore > bscore_max) bscore_max = bscore;
-    }
-    //is not top tag
-  }
-  if(is_toptag_reconstruction){
-    // Loop over hadronic top's subjets to extract highest bscore
-  for(unsigned int i=0; i < BestZprimeCandidate->tophad_topjet_ptr()->subjets().size(); i++){
-    float bscore = BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(i).btag_DeepJet(); // Using DeepJet btag score
-    if(bscore > bscore_max) bscore_max = bscore;
-  }
-
-}
-  TLorentzVector had_top_b(0, 0, 0, 0);
-
-// Resolved topology
-  if(!is_toptag_reconstruction){ // Define hadronic b-jet as hadronic AK4-jet with highest bscore
-    for(unsigned int i=0; i< BestZprimeCandidate->jets_hadronic().size(); i++){
-      float bscore = jets_hadronic_bscores.at(i);
-      if(bscore == bscore_max) had_top_b.SetPtEtaPhiE(BestZprimeCandidate->jets_hadronic().at(i).pt(), 
-                                                      BestZprimeCandidate->jets_hadronic().at(i).eta(), 
-                                                      BestZprimeCandidate->jets_hadronic().at(i).phi(), 
-                                                      BestZprimeCandidate->jets_hadronic().at(i).energy());
-    }
-  }
-  // Merged topology
-  if(is_toptag_reconstruction){ // Define hadronic b-jet as hadronic AK8-subjet with highest bscore
-    for(unsigned int j=0; j < BestZprimeCandidate->tophad_topjet_ptr()->subjets().size(); j++){
-      float bscore = BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).btag_DeepJet();
-      if(bscore == bscore_max) had_top_b.SetPtEtaPhiE(BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).pt(), 
-                                                      BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).eta(), 
-                                                      BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).phi(), 
-                                                      BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).energy());
-    }
-  }
-  TLorentzVector lep_top_lep(0, 0, 0, 0);
-  LorentzVector lep = BestZprimeCandidate->lepton().v4();
-  lep_top_lep.SetPtEtaPhiE(lep.pt(), lep.eta(), lep.phi(), lep.E());
-    // Define 4vectors of top quarks
-  TLorentzVector PosTop(0, 0, 0, 0);
-  TLorentzVector NegTop(0, 0, 0, 0);
-
-      // POSITIVE LEPTON CONFIGURATION => Positive charged lepton has Positive Top mother
-  if(BestZprimeCandidate->lepton().charge() > 0){
-    // Define ttbar system
-    PosTop.SetPtEtaPhiE(BestZprimeCandidate->top_leptonic_v4().pt(), 
-                        BestZprimeCandidate->top_leptonic_v4().eta(), 
-                        BestZprimeCandidate->top_leptonic_v4().phi(), 
-                        BestZprimeCandidate->top_leptonic_v4().energy());
-    NegTop.SetPtEtaPhiE(BestZprimeCandidate->top_hadronic_v4().pt(), 
-                        BestZprimeCandidate->top_hadronic_v4().eta(), 
-                        BestZprimeCandidate->top_hadronic_v4().phi(), 
-                        BestZprimeCandidate->top_hadronic_v4().energy());
-  }
-  else if (BestZprimeCandidate->lepton().charge() < 0){
-    PosTop.SetPtEtaPhiE(BestZprimeCandidate->top_hadronic_v4().pt(), 
-                        BestZprimeCandidate->top_hadronic_v4().eta(), 
-                        BestZprimeCandidate->top_hadronic_v4().phi(), 
-                        BestZprimeCandidate->top_hadronic_v4().energy());
-    NegTop.SetPtEtaPhiE(BestZprimeCandidate->top_leptonic_v4().pt(), 
-                        BestZprimeCandidate->top_leptonic_v4().eta(), 
-                        BestZprimeCandidate->top_leptonic_v4().phi(), 
-                        BestZprimeCandidate->top_leptonic_v4().energy());
-  }
-      
-  TLorentzVector ttbar = PosTop + NegTop;
-  TLorentzVector lep_top_lep_CoM = lep_top_lep;
-  // Boost into ttbar CoM-Frame <<<-------//
-  lep_top_lep_CoM.Boost(-1.*ttbar.BoostVector());
-  TLorentzVector had_top_b_CoM = had_top_b;
-  had_top_b_CoM.Boost(-ttbar.BoostVector());
-  TLorentzVector PosTop_CoM = PosTop;
-  PosTop_CoM.Boost(-ttbar.BoostVector());
-  TLorentzVector NegTop_CoM = NegTop;
-  NegTop_CoM.Boost(-ttbar.BoostVector());
-  // Beam unit vector in COM frame
-  TVector3 beam_axis(0,0,1);
-  // Calculating top scattering angle for PosTop only
-  double cos_PosTop_beam = PosTop_CoM.Vect().Unit().Dot(beam_axis);
-  double sin_PosTop_beam = sqrt(1 - cos_PosTop_beam*cos_PosTop_beam);
-
-  // The sign of cos_PosTop_beam to account for Bose symmetry
-  double sign_cos_PosTop_beam = (cos_PosTop_beam > 0.) ? 1. : -1.;
-  // // The sign based on PosTop and NegTop's rapidity
-  // double sign_rapidity = (PosTop.Rapidity() >= NegTop.Rapidity()) ? 1. : -1.;
-
-  // Bernreuther basis vectors
-  TVector3 kbase = PosTop_CoM.Vect().Unit();
-  TVector3 rbase = ( (sign_cos_PosTop_beam/sin_PosTop_beam)*(beam_axis - cos_PosTop_beam * kbase) ).Unit();
-  TVector3 nbase = ( (sign_cos_PosTop_beam/sin_PosTop_beam)*beam_axis.Cross(kbase) ).Unit();
-
-  // Rotate vectors into Helicity Frame <<<-----------//
-  // Rotate about beamline
-  TLorentzVector lep_top_lep_H = lep_top_lep_CoM;
-  lep_top_lep_H.RotateZ(-1.*PosTop_CoM.Phi());
-  TLorentzVector had_top_b_H = had_top_b_CoM;
-  had_top_b_H.RotateZ(-1.*PosTop_CoM.Phi());
-  TLorentzVector PosTop_H = PosTop_CoM;
-  PosTop_H.RotateZ(-1.*PosTop_CoM.Phi());
-  TLorentzVector NegTop_H = NegTop_CoM;
-  NegTop_H.RotateZ(-1.*PosTop_CoM.Phi());
-
-  TVector3 kbase_H = kbase;
-  kbase_H.RotateZ(-1.*PosTop_CoM.Phi());
-  TVector3 rbase_H = rbase;
-  rbase_H.RotateZ(-1.*PosTop_CoM.Phi());
-  TVector3 nbase_H = nbase;
-  nbase_H.RotateZ(-1.*PosTop_CoM.Phi());
-
-  // Rotate about y-axis
-  TLorentzVector lep_top_lep_Hel = lep_top_lep_H;
-  lep_top_lep_Hel.RotateY(-1.*PosTop_CoM.Theta());
-  TLorentzVector had_top_b_Hel = had_top_b_H;
-  had_top_b_Hel.RotateY(-1.*PosTop_CoM.Theta());
-  TLorentzVector PosTop_Hel = PosTop_H;
-  PosTop_Hel.RotateY(-1.*PosTop_CoM.Theta());
-  TLorentzVector NegTop_Hel = NegTop_H;
-  NegTop_Hel.RotateY(-1.*PosTop_CoM.Theta());
-
-  TVector3 kbase_Hel = kbase_H;
-  kbase_Hel.RotateY(-1.*PosTop_CoM.Theta());
-  TVector3 rbase_Hel = rbase_H;
-  rbase_Hel.RotateY(-1.*PosTop_CoM.Theta());
-  TVector3 nbase_Hel = nbase_H;
-  nbase_Hel.RotateY(-1.*PosTop_CoM.Theta());
-
-  // Rotation to align with Bernreuther basis <<<---------//
-  TLorentzVector lep_top_lep_BoseSymm = lep_top_lep_Hel;
-  TLorentzVector had_top_b_BoseSymm = had_top_b_Hel;
-  TLorentzVector PosTop_BoseSymm = PosTop_Hel;
-  TLorentzVector NegTop_BoseSymm = NegTop_Hel;
-
-  TVector3 kbase_BoseSymm = kbase_Hel;
-  TVector3 rbase_BoseSymm = rbase_Hel;
-  TVector3 nbase_BoseSymm = nbase_Hel;
-
-  // if(sign_cos_PosTop_beam > 0.){
-  //   lep_top_lep_BoseSymm.RotateZ(-1.*TMath::Pi()/2.);
-  //   had_top_b_BoseSymm.RotateZ(-1.*TMath::Pi()/2.);
-  //   PosTop_BoseSymm.RotateZ(-1.*TMath::Pi()/2.);
-  //   NegTop_BoseSymm.RotateZ(-1.*TMath::Pi()/2.);
-
-  //   kbase_BoseSymm.RotateZ(-1.*TMath::Pi()/2.);
-  //   rbase_BoseSymm.RotateZ(-1.*TMath::Pi()/2.);
-  //   nbase_BoseSymm.RotateZ(-1.*TMath::Pi()/2.);
-  // }
-  // else{
-  //   lep_top_lep_BoseSymm.RotateZ(TMath::Pi()/2.);
-  //   had_top_b_BoseSymm.RotateZ(TMath::Pi()/2.);
-  //   PosTop_BoseSymm.RotateZ(TMath::Pi()/2.);
-  //   NegTop_BoseSymm.RotateZ(TMath::Pi()/2.);
-
-  //   kbase_BoseSymm.RotateZ(TMath::Pi()/2.);
-  //   rbase_BoseSymm.RotateZ(TMath::Pi()/2.);
-  //   nbase_BoseSymm.RotateZ(TMath::Pi()/2.);
-  // }
-   // Boosting into ttbar rest-frame <<<-------------------------------------------------------//
-  TLorentzVector lep_top_lep_Rest = lep_top_lep_BoseSymm;
-  TLorentzVector had_top_b_Rest = had_top_b_BoseSymm;
-  TLorentzVector PosTop_Rest = PosTop_BoseSymm;
-  TLorentzVector NegTop_Rest = NegTop_BoseSymm;
-  if(BestZprimeCandidate->lepton().charge() > 0){
-    lep_top_lep_Rest.Boost(-1.*PosTop_BoseSymm.BoostVector()); // lepton has Positive Top mother
-    had_top_b_Rest.Boost(-1.*NegTop_BoseSymm.BoostVector());   // b-jet has Negative Top mother
-  }
-  else if (BestZprimeCandidate->lepton().charge() < 0){
-    lep_top_lep_Rest.Boost(-1.*NegTop_BoseSymm.BoostVector()); // lepton has Negative Top mother
-    had_top_b_Rest.Boost(-1.*PosTop_BoseSymm.BoostVector());   // b-jet has Positive Top mother
-  }
-
-  float dphi=0.;
-  float sphi = lep_top_lep_Rest.Phi() + had_top_b_Rest.Phi();
-  if(BestZprimeCandidate->lepton().charge() > 0){ // lepton is Positive Top's Decay Product
-    dphi = lep_top_lep_Rest.Phi() - had_top_b_Rest.Phi();
-  }
-  if(BestZprimeCandidate->lepton().charge() < 0){
-    dphi = had_top_b_Rest.Phi() - lep_top_lep_Rest.Phi();
-  }
-
-  evt.set(h_Sigma_phi,-10);
-  evt.set(h_Delta_phi,-10);
-  evt.set(h_Sigma_phi_1,-10);
-  evt.set(h_Sigma_phi_2,-10);
-  evt.set(h_dyreco_1,-10);
-  evt.set(h_dyreco_2,-10);
-
-
-  if(sphi > TMath::Pi()) sphi = sphi - 2*TMath::Pi();
-  if(sphi < -TMath::Pi()) sphi = sphi + 2*TMath::Pi();
-  if(dphi > TMath::Pi()) dphi = dphi - 2*TMath::Pi();
-  if(dphi < -TMath::Pi()) dphi = dphi + 2*TMath::Pi();
-  
-  evt.set(h_Sigma_phi,sphi);
-  evt.set(h_Delta_phi,dphi);
-  
-
-
-
-  evt.set(h_dyreco,-10);
-  float dyreco=0;
-  // ZprimeCandidate* BestZprimeCandidate = evt.get(h_BestZprimeCandidateChi2);
-  if (BestZprimeCandidate->lepton().charge()>0) {
-    dyreco = TMath::Abs(BestZprimeCandidate->top_leptonic_v4().Rapidity()) - TMath::Abs(BestZprimeCandidate->top_hadronic_v4().Rapidity()); 
-  } else {
-    dyreco = TMath::Abs(BestZprimeCandidate->top_hadronic_v4().Rapidity()) - TMath::Abs(BestZprimeCandidate->top_leptonic_v4().Rapidity()); 
-  }
-  evt.set(h_dyreco,dyreco);
-
-  if(pt_hadTop > pt_hadTop_thresh && dyreco >0){
-    evt.set(h_Sigma_phi_1,sphi);
-  }
-  if(pt_hadTop > pt_hadTop_thresh && dyreco <0){
-    evt.set(h_Sigma_phi_2,sphi);
-
-  }
-
-  if(pt_hadTop < pt_hadTop_thresh && dphi >0){
-    evt.set(h_dyreco_1,dyreco);
-  }
-  if(pt_hadTop < pt_hadTop_thresh && dphi <0){
-    evt.set(h_dyreco_2,dyreco);
-  }
-// random generator with eta-dependend random seed for k-fold validation
+  // random generator with eta-dependant random seed for k-fold validation
   double leading_jet_phi = Ak4jets->at(0).v4().phi();
   std::srand((int)(1000 * leading_jet_phi));
   evt.set(h_uniform_random, ((double) rand()) / RAND_MAX);
+
+  ////////////////////////////////////////////////////////////////////////////////////////////
+  ///////////// Variables from reconstructed ttbar system for EFT interpretation /////////////
+  ////////////////////////////////////////////////////////////////////////////////////////////
+
+  bool is_zprime_reconstructed_chi2 = evt.get(h_is_zprime_reconstructed_chi2); // reconstruction method boolean
+  evt.set(h_chi2, -10);  // chi^2 of ttbar reconstruction
+  evt.set(h_M_tt, -10);  // invariant mass of ttbar system
+  evt.set(h_beta, -10);  // relativistic-beta of ttbar system
+  evt.set(h_dyreco,-10); // Charge asymmetry of ttbar system
+  
+  if(is_zprime_reconstructed_chi2){
+    ZprimeCandidate* BestZprimeCandidate = evt.get(h_BestZprimeCandidateChi2); // Best ttbar-system reconstruction based on chi^2 discriminator
+    float chi2 = BestZprimeCandidate->discriminator("chi2_total");
+    float Mass_tt = BestZprimeCandidate->Zprime_v4().M();
+    evt.set(h_chi2, chi2);
+    evt.set(h_M_tt, Mass_tt);
+
+    bool is_toptag_reconstruction = BestZprimeCandidate->is_toptag_reconstruction(); // Reconstruction process id
+    vector <Jet> AK4CHSjets_matched = evt.get(h_CHSjets_matched);                    // AK4Puppijets that have been matched to CHSjets
+    vector <float> jets_hadronic_bscores;                                            // bScores vector for resolved hadronic jets
+    float pt_hadTop_thresh = 150;                                                    // Define cut-variable as pt of hadTop for low/high regions
+    float pt_hadTop = BestZprimeCandidate->top_hadronic_v4().pt();                   // pT of hadronic-top jet
+    
+    // Working points for DeepJet AK4-jet b-tagging, e.g., see https://btv-wiki.docs.cern.ch/ScaleFactors/Run2UL2016preVFP/#ak4-b-tagging for UL16preVFP
+    float noTopTag_btag_WP_M;                       // Medium working point flag to cut on working point
+    if (isUL16preVFP) noTopTag_btag_WP_M = 0.2598;  // medium WP for UL16preVFP DeepJet -> 73.3% efficiency
+    if (isUL16postVFP) noTopTag_btag_WP_M = 0.3657; // medium WP for UL16postVFP DeepJet -> 71.4% efficiency
+    if (isUL17) noTopTag_btag_WP_M = 0.3040;        // medium WP for UL17 DeepJet -> 79.1% efficiency
+    if (isUL18) noTopTag_btag_WP_M = 0.2783;        // medium WP for UL18 DeepJet -> 80.7% efficiency
+    
+    // Working points for DeepCSV AK8-subjet b-tagging, e.g., see https://btv-wiki.docs.cern.ch/ScaleFactors/Run2UL2016preVFP/#subjet-b-tagging for UL16preVFP
+    float TopTag_btag_WP_M;                         // Medium working point flag to cut on working point
+    if (isUL16preVFP) TopTag_btag_WP_M = 0.6001;    // medium WP for UL16preVFP DeepCSV
+    if (isUL16postVFP) TopTag_btag_WP_M = 0.5847;   // medium WP for UL16postVFP DeepCSV
+    if (isUL17) TopTag_btag_WP_M = 0.4506;          // medium WP for UL17 DeepCSV
+    if (isUL18) TopTag_btag_WP_M = 0.4506;          // medium WP for UL18 DeepCSV
+    
+    bool passes_btagging = false;                   // Variable to check if event passes b-tagging condition
+
+    float bscore_max = -2;
+    //-------------- Extracting highest b-tag score in Resolved topology, i.e. no top-tagged jet in event --------------//
+    if(!is_toptag_reconstruction){
+        // Loop over resolved hadronic jets to find their bscore via CHS jets
+      for(unsigned int i=0; i<BestZprimeCandidate->jets_hadronic().size(); i++){
+        double deltaR_min = 99;
+        // Match resolved hadronic jets to CHS jets (which have bscores)
+        for(unsigned int j=0; j<AK4CHSjets_matched.size(); j++){
+          double deltaR_CHS = deltaR(BestZprimeCandidate->jets_hadronic().at(i), AK4CHSjets_matched.at(j));
+          if(deltaR_CHS < deltaR_min) deltaR_min = deltaR_CHS;
+          }
+        // Build bScore-vector for resolved hadronic jets whose bscore will correspond by index
+        for(unsigned int k=0; k<AK4CHSjets_matched.size(); k++){
+          if(deltaR(BestZprimeCandidate->jets_hadronic().at(i), AK4CHSjets_matched.at(k)) == deltaR_min) 
+          jets_hadronic_bscores.emplace_back(AK4CHSjets_matched.at(k).btag_DeepJet()); // Using DeepJet btag score
+          } 
+      }
+      // Loop over bScores-vector to extract highest bscore
+      for(unsigned int i=0; i<jets_hadronic_bscores.size(); i++){
+        float bscore = jets_hadronic_bscores.at(i);
+        if(bscore > bscore_max) bscore_max = bscore;
+      }
+      if(bscore_max >= noTopTag_btag_WP_M) passes_btagging = true; // Event passes b-tagging condition
+    }
+    
+    //--------------- Extracting highest b-tag score in Merged topology, i.e. with top-tagged jet in event ---------------//
+    if(is_toptag_reconstruction){
+        // Loop over hadronic top's subjets to extract highest bscore
+      for(unsigned int i=0; i < BestZprimeCandidate->tophad_topjet_ptr()->subjets().size(); i++){
+        float bscore = BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(i).btag_DeepCSV(); // Using DeepCSV btag score
+        if(bscore > bscore_max) bscore_max = bscore;
+      }
+      if(bscore_max >= TopTag_btag_WP_M) passes_btagging = true; // Event passes b-tagging condition
+    }
+
+
+    //------------------------------------Define 4vectors of top quarks and spin analyzers------------------------------------//
+    TLorentzVector had_top_b(0, 0, 0, 0); // b-jet 4-vector
+    TLorentzVector lep_top_lep(0, 0, 0, 0); // Lepton 4-vector
+
+    if(passes_btagging){ // only define angular variables if event passes b-tag WP-cut
+      // b-jet from Resolved topology
+      if(!is_toptag_reconstruction){ // Defined as hadronic AK4-jet with highest deepJet bscore
+        for(unsigned int i=0; i< BestZprimeCandidate->jets_hadronic().size(); i++){
+          float bscore = jets_hadronic_bscores.at(i);
+          if(bscore == bscore_max) had_top_b.SetPtEtaPhiE(BestZprimeCandidate->jets_hadronic().at(i).pt(), 
+                                                          BestZprimeCandidate->jets_hadronic().at(i).eta(), 
+                                                          BestZprimeCandidate->jets_hadronic().at(i).phi(), 
+                                                          BestZprimeCandidate->jets_hadronic().at(i).energy());
+        }
+      }
+      // b-jet from Merged topology
+      if(is_toptag_reconstruction){ // Defined as hadronic AK8-SDsubjet with highest deepCSV bscore
+        for(unsigned int j=0; j < BestZprimeCandidate->tophad_topjet_ptr()->subjets().size(); j++){
+          float bscore = BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).btag_DeepCSV();
+          if(bscore == bscore_max) had_top_b.SetPtEtaPhiE(BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).pt(), 
+                                                          BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).eta(), 
+                                                          BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).phi(), 
+                                                          BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).energy());
+        }
+      }
+
+      // lepton
+      LorentzVector lep = BestZprimeCandidate->lepton().v4();
+      lep_top_lep.SetPtEtaPhiE(lep.pt(), lep.eta(), lep.phi(), lep.E());
+
+      // top quark parents for boosting and basis construction
+      TLorentzVector PosTop(0, 0, 0, 0);
+      TLorentzVector NegTop(0, 0, 0, 0);
+      if(BestZprimeCandidate->lepton().charge() > 0){ // Positively charged Lepton => "Leptonic" top QUARK is POSitively charged
+        PosTop.SetPtEtaPhiE(BestZprimeCandidate->top_leptonic_v4().pt(), 
+                            BestZprimeCandidate->top_leptonic_v4().eta(), 
+                            BestZprimeCandidate->top_leptonic_v4().phi(), 
+                            BestZprimeCandidate->top_leptonic_v4().energy());
+        NegTop.SetPtEtaPhiE(BestZprimeCandidate->top_hadronic_v4().pt(), 
+                            BestZprimeCandidate->top_hadronic_v4().eta(), 
+                            BestZprimeCandidate->top_hadronic_v4().phi(), 
+                            BestZprimeCandidate->top_hadronic_v4().energy());
+      }
+      else if (BestZprimeCandidate->lepton().charge() < 0){ // Negatively charged Lepton => "Leptonic" top ANTI-QUARK is NEGatively charged
+        PosTop.SetPtEtaPhiE(BestZprimeCandidate->top_hadronic_v4().pt(), 
+                            BestZprimeCandidate->top_hadronic_v4().eta(), 
+                            BestZprimeCandidate->top_hadronic_v4().phi(), 
+                            BestZprimeCandidate->top_hadronic_v4().energy());
+        NegTop.SetPtEtaPhiE(BestZprimeCandidate->top_leptonic_v4().pt(), 
+                            BestZprimeCandidate->top_leptonic_v4().eta(), 
+                            BestZprimeCandidate->top_leptonic_v4().phi(), 
+                            BestZprimeCandidate->top_leptonic_v4().energy());
+      }
+      TLorentzVector ttbar = PosTop + NegTop; // ttbar 4vector
+
+      // Lab-frame variables
+      float beta = TMath::Abs(PosTop.Pz() + NegTop.Pz()) / (PosTop.E() + NegTop.E());
+      evt.set(h_beta, beta); // relativistic beta
+      
+      float_t dyreco = -999.0;
+      if (BestZprimeCandidate->lepton().charge()>0) {
+        dyreco = TMath::Abs(BestZprimeCandidate->top_leptonic_v4().Rapidity()) - TMath::Abs(BestZprimeCandidate->top_hadronic_v4().Rapidity());} 
+      else {
+        dyreco = TMath::Abs(BestZprimeCandidate->top_hadronic_v4().Rapidity()) - TMath::Abs(BestZprimeCandidate->top_leptonic_v4().Rapidity());}
+      evt.set(h_dyreco, dyreco); // charge asymmetry
+
+      //--------- Boost into ttbar CoM-Frame ---------//
+      // Center of Mass frame copies of 4vectors
+      TLorentzVector PosTop_CoM = PosTop;
+      TLorentzVector NegTop_CoM = NegTop;
+      TLorentzVector lep_top_lep_CoM = lep_top_lep;
+      TLorentzVector had_top_b_CoM = had_top_b;
+      // Boost with negative of ttbar boost vector
+      PosTop_CoM.Boost(-1*ttbar.BoostVector());
+      NegTop_CoM.Boost(-1*ttbar.BoostVector());
+      lep_top_lep_CoM.Boost(-1*ttbar.BoostVector());
+      had_top_b_CoM.Boost(-1*ttbar.BoostVector());
+
+
+      //-------------------------------------------------------------- Build Bernreuther basis --------------------------------------------------------------//
+      // Required axes from CoM frame
+      TVector3 beam_axis(0,0,1);                                                                      // Beam unit vector
+      TVector3 k_axis = PosTop_CoM.Vect().Unit();                                                     // direction of top quark momentum in ttbar CoM frame
+      double cos_PosTop_beam = PosTop_CoM.Vect().Unit().Dot(beam_axis);                               // Cosine of scattering angle, "y" in Bernreuther et al.
+      double abs_sin_PosTop_beam = sqrt(1 - cos_PosTop_beam*cos_PosTop_beam);                         // Sine of scattering angle,   "r" in Bernreuther et al.
+      TVector3 r_axis = ( (1./abs_sin_PosTop_beam) * (beam_axis - cos_PosTop_beam * k_axis) ).Unit(); // orthogonal to k_axis and lies in production plane
+      TVector3 n_axis = ( (1./abs_sin_PosTop_beam) * beam_axis.Cross(k_axis) ).Unit();                // orthogonal to k_axis and production plane
+      double sign_cos_PosTop_beam = (cos_PosTop_beam > 0.) ? 1. : -1.;                                // Bose symmetry factor
+      double sign_rapidity = (dyreco > 0.) ? 1. : -1.;                                                // Charge asymmetry (in lab-frame) factor
+
+      // Basis vectors
+      TVector3 kbase = k_axis;
+      TVector3 rbase = sign_cos_PosTop_beam * r_axis;
+      TVector3 nbase = sign_cos_PosTop_beam * n_axis;
+      // CA-corrected basis vectors
+      TVector3 kStar = sign_rapidity * k_axis;
+      TVector3 rStar = sign_rapidity * sign_cos_PosTop_beam * r_axis;
+
+      
+      //------------------- Boost spin-analyzers into top quark Rest-Frames -------------------//
+      TLorentzVector lep_top_lep_Rest = lep_top_lep_CoM;
+      TLorentzVector had_top_b_Rest   = had_top_b_CoM;
+      
+      // Mother depends on lepton charge
+      if(BestZprimeCandidate->lepton().charge() > 0){
+        lep_top_lep_Rest.Boost(-1.*PosTop_CoM.BoostVector()); // lepton has Positive Top mother
+        had_top_b_Rest.Boost(-1.*NegTop_CoM.BoostVector());   // b-jet has Negative Top mother
+      }
+      else if (BestZprimeCandidate->lepton().charge() < 0){
+        lep_top_lep_Rest.Boost(-1.*NegTop_CoM.BoostVector()); // lepton has Negative Top mother
+        had_top_b_Rest.Boost(-1.*PosTop_CoM.BoostVector());   // b-jet has Positive Top mother
+      }
+
+    
+      //------------------------------------------- Spin Correlation variables -------------------------------------------//
+      float cosTheta1k_antiLep = 99.;
+      float cosTheta1r_antiLep = 99.;
+      float cosTheta1n_antiLep = 99.;
+      float cosTheta1kStar_antiLep = 99.;
+      float cosTheta1rStar_antiLep = 99.;
+      float cosTheta2k_Lep = 99.;
+      float cosTheta2r_Lep = 99.;
+      float cosTheta2n_Lep = 99.;
+      float cosTheta2kStar_Lep = 99.;
+      float cosTheta2rStar_Lep = 99.;
+
+      float cosTheta1k = 99.;
+      float cosTheta1r = 99.;
+      float cosTheta1n = 99.;
+      float cosTheta1kStar = 99.;
+      float cosTheta1rStar = 99.;
+      float cosTheta2k = 99.;
+      float cosTheta2r = 99.;
+      float cosTheta2n = 99.;
+      float cosTheta2kStar = 99.;
+      float cosTheta2rStar = 99.;
+
+      float CHel = 99.;
+      float CHel_P3n = 99.;
+
+      // Use only (anti)leptons as spin-analyzers
+      if(BestZprimeCandidate->lepton().charge() > 0){// anti-lepton
+        cosTheta1k_antiLep = lep_top_lep_Rest.Vect().Unit().Dot(kbase);
+        cosTheta1r_antiLep = lep_top_lep_Rest.Vect().Unit().Dot(rbase);
+        cosTheta1n_antiLep = lep_top_lep_Rest.Vect().Unit().Dot(nbase);
+        cosTheta1kStar_antiLep = lep_top_lep_Rest.Vect().Unit().Dot(kStar);
+        cosTheta1rStar_antiLep = lep_top_lep_Rest.Vect().Unit().Dot(rStar);
+      }
+      else if (BestZprimeCandidate->lepton().charge() < 0){// lepton 
+        cosTheta2k_Lep = lep_top_lep_Rest.Vect().Unit().Dot(kbase);
+        cosTheta2r_Lep = lep_top_lep_Rest.Vect().Unit().Dot(rbase);
+        cosTheta2n_Lep = lep_top_lep_Rest.Vect().Unit().Dot(nbase);
+        cosTheta2kStar_Lep = lep_top_lep_Rest.Vect().Unit().Dot(kStar);
+        cosTheta2rStar_Lep = lep_top_lep_Rest.Vect().Unit().Dot(rStar);
+      }
+      // top polarization via anti-leptons only
+      evt.set(h_cosTheta1k_antiLep, cosTheta1k_antiLep);
+      evt.set(h_cosTheta1r_antiLep, cosTheta1r_antiLep);
+      evt.set(h_cosTheta1n_antiLep, cosTheta1n_antiLep);
+      evt.set(h_cosTheta1kStar_antiLep, cosTheta1kStar_antiLep);
+      evt.set(h_cosTheta1rStar_antiLep, cosTheta1rStar_antiLep);
+      // antitop polarization via leptons only
+      evt.set(h_cosTheta2k_Lep, cosTheta2k_Lep);
+      evt.set(h_cosTheta2r_Lep, cosTheta2r_Lep);
+      evt.set(h_cosTheta2n_Lep, cosTheta2n_Lep);
+      evt.set(h_cosTheta2kStar_Lep, cosTheta2kStar_Lep);
+      evt.set(h_cosTheta2rStar_Lep, cosTheta2rStar_Lep);
+
+      // Assign spin-analyzers depending on lepton charge
+      if(BestZprimeCandidate->lepton().charge() > 0){
+        // top quark spin-analyzer is lepton
+        cosTheta1k = lep_top_lep_Rest.Vect().Unit().Dot(kbase);
+        cosTheta1r = lep_top_lep_Rest.Vect().Unit().Dot(rbase);
+        cosTheta1n = lep_top_lep_Rest.Vect().Unit().Dot(nbase);
+        cosTheta1kStar = lep_top_lep_Rest.Vect().Unit().Dot(kStar);
+        cosTheta1rStar = lep_top_lep_Rest.Vect().Unit().Dot(rStar);
+        // antitop spin-analyzer is b-jet
+        cosTheta2k = had_top_b_Rest.Vect().Unit().Dot(kbase);
+        cosTheta2r = had_top_b_Rest.Vect().Unit().Dot(rbase);
+        cosTheta2n = had_top_b_Rest.Vect().Unit().Dot(nbase);
+        cosTheta2kStar = had_top_b_Rest.Vect().Unit().Dot(kStar);
+        cosTheta2rStar = had_top_b_Rest.Vect().Unit().Dot(rStar);
+      }
+      else if (BestZprimeCandidate->lepton().charge() < 0){
+        // top quark spin-analyzer is b-jet
+        cosTheta1k = had_top_b_Rest.Vect().Unit().Dot(kbase);
+        cosTheta1r = had_top_b_Rest.Vect().Unit().Dot(rbase);
+        cosTheta1n = had_top_b_Rest.Vect().Unit().Dot(nbase);
+        cosTheta1kStar = had_top_b_Rest.Vect().Unit().Dot(kStar);
+        cosTheta1rStar = had_top_b_Rest.Vect().Unit().Dot(rStar);
+        // antitop spin-analyzer is lepton
+        cosTheta2k = lep_top_lep_Rest.Vect().Unit().Dot(kbase);
+        cosTheta2r = lep_top_lep_Rest.Vect().Unit().Dot(rbase);
+        cosTheta2n = lep_top_lep_Rest.Vect().Unit().Dot(nbase);
+        cosTheta2kStar = lep_top_lep_Rest.Vect().Unit().Dot(kStar);
+        cosTheta2rStar = lep_top_lep_Rest.Vect().Unit().Dot(rStar);
+      }
+      // top daughter polarizations
+      evt.set(h_cosTheta1k, cosTheta1k);
+      evt.set(h_cosTheta1r, cosTheta1r);
+      evt.set(h_cosTheta1n, cosTheta1n);
+      evt.set(h_cosTheta1kStar, cosTheta1kStar);
+      evt.set(h_cosTheta1rStar, cosTheta1rStar);
+      // antitop daughter polarizations
+      evt.set(h_cosTheta2k, cosTheta2k);
+      evt.set(h_cosTheta2r, cosTheta2r);
+      evt.set(h_cosTheta2n, cosTheta2n);
+      evt.set(h_cosTheta2kStar, cosTheta2kStar);
+      evt.set(h_cosTheta2rStar, cosTheta2rStar);
+
+      // correlation matrix elements
+      evt.set(h_Cnn, cosTheta1n * cosTheta2n);
+      evt.set(h_Cnr, cosTheta1n * cosTheta2r);
+      evt.set(h_Cnk, cosTheta1n * cosTheta2k);
+      evt.set(h_Crn, cosTheta1r * cosTheta2n);
+      evt.set(h_Crr, cosTheta1r * cosTheta2r);
+      evt.set(h_Crk, cosTheta1r * cosTheta2k);
+      evt.set(h_Ckn, cosTheta1k * cosTheta2n);
+      evt.set(h_Ckr, cosTheta1k * cosTheta2r);
+      evt.set(h_Ckk, cosTheta1k * cosTheta2k);
+      // sum and differences of cross correlations
+      evt.set(h_Crk_plus, cosTheta1r * cosTheta2k + cosTheta1k * cosTheta2r);
+      evt.set(h_Crk_minus, cosTheta1r * cosTheta2k - cosTheta1k * cosTheta2r);
+      evt.set(h_Cnr_plus, cosTheta1n * cosTheta2r + cosTheta1r * cosTheta2n);
+      evt.set(h_Cnr_minus, cosTheta1n * cosTheta2r - cosTheta1r * cosTheta2n);
+      evt.set(h_Cnk_plus, cosTheta1n * cosTheta2k + cosTheta1k * cosTheta2n);
+      evt.set(h_Cnk_minus, cosTheta1n * cosTheta2k - cosTheta1k * cosTheta2n);
+
+      // entanglement variables, inclusive
+      CHel = lep_top_lep_Rest.Vect().Unit().Dot(had_top_b_Rest.Vect().Unit());
+      CHel_P3n = cosTheta1k * cosTheta2k + cosTheta1r * cosTheta2r - cosTheta1n * cosTheta2n;
+      evt.set(h_cHel, CHel);
+      evt.set(h_cHel_P3n, CHel_P3n);
+
+      // entanglement variables, near-threshold
+      if(ttbar.M() < 400.){evt.set(h_cHel_Mtt300_400, CHel);
+        // near-threshold and non-relativistic
+        if(beta < 0.9){evt.set(h_cHel_Mtt300_400_betaLT0p9, CHel);}
+      }
+
+      // entanglement variables, boosted
+      if(ttbar.M() > 800.){evt.set(h_cHel_P3n_Mtt800_Inf, CHel_P3n);
+        // boosted and central
+        if(TMath::Abs(cos_PosTop_beam) < 0.4){evt.set(h_cHel_P3n_Mtt800_Inf_cosThetaLT0p4, CHel_P3n);}
+      }
+
+      // Baumgart et al. variables
+      // defined using phi-coordinate wrt Bernreuther nr-plane
+      float lep_top_lep_phi = atan2(lep_top_lep_Rest.Vect().Unit().Dot(rbase), lep_top_lep_Rest.Vect().Unit().Dot(nbase));
+      float had_top_b_phi   = atan2(had_top_b_Rest.Vect().Unit().Dot(rbase),   had_top_b_Rest.Vect().Unit().Dot(nbase));
+
+      // sphi and dphi = PosTopDecayProd_phi +- NegTopDecayProd_phi
+      float sphi = lep_top_lep_phi + had_top_b_phi;   // sum is independent of order
+      float dphi = -99.;                              // initialize with dummy value
+      if(BestZprimeCandidate->lepton().charge() > 0){ // lepton is Positive Top's Decay Product
+        dphi = lep_top_lep_phi - had_top_b_phi;
+      }
+      if(BestZprimeCandidate->lepton().charge() < 0){ // b-jet is Positive Top's Decay Product
+        dphi = had_top_b_phi - lep_top_lep_phi;
+      }
+      
+      // Map back into original domain if necessary
+      if(sphi > TMath::Pi()) sphi = sphi - 2*TMath::Pi();
+      if(sphi < -TMath::Pi()) sphi = sphi + 2*TMath::Pi();
+      if(dphi > TMath::Pi()) dphi = dphi - 2*TMath::Pi();
+      if(dphi < -TMath::Pi()) dphi = dphi + 2*TMath::Pi();
+      evt.set(h_Sigma_phi, sphi);
+      evt.set(h_Delta_phi, dphi);
+
+      // Plot dphi and sphi for high-pt range && positive dy_reco
+      if(pt_hadTop > pt_hadTop_thresh && dyreco >0){
+        evt.set(h_Sigma_phi_1, sphi);
+        evt.set(h_Delta_phi_1, dphi);
+      }
+      // Plot dphi and sphi for high-pt range && negative dy_reco
+      if(pt_hadTop > pt_hadTop_thresh && dyreco <0){
+        evt.set(h_Sigma_phi_2, sphi);
+        evt.set(h_Delta_phi_2, dphi);
+      }
+      // Plot dy_reco for low-pt ranges && positive sphi
+      if(pt_hadTop < pt_hadTop_thresh && sphi >0){
+        evt.set(h_dyreco_s1, dyreco);
+      }
+      // Plot dy_reco for low-pt ranges && negative sphi
+      if(pt_hadTop < pt_hadTop_thresh && sphi <0){
+        evt.set(h_dyreco_s2, dyreco);
+      }
+      // Plot dy_reco for low-pt ranges && positive dphi
+      if(pt_hadTop < pt_hadTop_thresh && dphi >0){
+        evt.set(h_dyreco_d1, dyreco);
+      }
+      // Plot dy_reco for low-pt ranges && negative dphi
+      if(pt_hadTop < pt_hadTop_thresh && dphi <0){
+        evt.set(h_dyreco_d2, dyreco);
+      }
+
+      // Plot all for high-pt ranges
+      if(pt_hadTop > pt_hadTop_thresh){
+        evt.set(h_Sigma_phi_high, sphi);
+        evt.set(h_Delta_phi_high, dphi);
+        evt.set(h_dyreco_high, dyreco);
+      }
+      // Plot all for low-pt ranges
+      if(pt_hadTop < pt_hadTop_thresh){
+        evt.set(h_Sigma_phi_low, sphi);
+        evt.set(h_Delta_phi_low, dphi);
+        evt.set(h_dyreco_low, dyreco);
+      }
+
+    }// end b-tagging condition
+
+  }// end chi2 reconstruction condition
 
   return true;
 }
@@ -1603,63 +1800,97 @@ bool Variables_NN::process(uhh2::Event& evt){
 /////Saving EFT variables to TTree at different DNN stages//////
 ////////////////////////////////////////////////////////////////
 
-
-
+// SR //
 Variables_EFT_SR::Variables_EFT_SR(uhh2::Context& ctx, TString mode): mode_(mode){
+  // Necessary event handles and booleans
   h_BestZprimeCandidateChi2 = ctx.get_handle<ZprimeCandidate*>("ZprimeCandidateBestChi2");
   h_is_zprime_reconstructed_chi2 = ctx.get_handle<bool>("is_zprime_reconstructed_chi2");
   h_CHSjets_matched = ctx.get_handle<std::vector<Jet>>("CHS_matched");
   h_eventweight_SR = ctx.declare_event_output<float> ("eventweight");
+  isUL16preVFP=false; isUL16postVFP=false; isUL17=false; isUL18 =false;
+  isUL16preVFP  = (ctx.get("dataset_version").find("UL16preVFP")  != std::string::npos);
+  isUL16postVFP = (ctx.get("dataset_version").find("UL16postVFP") != std::string::npos);
+  isUL17        = (ctx.get("dataset_version").find("UL17")        != std::string::npos);
+  isUL18        = (ctx.get("dataset_version").find("UL18")        != std::string::npos);
+  // ttbar system variables
+  h_chi2_SR = ctx.declare_event_output<float>("chi2_SR");
+  h_M_tt_SR = ctx.declare_event_output<float>("M_tt_SR");
+  h_beta_SR = ctx.declare_event_output<float>("beta_SR");
+  h_dyreco_SR = ctx.declare_event_output<float>("dyreco_SR"); // charge asymmetry
 
-  h_dyreco_SR = ctx.declare_event_output<float>("dyreco_SR");
+  // spin-analyzer (leptons-only) projections
+  h_cosTheta1k_antiLep_SR = ctx.declare_event_output<float>("cosTheta1k_antiLep_SR");
+  h_cosTheta1r_antiLep_SR = ctx.declare_event_output<float>("cosTheta1r_antiLep_SR");
+  h_cosTheta1n_antiLep_SR = ctx.declare_event_output<float>("cosTheta1n_antiLep_SR");
+  h_cosTheta1kStar_antiLep_SR = ctx.declare_event_output<float>("cosTheta1kStar_antiLep_SR");
+  h_cosTheta1rStar_antiLep_SR = ctx.declare_event_output<float>("cosTheta1rStar_antiLep_SR");
+  h_cosTheta2k_Lep_SR = ctx.declare_event_output<float>("cosTheta2k_Lep_SR");
+  h_cosTheta2r_Lep_SR = ctx.declare_event_output<float>("cosTheta2r_Lep_SR");
+  h_cosTheta2n_Lep_SR = ctx.declare_event_output<float>("cosTheta2n_Lep_SR");
+  h_cosTheta2kStar_Lep_SR = ctx.declare_event_output<float>("cosTheta2kStar_Lep_SR");
+  h_cosTheta2rStar_Lep_SR = ctx.declare_event_output<float>("cosTheta2rStar_Lep_SR");
+
+  // spin-analyzer projections
+  h_cosTheta1k_SR = ctx.declare_event_output<float>("cosTheta1k_SR");
+  h_cosTheta1r_SR = ctx.declare_event_output<float>("cosTheta1r_SR");
+  h_cosTheta1n_SR = ctx.declare_event_output<float>("cosTheta1n_SR");
+  h_cosTheta1kStar_SR = ctx.declare_event_output<float>("cosTheta1kStar_SR");
+  h_cosTheta1rStar_SR = ctx.declare_event_output<float>("cosTheta1rStar_SR");
+  h_cosTheta2k_SR = ctx.declare_event_output<float>("cosTheta2k_SR");
+  h_cosTheta2r_SR = ctx.declare_event_output<float>("cosTheta2r_SR");
+  h_cosTheta2n_SR = ctx.declare_event_output<float>("cosTheta2n_SR");
+  h_cosTheta2kStar_SR = ctx.declare_event_output<float>("cosTheta2kStar_SR");
+  h_cosTheta2rStar_SR = ctx.declare_event_output<float>("cosTheta2rStar_SR");
+
+  // Correlation elements
+  h_Cnn_SR = ctx.declare_event_output<float>("Cnn_SR");
+  h_Cnr_SR = ctx.declare_event_output<float>("Cnr_SR");
+  h_Cnk_SR = ctx.declare_event_output<float>("Cnk_SR");
+  h_Crn_SR = ctx.declare_event_output<float>("Crn_SR");
+  h_Crr_SR = ctx.declare_event_output<float>("Crr_SR");
+  h_Crk_SR = ctx.declare_event_output<float>("Crk_SR");
+  h_Ckn_SR = ctx.declare_event_output<float>("Ckn_SR");
+  h_Ckr_SR = ctx.declare_event_output<float>("Ckr_SR");
+  h_Ckk_SR = ctx.declare_event_output<float>("Ckk_SR");
+  // linear combinations
+  h_Crk_plus_SR = ctx.declare_event_output<float>("Crk_plus_SR");
+  h_Crk_minus_SR = ctx.declare_event_output<float>("Crk_minus_SR");
+  h_Cnr_plus_SR = ctx.declare_event_output<float>("Cnr_plus_SR");
+  h_Cnr_minus_SR = ctx.declare_event_output<float>("Cnr_minus_SR");
+  h_Cnk_plus_SR = ctx.declare_event_output<float>("Cnk_plus_SR");
+  h_Cnk_minus_SR = ctx.declare_event_output<float>("Cnk_minus_SR");
+
+  // Entanglement witnesses
+  h_cHel_SR = ctx.declare_event_output<float>("cHel_SR");
+  h_cHel_Mtt300_400_SR = ctx.declare_event_output<float>("cHel_Mtt300_400_SR");
+  h_cHel_Mtt300_400_betaLT0p9_SR = ctx.declare_event_output<float>("cHel_Mtt300_400_betaLT0p9_SR");
+
+  h_cHel_P3n_SR = ctx.declare_event_output<float>("cHel_P3n_SR");
+  h_cHel_P3n_Mtt800_Inf_SR = ctx.declare_event_output<float>("cHel_P3n_Mtt800_Inf_SR");
+  h_cHel_P3n_Mtt800_Inf_cosThetaLT0p4_SR = ctx.declare_event_output<float>("cHel_P3n_Mtt800_Inf_cosThetaLT0p4_SR");
+
+  // Baumgart et al. variables
   h_Sigma_phi_SR = ctx.declare_event_output<float>("Sigma_phi_SR");
   h_Delta_phi_SR = ctx.declare_event_output<float>("Delta_phi_SR");
 
+  // Baumgart variables with cut on charge asymmetry
+  h_Sigma_phi_1_SR = ctx.declare_event_output<float>("Sigma_phi_1_SR");
+  h_Sigma_phi_2_SR = ctx.declare_event_output<float>("Sigma_phi_2_SR");
   h_Delta_phi_1_SR = ctx.declare_event_output<float>("Delta_phi_1_SR");
   h_Delta_phi_2_SR = ctx.declare_event_output<float>("Delta_phi_2_SR");
-  
-  h_dyreco_1_SR = ctx.declare_event_output<float>("dyreco_1_SR");
-  h_dyreco_1_SR_0_500 = ctx.declare_event_output<float>("dyreco_1_SR_0_500");
-  h_dyreco_1_SR_500_750 = ctx.declare_event_output<float>("dyreco_1_SR_500_750");
-  h_dyreco_1_SR_750_1000 = ctx.declare_event_output<float>("dyreco_1_SR_750_1000");
-  h_dyreco_1_SR_1000_1500 = ctx.declare_event_output<float>("dyreco_1_SR_1000_1500");
-  h_dyreco_1_SR_1500_Inf = ctx.declare_event_output<float>("dyreco_1_SR_1500_Inf");
-  h_dyreco_1_SR_0_700 = ctx.declare_event_output<float>("dyreco_1_SR_0_700");
-  h_dyreco_1_SR_700_900 = ctx.declare_event_output<float>("dyreco_1_SR_700_900");
-  h_dyreco_1_SR_900_Inf = ctx.declare_event_output<float>("dyreco_1_SR_900_Inf");
+  // Charge asymmetry with cut on Baumgart variables
+  h_dyreco_s1_SR = ctx.declare_event_output<float>("dyreco_s1_SR");
+  h_dyreco_s2_SR = ctx.declare_event_output<float>("dyreco_s2_SR");
+  h_dyreco_d1_SR = ctx.declare_event_output<float>("dyreco_d1_SR");
+  h_dyreco_d2_SR = ctx.declare_event_output<float>("dyreco_d2_SR");
 
-  h_dyreco_2_SR = ctx.declare_event_output<float>("dyreco_2_SR");
-  h_dyreco_2_SR_0_500 = ctx.declare_event_output<float>("dyreco_2_SR_0_500");
-  h_dyreco_2_SR_500_750 = ctx.declare_event_output<float>("dyreco_2_SR_500_750");
-  h_dyreco_2_SR_750_1000 = ctx.declare_event_output<float>("dyreco_2_SR_750_1000");
-  h_dyreco_2_SR_1000_1500 = ctx.declare_event_output<float>("dyreco_2_SR_1000_1500");
-  h_dyreco_2_SR_1500_Inf = ctx.declare_event_output<float>("dyreco_2_SR_1500_Inf");
-  h_dyreco_2_SR_0_700 = ctx.declare_event_output<float>("dyreco_2_SR_0_700");
-  h_dyreco_2_SR_700_900 = ctx.declare_event_output<float>("dyreco_2_SR_700_900");
-  h_dyreco_2_SR_900_Inf = ctx.declare_event_output<float>("dyreco_2_SR_900_Inf");
-
-
-
-  h_Sigma_phi_1_SR=ctx.declare_event_output<float>("Sigma_phi_1_SR");
-  h_Sigma_phi_1_SR_0_500=ctx.declare_event_output<float>("Sigma_phi_1_SR_0_500");
-  h_Sigma_phi_1_SR_500_750=ctx.declare_event_output<float>("Sigma_phi_1_SR_500_750");
-  h_Sigma_phi_1_SR_750_1000=ctx.declare_event_output<float>("Sigma_phi_1_SR_750_1000");
-  h_Sigma_phi_1_SR_1000_1500=ctx.declare_event_output<float>("Sigma_phi_1_SR_1000_1500");
-  h_Sigma_phi_1_SR_1500_Inf=ctx.declare_event_output<float>("Sigma_phi_1_SR_1000_1500");
-  h_Sigma_phi_1_SR_0_700=ctx.declare_event_output<float>("Sigma_phi_1_SR_0_700");
-  h_Sigma_phi_1_SR_700_900=ctx.declare_event_output<float>("Sigma_phi_1_SR_700_900");
-  h_Sigma_phi_1_SR_900_Inf=ctx.declare_event_output<float>("Sigma_phi_1_SR_900_Inf");
-
-  h_Sigma_phi_2_SR=ctx.declare_event_output<float>("Sigma_phi_2_SR");
-  h_Sigma_phi_2_SR_0_500=ctx.declare_event_output<float>("Sigma_phi_2_SR_0_500");
-  h_Sigma_phi_2_SR_500_750=ctx.declare_event_output<float>("Sigma_phi_2_SR_500_750");
-  h_Sigma_phi_2_SR_750_1000=ctx.declare_event_output<float>("Sigma_phi_2_SR_750_1000");
-  h_Sigma_phi_2_SR_1000_1500=ctx.declare_event_output<float>("Sigma_phi_2_SR_1000_1500");
-  h_Sigma_phi_2_SR_1500_Inf=ctx.declare_event_output<float>("Sigma_phi_2_SR_1000_1500");
-  h_Sigma_phi_2_SR_0_700=ctx.declare_event_output<float>("Sigma_phi_2_SR_0_700");
-  h_Sigma_phi_2_SR_700_900=ctx.declare_event_output<float>("Sigma_phi_2_SR_700_900");
-  h_Sigma_phi_2_SR_900_Inf=ctx.declare_event_output<float>("Sigma_phi_2_SR_900_Inf");
-
+  // all three variables in high/low pt cuts
+  h_Sigma_phi_high_SR = ctx.declare_event_output<float>("Sigma_phi_high_SR");
+  h_Delta_phi_high_SR = ctx.declare_event_output<float>("Delta_phi_high_SR");
+  h_dyreco_high_SR = ctx.declare_event_output<float>("dyreco_high_SR");
+  h_Sigma_phi_low_SR = ctx.declare_event_output<float>("Sigma_phi_low_SR");
+  h_Delta_phi_low_SR = ctx.declare_event_output<float>("Delta_phi_low_SR");
+  h_dyreco_low_SR = ctx.declare_event_output<float>("dyreco_low_SR");
 }
 
 bool Variables_EFT_SR::process(uhh2::Event& evt){
@@ -1668,401 +1899,481 @@ bool Variables_EFT_SR::process(uhh2::Event& evt){
   evt.set(h_eventweight_SR, -10);
   evt.set(h_eventweight_SR, weight);
 
-  // bool is_zprime_reconstructed_chi2 = evt.get(h_is_zprime_reconstructed_chi2);
-  ZprimeCandidate* BestZprimeCandidate = evt.get(h_BestZprimeCandidateChi2);
-  bool is_toptag_reconstruction = BestZprimeCandidate->is_toptag_reconstruction(); // Reconstruction process id
-  vector <Jet> AK4CHSjets_matched = evt.get(h_CHSjets_matched);  
-  //                 // AK4Puppijets that have been matched to CHSjets
- 
-  // vector <TopJet> TopTaggedJets = evt.get(h_AK8TopTags);                     // AK8Puppi jets TopTagged by DeepAK8TopTagger
-  vector <float> jets_hadronic_bscores;                                            // bScores vector for resolved hadronic jets
-  float pt_hadTop_thresh = 150;                                                    // Define cut-variable as pt of hadTop for low/high regions                                                   // medium WP for UL18 DeepJet
-
-  // EFT Ac and spin correlation variables:
-  // Plot pt of hadronic Top jet
-  float pt_hadTop = BestZprimeCandidate->top_hadronic_v4().pt();
+  bool is_zprime_reconstructed_chi2 = evt.get(h_is_zprime_reconstructed_chi2); // reconstruction method boolean
+  evt.set(h_chi2_SR, -10);  // chi^2 of ttbar reconstruction
+  evt.set(h_M_tt_SR, -10);  // invariant mass of ttbar system
+  evt.set(h_beta_SR, -10);  // relativistic-beta of ttbar system
+  evt.set(h_dyreco_SR,-10); // Charge asymmetry of ttbar system
   
-  float bscore_max = -2;
-  if(!is_toptag_reconstruction){
-      // Loop over resolved hadronic jets to find their bscore via CHS jets
-    for(unsigned int i=0; i<BestZprimeCandidate->jets_hadronic().size(); i++){
-      double deltaR_min = 99;
-      // Match resolved hadronic jets to CHS jets (which have bscores)
-      for(unsigned int j=0; j<AK4CHSjets_matched.size(); j++){
-        double deltaR_CHS = deltaR(BestZprimeCandidate->jets_hadronic().at(i), AK4CHSjets_matched.at(j));
-        if(deltaR_CHS < deltaR_min) deltaR_min = deltaR_CHS;
+  if(is_zprime_reconstructed_chi2){
+    ZprimeCandidate* BestZprimeCandidate = evt.get(h_BestZprimeCandidateChi2); // Best ttbar-system reconstruction based on chi^2 discriminator
+    float chi2 = BestZprimeCandidate->discriminator("chi2_total");
+    float Mass_tt = BestZprimeCandidate->Zprime_v4().M();
+    evt.set(h_chi2_SR, chi2);
+    evt.set(h_M_tt_SR, Mass_tt);
+
+    bool is_toptag_reconstruction = BestZprimeCandidate->is_toptag_reconstruction(); // Reconstruction process id
+    vector <Jet> AK4CHSjets_matched = evt.get(h_CHSjets_matched);                    // AK4Puppijets that have been matched to CHSjets
+    vector <float> jets_hadronic_bscores;                                            // bScores vector for resolved hadronic jets
+    float pt_hadTop_thresh = 150;                                                    // Define cut-variable as pt of hadTop for low/high regions
+    float pt_hadTop = BestZprimeCandidate->top_hadronic_v4().pt();                   // pT of hadronic-top jet
+    
+    // Working points for DeepJet AK4-jet b-tagging, e.g., see https://btv-wiki.docs.cern.ch/ScaleFactors/Run2UL2016preVFP/#ak4-b-tagging for UL16preVFP
+    float noTopTag_btag_WP_M;                       // Medium working point flag to cut on working point
+    if (isUL16preVFP) noTopTag_btag_WP_M = 0.2598;  // medium WP for UL16preVFP DeepJet -> 73.3% efficiency
+    if (isUL16postVFP) noTopTag_btag_WP_M = 0.3657; // medium WP for UL16postVFP DeepJet -> 71.4% efficiency
+    if (isUL17) noTopTag_btag_WP_M = 0.3040;        // medium WP for UL17 DeepJet -> 79.1% efficiency
+    if (isUL18) noTopTag_btag_WP_M = 0.2783;        // medium WP for UL18 DeepJet -> 80.7% efficiency
+    
+    // Working points for DeepCSV AK8-subjet b-tagging, e.g., see https://btv-wiki.docs.cern.ch/ScaleFactors/Run2UL2016preVFP/#subjet-b-tagging for UL16preVFP
+    float TopTag_btag_WP_M;                         // Medium working point flag to cut on working point
+    if (isUL16preVFP) TopTag_btag_WP_M = 0.6001;    // medium WP for UL16preVFP DeepCSV
+    if (isUL16postVFP) TopTag_btag_WP_M = 0.5847;   // medium WP for UL16postVFP DeepCSV
+    if (isUL17) TopTag_btag_WP_M = 0.4506;          // medium WP for UL17 DeepCSV
+    if (isUL18) TopTag_btag_WP_M = 0.4506;          // medium WP for UL18 DeepCSV
+    
+    bool passes_btagging = false;                   // Variable to check if event passes b-tagging condition
+
+    float bscore_max = -2;
+    //-------------- Extracting highest b-tag score in Resolved topology, i.e. no top-tagged jet in event --------------//
+    if(!is_toptag_reconstruction){
+        // Loop over resolved hadronic jets to find their bscore via CHS jets
+      for(unsigned int i=0; i<BestZprimeCandidate->jets_hadronic().size(); i++){
+        double deltaR_min = 99;
+        // Match resolved hadronic jets to CHS jets (which have bscores)
+        for(unsigned int j=0; j<AK4CHSjets_matched.size(); j++){
+          double deltaR_CHS = deltaR(BestZprimeCandidate->jets_hadronic().at(i), AK4CHSjets_matched.at(j));
+          if(deltaR_CHS < deltaR_min) deltaR_min = deltaR_CHS;
+          }
+        // Build bScore-vector for resolved hadronic jets whose bscore will correspond by index
+        for(unsigned int k=0; k<AK4CHSjets_matched.size(); k++){
+          if(deltaR(BestZprimeCandidate->jets_hadronic().at(i), AK4CHSjets_matched.at(k)) == deltaR_min) 
+          jets_hadronic_bscores.emplace_back(AK4CHSjets_matched.at(k).btag_DeepJet()); // Using DeepJet btag score
+          } 
+      }
+      // Loop over bScores-vector to extract highest bscore
+      for(unsigned int i=0; i<jets_hadronic_bscores.size(); i++){
+        float bscore = jets_hadronic_bscores.at(i);
+        if(bscore > bscore_max) bscore_max = bscore;
+      }
+      if(bscore_max >= noTopTag_btag_WP_M) passes_btagging = true; // Event passes b-tagging condition
+    }
+    
+    //--------------- Extracting highest b-tag score in Merged topology, i.e. with top-tagged jet in event ---------------//
+    if(is_toptag_reconstruction){
+        // Loop over hadronic top's subjets to extract highest bscore
+      for(unsigned int i=0; i < BestZprimeCandidate->tophad_topjet_ptr()->subjets().size(); i++){
+        float bscore = BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(i).btag_DeepCSV(); // Using DeepCSV btag score
+        if(bscore > bscore_max) bscore_max = bscore;
+      }
+      if(bscore_max >= TopTag_btag_WP_M) passes_btagging = true; // Event passes b-tagging condition
+    }
+
+
+    //------------------------------------Define 4vectors of top quarks and spin analyzers------------------------------------//
+    TLorentzVector had_top_b(0, 0, 0, 0); // b-jet 4-vector
+    TLorentzVector lep_top_lep(0, 0, 0, 0); // Lepton 4-vector
+
+    if(passes_btagging){ // only define angular variables if event passes b-tag WP-cut
+      // b-jet from Resolved topology
+      if(!is_toptag_reconstruction){ // Defined as hadronic AK4-jet with highest deepJet bscore
+        for(unsigned int i=0; i< BestZprimeCandidate->jets_hadronic().size(); i++){
+          float bscore = jets_hadronic_bscores.at(i);
+          if(bscore == bscore_max) had_top_b.SetPtEtaPhiE(BestZprimeCandidate->jets_hadronic().at(i).pt(), 
+                                                          BestZprimeCandidate->jets_hadronic().at(i).eta(), 
+                                                          BestZprimeCandidate->jets_hadronic().at(i).phi(), 
+                                                          BestZprimeCandidate->jets_hadronic().at(i).energy());
         }
-      // Build bScore-vector for resolved hadronic jets whose bscore will correspond by index
-      for(unsigned int k=0; k<AK4CHSjets_matched.size(); k++){
-        if(deltaR(BestZprimeCandidate->jets_hadronic().at(i), AK4CHSjets_matched.at(k)) == deltaR_min) 
-        jets_hadronic_bscores.emplace_back(AK4CHSjets_matched.at(k).btag_DeepJet());
-        } // Using DeepJet btag score
-    }
-    // Loop over bScores-vector to extract highest bscor
-    for(unsigned int i=0; i<jets_hadronic_bscores.size(); i++){
-      float bscore = jets_hadronic_bscores.at(i);
-      if(bscore > bscore_max) bscore_max = bscore;
-    }
-    //is not top tag
-  }
-  if(is_toptag_reconstruction){
-    // Loop over hadronic top's subjets to extract highest bscore
-  for(unsigned int i=0; i < BestZprimeCandidate->tophad_topjet_ptr()->subjets().size(); i++){
-    float bscore = BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(i).btag_DeepJet(); // Using DeepJet btag score
-    if(bscore > bscore_max) bscore_max = bscore;
-  }
+      }
+      // b-jet from Merged topology
+      if(is_toptag_reconstruction){ // Defined as hadronic AK8-SDsubjet with highest deepCSV bscore
+        for(unsigned int j=0; j < BestZprimeCandidate->tophad_topjet_ptr()->subjets().size(); j++){
+          float bscore = BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).btag_DeepCSV();
+          if(bscore == bscore_max) had_top_b.SetPtEtaPhiE(BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).pt(), 
+                                                          BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).eta(), 
+                                                          BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).phi(), 
+                                                          BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).energy());
+        }
+      }
 
-}
-  TLorentzVector had_top_b(0, 0, 0, 0);
+      // lepton
+      LorentzVector lep = BestZprimeCandidate->lepton().v4();
+      lep_top_lep.SetPtEtaPhiE(lep.pt(), lep.eta(), lep.phi(), lep.E());
 
-// Resolved topology
-  if(!is_toptag_reconstruction){ // Define hadronic b-jet as hadronic AK4-jet with highest bscore
-    for(unsigned int i=0; i< BestZprimeCandidate->jets_hadronic().size(); i++){
-      float bscore = jets_hadronic_bscores.at(i);
-      if(bscore == bscore_max) had_top_b.SetPtEtaPhiE(BestZprimeCandidate->jets_hadronic().at(i).pt(), 
-                                                      BestZprimeCandidate->jets_hadronic().at(i).eta(), 
-                                                      BestZprimeCandidate->jets_hadronic().at(i).phi(), 
-                                                      BestZprimeCandidate->jets_hadronic().at(i).energy());
-    }
-  }
-  // Merged topology
-  if(is_toptag_reconstruction){ // Define hadronic b-jet as hadronic AK8-subjet with highest bscore
-    for(unsigned int j=0; j < BestZprimeCandidate->tophad_topjet_ptr()->subjets().size(); j++){
-      float bscore = BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).btag_DeepJet();
-      if(bscore == bscore_max) had_top_b.SetPtEtaPhiE(BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).pt(), 
-                                                      BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).eta(), 
-                                                      BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).phi(), 
-                                                      BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).energy());
-    }
-  }
-  TLorentzVector lep_top_lep(0, 0, 0, 0);
-  LorentzVector lep = BestZprimeCandidate->lepton().v4();
-  lep_top_lep.SetPtEtaPhiE(lep.pt(), lep.eta(), lep.phi(), lep.E());
-    // Define 4vectors of top quarks
-  TLorentzVector PosTop(0, 0, 0, 0);
-  TLorentzVector NegTop(0, 0, 0, 0);
+      // top quark parents for boosting and basis construction
+      TLorentzVector PosTop(0, 0, 0, 0);
+      TLorentzVector NegTop(0, 0, 0, 0);
+      if(BestZprimeCandidate->lepton().charge() > 0){ // Positively charged Lepton => "Leptonic" top QUARK is POSitively charged
+        PosTop.SetPtEtaPhiE(BestZprimeCandidate->top_leptonic_v4().pt(), 
+                            BestZprimeCandidate->top_leptonic_v4().eta(), 
+                            BestZprimeCandidate->top_leptonic_v4().phi(), 
+                            BestZprimeCandidate->top_leptonic_v4().energy());
+        NegTop.SetPtEtaPhiE(BestZprimeCandidate->top_hadronic_v4().pt(), 
+                            BestZprimeCandidate->top_hadronic_v4().eta(), 
+                            BestZprimeCandidate->top_hadronic_v4().phi(), 
+                            BestZprimeCandidate->top_hadronic_v4().energy());
+      }
+      else if (BestZprimeCandidate->lepton().charge() < 0){ // Negatively charged Lepton => "Leptonic" top ANTI-QUARK is NEGatively charged
+        PosTop.SetPtEtaPhiE(BestZprimeCandidate->top_hadronic_v4().pt(), 
+                            BestZprimeCandidate->top_hadronic_v4().eta(), 
+                            BestZprimeCandidate->top_hadronic_v4().phi(), 
+                            BestZprimeCandidate->top_hadronic_v4().energy());
+        NegTop.SetPtEtaPhiE(BestZprimeCandidate->top_leptonic_v4().pt(), 
+                            BestZprimeCandidate->top_leptonic_v4().eta(), 
+                            BestZprimeCandidate->top_leptonic_v4().phi(), 
+                            BestZprimeCandidate->top_leptonic_v4().energy());
+      }
+      TLorentzVector ttbar = PosTop + NegTop; // ttbar 4vector
 
-      // POSITIVE LEPTON CONFIGURATION => Positive charged lepton has Positive Top mother
-  if(BestZprimeCandidate->lepton().charge() > 0){
-    // Define ttbar system
-    PosTop.SetPtEtaPhiE(BestZprimeCandidate->top_leptonic_v4().pt(), 
-                        BestZprimeCandidate->top_leptonic_v4().eta(), 
-                        BestZprimeCandidate->top_leptonic_v4().phi(), 
-                        BestZprimeCandidate->top_leptonic_v4().energy());
-    NegTop.SetPtEtaPhiE(BestZprimeCandidate->top_hadronic_v4().pt(), 
-                        BestZprimeCandidate->top_hadronic_v4().eta(), 
-                        BestZprimeCandidate->top_hadronic_v4().phi(), 
-                        BestZprimeCandidate->top_hadronic_v4().energy());
-  }
-  else if (BestZprimeCandidate->lepton().charge() < 0){
-    PosTop.SetPtEtaPhiE(BestZprimeCandidate->top_hadronic_v4().pt(), 
-                        BestZprimeCandidate->top_hadronic_v4().eta(), 
-                        BestZprimeCandidate->top_hadronic_v4().phi(), 
-                        BestZprimeCandidate->top_hadronic_v4().energy());
-    NegTop.SetPtEtaPhiE(BestZprimeCandidate->top_leptonic_v4().pt(), 
-                        BestZprimeCandidate->top_leptonic_v4().eta(), 
-                        BestZprimeCandidate->top_leptonic_v4().phi(), 
-                        BestZprimeCandidate->top_leptonic_v4().energy());
-  }
+      // Lab-frame variables
+      float beta = TMath::Abs(PosTop.Pz() + NegTop.Pz()) / (PosTop.E() + NegTop.E());
+      evt.set(h_beta_SR, beta); // relativistic beta
+
+      float dyreco = -999.0;
+      if (BestZprimeCandidate->lepton().charge()>0) {
+        dyreco = TMath::Abs(BestZprimeCandidate->top_leptonic_v4().Rapidity()) - TMath::Abs(BestZprimeCandidate->top_hadronic_v4().Rapidity());} 
+      else {
+        dyreco = TMath::Abs(BestZprimeCandidate->top_hadronic_v4().Rapidity()) - TMath::Abs(BestZprimeCandidate->top_leptonic_v4().Rapidity());}
+      evt.set(h_dyreco_SR, dyreco); // charge asymmetry
+
+      //--------- Boost into ttbar CoM-Frame ---------//
+      // Center of Mass frame copies of 4vectors
+      TLorentzVector PosTop_CoM = PosTop;
+      TLorentzVector NegTop_CoM = NegTop;
+      TLorentzVector lep_top_lep_CoM = lep_top_lep;
+      TLorentzVector had_top_b_CoM = had_top_b;
+      // Boost with negative of ttbar boost vector
+      PosTop_CoM.Boost(-1*ttbar.BoostVector());
+      NegTop_CoM.Boost(-1*ttbar.BoostVector());
+      lep_top_lep_CoM.Boost(-1*ttbar.BoostVector());
+      had_top_b_CoM.Boost(-1*ttbar.BoostVector());
+
+
+      //-------------------------------------------------------------- Build Bernreuther basis --------------------------------------------------------------//
+      // Required axes from CoM frame
+      TVector3 beam_axis(0,0,1);                                                                      // Beam unit vector
+      TVector3 k_axis = PosTop_CoM.Vect().Unit();                                                     // direction of top quark momentum in ttbar CoM frame
+      double cos_PosTop_beam = PosTop_CoM.Vect().Unit().Dot(beam_axis);                               // Cosine of scattering angle, "y" in Bernreuther et al.
+      double abs_sin_PosTop_beam = sqrt(1 - cos_PosTop_beam*cos_PosTop_beam);                         // Sine of scattering angle,   "r" in Bernreuther et al.
+      TVector3 r_axis = ( (1./abs_sin_PosTop_beam) * (beam_axis - cos_PosTop_beam * k_axis) ).Unit(); // orthogonal to k_axis and lies in production plane
+      TVector3 n_axis = ( (1./abs_sin_PosTop_beam) * beam_axis.Cross(k_axis) ).Unit();                // orthogonal to k_axis and production plane
+      double sign_cos_PosTop_beam = (cos_PosTop_beam > 0.) ? 1. : -1.;                                // Bose symmetry factor
+      double sign_rapidity = (dyreco > 0.) ? 1. : -1.;                                                // Charge asymmetry (in lab-frame) factor
+
+      // Basis vectors
+      TVector3 kbase = k_axis;
+      TVector3 rbase = sign_cos_PosTop_beam * r_axis;
+      TVector3 nbase = sign_cos_PosTop_beam * n_axis;
+      // CA-corrected basis vectors
+      TVector3 kStar = sign_rapidity * k_axis;
+      TVector3 rStar = sign_rapidity * sign_cos_PosTop_beam * r_axis;
+
       
-  TLorentzVector ttbar = PosTop + NegTop;
-  TLorentzVector lep_top_lep_CoM = lep_top_lep;
-  // Boost into ttbar CoM-Frame <<<-------//
-    // Boost into ttbar CoM-Frame <<<------- Step 1//
-    lep_top_lep_CoM.Boost(-1.*ttbar.BoostVector());
-    TLorentzVector had_top_b_CoM = had_top_b;
-    had_top_b_CoM.Boost(-ttbar.BoostVector());
-    TLorentzVector PosTop_CoM = PosTop;
-    PosTop_CoM.Boost(-ttbar.BoostVector());
-    TLorentzVector NegTop_CoM = NegTop;
-    NegTop_CoM.Boost(-ttbar.BoostVector());
-    // Beam unit vector in COM frame Step 2
-    TVector3 beam_axis(0,0,1);
-    // Calculating top scattering angle for PosTop only
-    double cos_PosTop_beam = PosTop_CoM.Vect().Unit().Dot(beam_axis);
-    double sin_PosTop_beam = sqrt(1 - cos_PosTop_beam*cos_PosTop_beam);
-  
-    // The sign of cos_PosTop_beam to account for Bose symmetry
-    double sign_cos_PosTop_beam = (cos_PosTop_beam > 0.) ? 1. : -1.;
-    // // The sign based on PosTop and NegTop's rapidity
-    // double sign_rapidity = (PosTop.Rapidity() >= NegTop.Rapidity()) ? 1. : -1.;
-  
-    // Bernreuther basis vectors
-    TVector3 kbase = PosTop_CoM.Vect().Unit();
-    TVector3 rbase = ( (sign_cos_PosTop_beam/sin_PosTop_beam)*(beam_axis - cos_PosTop_beam * kbase) ).Unit(); /// check with Lin about numerator
-    TVector3 nbase = ( (sign_cos_PosTop_beam/sin_PosTop_beam)*beam_axis.Cross(kbase) ).Unit();
-  
-    
-    TLorentzVector lep_top_lep_Rest = lep_top_lep_CoM;
-    TLorentzVector had_top_b_Rest = had_top_b_CoM;
-    TLorentzVector PosTop_Rest = PosTop_CoM;
-    TLorentzVector NegTop_Rest = NegTop_CoM;
-    
-    if(BestZprimeCandidate->lepton().charge() > 0){
-      lep_top_lep_Rest.Boost(-1.*PosTop_CoM.BoostVector()); // lepton has Positive Top mother
-      had_top_b_Rest.Boost(-1.*NegTop_CoM.BoostVector());   // b-jet has Negative Top mother
-    }
-    else if (BestZprimeCandidate->lepton().charge() < 0){
-      lep_top_lep_Rest.Boost(-1.*NegTop_CoM.BoostVector()); // lepton has Negative Top mother
-      had_top_b_Rest.Boost(-1.*PosTop_CoM.BoostVector());   // b-jet has Positive Top mother
-    }
-    //Step 4, calculating the angular variables in the ttbar rest frame
-    float bquark_phi = TMath::ATan2(had_top_b_Rest.Vect().Dot(nbase), had_top_b_Rest.Vect().Dot(rbase));
-    float lep_phi = TMath::ATan2(lep_top_lep_Rest.Vect().Dot(nbase), lep_top_lep_Rest.Vect().Dot(rbase));
-  
-    float dphi_SR= 0.;
-    
-    float sphi_SR = lep_phi + bquark_phi;
-    if(sphi_SR > TMath::Pi()) {
-      sphi_SR = sphi_SR - 2.*TMath::Pi();
-    }
-    if(sphi_SR < -1.*TMath::Pi()) {
-      sphi_SR = sphi_SR + 2.*TMath::Pi();
-    }
-    if(BestZprimeCandidate->lepton().charge() > 0){ // lepton is Positive Top's Decay Product
-      dphi_SR = lep_phi - bquark_phi;
-    }
-    if(BestZprimeCandidate->lepton().charge() < 0){
-      dphi_SR = bquark_phi - lep_phi;
-    }
-    if(dphi_SR > TMath::Pi()) {
-      dphi_SR = dphi_SR - 2.*TMath::Pi();
-    }
-    if(dphi_SR < -1.*TMath::Pi()) {
-      dphi_SR = dphi_SR + 2.*TMath::Pi();
-    }
-  
-  evt.set(h_Sigma_phi_SR,-10);
-  evt.set(h_Delta_phi_SR,-10);
-  evt.set(h_Sigma_phi_1_SR,-10);
-  evt.set(h_Sigma_phi_2_SR,-10);
-  evt.set(h_dyreco_1_SR,-10);
-  evt.set(h_dyreco_2_SR,-10);
-  evt.set(h_Delta_phi_1_SR,-10);
-  evt.set(h_Delta_phi_2_SR,-10);
-  evt.set(h_Sigma_phi_1_SR_0_500,-10);
-  evt.set(h_Sigma_phi_1_SR_500_750,-10);
-  evt.set(h_Sigma_phi_1_SR_750_1000,-10);
-  evt.set(h_Sigma_phi_1_SR_1000_1500,-10);
-  evt.set(h_Sigma_phi_1_SR_1500_Inf,-10);
-  evt.set(h_Sigma_phi_2_SR_0_500,-10);
-  evt.set(h_Sigma_phi_2_SR_500_750,-10);
-  evt.set(h_Sigma_phi_2_SR_750_1000,-10);
-  evt.set(h_Sigma_phi_2_SR_1000_1500,-10);
-  evt.set(h_Sigma_phi_2_SR_1500_Inf,-10);
-  evt.set(h_dyreco_1_SR_0_500,-10);
-  evt.set(h_dyreco_1_SR_500_750,-10);
-  evt.set(h_dyreco_1_SR_750_1000,-10);
-  evt.set(h_dyreco_1_SR_1000_1500,-10);
-  evt.set(h_dyreco_1_SR_1500_Inf,-10);
-  evt.set(h_dyreco_2_SR_0_500,-10);
-  evt.set(h_dyreco_2_SR_500_750,-10);
-  evt.set(h_dyreco_2_SR_750_1000,-10);
-  evt.set(h_dyreco_2_SR_1000_1500,-10);
-  evt.set(h_dyreco_2_SR_1500_Inf,-10);
-  evt.set(h_dyreco_1_SR_0_700,-10);
-  evt.set(h_dyreco_1_SR_700_900,-10);
-  evt.set(h_dyreco_1_SR_900_Inf,-10);
-  evt.set(h_dyreco_2_SR_0_700,-10);
-  evt.set(h_dyreco_2_SR_700_900,-10);
-  evt.set(h_dyreco_2_SR_900_Inf,-10);
-  evt.set(h_Sigma_phi_1_SR_0_700,-10);
-  evt.set(h_Sigma_phi_1_SR_700_900,-10);
-  evt.set(h_Sigma_phi_1_SR_900_Inf,-10);
-  evt.set(h_Sigma_phi_2_SR_0_700,-10);
-  evt.set(h_Sigma_phi_2_SR_700_900,-10);
-  evt.set(h_Sigma_phi_2_SR_900_Inf,-10);
-  evt.set(h_Sigma_phi_SR,sphi_SR);
-  evt.set(h_Delta_phi_SR,dphi_SR);
-  evt.set(h_dyreco_SR,-10);
-  
-  
-  float dy_reco_SR=0;
-  // ZprimeCandidate* BestZprimeCandidate = evt.get(h_BestZprimeCandidateChi2);
-  if (BestZprimeCandidate->lepton().charge()>0) {
-    dy_reco_SR = TMath::Abs(BestZprimeCandidate->top_leptonic_v4().Rapidity()) - TMath::Abs(BestZprimeCandidate->top_hadronic_v4().Rapidity()); 
-  } else {
-    dy_reco_SR = TMath::Abs(BestZprimeCandidate->top_hadronic_v4().Rapidity()) - TMath::Abs(BestZprimeCandidate->top_leptonic_v4().Rapidity()); 
-  }
-  evt.set(h_dyreco_SR,dy_reco_SR);
-  float Mass_tt = BestZprimeCandidate->Zprime_v4().M();
+      //------------------- Boost spin-analyzers into top quark Rest-Frames -------------------//
+      TLorentzVector lep_top_lep_Rest = lep_top_lep_CoM;
+      TLorentzVector had_top_b_Rest   = had_top_b_CoM;
+      
+      // Mother depends on lepton charge
+      if(BestZprimeCandidate->lepton().charge() > 0){
+        lep_top_lep_Rest.Boost(-1.*PosTop_CoM.BoostVector()); // lepton has Positive Top mother
+        had_top_b_Rest.Boost(-1.*NegTop_CoM.BoostVector());   // b-jet has Negative Top mother
+      }
+      else if (BestZprimeCandidate->lepton().charge() < 0){
+        lep_top_lep_Rest.Boost(-1.*NegTop_CoM.BoostVector()); // lepton has Negative Top mother
+        had_top_b_Rest.Boost(-1.*PosTop_CoM.BoostVector());   // b-jet has Positive Top mother
+      }
 
-  if(pt_hadTop > pt_hadTop_thresh && dy_reco_SR >0){
-    evt.set(h_Sigma_phi_1_SR,sphi_SR);
-    if(Mass_tt>=0 && Mass_tt < 500){
-      evt.set(h_Sigma_phi_1_SR_0_500,sphi_SR);
-    }
-    if(Mass_tt>=500 && Mass_tt < 750){
-      evt.set(h_Sigma_phi_1_SR_500_750,sphi_SR);
-    }
-    if(Mass_tt>=750 && Mass_tt < 1000){
-      evt.set(h_Sigma_phi_1_SR_750_1000,sphi_SR);
-    }
-    if(Mass_tt>=1000 && Mass_tt < 1500){
-      evt.set(h_Sigma_phi_1_SR_1000_1500,sphi_SR);
-    }
-    if(Mass_tt>=1500){
-      evt.set(h_Sigma_phi_1_SR_1500_Inf,sphi_SR);
-    }
-    if(Mass_tt>=0 && Mass_tt < 700){
-      evt.set(h_Sigma_phi_1_SR_0_700,sphi_SR);
-    }
-    if(Mass_tt>=700 && Mass_tt < 1000){
-      evt.set(h_Sigma_phi_1_SR_700_900,sphi_SR);
-    }
-    if(Mass_tt>=1000){
-      evt.set(h_Sigma_phi_1_SR_900_Inf,sphi_SR);
-    }
-  }
-  if(pt_hadTop > pt_hadTop_thresh && dy_reco_SR <0){
-    evt.set(h_Sigma_phi_2_SR,sphi_SR);
-    if(Mass_tt>=0 && Mass_tt < 500){
-      evt.set(h_Sigma_phi_2_SR_0_500,sphi_SR);
-    }
-    if(Mass_tt>=500 && Mass_tt < 750){
-      evt.set(h_Sigma_phi_2_SR_500_750,sphi_SR);
-    }
-    if(Mass_tt>=750 && Mass_tt < 1000){
-      evt.set(h_Sigma_phi_2_SR_750_1000,sphi_SR);
-    }
-    if(Mass_tt>=1000 && Mass_tt < 1500){
-      evt.set(h_Sigma_phi_2_SR_1000_1500,sphi_SR);
-    }
-    if(Mass_tt>=1500){
-      evt.set(h_Sigma_phi_2_SR_1500_Inf,sphi_SR);
-    }
-    if(Mass_tt>=0 && Mass_tt < 700){
-      evt.set(h_Sigma_phi_2_SR_0_700,sphi_SR);
-    }
-    if(Mass_tt>=700 && Mass_tt < 1000){
-      evt.set(h_Sigma_phi_2_SR_700_900,sphi_SR);
-    }
-    if(Mass_tt>=1000){
-      evt.set(h_Sigma_phi_2_SR_900_Inf,sphi_SR);
-    }
-  }
+    
+      //------------------------------------------- Spin Correlation variables -------------------------------------------//
+      float cosTheta1k_antiLep = 99.;
+      float cosTheta1r_antiLep = 99.;
+      float cosTheta1n_antiLep = 99.;
+      float cosTheta1kStar_antiLep = 99.;
+      float cosTheta1rStar_antiLep = 99.;
+      float cosTheta2k_Lep = 99.;
+      float cosTheta2r_Lep = 99.;
+      float cosTheta2n_Lep = 99.;
+      float cosTheta2kStar_Lep = 99.;
+      float cosTheta2rStar_Lep = 99.;
 
-  if(pt_hadTop < pt_hadTop_thresh && dphi_SR >0){
-    evt.set(h_dyreco_1_SR,dy_reco_SR);
-    if(Mass_tt>=0 && Mass_tt < 500){
-      evt.set(h_dyreco_1_SR_0_500,dy_reco_SR);
-    }
-    if(Mass_tt>=500 && Mass_tt < 750){
-      evt.set(h_dyreco_1_SR_500_750,dy_reco_SR);
-    }
-    if(Mass_tt>=750 && Mass_tt < 1000){
-      evt.set(h_dyreco_1_SR_750_1000,dy_reco_SR);
-    }
-    if(Mass_tt>=1000 && Mass_tt < 1500){
-      evt.set(h_dyreco_1_SR_1000_1500,dy_reco_SR);
-    }
-    if(Mass_tt>=1500){
-      evt.set(h_dyreco_1_SR_1500_Inf,dy_reco_SR);
-    }
-    if(Mass_tt>=0 && Mass_tt < 700){
-      evt.set(h_dyreco_1_SR_0_700,dy_reco_SR);
-    }
-    if(Mass_tt>=700 && Mass_tt < 1000){
-      evt.set(h_dyreco_1_SR_700_900,dy_reco_SR);
-    }
-    if(Mass_tt>=1000){
-      evt.set(h_dyreco_1_SR_900_Inf,dy_reco_SR);
-    }
-  }
-  if(pt_hadTop < pt_hadTop_thresh && dphi_SR <0){
-    evt.set(h_dyreco_2_SR,dy_reco_SR);
-    if(Mass_tt>=0 && Mass_tt < 500){
-      evt.set(h_dyreco_2_SR_0_500,dy_reco_SR);
-    }
-    if(Mass_tt>=500 && Mass_tt < 750){
-      evt.set(h_dyreco_2_SR_500_750,dy_reco_SR);
-    }
-    if(Mass_tt>=750 && Mass_tt < 1000){
-      evt.set(h_dyreco_2_SR_750_1000,dy_reco_SR);
-    }
-    if(Mass_tt>=1000 && Mass_tt < 1500){
-      evt.set(h_dyreco_2_SR_1000_1500,dy_reco_SR);
-    }
-    if(Mass_tt>=1500){
-      evt.set(h_dyreco_2_SR_1500_Inf,dy_reco_SR);
-    }
-    if(Mass_tt>=0 && Mass_tt < 700){
-      evt.set(h_dyreco_2_SR_0_700,dy_reco_SR);
-    }
-    if(Mass_tt>=700 && Mass_tt < 1000){
-      evt.set(h_dyreco_2_SR_700_900,dy_reco_SR);
-    }
-    if(Mass_tt>=1000){
-      evt.set(h_dyreco_2_SR_900_Inf,dy_reco_SR);
-    }
-  }
-  if(pt_hadTop < pt_hadTop_thresh){
-    evt.set(h_Delta_phi_1_SR,dphi_SR);
-  }
-  if(pt_hadTop > pt_hadTop_thresh){
-    evt.set(h_Delta_phi_2_SR,dphi_SR);
-  }
+      float cosTheta1k = 99.;
+      float cosTheta1r = 99.;
+      float cosTheta1n = 99.;
+      float cosTheta1kStar = 99.;
+      float cosTheta1rStar = 99.;
+      float cosTheta2k = 99.;
+      float cosTheta2r = 99.;
+      float cosTheta2n = 99.;
+      float cosTheta2kStar = 99.;
+      float cosTheta2rStar = 99.;
+
+      float CHel = 99.;
+      float CHel_P3n = 99.;
+
+      // Use only (anti)leptons as spin-analyzers
+      if(BestZprimeCandidate->lepton().charge() > 0){// anti-lepton
+        cosTheta1k_antiLep = lep_top_lep_Rest.Vect().Unit().Dot(kbase);
+        cosTheta1r_antiLep = lep_top_lep_Rest.Vect().Unit().Dot(rbase);
+        cosTheta1n_antiLep = lep_top_lep_Rest.Vect().Unit().Dot(nbase);
+        cosTheta1kStar_antiLep = lep_top_lep_Rest.Vect().Unit().Dot(kStar);
+        cosTheta1rStar_antiLep = lep_top_lep_Rest.Vect().Unit().Dot(rStar);
+      }
+      else if (BestZprimeCandidate->lepton().charge() < 0){// lepton 
+        cosTheta2k_Lep = lep_top_lep_Rest.Vect().Unit().Dot(kbase);
+        cosTheta2r_Lep = lep_top_lep_Rest.Vect().Unit().Dot(rbase);
+        cosTheta2n_Lep = lep_top_lep_Rest.Vect().Unit().Dot(nbase);
+        cosTheta2kStar_Lep = lep_top_lep_Rest.Vect().Unit().Dot(kStar);
+        cosTheta2rStar_Lep = lep_top_lep_Rest.Vect().Unit().Dot(rStar);
+      }
+      // top polarization via anti-leptons only
+      evt.set(h_cosTheta1k_antiLep_SR, cosTheta1k_antiLep);
+      evt.set(h_cosTheta1r_antiLep_SR, cosTheta1r_antiLep);
+      evt.set(h_cosTheta1n_antiLep_SR, cosTheta1n_antiLep);
+      evt.set(h_cosTheta1kStar_antiLep_SR, cosTheta1kStar_antiLep);
+      evt.set(h_cosTheta1rStar_antiLep_SR, cosTheta1rStar_antiLep);
+      // antitop polarization via leptons only
+      evt.set(h_cosTheta2k_Lep_SR, cosTheta2k_Lep);
+      evt.set(h_cosTheta2r_Lep_SR, cosTheta2r_Lep);
+      evt.set(h_cosTheta2n_Lep_SR, cosTheta2n_Lep);
+      evt.set(h_cosTheta2kStar_Lep_SR, cosTheta2kStar_Lep);
+      evt.set(h_cosTheta2rStar_Lep_SR, cosTheta2rStar_Lep);
+
+      // Assign spin-analyzers depending on lepton charge
+      if(BestZprimeCandidate->lepton().charge() > 0){
+        // top quark spin-analyzer is lepton
+        cosTheta1k = lep_top_lep_Rest.Vect().Unit().Dot(kbase);
+        cosTheta1r = lep_top_lep_Rest.Vect().Unit().Dot(rbase);
+        cosTheta1n = lep_top_lep_Rest.Vect().Unit().Dot(nbase);
+        cosTheta1kStar = lep_top_lep_Rest.Vect().Unit().Dot(kStar);
+        cosTheta1rStar = lep_top_lep_Rest.Vect().Unit().Dot(rStar);
+        // antitop spin-analyzer is b-jet
+        cosTheta2k = had_top_b_Rest.Vect().Unit().Dot(kbase);
+        cosTheta2r = had_top_b_Rest.Vect().Unit().Dot(rbase);
+        cosTheta2n = had_top_b_Rest.Vect().Unit().Dot(nbase);
+        cosTheta2kStar = had_top_b_Rest.Vect().Unit().Dot(kStar);
+        cosTheta2rStar = had_top_b_Rest.Vect().Unit().Dot(rStar);
+      }
+      else if (BestZprimeCandidate->lepton().charge() < 0){
+        // top quark spin-analyzer is b-jet
+        cosTheta1k = had_top_b_Rest.Vect().Unit().Dot(kbase);
+        cosTheta1r = had_top_b_Rest.Vect().Unit().Dot(rbase);
+        cosTheta1n = had_top_b_Rest.Vect().Unit().Dot(nbase);
+        cosTheta1kStar = had_top_b_Rest.Vect().Unit().Dot(kStar);
+        cosTheta1rStar = had_top_b_Rest.Vect().Unit().Dot(rStar);
+        // antitop spin-analyzer is lepton
+        cosTheta2k = lep_top_lep_Rest.Vect().Unit().Dot(kbase);
+        cosTheta2r = lep_top_lep_Rest.Vect().Unit().Dot(rbase);
+        cosTheta2n = lep_top_lep_Rest.Vect().Unit().Dot(nbase);
+        cosTheta2kStar = lep_top_lep_Rest.Vect().Unit().Dot(kStar);
+        cosTheta2rStar = lep_top_lep_Rest.Vect().Unit().Dot(rStar);
+      }
+      // top daughter polarizations
+      evt.set(h_cosTheta1k_SR, cosTheta1k);
+      evt.set(h_cosTheta1r_SR, cosTheta1r);
+      evt.set(h_cosTheta1n_SR, cosTheta1n);
+      evt.set(h_cosTheta1kStar_SR, cosTheta1kStar);
+      evt.set(h_cosTheta1rStar_SR, cosTheta1rStar);
+      // antitop daughter polarizations
+      evt.set(h_cosTheta2k_SR, cosTheta2k);
+      evt.set(h_cosTheta2r_SR, cosTheta2r);
+      evt.set(h_cosTheta2n_SR, cosTheta2n);
+      evt.set(h_cosTheta2kStar_SR, cosTheta2kStar);
+      evt.set(h_cosTheta2rStar_SR, cosTheta2rStar);
+
+      // correlation matrix elements
+      evt.set(h_Cnn_SR, cosTheta1n * cosTheta2n);
+      evt.set(h_Cnr_SR, cosTheta1n * cosTheta2r);
+      evt.set(h_Cnk_SR, cosTheta1n * cosTheta2k);
+      evt.set(h_Crn_SR, cosTheta1r * cosTheta2n);
+      evt.set(h_Crr_SR, cosTheta1r * cosTheta2r);
+      evt.set(h_Crk_SR, cosTheta1r * cosTheta2k);
+      evt.set(h_Ckn_SR, cosTheta1k * cosTheta2n);
+      evt.set(h_Ckr_SR, cosTheta1k * cosTheta2r);
+      evt.set(h_Ckk_SR, cosTheta1k * cosTheta2k);
+      // sum and differences of cross correlations
+      evt.set(h_Crk_plus_SR, cosTheta1r * cosTheta2k + cosTheta1k * cosTheta2r);
+      evt.set(h_Crk_minus_SR, cosTheta1r * cosTheta2k - cosTheta1k * cosTheta2r);
+      evt.set(h_Cnr_plus_SR, cosTheta1n * cosTheta2r + cosTheta1r * cosTheta2n);
+      evt.set(h_Cnr_minus_SR, cosTheta1n * cosTheta2r - cosTheta1r * cosTheta2n);
+      evt.set(h_Cnk_plus_SR, cosTheta1n * cosTheta2k + cosTheta1k * cosTheta2n);
+      evt.set(h_Cnk_minus_SR, cosTheta1n * cosTheta2k - cosTheta1k * cosTheta2n);
+
+      // entanglement variables, inclusive
+      CHel = lep_top_lep_Rest.Vect().Unit().Dot(had_top_b_Rest.Vect().Unit());
+      CHel_P3n = cosTheta1k * cosTheta2k + cosTheta1r * cosTheta2r - cosTheta1n * cosTheta2n;
+      evt.set(h_cHel_SR, CHel);
+      evt.set(h_cHel_P3n_SR, CHel_P3n);
+
+      // entanglement variables, near-threshold
+      if(ttbar.M() < 400.){evt.set(h_cHel_Mtt300_400_SR, CHel);
+        // near-threshold and non-relativistic
+        if(beta < 0.9){evt.set(h_cHel_Mtt300_400_betaLT0p9_SR, CHel);}
+      }
+
+      // entanglement variables, boosted
+      if(ttbar.M() > 800.){evt.set(h_cHel_P3n_Mtt800_Inf_SR, CHel_P3n);
+        // boosted and central
+        if(TMath::Abs(cos_PosTop_beam) < 0.4){evt.set(h_cHel_P3n_Mtt800_Inf_cosThetaLT0p4_SR, CHel_P3n);}
+      }
+
+      // Baumgart et al. variables
+      // defined using phi-coordinate wrt Bernreuther nr-plane
+      float lep_top_lep_phi = atan2(lep_top_lep_Rest.Vect().Unit().Dot(rbase), lep_top_lep_Rest.Vect().Unit().Dot(nbase));
+      float had_top_b_phi   = atan2(had_top_b_Rest.Vect().Unit().Dot(rbase),   had_top_b_Rest.Vect().Unit().Dot(nbase));
+
+      // sphi and dphi = PosTopDecayProd_phi +- NegTopDecayProd_phi
+      float sphi = lep_top_lep_phi + had_top_b_phi;   // sum is independent of order
+      float dphi = -99.;                              // initialize with dummy value
+      if(BestZprimeCandidate->lepton().charge() > 0){ // lepton is Positive Top's Decay Product
+        dphi = lep_top_lep_phi - had_top_b_phi;
+      }
+      if(BestZprimeCandidate->lepton().charge() < 0){ // b-jet is Positive Top's Decay Product
+        dphi = had_top_b_phi - lep_top_lep_phi;
+      }
+      
+      // Map back into original domain if necessary
+      if(sphi > TMath::Pi()) sphi = sphi - 2*TMath::Pi();
+      if(sphi < -TMath::Pi()) sphi = sphi + 2*TMath::Pi();
+      if(dphi > TMath::Pi()) dphi = dphi - 2*TMath::Pi();
+      if(dphi < -TMath::Pi()) dphi = dphi + 2*TMath::Pi();
+      evt.set(h_Sigma_phi_SR, sphi);
+      evt.set(h_Delta_phi_SR, dphi);
+
+      // Plot dphi and sphi for high-pt range && positive dy_reco
+      if(pt_hadTop > pt_hadTop_thresh && dyreco >0){
+        evt.set(h_Sigma_phi_1_SR, sphi);
+        evt.set(h_Delta_phi_1_SR, dphi);
+      }
+      // Plot dphi and sphi for high-pt range && negative dy_reco
+      if(pt_hadTop > pt_hadTop_thresh && dyreco <0){
+        evt.set(h_Sigma_phi_2_SR, sphi);
+        evt.set(h_Delta_phi_2_SR, dphi);
+      }
+      // Plot dy_reco for low-pt ranges && positive sphi
+      if(pt_hadTop < pt_hadTop_thresh && sphi >0){
+        evt.set(h_dyreco_s1_SR, dyreco);
+      }
+      // Plot dy_reco for low-pt ranges && negative sphi
+      if(pt_hadTop < pt_hadTop_thresh && sphi <0){
+        evt.set(h_dyreco_s2_SR, dyreco);
+      }
+      // Plot dy_reco for low-pt ranges && positive dphi
+      if(pt_hadTop < pt_hadTop_thresh && dphi >0){
+        evt.set(h_dyreco_d1_SR, dyreco);
+      }
+      // Plot dy_reco for low-pt ranges && negative dphi
+      if(pt_hadTop < pt_hadTop_thresh && dphi <0){
+        evt.set(h_dyreco_d2_SR, dyreco);
+      }
+
+      // Plot all for high-pt ranges
+      if(pt_hadTop > pt_hadTop_thresh){
+        evt.set(h_Sigma_phi_high_SR, sphi);
+        evt.set(h_Delta_phi_high_SR, dphi);
+        evt.set(h_dyreco_high_SR, dyreco);
+      }
+      // Plot all for low-pt ranges
+      if(pt_hadTop < pt_hadTop_thresh){
+        evt.set(h_Sigma_phi_low_SR, sphi);
+        evt.set(h_Delta_phi_low_SR, dphi);
+        evt.set(h_dyreco_low_SR, dyreco);
+      }
+
+    }// end b-tagging condition
+
+  }// end chi2 reconstruction condition
 
 
   return true;
 }
 
 
-/////CR1///////
-
+// CR1 //
 Variables_EFT_CR1::Variables_EFT_CR1(uhh2::Context& ctx, TString mode): mode_(mode){
   h_BestZprimeCandidateChi2 = ctx.get_handle<ZprimeCandidate*>("ZprimeCandidateBestChi2");
   h_is_zprime_reconstructed_chi2 = ctx.get_handle<bool>("is_zprime_reconstructed_chi2");
   h_CHSjets_matched = ctx.get_handle<std::vector<Jet>>("CHS_matched");
   h_eventweight_CR1 = ctx.declare_event_output<float> ("eventweight");
 
-  h_dyreco_CR1 = ctx.declare_event_output<float>("dyreco_CR1");
+  // ttbar system variables
+  h_chi2_CR1 = ctx.declare_event_output<float>("chi2_CR1");
+  h_M_tt_CR1 = ctx.declare_event_output<float>("M_tt_CR1");
+  h_beta_CR1 = ctx.declare_event_output<float>("beta_CR1");
+  h_dyreco_CR1 = ctx.declare_event_output<float>("dyreco_CR1"); // charge asymmetry
+
+  // spin-analyzer (leptons-only) projections
+  h_cosTheta1k_antiLep_CR1 = ctx.declare_event_output<float>("cosTheta1k_antiLep_CR1");
+  h_cosTheta1r_antiLep_CR1 = ctx.declare_event_output<float>("cosTheta1r_antiLep_CR1");
+  h_cosTheta1n_antiLep_CR1 = ctx.declare_event_output<float>("cosTheta1n_antiLep_CR1");
+  h_cosTheta1kStar_antiLep_CR1 = ctx.declare_event_output<float>("cosTheta1kStar_antiLep_CR1");
+  h_cosTheta1rStar_antiLep_CR1 = ctx.declare_event_output<float>("cosTheta1rStar_antiLep_CR1");
+  h_cosTheta2k_Lep_CR1 = ctx.declare_event_output<float>("cosTheta2k_Lep_CR1");
+  h_cosTheta2r_Lep_CR1 = ctx.declare_event_output<float>("cosTheta2r_Lep_CR1");
+  h_cosTheta2n_Lep_CR1 = ctx.declare_event_output<float>("cosTheta2n_Lep_CR1");
+  h_cosTheta2kStar_Lep_CR1 = ctx.declare_event_output<float>("cosTheta2kStar_Lep_CR1");
+  h_cosTheta2rStar_Lep_CR1 = ctx.declare_event_output<float>("cosTheta2rStar_Lep_CR1");
+
+  // spin-analyzer projections
+  h_cosTheta1k_CR1 = ctx.declare_event_output<float>("cosTheta1k_CR1");
+  h_cosTheta1r_CR1 = ctx.declare_event_output<float>("cosTheta1r_CR1");
+  h_cosTheta1n_CR1 = ctx.declare_event_output<float>("cosTheta1n_CR1");
+  h_cosTheta1kStar_CR1 = ctx.declare_event_output<float>("cosTheta1kStar_CR1");
+  h_cosTheta1rStar_CR1 = ctx.declare_event_output<float>("cosTheta1rStar_CR1");
+  h_cosTheta2k_CR1 = ctx.declare_event_output<float>("cosTheta2k_CR1");
+  h_cosTheta2r_CR1 = ctx.declare_event_output<float>("cosTheta2r_CR1");
+  h_cosTheta2n_CR1 = ctx.declare_event_output<float>("cosTheta2n_CR1");
+  h_cosTheta2kStar_CR1 = ctx.declare_event_output<float>("cosTheta2kStar_CR1");
+  h_cosTheta2rStar_CR1 = ctx.declare_event_output<float>("cosTheta2rStar_CR1");
+
+  // Correlation elements
+  h_Cnn_CR1 = ctx.declare_event_output<float>("Cnn_CR1");
+  h_Cnr_CR1 = ctx.declare_event_output<float>("Cnr_CR1");
+  h_Cnk_CR1 = ctx.declare_event_output<float>("Cnk_CR1");
+  h_Crn_CR1 = ctx.declare_event_output<float>("Crn_CR1");
+  h_Crr_CR1 = ctx.declare_event_output<float>("Crr_CR1");
+  h_Crk_CR1 = ctx.declare_event_output<float>("Crk_CR1");
+  h_Ckn_CR1 = ctx.declare_event_output<float>("Ckn_CR1");
+  h_Ckr_CR1 = ctx.declare_event_output<float>("Ckr_CR1");
+  h_Ckk_CR1 = ctx.declare_event_output<float>("Ckk_CR1");
+  // linear combinations
+  h_Crk_plus_CR1 = ctx.declare_event_output<float>("Crk_plus_CR1");
+  h_Crk_minus_CR1 = ctx.declare_event_output<float>("Crk_minus_CR1");
+  h_Cnr_plus_CR1 = ctx.declare_event_output<float>("Cnr_plus_CR1");
+  h_Cnr_minus_CR1 = ctx.declare_event_output<float>("Cnr_minus_CR1");
+  h_Cnk_plus_CR1 = ctx.declare_event_output<float>("Cnk_plus_CR1");
+  h_Cnk_minus_CR1 = ctx.declare_event_output<float>("Cnk_minus_CR1");
+
+  // Entanglement witnesses
+  h_cHel_CR1 = ctx.declare_event_output<float>("cHel_CR1");
+  h_cHel_Mtt300_400_CR1 = ctx.declare_event_output<float>("cHel_Mtt300_400_CR1");
+  h_cHel_Mtt300_400_betaLT0p9_CR1 = ctx.declare_event_output<float>("cHel_Mtt300_400_betaLT0p9_CR1");
+
+  h_cHel_P3n_CR1 = ctx.declare_event_output<float>("cHel_P3n_CR1");
+  h_cHel_P3n_Mtt800_Inf_CR1 = ctx.declare_event_output<float>("cHel_P3n_Mtt800_Inf_CR1");
+  h_cHel_P3n_Mtt800_Inf_cosThetaLT0p4_CR1 = ctx.declare_event_output<float>("cHel_P3n_Mtt800_Inf_cosThetaLT0p4_CR1");
+
+  // Baumgart et al. variables
   h_Sigma_phi_CR1 = ctx.declare_event_output<float>("Sigma_phi_CR1");
   h_Delta_phi_CR1 = ctx.declare_event_output<float>("Delta_phi_CR1");
 
+  // Baumgart variables with cut on charge asymmetry
+  h_Sigma_phi_1_CR1 = ctx.declare_event_output<float>("Sigma_phi_1_CR1");
+  h_Sigma_phi_2_CR1 = ctx.declare_event_output<float>("Sigma_phi_2_CR1");
   h_Delta_phi_1_CR1 = ctx.declare_event_output<float>("Delta_phi_1_CR1");
   h_Delta_phi_2_CR1 = ctx.declare_event_output<float>("Delta_phi_2_CR1");
-  
-  h_dyreco_1_CR1 = ctx.declare_event_output<float>("dyreco_1_CR1");
-  h_dyreco_1_CR1_0_500 = ctx.declare_event_output<float>("dyreco_1_CR1_0_500");
-  h_dyreco_1_CR1_500_750 = ctx.declare_event_output<float>("dyreco_1_CR1_500_750");
-  h_dyreco_1_CR1_750_1000 = ctx.declare_event_output<float>("dyreco_1_CR1_750_1000");
-  h_dyreco_1_CR1_1000_1500 = ctx.declare_event_output<float>("dyreco_1_CR1_1000_1500");
-  h_dyreco_1_CR1_1500_Inf = ctx.declare_event_output<float>("dyreco_1_CR1_1500_Inf");
-  h_dyreco_1_CR1_0_700 = ctx.declare_event_output<float>("dyreco_1_CR1_0_700");
-  h_dyreco_1_CR1_700_900 = ctx.declare_event_output<float>("dyreco_1_CR1_700_900");
-  h_dyreco_1_CR1_900_Inf = ctx.declare_event_output<float>("dyreco_1_CR1_900_Inf");
+  // Charge asymmetry with cut on Baumgart variables
+  h_dyreco_s1_CR1 = ctx.declare_event_output<float>("dyreco_s1_CR1");
+  h_dyreco_s2_CR1 = ctx.declare_event_output<float>("dyreco_s2_CR1");
+  h_dyreco_d1_CR1 = ctx.declare_event_output<float>("dyreco_d1_CR1");
+  h_dyreco_d2_CR1 = ctx.declare_event_output<float>("dyreco_d2_CR1");
 
-  h_dyreco_2_CR1 = ctx.declare_event_output<float>("dyreco_2_CR1");
-  h_dyreco_2_CR1_0_500 = ctx.declare_event_output<float>("dyreco_2_CR1_0_500");
-  h_dyreco_2_CR1_500_750 = ctx.declare_event_output<float>("dyreco_2_CR1_500_750");
-  h_dyreco_2_CR1_750_1000 = ctx.declare_event_output<float>("dyreco_2_CR1_750_1000");
-  h_dyreco_2_CR1_1000_1500 = ctx.declare_event_output<float>("dyreco_2_CR1_1000_1500");
-  h_dyreco_2_CR1_1500_Inf = ctx.declare_event_output<float>("dyreco_2_CR1_1500_Inf");
-  h_dyreco_2_CR1_0_700 = ctx.declare_event_output<float>("dyreco_2_CR1_0_700");
-  h_dyreco_2_CR1_700_900 = ctx.declare_event_output<float>("dyreco_2_CR1_700_900");
-  h_dyreco_2_CR1_900_Inf = ctx.declare_event_output<float>("dyreco_2_CR1_900_Inf");
-
-
-  h_Sigma_phi_1_CR1=ctx.declare_event_output<float>("Sigma_phi_1_CR1");
-  h_Sigma_phi_1_CR1_0_500=ctx.declare_event_output<float>("Sigma_phi_1_CR1_0_500");
-  h_Sigma_phi_1_CR1_500_750=ctx.declare_event_output<float>("Sigma_phi_1_CR1_500_750");
-  h_Sigma_phi_1_CR1_750_1000=ctx.declare_event_output<float>("Sigma_phi_1_CR1_750_1000");
-  h_Sigma_phi_1_CR1_1000_1500=ctx.declare_event_output<float>("Sigma_phi_1_CR1_1000_1500");
-  h_Sigma_phi_1_CR1_1500_Inf=ctx.declare_event_output<float>("Sigma_phi_1_CR1_1000_1500");
-  h_Sigma_phi_1_CR1_0_700=ctx.declare_event_output<float>("Sigma_phi_1_CR1_0_700");
-  h_Sigma_phi_1_CR1_700_900=ctx.declare_event_output<float>("Sigma_phi_1_CR1_700_900");
-  h_Sigma_phi_1_CR1_900_Inf=ctx.declare_event_output<float>("Sigma_phi_1_CR1_900_Inf");
-
-  h_Sigma_phi_2_CR1=ctx.declare_event_output<float>("Sigma_phi_2_CR1");
-  h_Sigma_phi_2_CR1_0_500=ctx.declare_event_output<float>("Sigma_phi_2_CR1_0_500");
-  h_Sigma_phi_2_CR1_500_750=ctx.declare_event_output<float>("Sigma_phi_2_CR1_500_750");
-  h_Sigma_phi_2_CR1_750_1000=ctx.declare_event_output<float>("Sigma_phi_2_CR1_750_1000");
-  h_Sigma_phi_2_CR1_1000_1500=ctx.declare_event_output<float>("Sigma_phi_2_CR1_1000_1500");
-  h_Sigma_phi_2_CR1_1500_Inf=ctx.declare_event_output<float>("Sigma_phi_2_CR1_1000_1500");
-  h_Sigma_phi_2_CR1_0_700=ctx.declare_event_output<float>("Sigma_phi_2_CR1_0_700");
-  h_Sigma_phi_2_CR1_700_900=ctx.declare_event_output<float>("Sigma_phi_2_CR1_700_900");
-  h_Sigma_phi_2_CR1_900_Inf=ctx.declare_event_output<float>("Sigma_phi_2_CR1_900_Inf");
+  // all three variables in high/low pt cuts
+  h_Sigma_phi_high_CR1 = ctx.declare_event_output<float>("Sigma_phi_high_CR1");
+  h_Delta_phi_high_CR1 = ctx.declare_event_output<float>("Delta_phi_high_CR1");
+  h_dyreco_high_CR1 = ctx.declare_event_output<float>("dyreco_high_CR1");
+  h_Sigma_phi_low_CR1 = ctx.declare_event_output<float>("Sigma_phi_low_CR1");
+  h_Delta_phi_low_CR1 = ctx.declare_event_output<float>("Delta_phi_low_CR1");
+  h_dyreco_low_CR1 = ctx.declare_event_output<float>("dyreco_low_CR1");
 }
 
 bool Variables_EFT_CR1::process(uhh2::Event& evt){
@@ -2071,405 +2382,480 @@ bool Variables_EFT_CR1::process(uhh2::Event& evt){
   evt.set(h_eventweight_CR1, -10);
   evt.set(h_eventweight_CR1, weight);
 
-  // bool is_zprime_reconstructed_chi2 = evt.get(h_is_zprime_reconstructed_chi2);
-  ZprimeCandidate* BestZprimeCandidate = evt.get(h_BestZprimeCandidateChi2);
-  bool is_toptag_reconstruction = BestZprimeCandidate->is_toptag_reconstruction(); // Reconstruction process id
-  vector <Jet> AK4CHSjets_matched = evt.get(h_CHSjets_matched);  
-  //                 // AK4Puppijets that have been matched to CHSjets
- 
-  // vector <TopJet> TopTaggedJets = evt.get(h_AK8TopTags);                     // AK8Puppi jets TopTagged by DeepAK8TopTagger
-  vector <float> jets_hadronic_bscores;                                            // bScores vector for resolved hadronic jets
-  float pt_hadTop_thresh = 150;                                                    // Define cut-variable as pt of hadTop for low/high regions                                                   // medium WP for UL18 DeepJet
-  // EFT Ac and spin correlation variables:
-  // Plot pt of hadronic Top jet
-  float pt_hadTop = BestZprimeCandidate->top_hadronic_v4().pt();
+  bool is_zprime_reconstructed_chi2 = evt.get(h_is_zprime_reconstructed_chi2); // reconstruction method boolean
+  evt.set(h_chi2_CR1, -10);  // chi^2 of ttbar reconstruction
+  evt.set(h_M_tt_CR1, -10);  // invariant mass of ttbar system
+  evt.set(h_beta_CR1, -10);  // relativistic-beta of ttbar system
+  evt.set(h_dyreco_CR1,-10); // Charge asymmetry of ttbar system
   
-  float bscore_max = -2;
-  if(!is_toptag_reconstruction){
-      // Loop over resolved hadronic jets to find their bscore via CHS jets
-    for(unsigned int i=0; i<BestZprimeCandidate->jets_hadronic().size(); i++){
-      double deltaR_min = 99;
-      // Match resolved hadronic jets to CHS jets (which have bscores)
-      for(unsigned int j=0; j<AK4CHSjets_matched.size(); j++){
-        double deltaR_CHS = deltaR(BestZprimeCandidate->jets_hadronic().at(i), AK4CHSjets_matched.at(j));
-        if(deltaR_CHS < deltaR_min) deltaR_min = deltaR_CHS;
+  if(is_zprime_reconstructed_chi2){
+    ZprimeCandidate* BestZprimeCandidate = evt.get(h_BestZprimeCandidateChi2); // Best ttbar-system reconstruction based on chi^2 discriminator
+    float chi2 = BestZprimeCandidate->discriminator("chi2_total");
+    float Mass_tt = BestZprimeCandidate->Zprime_v4().M();
+    evt.set(h_chi2_CR1, chi2);
+    evt.set(h_M_tt_CR1, Mass_tt);
+
+    bool is_toptag_reconstruction = BestZprimeCandidate->is_toptag_reconstruction(); // Reconstruction process id
+    vector <Jet> AK4CHSjets_matched = evt.get(h_CHSjets_matched);                    // AK4Puppijets that have been matched to CHSjets
+    vector <float> jets_hadronic_bscores;                                            // bScores vector for resolved hadronic jets
+    float pt_hadTop_thresh = 150;                                                    // Define cut-variable as pt of hadTop for low/high regions
+    float pt_hadTop = BestZprimeCandidate->top_hadronic_v4().pt();                   // pT of hadronic-top jet
+    
+    // Working points for DeepJet AK4-jet b-tagging, e.g., see https://btv-wiki.docs.cern.ch/ScaleFactors/Run2UL2016preVFP/#ak4-b-tagging for UL16preVFP
+    float noTopTag_btag_WP_M;                       // Medium working point flag to cut on working point
+    if (isUL16preVFP) noTopTag_btag_WP_M = 0.2598;  // medium WP for UL16preVFP DeepJet -> 73.3% efficiency
+    if (isUL16postVFP) noTopTag_btag_WP_M = 0.3657; // medium WP for UL16postVFP DeepJet -> 71.4% efficiency
+    if (isUL17) noTopTag_btag_WP_M = 0.3040;        // medium WP for UL17 DeepJet -> 79.1% efficiency
+    if (isUL18) noTopTag_btag_WP_M = 0.2783;        // medium WP for UL18 DeepJet -> 80.7% efficiency
+    
+    // Working points for DeepCSV AK8-subjet b-tagging, e.g., see https://btv-wiki.docs.cern.ch/ScaleFactors/Run2UL2016preVFP/#subjet-b-tagging for UL16preVFP
+    float TopTag_btag_WP_M;                         // Medium working point flag to cut on working point
+    if (isUL16preVFP) TopTag_btag_WP_M = 0.6001;    // medium WP for UL16preVFP DeepCSV
+    if (isUL16postVFP) TopTag_btag_WP_M = 0.5847;   // medium WP for UL16postVFP DeepCSV
+    if (isUL17) TopTag_btag_WP_M = 0.4506;          // medium WP for UL17 DeepCSV
+    if (isUL18) TopTag_btag_WP_M = 0.4506;          // medium WP for UL18 DeepCSV
+    
+    bool passes_btagging = false;                   // Variable to check if event passes b-tagging condition
+
+    float bscore_max = -2;
+    //-------------- Extracting highest b-tag score in Resolved topology, i.e. no top-tagged jet in event --------------//
+    if(!is_toptag_reconstruction){
+        // Loop over resolved hadronic jets to find their bscore via CHS jets
+      for(unsigned int i=0; i<BestZprimeCandidate->jets_hadronic().size(); i++){
+        double deltaR_min = 99;
+        // Match resolved hadronic jets to CHS jets (which have bscores)
+        for(unsigned int j=0; j<AK4CHSjets_matched.size(); j++){
+          double deltaR_CHS = deltaR(BestZprimeCandidate->jets_hadronic().at(i), AK4CHSjets_matched.at(j));
+          if(deltaR_CHS < deltaR_min) deltaR_min = deltaR_CHS;
+          }
+        // Build bScore-vector for resolved hadronic jets whose bscore will correspond by index
+        for(unsigned int k=0; k<AK4CHSjets_matched.size(); k++){
+          if(deltaR(BestZprimeCandidate->jets_hadronic().at(i), AK4CHSjets_matched.at(k)) == deltaR_min) 
+          jets_hadronic_bscores.emplace_back(AK4CHSjets_matched.at(k).btag_DeepJet()); // Using DeepJet btag score
+          } 
+      }
+      // Loop over bScores-vector to extract highest bscore
+      for(unsigned int i=0; i<jets_hadronic_bscores.size(); i++){
+        float bscore = jets_hadronic_bscores.at(i);
+        if(bscore > bscore_max) bscore_max = bscore;
+      }
+      if(bscore_max >= noTopTag_btag_WP_M) passes_btagging = true; // Event passes b-tagging condition
+    }
+    
+    //--------------- Extracting highest b-tag score in Merged topology, i.e. with top-tagged jet in event ---------------//
+    if(is_toptag_reconstruction){
+        // Loop over hadronic top's subjets to extract highest bscore
+      for(unsigned int i=0; i < BestZprimeCandidate->tophad_topjet_ptr()->subjets().size(); i++){
+        float bscore = BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(i).btag_DeepCSV(); // Using DeepCSV btag score
+        if(bscore > bscore_max) bscore_max = bscore;
+      }
+      if(bscore_max >= TopTag_btag_WP_M) passes_btagging = true; // Event passes b-tagging condition
+    }
+
+
+    //------------------------------------Define 4vectors of top quarks and spin analyzers------------------------------------//
+    TLorentzVector had_top_b(0, 0, 0, 0); // b-jet 4-vector
+    TLorentzVector lep_top_lep(0, 0, 0, 0); // Lepton 4-vector
+
+    if(passes_btagging){ // only define angular variables if event passes b-tag WP-cut
+      // b-jet from Resolved topology
+      if(!is_toptag_reconstruction){ // Defined as hadronic AK4-jet with highest deepJet bscore
+        for(unsigned int i=0; i< BestZprimeCandidate->jets_hadronic().size(); i++){
+          float bscore = jets_hadronic_bscores.at(i);
+          if(bscore == bscore_max) had_top_b.SetPtEtaPhiE(BestZprimeCandidate->jets_hadronic().at(i).pt(), 
+                                                          BestZprimeCandidate->jets_hadronic().at(i).eta(), 
+                                                          BestZprimeCandidate->jets_hadronic().at(i).phi(), 
+                                                          BestZprimeCandidate->jets_hadronic().at(i).energy());
         }
-      // Build bScore-vector for resolved hadronic jets whose bscore will correspond by index
-      for(unsigned int k=0; k<AK4CHSjets_matched.size(); k++){
-        if(deltaR(BestZprimeCandidate->jets_hadronic().at(i), AK4CHSjets_matched.at(k)) == deltaR_min) 
-        jets_hadronic_bscores.emplace_back(AK4CHSjets_matched.at(k).btag_DeepJet());
-        } // Using DeepJet btag score
-    }
-    // Loop over bScores-vector to extract highest bscor
-    for(unsigned int i=0; i<jets_hadronic_bscores.size(); i++){
-      float bscore = jets_hadronic_bscores.at(i);
-      if(bscore > bscore_max) bscore_max = bscore;
-    }
-    //is not top tag
-  }
-  if(is_toptag_reconstruction){
-    // Loop over hadronic top's subjets to extract highest bscore
-  for(unsigned int i=0; i < BestZprimeCandidate->tophad_topjet_ptr()->subjets().size(); i++){
-    float bscore = BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(i).btag_DeepJet(); // Using DeepJet btag score
-    if(bscore > bscore_max) bscore_max = bscore;
-  }
+      }
+      // b-jet from Merged topology
+      if(is_toptag_reconstruction){ // Defined as hadronic AK8-SDsubjet with highest deepCSV bscore
+        for(unsigned int j=0; j < BestZprimeCandidate->tophad_topjet_ptr()->subjets().size(); j++){
+          float bscore = BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).btag_DeepCSV();
+          if(bscore == bscore_max) had_top_b.SetPtEtaPhiE(BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).pt(), 
+                                                          BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).eta(), 
+                                                          BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).phi(), 
+                                                          BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).energy());
+        }
+      }
 
-}
-  TLorentzVector had_top_b(0, 0, 0, 0);
+      // lepton
+      LorentzVector lep = BestZprimeCandidate->lepton().v4();
+      lep_top_lep.SetPtEtaPhiE(lep.pt(), lep.eta(), lep.phi(), lep.E());
 
-// Resolved topology
-  if(!is_toptag_reconstruction){ // Define hadronic b-jet as hadronic AK4-jet with highest bscore
-    for(unsigned int i=0; i< BestZprimeCandidate->jets_hadronic().size(); i++){
-      float bscore = jets_hadronic_bscores.at(i);
-      if(bscore == bscore_max) had_top_b.SetPtEtaPhiE(BestZprimeCandidate->jets_hadronic().at(i).pt(), 
-                                                      BestZprimeCandidate->jets_hadronic().at(i).eta(), 
-                                                      BestZprimeCandidate->jets_hadronic().at(i).phi(), 
-                                                      BestZprimeCandidate->jets_hadronic().at(i).energy());
-    }
-  }
-  // Merged topology
-  if(is_toptag_reconstruction){ // Define hadronic b-jet as hadronic AK8-subjet with highest bscore
-    for(unsigned int j=0; j < BestZprimeCandidate->tophad_topjet_ptr()->subjets().size(); j++){
-      float bscore = BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).btag_DeepJet();
-      if(bscore == bscore_max) had_top_b.SetPtEtaPhiE(BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).pt(), 
-                                                      BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).eta(), 
-                                                      BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).phi(), 
-                                                      BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).energy());
-    }
-  }
-  TLorentzVector lep_top_lep(0, 0, 0, 0);
-  LorentzVector lep = BestZprimeCandidate->lepton().v4();
-  lep_top_lep.SetPtEtaPhiE(lep.pt(), lep.eta(), lep.phi(), lep.E());
-    // Define 4vectors of top quarks
-  TLorentzVector PosTop(0, 0, 0, 0);
-  TLorentzVector NegTop(0, 0, 0, 0);
+      // top quark parents for boosting and basis construction
+      TLorentzVector PosTop(0, 0, 0, 0);
+      TLorentzVector NegTop(0, 0, 0, 0);
+      if(BestZprimeCandidate->lepton().charge() > 0){ // Positively charged Lepton => "Leptonic" top QUARK is POSitively charged
+        PosTop.SetPtEtaPhiE(BestZprimeCandidate->top_leptonic_v4().pt(), 
+                            BestZprimeCandidate->top_leptonic_v4().eta(), 
+                            BestZprimeCandidate->top_leptonic_v4().phi(), 
+                            BestZprimeCandidate->top_leptonic_v4().energy());
+        NegTop.SetPtEtaPhiE(BestZprimeCandidate->top_hadronic_v4().pt(), 
+                            BestZprimeCandidate->top_hadronic_v4().eta(), 
+                            BestZprimeCandidate->top_hadronic_v4().phi(), 
+                            BestZprimeCandidate->top_hadronic_v4().energy());
+      }
+      else if (BestZprimeCandidate->lepton().charge() < 0){ // Negatively charged Lepton => "Leptonic" top ANTI-QUARK is NEGatively charged
+        PosTop.SetPtEtaPhiE(BestZprimeCandidate->top_hadronic_v4().pt(), 
+                            BestZprimeCandidate->top_hadronic_v4().eta(), 
+                            BestZprimeCandidate->top_hadronic_v4().phi(), 
+                            BestZprimeCandidate->top_hadronic_v4().energy());
+        NegTop.SetPtEtaPhiE(BestZprimeCandidate->top_leptonic_v4().pt(), 
+                            BestZprimeCandidate->top_leptonic_v4().eta(), 
+                            BestZprimeCandidate->top_leptonic_v4().phi(), 
+                            BestZprimeCandidate->top_leptonic_v4().energy());
+      }
+      TLorentzVector ttbar = PosTop + NegTop; // ttbar 4vector
 
-      // POSITIVE LEPTON CONFIGURATION => Positive charged lepton has Positive Top mother
-  if(BestZprimeCandidate->lepton().charge() > 0){
-    // Define ttbar system
-    PosTop.SetPtEtaPhiE(BestZprimeCandidate->top_leptonic_v4().pt(), 
-                        BestZprimeCandidate->top_leptonic_v4().eta(), 
-                        BestZprimeCandidate->top_leptonic_v4().phi(), 
-                        BestZprimeCandidate->top_leptonic_v4().energy());
-    NegTop.SetPtEtaPhiE(BestZprimeCandidate->top_hadronic_v4().pt(), 
-                        BestZprimeCandidate->top_hadronic_v4().eta(), 
-                        BestZprimeCandidate->top_hadronic_v4().phi(), 
-                        BestZprimeCandidate->top_hadronic_v4().energy());
-  }
-  else if (BestZprimeCandidate->lepton().charge() < 0){
-    PosTop.SetPtEtaPhiE(BestZprimeCandidate->top_hadronic_v4().pt(), 
-                        BestZprimeCandidate->top_hadronic_v4().eta(), 
-                        BestZprimeCandidate->top_hadronic_v4().phi(), 
-                        BestZprimeCandidate->top_hadronic_v4().energy());
-    NegTop.SetPtEtaPhiE(BestZprimeCandidate->top_leptonic_v4().pt(), 
-                        BestZprimeCandidate->top_leptonic_v4().eta(), 
-                        BestZprimeCandidate->top_leptonic_v4().phi(), 
-                        BestZprimeCandidate->top_leptonic_v4().energy());
-  }
+      // Lab-frame variables
+      float beta = TMath::Abs(PosTop.Pz() + NegTop.Pz()) / (PosTop.E() + NegTop.E());
+      evt.set(h_beta_CR1, beta); // relativistic beta
+
+      float dyreco = -999.0;
+      if (BestZprimeCandidate->lepton().charge()>0) {
+        dyreco = TMath::Abs(BestZprimeCandidate->top_leptonic_v4().Rapidity()) - TMath::Abs(BestZprimeCandidate->top_hadronic_v4().Rapidity());} 
+      else {
+        dyreco = TMath::Abs(BestZprimeCandidate->top_hadronic_v4().Rapidity()) - TMath::Abs(BestZprimeCandidate->top_leptonic_v4().Rapidity());}
+      evt.set(h_dyreco_CR1, dyreco); // charge asymmetry
+
+      //--------- Boost into ttbar CoM-Frame ---------//
+      // Center of Mass frame copies of 4vectors
+      TLorentzVector PosTop_CoM = PosTop;
+      TLorentzVector NegTop_CoM = NegTop;
+      TLorentzVector lep_top_lep_CoM = lep_top_lep;
+      TLorentzVector had_top_b_CoM = had_top_b;
+      // Boost with negative of ttbar boost vector
+      PosTop_CoM.Boost(-1*ttbar.BoostVector());
+      NegTop_CoM.Boost(-1*ttbar.BoostVector());
+      lep_top_lep_CoM.Boost(-1*ttbar.BoostVector());
+      had_top_b_CoM.Boost(-1*ttbar.BoostVector());
+
+
+      //-------------------------------------------------------------- Build Bernreuther basis --------------------------------------------------------------//
+      // Required axes from CoM frame
+      TVector3 beam_axis(0,0,1);                                                                      // Beam unit vector
+      TVector3 k_axis = PosTop_CoM.Vect().Unit();                                                     // direction of top quark momentum in ttbar CoM frame
+      double cos_PosTop_beam = PosTop_CoM.Vect().Unit().Dot(beam_axis);                               // Cosine of scattering angle, "y" in Bernreuther et al.
+      double abs_sin_PosTop_beam = sqrt(1 - cos_PosTop_beam*cos_PosTop_beam);                         // Sine of scattering angle,   "r" in Bernreuther et al.
+      TVector3 r_axis = ( (1./abs_sin_PosTop_beam) * (beam_axis - cos_PosTop_beam * k_axis) ).Unit(); // orthogonal to k_axis and lies in production plane
+      TVector3 n_axis = ( (1./abs_sin_PosTop_beam) * beam_axis.Cross(k_axis) ).Unit();                // orthogonal to k_axis and production plane
+      double sign_cos_PosTop_beam = (cos_PosTop_beam > 0.) ? 1. : -1.;                                // Bose symmetry factor
+      double sign_rapidity = (dyreco > 0.) ? 1. : -1.;                                                // Charge asymmetry (in lab-frame) factor
+
+      // Basis vectors
+      TVector3 kbase = k_axis;
+      TVector3 rbase = sign_cos_PosTop_beam * r_axis;
+      TVector3 nbase = sign_cos_PosTop_beam * n_axis;
+      // CA-corrected basis vectors
+      TVector3 kStar = sign_rapidity * k_axis;
+      TVector3 rStar = sign_rapidity * sign_cos_PosTop_beam * r_axis;
+
       
-  TLorentzVector ttbar = PosTop + NegTop;
-  TLorentzVector lep_top_lep_CoM = lep_top_lep;
-  // Boost into ttbar CoM-Frame <<<------- Step 1//
-  lep_top_lep_CoM.Boost(-1.*ttbar.BoostVector());
-  TLorentzVector had_top_b_CoM = had_top_b;
-  had_top_b_CoM.Boost(-ttbar.BoostVector());
-  TLorentzVector PosTop_CoM = PosTop;
-  PosTop_CoM.Boost(-ttbar.BoostVector());
-  TLorentzVector NegTop_CoM = NegTop;
-  NegTop_CoM.Boost(-ttbar.BoostVector());
-  // Beam unit vector in COM frame Step 2
-  TVector3 beam_axis(0,0,1);
-  // Calculating top scattering angle for PosTop only
-  double cos_PosTop_beam = PosTop_CoM.Vect().Unit().Dot(beam_axis);
-  double sin_PosTop_beam = sqrt(1 - cos_PosTop_beam*cos_PosTop_beam);
+      //------------------- Boost spin-analyzers into top quark Rest-Frames -------------------//
+      TLorentzVector lep_top_lep_Rest = lep_top_lep_CoM;
+      TLorentzVector had_top_b_Rest   = had_top_b_CoM;
+      
+      // Mother depends on lepton charge
+      if(BestZprimeCandidate->lepton().charge() > 0){
+        lep_top_lep_Rest.Boost(-1.*PosTop_CoM.BoostVector()); // lepton has Positive Top mother
+        had_top_b_Rest.Boost(-1.*NegTop_CoM.BoostVector());   // b-jet has Negative Top mother
+      }
+      else if (BestZprimeCandidate->lepton().charge() < 0){
+        lep_top_lep_Rest.Boost(-1.*NegTop_CoM.BoostVector()); // lepton has Negative Top mother
+        had_top_b_Rest.Boost(-1.*PosTop_CoM.BoostVector());   // b-jet has Positive Top mother
+      }
 
-  // The sign of cos_PosTop_beam to account for Bose symmetry
-  double sign_cos_PosTop_beam = (cos_PosTop_beam > 0.) ? 1. : -1.;
-  // // The sign based on PosTop and NegTop's rapidity
-  // double sign_rapidity = (PosTop.Rapidity() >= NegTop.Rapidity()) ? 1. : -1.;
+    
+      //------------------------------------------- Spin Correlation variables -------------------------------------------//
+      float cosTheta1k_antiLep = 99.;
+      float cosTheta1r_antiLep = 99.;
+      float cosTheta1n_antiLep = 99.;
+      float cosTheta1kStar_antiLep = 99.;
+      float cosTheta1rStar_antiLep = 99.;
+      float cosTheta2k_Lep = 99.;
+      float cosTheta2r_Lep = 99.;
+      float cosTheta2n_Lep = 99.;
+      float cosTheta2kStar_Lep = 99.;
+      float cosTheta2rStar_Lep = 99.;
 
-  // Bernreuther basis vectors
-  TVector3 kbase = PosTop_CoM.Vect().Unit();
-  TVector3 rbase = ( (sign_cos_PosTop_beam/sin_PosTop_beam)*(beam_axis - cos_PosTop_beam * kbase) ).Unit(); /// check with Lin about numerator
-  TVector3 nbase = ( (sign_cos_PosTop_beam/sin_PosTop_beam)*beam_axis.Cross(kbase) ).Unit();
+      float cosTheta1k = 99.;
+      float cosTheta1r = 99.;
+      float cosTheta1n = 99.;
+      float cosTheta1kStar = 99.;
+      float cosTheta1rStar = 99.;
+      float cosTheta2k = 99.;
+      float cosTheta2r = 99.;
+      float cosTheta2n = 99.;
+      float cosTheta2kStar = 99.;
+      float cosTheta2rStar = 99.;
 
-  
-  TLorentzVector lep_top_lep_Rest = lep_top_lep_CoM;
-  TLorentzVector had_top_b_Rest = had_top_b_CoM;
-  TLorentzVector PosTop_Rest = PosTop_CoM;
-  TLorentzVector NegTop_Rest = NegTop_CoM;
-  
-  if(BestZprimeCandidate->lepton().charge() > 0){
-    lep_top_lep_Rest.Boost(-1.*PosTop_CoM.BoostVector()); // lepton has Positive Top mother
-    had_top_b_Rest.Boost(-1.*NegTop_CoM.BoostVector());   // b-jet has Negative Top mother
-  }
-  else if (BestZprimeCandidate->lepton().charge() < 0){
-    lep_top_lep_Rest.Boost(-1.*NegTop_CoM.BoostVector()); // lepton has Negative Top mother
-    had_top_b_Rest.Boost(-1.*PosTop_CoM.BoostVector());   // b-jet has Positive Top mother
-  }
-  //Step 4, calculating the angular variables in the ttbar rest frame
-  float bquark_phi = TMath::ATan2(had_top_b_Rest.Vect().Dot(nbase), had_top_b_Rest.Vect().Dot(rbase));
-  float lep_phi = TMath::ATan2(lep_top_lep_Rest.Vect().Dot(nbase), lep_top_lep_Rest.Vect().Dot(rbase));
+      float CHel = 99.;
+      float CHel_P3n = 99.;
 
-  float dphi_CR1= 0.;
-  
-  float sphi_CR1 = lep_phi + bquark_phi;
-  if(sphi_CR1 > TMath::Pi()) {
-    sphi_CR1 = sphi_CR1 - 2.*TMath::Pi();
-  }
-  if(sphi_CR1 < -1.*TMath::Pi()) {
-    sphi_CR1 = sphi_CR1 + 2.*TMath::Pi();
-  }
-  if(BestZprimeCandidate->lepton().charge() > 0){ // lepton is Positive Top's Decay Product
-    dphi_CR1 = lep_phi - bquark_phi;
-  }
-  if(BestZprimeCandidate->lepton().charge() < 0){
-    dphi_CR1 = bquark_phi - lep_phi;
-  }
-  if(dphi_CR1 > TMath::Pi()){
-    dphi_CR1 = dphi_CR1 - 2.*TMath::Pi();
-  }
-  if(dphi_CR1 < -1.*TMath::Pi()) {
-    dphi_CR1 = dphi_CR1 + 2.*TMath::Pi();
-  }
+      // Use only (anti)leptons as spin-analyzers
+      if(BestZprimeCandidate->lepton().charge() > 0){// anti-lepton
+        cosTheta1k_antiLep = lep_top_lep_Rest.Vect().Unit().Dot(kbase);
+        cosTheta1r_antiLep = lep_top_lep_Rest.Vect().Unit().Dot(rbase);
+        cosTheta1n_antiLep = lep_top_lep_Rest.Vect().Unit().Dot(nbase);
+        cosTheta1kStar_antiLep = lep_top_lep_Rest.Vect().Unit().Dot(kStar);
+        cosTheta1rStar_antiLep = lep_top_lep_Rest.Vect().Unit().Dot(rStar);
+      }
+      else if (BestZprimeCandidate->lepton().charge() < 0){// lepton 
+        cosTheta2k_Lep = lep_top_lep_Rest.Vect().Unit().Dot(kbase);
+        cosTheta2r_Lep = lep_top_lep_Rest.Vect().Unit().Dot(rbase);
+        cosTheta2n_Lep = lep_top_lep_Rest.Vect().Unit().Dot(nbase);
+        cosTheta2kStar_Lep = lep_top_lep_Rest.Vect().Unit().Dot(kStar);
+        cosTheta2rStar_Lep = lep_top_lep_Rest.Vect().Unit().Dot(rStar);
+      }
+      // top polarization via anti-leptons only
+      evt.set(h_cosTheta1k_antiLep_CR1, cosTheta1k_antiLep);
+      evt.set(h_cosTheta1r_antiLep_CR1, cosTheta1r_antiLep);
+      evt.set(h_cosTheta1n_antiLep_CR1, cosTheta1n_antiLep);
+      evt.set(h_cosTheta1kStar_antiLep_CR1, cosTheta1kStar_antiLep);
+      evt.set(h_cosTheta1rStar_antiLep_CR1, cosTheta1rStar_antiLep);
+      // antitop polarization via leptons only
+      evt.set(h_cosTheta2k_Lep_CR1, cosTheta2k_Lep);
+      evt.set(h_cosTheta2r_Lep_CR1, cosTheta2r_Lep);
+      evt.set(h_cosTheta2n_Lep_CR1, cosTheta2n_Lep);
+      evt.set(h_cosTheta2kStar_Lep_CR1, cosTheta2kStar_Lep);
+      evt.set(h_cosTheta2rStar_Lep_CR1, cosTheta2rStar_Lep);
 
-  evt.set(h_Sigma_phi_CR1,-10);
-  evt.set(h_Delta_phi_CR1,-10);
-  evt.set(h_Sigma_phi_1_CR1,-10);
-  evt.set(h_Sigma_phi_2_CR1,-10);
-  evt.set(h_dyreco_1_CR1,-10);
-  evt.set(h_dyreco_2_CR1,-10);
-  evt.set(h_Delta_phi_1_CR1,-10);
-  evt.set(h_Delta_phi_2_CR1,-10);
-  evt.set(h_Sigma_phi_1_CR1_0_500,-10);
-  evt.set(h_Sigma_phi_1_CR1_500_750,-10);
-  evt.set(h_Sigma_phi_1_CR1_750_1000,-10);
-  evt.set(h_Sigma_phi_1_CR1_1000_1500,-10);
-  evt.set(h_Sigma_phi_1_CR1_1500_Inf,-10);
-  evt.set(h_Sigma_phi_2_CR1_0_500,-10);
-  evt.set(h_Sigma_phi_2_CR1_500_750,-10);
-  evt.set(h_Sigma_phi_2_CR1_750_1000,-10);
-  evt.set(h_Sigma_phi_2_CR1_1000_1500,-10);
-  evt.set(h_Sigma_phi_2_CR1_1500_Inf,-10);
-  evt.set(h_dyreco_1_CR1_0_500,-10);
-  evt.set(h_dyreco_1_CR1_500_750,-10);
-  evt.set(h_dyreco_1_CR1_750_1000,-10);
-  evt.set(h_dyreco_1_CR1_1000_1500,-10);
-  evt.set(h_dyreco_1_CR1_1500_Inf,-10);
-  evt.set(h_dyreco_2_CR1_0_500,-10);
-  evt.set(h_dyreco_2_CR1_500_750,-10);
-  evt.set(h_dyreco_2_CR1_750_1000,-10);
-  evt.set(h_dyreco_2_CR1_1000_1500,-10);
-  evt.set(h_dyreco_2_CR1_1500_Inf,-10);
-  evt.set(h_dyreco_1_CR1_0_700,-10);
-  evt.set(h_dyreco_1_CR1_700_900,-10);
-  evt.set(h_dyreco_1_CR1_900_Inf,-10);
-  evt.set(h_dyreco_2_CR1_0_700,-10);
-  evt.set(h_dyreco_2_CR1_700_900,-10);
-  evt.set(h_dyreco_2_CR1_900_Inf,-10);
-  evt.set(h_Sigma_phi_1_CR1_0_700,-10);
-  evt.set(h_Sigma_phi_1_CR1_700_900,-10);
-  evt.set(h_Sigma_phi_1_CR1_900_Inf,-10);
-  evt.set(h_Sigma_phi_2_CR1_0_700,-10);
-  evt.set(h_Sigma_phi_2_CR1_700_900,-10);
-  evt.set(h_Sigma_phi_2_CR1_900_Inf,-10);
-  evt.set(h_Sigma_phi_CR1,sphi_CR1);
-  evt.set(h_Delta_phi_CR1,dphi_CR1);
-  evt.set(h_dyreco_CR1,-10);
-  
-  
-  float dy_reco_CR1=0;
-  // ZprimeCandidate* BestZprimeCandidate = evt.get(h_BestZprimeCandidateChi2);
-  if (BestZprimeCandidate->lepton().charge()>0) {
-    dy_reco_CR1 = TMath::Abs(BestZprimeCandidate->top_leptonic_v4().Rapidity()) - TMath::Abs(BestZprimeCandidate->top_hadronic_v4().Rapidity()); 
-  } else {
-    dy_reco_CR1 = TMath::Abs(BestZprimeCandidate->top_hadronic_v4().Rapidity()) - TMath::Abs(BestZprimeCandidate->top_leptonic_v4().Rapidity()); 
-  }
-  evt.set(h_dyreco_CR1,dy_reco_CR1);
-  float Mass_tt = BestZprimeCandidate->Zprime_v4().M();
+      // Assign spin-analyzers depending on lepton charge
+      if(BestZprimeCandidate->lepton().charge() > 0){
+        // top quark spin-analyzer is lepton
+        cosTheta1k = lep_top_lep_Rest.Vect().Unit().Dot(kbase);
+        cosTheta1r = lep_top_lep_Rest.Vect().Unit().Dot(rbase);
+        cosTheta1n = lep_top_lep_Rest.Vect().Unit().Dot(nbase);
+        cosTheta1kStar = lep_top_lep_Rest.Vect().Unit().Dot(kStar);
+        cosTheta1rStar = lep_top_lep_Rest.Vect().Unit().Dot(rStar);
+        // antitop spin-analyzer is b-jet
+        cosTheta2k = had_top_b_Rest.Vect().Unit().Dot(kbase);
+        cosTheta2r = had_top_b_Rest.Vect().Unit().Dot(rbase);
+        cosTheta2n = had_top_b_Rest.Vect().Unit().Dot(nbase);
+        cosTheta2kStar = had_top_b_Rest.Vect().Unit().Dot(kStar);
+        cosTheta2rStar = had_top_b_Rest.Vect().Unit().Dot(rStar);
+      }
+      else if (BestZprimeCandidate->lepton().charge() < 0){
+        // top quark spin-analyzer is b-jet
+        cosTheta1k = had_top_b_Rest.Vect().Unit().Dot(kbase);
+        cosTheta1r = had_top_b_Rest.Vect().Unit().Dot(rbase);
+        cosTheta1n = had_top_b_Rest.Vect().Unit().Dot(nbase);
+        cosTheta1kStar = had_top_b_Rest.Vect().Unit().Dot(kStar);
+        cosTheta1rStar = had_top_b_Rest.Vect().Unit().Dot(rStar);
+        // antitop spin-analyzer is lepton
+        cosTheta2k = lep_top_lep_Rest.Vect().Unit().Dot(kbase);
+        cosTheta2r = lep_top_lep_Rest.Vect().Unit().Dot(rbase);
+        cosTheta2n = lep_top_lep_Rest.Vect().Unit().Dot(nbase);
+        cosTheta2kStar = lep_top_lep_Rest.Vect().Unit().Dot(kStar);
+        cosTheta2rStar = lep_top_lep_Rest.Vect().Unit().Dot(rStar);
+      }
+      // top daughter polarizations
+      evt.set(h_cosTheta1k_CR1, cosTheta1k);
+      evt.set(h_cosTheta1r_CR1, cosTheta1r);
+      evt.set(h_cosTheta1n_CR1, cosTheta1n);
+      evt.set(h_cosTheta1kStar_CR1, cosTheta1kStar);
+      evt.set(h_cosTheta1rStar_CR1, cosTheta1rStar);
+      // antitop daughter polarizations
+      evt.set(h_cosTheta2k_CR1, cosTheta2k);
+      evt.set(h_cosTheta2r_CR1, cosTheta2r);
+      evt.set(h_cosTheta2n_CR1, cosTheta2n);
+      evt.set(h_cosTheta2kStar_CR1, cosTheta2kStar);
+      evt.set(h_cosTheta2rStar_CR1, cosTheta2rStar);
 
-  if(pt_hadTop > pt_hadTop_thresh && dy_reco_CR1 >0){
-    evt.set(h_Sigma_phi_1_CR1,sphi_CR1);
-    if(Mass_tt>=0 && Mass_tt < 500){
-      evt.set(h_Sigma_phi_1_CR1_0_500,sphi_CR1);
-    }
-    if(Mass_tt>=500 && Mass_tt < 750){
-      evt.set(h_Sigma_phi_1_CR1_500_750,sphi_CR1);
-    }
-    if(Mass_tt>=750 && Mass_tt < 1000){
-      evt.set(h_Sigma_phi_1_CR1_750_1000,sphi_CR1);
-    }
-    if(Mass_tt>=1000 && Mass_tt < 1500){
-      evt.set(h_Sigma_phi_1_CR1_1000_1500,sphi_CR1);
-    }
-    if(Mass_tt>=1500){
-      evt.set(h_Sigma_phi_1_CR1_1500_Inf,sphi_CR1);
-    }    
-    if(Mass_tt>=0 && Mass_tt < 700){
-      evt.set(h_Sigma_phi_1_CR1_0_700,sphi_CR1);
-    }
-    if(Mass_tt>=700 && Mass_tt < 1000){
-      evt.set(h_Sigma_phi_1_CR1_700_900,sphi_CR1);
-    }
-    if(Mass_tt>=1000){
-      evt.set(h_Sigma_phi_1_CR1_900_Inf,sphi_CR1);
-    }
-  }
-  if(pt_hadTop > pt_hadTop_thresh && dy_reco_CR1 <0){
-    evt.set(h_Sigma_phi_2_CR1,sphi_CR1);
-    if(Mass_tt>=0 && Mass_tt < 500){
-      evt.set(h_Sigma_phi_2_CR1_0_500,sphi_CR1);
-    }
-    if(Mass_tt>=500 && Mass_tt < 750){
-      evt.set(h_Sigma_phi_2_CR1_500_750,sphi_CR1);
-    }
-    if(Mass_tt>=750 && Mass_tt < 1000){
-      evt.set(h_Sigma_phi_2_CR1_750_1000,sphi_CR1);
-    }
-    if(Mass_tt>=1000 && Mass_tt < 1500){
-      evt.set(h_Sigma_phi_2_CR1_1000_1500,sphi_CR1);
-    }
-    if(Mass_tt>=1500){
-      evt.set(h_Sigma_phi_2_CR1_1500_Inf,sphi_CR1);
-    }  
-    if(Mass_tt>=0 && Mass_tt < 700){
-      evt.set(h_Sigma_phi_2_CR1_0_700,sphi_CR1);
-    }
-    if(Mass_tt>=700 && Mass_tt < 1000){
-      evt.set(h_Sigma_phi_2_CR1_700_900,sphi_CR1);
-    }
-    if(Mass_tt>=1000){
-      evt.set(h_Sigma_phi_2_CR1_900_Inf,sphi_CR1);
-    }
-  }
+      // correlation matrix elements
+      evt.set(h_Cnn_CR1, cosTheta1n * cosTheta2n);
+      evt.set(h_Cnr_CR1, cosTheta1n * cosTheta2r);
+      evt.set(h_Cnk_CR1, cosTheta1n * cosTheta2k);
+      evt.set(h_Crn_CR1, cosTheta1r * cosTheta2n);
+      evt.set(h_Crr_CR1, cosTheta1r * cosTheta2r);
+      evt.set(h_Crk_CR1, cosTheta1r * cosTheta2k);
+      evt.set(h_Ckn_CR1, cosTheta1k * cosTheta2n);
+      evt.set(h_Ckr_CR1, cosTheta1k * cosTheta2r);
+      evt.set(h_Ckk_CR1, cosTheta1k * cosTheta2k);
+      // sum and differences of cross correlations
+      evt.set(h_Crk_plus_CR1, cosTheta1r * cosTheta2k + cosTheta1k * cosTheta2r);
+      evt.set(h_Crk_minus_CR1, cosTheta1r * cosTheta2k - cosTheta1k * cosTheta2r);
+      evt.set(h_Cnr_plus_CR1, cosTheta1n * cosTheta2r + cosTheta1r * cosTheta2n);
+      evt.set(h_Cnr_minus_CR1, cosTheta1n * cosTheta2r - cosTheta1r * cosTheta2n);
+      evt.set(h_Cnk_plus_CR1, cosTheta1n * cosTheta2k + cosTheta1k * cosTheta2n);
+      evt.set(h_Cnk_minus_CR1, cosTheta1n * cosTheta2k - cosTheta1k * cosTheta2n);
 
-  if(pt_hadTop < pt_hadTop_thresh && dphi_CR1 >0){
-    evt.set(h_dyreco_1_CR1,dy_reco_CR1);
-    if(Mass_tt>=0 && Mass_tt < 500){
-      evt.set(h_dyreco_1_CR1_0_500,dy_reco_CR1);
-    }
-    if(Mass_tt>=500 && Mass_tt < 750){
-      evt.set(h_dyreco_1_CR1_500_750,dy_reco_CR1);
-    }
-    if(Mass_tt>=750 && Mass_tt < 1000){
-      evt.set(h_dyreco_1_CR1_750_1000,dy_reco_CR1);
-    }
-    if(Mass_tt>=1000 && Mass_tt < 1500){
-      evt.set(h_dyreco_1_CR1_1000_1500,dy_reco_CR1);
-    }
-    if(Mass_tt>=1500){
-      evt.set(h_dyreco_1_CR1_1500_Inf,dy_reco_CR1);
-    }  
-    if(Mass_tt>=0 && Mass_tt < 700){
-      evt.set(h_dyreco_1_CR1_0_700,dy_reco_CR1);
-    }
-    if(Mass_tt>=700 && Mass_tt < 1000){
-      evt.set(h_dyreco_1_CR1_700_900,dy_reco_CR1);
-    }
-    if(Mass_tt>=1000){
-      evt.set(h_dyreco_1_CR1_900_Inf,dy_reco_CR1);
-    }
-  }
-  if(pt_hadTop < pt_hadTop_thresh && dphi_CR1 <0){
-    evt.set(h_dyreco_2_CR1,dy_reco_CR1);
-    if(Mass_tt>=0 && Mass_tt < 500){
-      evt.set(h_dyreco_2_CR1_0_500,dy_reco_CR1);
-    }
-    if(Mass_tt>=500 && Mass_tt < 750){
-      evt.set(h_dyreco_2_CR1_500_750,dy_reco_CR1);
-    }
-    if(Mass_tt>=750 && Mass_tt < 1000){
-      evt.set(h_dyreco_2_CR1_750_1000,dy_reco_CR1);
-    }
-    if(Mass_tt>=1000 && Mass_tt < 1500){
-      evt.set(h_dyreco_2_CR1_1000_1500,dy_reco_CR1);
-    }
-    if(Mass_tt>=1500){
-      evt.set(h_dyreco_2_CR1_1500_Inf,dy_reco_CR1);
-    }  
-    if(Mass_tt>=0 && Mass_tt < 700){
-      evt.set(h_dyreco_2_CR1_0_700,dy_reco_CR1);
-    }
-    if(Mass_tt>=700 && Mass_tt < 1000){
-      evt.set(h_dyreco_2_CR1_700_900,dy_reco_CR1);
-    }
-    if(Mass_tt>=1000){
-      evt.set(h_dyreco_2_CR1_900_Inf,dy_reco_CR1);
-    }
-  }
-  if(pt_hadTop < pt_hadTop_thresh){
-    evt.set(h_Delta_phi_1_CR1,dphi_CR1);
-  }
-  if(pt_hadTop > pt_hadTop_thresh){
-    evt.set(h_Delta_phi_2_CR1,dphi_CR1);
-  }
+      // entanglement variables, inclusive
+      CHel = lep_top_lep_Rest.Vect().Unit().Dot(had_top_b_Rest.Vect().Unit());
+      CHel_P3n = cosTheta1k * cosTheta2k + cosTheta1r * cosTheta2r - cosTheta1n * cosTheta2n;
+      evt.set(h_cHel_CR1, CHel);
+      evt.set(h_cHel_P3n_CR1, CHel_P3n);
 
+      // entanglement variables, near-threshold
+      if(ttbar.M() < 400.){evt.set(h_cHel_Mtt300_400_CR1, CHel);
+        // near-threshold and non-relativistic
+        if(beta < 0.9){evt.set(h_cHel_Mtt300_400_betaLT0p9_CR1, CHel);}
+      }
+
+      // entanglement variables, boosted
+      if(ttbar.M() > 800.){evt.set(h_cHel_P3n_Mtt800_Inf_CR1, CHel_P3n);
+        // boosted and central
+        if(TMath::Abs(cos_PosTop_beam) < 0.4){evt.set(h_cHel_P3n_Mtt800_Inf_cosThetaLT0p4_CR1, CHel_P3n);}
+      }
+
+      // Baumgart et al. variables
+      // defined using phi-coordinate wrt Bernreuther nr-plane
+      float lep_top_lep_phi = atan2(lep_top_lep_Rest.Vect().Unit().Dot(rbase), lep_top_lep_Rest.Vect().Unit().Dot(nbase));
+      float had_top_b_phi   = atan2(had_top_b_Rest.Vect().Unit().Dot(rbase),   had_top_b_Rest.Vect().Unit().Dot(nbase));
+
+      // sphi and dphi = PosTopDecayProd_phi +- NegTopDecayProd_phi
+      float sphi = lep_top_lep_phi + had_top_b_phi;   // sum is independent of order
+      float dphi = -99.;                              // initialize with dummy value
+      if(BestZprimeCandidate->lepton().charge() > 0){ // lepton is Positive Top's Decay Product
+        dphi = lep_top_lep_phi - had_top_b_phi;
+      }
+      if(BestZprimeCandidate->lepton().charge() < 0){ // b-jet is Positive Top's Decay Product
+        dphi = had_top_b_phi - lep_top_lep_phi;
+      }
+      
+      // Map back into original domain if necessary
+      if(sphi > TMath::Pi()) sphi = sphi - 2*TMath::Pi();
+      if(sphi < -TMath::Pi()) sphi = sphi + 2*TMath::Pi();
+      if(dphi > TMath::Pi()) dphi = dphi - 2*TMath::Pi();
+      if(dphi < -TMath::Pi()) dphi = dphi + 2*TMath::Pi();
+      evt.set(h_Sigma_phi_CR1, sphi);
+      evt.set(h_Delta_phi_CR1, dphi);
+
+      // Plot dphi and sphi for high-pt range && positive dy_reco
+      if(pt_hadTop > pt_hadTop_thresh && dyreco >0){
+        evt.set(h_Sigma_phi_1_CR1, sphi);
+        evt.set(h_Delta_phi_1_CR1, dphi);
+      }
+      // Plot dphi and sphi for high-pt range && negative dy_reco
+      if(pt_hadTop > pt_hadTop_thresh && dyreco <0){
+        evt.set(h_Sigma_phi_2_CR1, sphi);
+        evt.set(h_Delta_phi_2_CR1, dphi);
+      }
+      // Plot dy_reco for low-pt ranges && positive sphi
+      if(pt_hadTop < pt_hadTop_thresh && sphi >0){
+        evt.set(h_dyreco_s1_CR1, dyreco);
+      }
+      // Plot dy_reco for low-pt ranges && negative sphi
+      if(pt_hadTop < pt_hadTop_thresh && sphi <0){
+        evt.set(h_dyreco_s2_CR1, dyreco);
+      }
+      // Plot dy_reco for low-pt ranges && positive dphi
+      if(pt_hadTop < pt_hadTop_thresh && dphi >0){
+        evt.set(h_dyreco_d1_CR1, dyreco);
+      }
+      // Plot dy_reco for low-pt ranges && negative dphi
+      if(pt_hadTop < pt_hadTop_thresh && dphi <0){
+        evt.set(h_dyreco_d2_CR1, dyreco);
+      }
+
+      // Plot all for high-pt ranges
+      if(pt_hadTop > pt_hadTop_thresh){
+        evt.set(h_Sigma_phi_high_CR1, sphi);
+        evt.set(h_Delta_phi_high_CR1, dphi);
+        evt.set(h_dyreco_high_CR1, dyreco);
+      }
+      // Plot all for low-pt ranges
+      if(pt_hadTop < pt_hadTop_thresh){
+        evt.set(h_Sigma_phi_low_CR1, sphi);
+        evt.set(h_Delta_phi_low_CR1, dphi);
+        evt.set(h_dyreco_low_CR1, dyreco);
+      }
+
+    }// end b-tagging condition
+
+  }// end chi2 reconstruction condition
 
   return true;
 }
 
 
-// // ////CR2//////
-
-
+// CR2 //
 Variables_EFT_CR2::Variables_EFT_CR2(uhh2::Context& ctx, TString mode): mode_(mode){
   h_BestZprimeCandidateChi2 = ctx.get_handle<ZprimeCandidate*>("ZprimeCandidateBestChi2");
   h_is_zprime_reconstructed_chi2 = ctx.get_handle<bool>("is_zprime_reconstructed_chi2");
   h_CHSjets_matched = ctx.get_handle<std::vector<Jet>>("CHS_matched");
   h_eventweight_CR2 = ctx.declare_event_output<float> ("eventweight");
 
-  h_dyreco_CR2 = ctx.declare_event_output<float>("dyreco_CR2");
+  // ttbar system variables
+  h_chi2_CR2 = ctx.declare_event_output<float>("chi2_CR2");
+  h_M_tt_CR2 = ctx.declare_event_output<float>("M_tt_CR2");
+  h_beta_CR2 = ctx.declare_event_output<float>("beta_CR2");
+  h_dyreco_CR2 = ctx.declare_event_output<float>("dyreco_CR2"); // charge asymmetry
+
+  // spin-analyzer (leptons-only) projections
+  h_cosTheta1k_antiLep_CR2 = ctx.declare_event_output<float>("cosTheta1k_antiLep_CR2");
+  h_cosTheta1r_antiLep_CR2 = ctx.declare_event_output<float>("cosTheta1r_antiLep_CR2");
+  h_cosTheta1n_antiLep_CR2 = ctx.declare_event_output<float>("cosTheta1n_antiLep_CR2");
+  h_cosTheta1kStar_antiLep_CR2 = ctx.declare_event_output<float>("cosTheta1kStar_antiLep_CR2");
+  h_cosTheta1rStar_antiLep_CR2 = ctx.declare_event_output<float>("cosTheta1rStar_antiLep_CR2");
+  h_cosTheta2k_Lep_CR2 = ctx.declare_event_output<float>("cosTheta2k_Lep_CR2");
+  h_cosTheta2r_Lep_CR2 = ctx.declare_event_output<float>("cosTheta2r_Lep_CR2");
+  h_cosTheta2n_Lep_CR2 = ctx.declare_event_output<float>("cosTheta2n_Lep_CR2");
+  h_cosTheta2kStar_Lep_CR2 = ctx.declare_event_output<float>("cosTheta2kStar_Lep_CR2");
+  h_cosTheta2rStar_Lep_CR2 = ctx.declare_event_output<float>("cosTheta2rStar_Lep_CR2");
+
+  // spin-analyzer projections
+  h_cosTheta1k_CR2 = ctx.declare_event_output<float>("cosTheta1k_CR2");
+  h_cosTheta1r_CR2 = ctx.declare_event_output<float>("cosTheta1r_CR2");
+  h_cosTheta1n_CR2 = ctx.declare_event_output<float>("cosTheta1n_CR2");
+  h_cosTheta1kStar_CR2 = ctx.declare_event_output<float>("cosTheta1kStar_CR2");
+  h_cosTheta1rStar_CR2 = ctx.declare_event_output<float>("cosTheta1rStar_CR2");
+  h_cosTheta2k_CR2 = ctx.declare_event_output<float>("cosTheta2k_CR2");
+  h_cosTheta2r_CR2 = ctx.declare_event_output<float>("cosTheta2r_CR2");
+  h_cosTheta2n_CR2 = ctx.declare_event_output<float>("cosTheta2n_CR2");
+  h_cosTheta2kStar_CR2 = ctx.declare_event_output<float>("cosTheta2kStar_CR2");
+  h_cosTheta2rStar_CR2 = ctx.declare_event_output<float>("cosTheta2rStar_CR2");
+
+  // Correlation elements
+  h_Cnn_CR2 = ctx.declare_event_output<float>("Cnn_CR2");
+  h_Cnr_CR2 = ctx.declare_event_output<float>("Cnr_CR2");
+  h_Cnk_CR2 = ctx.declare_event_output<float>("Cnk_CR2");
+  h_Crn_CR2 = ctx.declare_event_output<float>("Crn_CR2");
+  h_Crr_CR2 = ctx.declare_event_output<float>("Crr_CR2");
+  h_Crk_CR2 = ctx.declare_event_output<float>("Crk_CR2");
+  h_Ckn_CR2 = ctx.declare_event_output<float>("Ckn_CR2");
+  h_Ckr_CR2 = ctx.declare_event_output<float>("Ckr_CR2");
+  h_Ckk_CR2 = ctx.declare_event_output<float>("Ckk_CR2");
+  // linear combinations
+  h_Crk_plus_CR2 = ctx.declare_event_output<float>("Crk_plus_CR2");
+  h_Crk_minus_CR2 = ctx.declare_event_output<float>("Crk_minus_CR2");
+  h_Cnr_plus_CR2 = ctx.declare_event_output<float>("Cnr_plus_CR2");
+  h_Cnr_minus_CR2 = ctx.declare_event_output<float>("Cnr_minus_CR2");
+  h_Cnk_plus_CR2 = ctx.declare_event_output<float>("Cnk_plus_CR2");
+  h_Cnk_minus_CR2 = ctx.declare_event_output<float>("Cnk_minus_CR2");
+
+  // Entanglement witnesses
+  h_cHel_CR2 = ctx.declare_event_output<float>("cHel_CR2");
+  h_cHel_Mtt300_400_CR2 = ctx.declare_event_output<float>("cHel_Mtt300_400_CR2");
+  h_cHel_Mtt300_400_betaLT0p9_CR2 = ctx.declare_event_output<float>("cHel_Mtt300_400_betaLT0p9_CR2");
+
+  h_cHel_P3n_CR2 = ctx.declare_event_output<float>("cHel_P3n_CR2");
+  h_cHel_P3n_Mtt800_Inf_CR2 = ctx.declare_event_output<float>("cHel_P3n_Mtt800_Inf_CR2");
+  h_cHel_P3n_Mtt800_Inf_cosThetaLT0p4_CR2 = ctx.declare_event_output<float>("cHel_P3n_Mtt800_Inf_cosThetaLT0p4_CR2");
+
+  // Baumgart et al. variables
   h_Sigma_phi_CR2 = ctx.declare_event_output<float>("Sigma_phi_CR2");
   h_Delta_phi_CR2 = ctx.declare_event_output<float>("Delta_phi_CR2");
 
+  // Baumgart variables with cut on charge asymmetry
+  h_Sigma_phi_1_CR2 = ctx.declare_event_output<float>("Sigma_phi_1_CR2");
+  h_Sigma_phi_2_CR2 = ctx.declare_event_output<float>("Sigma_phi_2_CR2");
   h_Delta_phi_1_CR2 = ctx.declare_event_output<float>("Delta_phi_1_CR2");
   h_Delta_phi_2_CR2 = ctx.declare_event_output<float>("Delta_phi_2_CR2");
-  
-  h_dyreco_1_CR2 = ctx.declare_event_output<float>("dyreco_1_CR2");
-  h_dyreco_1_CR2_0_500 = ctx.declare_event_output<float>("dyreco_1_CR2_0_500");
-  h_dyreco_1_CR2_500_750 = ctx.declare_event_output<float>("dyreco_1_CR2_500_750");
-  h_dyreco_1_CR2_750_1000 = ctx.declare_event_output<float>("dyreco_1_CR2_750_1000");
-  h_dyreco_1_CR2_0_500 = ctx.declare_event_output<float>("dyreco_1_CR2_0_500");
-  h_dyreco_1_CR2_1000_1500 = ctx.declare_event_output<float>("dyreco_1_CR2_1000_1500");
-  h_dyreco_1_CR2_1500_Inf = ctx.declare_event_output<float>("dyreco_1_CR2_1500_Inf");
-  h_dyreco_1_CR2_0_700 = ctx.declare_event_output<float>("dyreco_1_CR2_0_500");
-  h_dyreco_1_CR2_700_900 = ctx.declare_event_output<float>("dyreco_1_CR2_700_900");
-  h_dyreco_1_CR2_900_Inf = ctx.declare_event_output<float>("dyreco_1_CR2_900_Inf");
+  // Charge asymmetry with cut on Baumgart variables
+  h_dyreco_s1_CR2 = ctx.declare_event_output<float>("dyreco_s1_CR2");
+  h_dyreco_s2_CR2 = ctx.declare_event_output<float>("dyreco_s2_CR2");
+  h_dyreco_d1_CR2 = ctx.declare_event_output<float>("dyreco_d1_CR2");
+  h_dyreco_d2_CR2 = ctx.declare_event_output<float>("dyreco_d2_CR2");
 
-
-  h_dyreco_2_CR2 = ctx.declare_event_output<float>("dyreco_2_CR2");
-  h_dyreco_2_CR2_0_500 = ctx.declare_event_output<float>("dyreco_2_CR2_0_500");
-  h_dyreco_2_CR2_500_750 = ctx.declare_event_output<float>("dyreco_2_CR2_500_750");
-  h_dyreco_2_CR2_750_1000 = ctx.declare_event_output<float>("dyreco_2_CR2_750_1000");
-  h_dyreco_2_CR2_1000_1500 = ctx.declare_event_output<float>("dyreco_2_CR2_1000_1500");
-  h_dyreco_2_CR2_1500_Inf = ctx.declare_event_output<float>("dyreco_2_CR2_1500_Inf");
-  h_dyreco_2_CR2_0_700 = ctx.declare_event_output<float>("dyreco_1_CR2_0_500");
-  h_dyreco_2_CR2_700_900 = ctx.declare_event_output<float>("dyreco_2_CR2_700_900");
-  h_dyreco_2_CR2_900_Inf = ctx.declare_event_output<float>("dyreco_2_CR2_900_Inf");
-
-
-
-  h_Sigma_phi_1_CR2=ctx.declare_event_output<float>("Sigma_phi_1_CR2");
-  h_Sigma_phi_1_CR2_0_500=ctx.declare_event_output<float>("Sigma_phi_1_CR2_0_500");
-  h_Sigma_phi_1_CR2_500_750=ctx.declare_event_output<float>("Sigma_phi_1_CR2_500_750");
-  h_Sigma_phi_1_CR2_750_1000=ctx.declare_event_output<float>("Sigma_phi_1_CR2_750_1000");
-  h_Sigma_phi_1_CR2_1000_1500=ctx.declare_event_output<float>("Sigma_phi_1_CR2_1000_1500");
-  h_Sigma_phi_1_CR2_1500_Inf=ctx.declare_event_output<float>("Sigma_phi_1_CR2_1000_1500");
-  h_Sigma_phi_1_CR2_0_700 = ctx.declare_event_output<float>("Sigma_phi_1_CR2_0_500");
-  h_Sigma_phi_1_CR2_700_900 = ctx.declare_event_output<float>("Sigma_phi_1_CR2_700_900");
-  h_Sigma_phi_1_CR2_900_Inf = ctx.declare_event_output<float>("Sigma_phi_1_CR2_900_Inf");
-
-
-
-  h_Sigma_phi_2_CR2=ctx.declare_event_output<float>("Sigma_phi_2_CR2");
-  h_Sigma_phi_2_CR2_0_500=ctx.declare_event_output<float>("Sigma_phi_2_CR2_0_500");
-  h_Sigma_phi_2_CR2_500_750=ctx.declare_event_output<float>("Sigma_phi_2_CR2_500_750");
-  h_Sigma_phi_2_CR2_750_1000=ctx.declare_event_output<float>("Sigma_phi_2_CR2_750_1000");
-  h_Sigma_phi_2_CR2_1000_1500=ctx.declare_event_output<float>("Sigma_phi_2_CR2_1000_1500");
-  h_Sigma_phi_2_CR2_1500_Inf=ctx.declare_event_output<float>("Sigma_phi_2_CR2_1000_1500");
-  h_Sigma_phi_2_CR2_0_700 = ctx.declare_event_output<float>("Sigma_phi_2_CR2_0_500");
-  h_Sigma_phi_2_CR2_700_900 = ctx.declare_event_output<float>("Sigma_phi_2_CR2_700_900");
-  h_Sigma_phi_2_CR2_900_Inf = ctx.declare_event_output<float>("Sigma_phi_2_CR2_900_Inf");
+  // all three variables in high/low pt cuts
+  h_Sigma_phi_high_CR2 = ctx.declare_event_output<float>("Sigma_phi_high_CR2");
+  h_Delta_phi_high_CR2 = ctx.declare_event_output<float>("Delta_phi_high_CR2");
+  h_dyreco_high_CR2 = ctx.declare_event_output<float>("dyreco_high_CR2");
+  h_Sigma_phi_low_CR2 = ctx.declare_event_output<float>("Sigma_phi_low_CR2");
+  h_Delta_phi_low_CR2 = ctx.declare_event_output<float>("Delta_phi_low_CR2");
+  h_dyreco_low_CR2 = ctx.declare_event_output<float>("dyreco_low_CR2");
 
 }
 
@@ -2479,338 +2865,390 @@ bool Variables_EFT_CR2::process(uhh2::Event& evt){
   evt.set(h_eventweight_CR2, -10);
   evt.set(h_eventweight_CR2, weight);
 
-  // bool is_zprime_reconstructed_chi2 = evt.get(h_is_zprime_reconstructed_chi2);
-  ZprimeCandidate* BestZprimeCandidate = evt.get(h_BestZprimeCandidateChi2);
-  bool is_toptag_reconstruction = BestZprimeCandidate->is_toptag_reconstruction(); // Reconstruction process id
-  vector <Jet> AK4CHSjets_matched = evt.get(h_CHSjets_matched);  
-  //                 // AK4Puppijets that have been matched to CHSjets
- 
-  // vector <TopJet> TopTaggedJets = evt.get(h_AK8TopTags);                     // AK8Puppi jets TopTagged by DeepAK8TopTagger
-  vector <float> jets_hadronic_bscores;                                            // bScores vector for resolved hadronic jets
-  float pt_hadTop_thresh = 150;                                                    // Define cut-variable as pt of hadTop for low/high regions                                                   // medium WP for UL18 DeepJet
-
-  // EFT Ac and spin correlation variables:
-  // Plot pt of hadronic Top jet
-  float pt_hadTop = BestZprimeCandidate->top_hadronic_v4().pt();
+  bool is_zprime_reconstructed_chi2 = evt.get(h_is_zprime_reconstructed_chi2); // reconstruction method boolean
+  evt.set(h_chi2_CR2, -10);  // chi^2 of ttbar reconstruction
+  evt.set(h_M_tt_CR2, -10);  // invariant mass of ttbar system
+  evt.set(h_beta_CR2, -10);  // relativistic-beta of ttbar system
+  evt.set(h_dyreco_CR2,-10); // Charge asymmetry of ttbar system
   
-  float bscore_max = -2;
-  if(!is_toptag_reconstruction){
-      // Loop over resolved hadronic jets to find their bscore via CHS jets
-    for(unsigned int i=0; i<BestZprimeCandidate->jets_hadronic().size(); i++){
-      double deltaR_min = 99;
-      // Match resolved hadronic jets to CHS jets (which have bscores)
-      for(unsigned int j=0; j<AK4CHSjets_matched.size(); j++){
-        double deltaR_CHS = deltaR(BestZprimeCandidate->jets_hadronic().at(i), AK4CHSjets_matched.at(j));
-        if(deltaR_CHS < deltaR_min) deltaR_min = deltaR_CHS;
+  if(is_zprime_reconstructed_chi2){
+    ZprimeCandidate* BestZprimeCandidate = evt.get(h_BestZprimeCandidateChi2); // Best ttbar-system reconstruction based on chi^2 discriminator
+    float chi2 = BestZprimeCandidate->discriminator("chi2_total");
+    float Mass_tt = BestZprimeCandidate->Zprime_v4().M();
+    evt.set(h_chi2_CR2, chi2);
+    evt.set(h_M_tt_CR2, Mass_tt);
+
+    bool is_toptag_reconstruction = BestZprimeCandidate->is_toptag_reconstruction(); // Reconstruction process id
+    vector <Jet> AK4CHSjets_matched = evt.get(h_CHSjets_matched);                    // AK4Puppijets that have been matched to CHSjets
+    vector <float> jets_hadronic_bscores;                                            // bScores vector for resolved hadronic jets
+    float pt_hadTop_thresh = 150;                                                    // Define cut-variable as pt of hadTop for low/high regions
+    float pt_hadTop = BestZprimeCandidate->top_hadronic_v4().pt();                   // pT of hadronic-top jet
+    
+    // Working points for DeepJet AK4-jet b-tagging, e.g., see https://btv-wiki.docs.cern.ch/ScaleFactors/Run2UL2016preVFP/#ak4-b-tagging for UL16preVFP
+    float noTopTag_btag_WP_M;                       // Medium working point flag to cut on working point
+    if (isUL16preVFP) noTopTag_btag_WP_M = 0.2598;  // medium WP for UL16preVFP DeepJet -> 73.3% efficiency
+    if (isUL16postVFP) noTopTag_btag_WP_M = 0.3657; // medium WP for UL16postVFP DeepJet -> 71.4% efficiency
+    if (isUL17) noTopTag_btag_WP_M = 0.3040;        // medium WP for UL17 DeepJet -> 79.1% efficiency
+    if (isUL18) noTopTag_btag_WP_M = 0.2783;        // medium WP for UL18 DeepJet -> 80.7% efficiency
+    
+    // Working points for DeepCSV AK8-subjet b-tagging, e.g., see https://btv-wiki.docs.cern.ch/ScaleFactors/Run2UL2016preVFP/#subjet-b-tagging for UL16preVFP
+    float TopTag_btag_WP_M;                         // Medium working point flag to cut on working point
+    if (isUL16preVFP) TopTag_btag_WP_M = 0.6001;    // medium WP for UL16preVFP DeepCSV
+    if (isUL16postVFP) TopTag_btag_WP_M = 0.5847;   // medium WP for UL16postVFP DeepCSV
+    if (isUL17) TopTag_btag_WP_M = 0.4506;          // medium WP for UL17 DeepCSV
+    if (isUL18) TopTag_btag_WP_M = 0.4506;          // medium WP for UL18 DeepCSV
+    
+    bool passes_btagging = false;                   // Variable to check if event passes b-tagging condition
+
+    float bscore_max = -2;
+    //-------------- Extracting highest b-tag score in Resolved topology, i.e. no top-tagged jet in event --------------//
+    if(!is_toptag_reconstruction){
+        // Loop over resolved hadronic jets to find their bscore via CHS jets
+      for(unsigned int i=0; i<BestZprimeCandidate->jets_hadronic().size(); i++){
+        double deltaR_min = 99;
+        // Match resolved hadronic jets to CHS jets (which have bscores)
+        for(unsigned int j=0; j<AK4CHSjets_matched.size(); j++){
+          double deltaR_CHS = deltaR(BestZprimeCandidate->jets_hadronic().at(i), AK4CHSjets_matched.at(j));
+          if(deltaR_CHS < deltaR_min) deltaR_min = deltaR_CHS;
+          }
+        // Build bScore-vector for resolved hadronic jets whose bscore will correspond by index
+        for(unsigned int k=0; k<AK4CHSjets_matched.size(); k++){
+          if(deltaR(BestZprimeCandidate->jets_hadronic().at(i), AK4CHSjets_matched.at(k)) == deltaR_min) 
+          jets_hadronic_bscores.emplace_back(AK4CHSjets_matched.at(k).btag_DeepJet()); // Using DeepJet btag score
+          } 
+      }
+      // Loop over bScores-vector to extract highest bscore
+      for(unsigned int i=0; i<jets_hadronic_bscores.size(); i++){
+        float bscore = jets_hadronic_bscores.at(i);
+        if(bscore > bscore_max) bscore_max = bscore;
+      }
+      if(bscore_max >= noTopTag_btag_WP_M) passes_btagging = true; // Event passes b-tagging condition
+    }
+    
+    //--------------- Extracting highest b-tag score in Merged topology, i.e. with top-tagged jet in event ---------------//
+    if(is_toptag_reconstruction){
+        // Loop over hadronic top's subjets to extract highest bscore
+      for(unsigned int i=0; i < BestZprimeCandidate->tophad_topjet_ptr()->subjets().size(); i++){
+        float bscore = BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(i).btag_DeepCSV(); // Using DeepCSV btag score
+        if(bscore > bscore_max) bscore_max = bscore;
+      }
+      if(bscore_max >= TopTag_btag_WP_M) passes_btagging = true; // Event passes b-tagging condition
+    }
+
+
+    //------------------------------------Define 4vectors of top quarks and spin analyzers------------------------------------//
+    TLorentzVector had_top_b(0, 0, 0, 0); // b-jet 4-vector
+    TLorentzVector lep_top_lep(0, 0, 0, 0); // Lepton 4-vector
+
+    if(passes_btagging){ // only define angular variables if event passes b-tag WP-cut
+      // b-jet from Resolved topology
+      if(!is_toptag_reconstruction){ // Defined as hadronic AK4-jet with highest deepJet bscore
+        for(unsigned int i=0; i< BestZprimeCandidate->jets_hadronic().size(); i++){
+          float bscore = jets_hadronic_bscores.at(i);
+          if(bscore == bscore_max) had_top_b.SetPtEtaPhiE(BestZprimeCandidate->jets_hadronic().at(i).pt(), 
+                                                          BestZprimeCandidate->jets_hadronic().at(i).eta(), 
+                                                          BestZprimeCandidate->jets_hadronic().at(i).phi(), 
+                                                          BestZprimeCandidate->jets_hadronic().at(i).energy());
         }
-      // Build bScore-vector for resolved hadronic jets whose bscore will correspond by index
-      for(unsigned int k=0; k<AK4CHSjets_matched.size(); k++){
-        if(deltaR(BestZprimeCandidate->jets_hadronic().at(i), AK4CHSjets_matched.at(k)) == deltaR_min) 
-        jets_hadronic_bscores.emplace_back(AK4CHSjets_matched.at(k).btag_DeepJet());
-        } // Using DeepJet btag score
-    }
-    // Loop over bScores-vector to extract highest bscor
-    for(unsigned int i=0; i<jets_hadronic_bscores.size(); i++){
-      float bscore = jets_hadronic_bscores.at(i);
-      if(bscore > bscore_max) bscore_max = bscore;
-    }
-    //is not top tag
-  }
-  if(is_toptag_reconstruction){
-    // Loop over hadronic top's subjets to extract highest bscore
-  for(unsigned int i=0; i < BestZprimeCandidate->tophad_topjet_ptr()->subjets().size(); i++){
-    float bscore = BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(i).btag_DeepJet(); // Using DeepJet btag score
-    if(bscore > bscore_max) bscore_max = bscore;
-  }
+      }
+      // b-jet from Merged topology
+      if(is_toptag_reconstruction){ // Defined as hadronic AK8-SDsubjet with highest deepCSV bscore
+        for(unsigned int j=0; j < BestZprimeCandidate->tophad_topjet_ptr()->subjets().size(); j++){
+          float bscore = BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).btag_DeepCSV();
+          if(bscore == bscore_max) had_top_b.SetPtEtaPhiE(BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).pt(), 
+                                                          BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).eta(), 
+                                                          BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).phi(), 
+                                                          BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).energy());
+        }
+      }
 
-}
-  TLorentzVector had_top_b(0, 0, 0, 0);
+      // lepton
+      LorentzVector lep = BestZprimeCandidate->lepton().v4();
+      lep_top_lep.SetPtEtaPhiE(lep.pt(), lep.eta(), lep.phi(), lep.E());
 
-// Resolved topology
-  if(!is_toptag_reconstruction){ // Define hadronic b-jet as hadronic AK4-jet with highest bscore
-    for(unsigned int i=0; i< BestZprimeCandidate->jets_hadronic().size(); i++){
-      float bscore = jets_hadronic_bscores.at(i);
-      if(bscore == bscore_max) had_top_b.SetPtEtaPhiE(BestZprimeCandidate->jets_hadronic().at(i).pt(), 
-                                                      BestZprimeCandidate->jets_hadronic().at(i).eta(), 
-                                                      BestZprimeCandidate->jets_hadronic().at(i).phi(), 
-                                                      BestZprimeCandidate->jets_hadronic().at(i).energy());
-    }
-  }
-  // Merged topology
-  if(is_toptag_reconstruction){ // Define hadronic b-jet as hadronic AK8-subjet with highest bscore
-    for(unsigned int j=0; j < BestZprimeCandidate->tophad_topjet_ptr()->subjets().size(); j++){
-      float bscore = BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).btag_DeepJet();
-      if(bscore == bscore_max) had_top_b.SetPtEtaPhiE(BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).pt(), 
-                                                      BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).eta(), 
-                                                      BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).phi(), 
-                                                      BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).energy());
-    }
-  }
-  TLorentzVector lep_top_lep(0, 0, 0, 0);
-  LorentzVector lep = BestZprimeCandidate->lepton().v4();
-  lep_top_lep.SetPtEtaPhiE(lep.pt(), lep.eta(), lep.phi(), lep.E());
-    // Define 4vectors of top quarks
-  TLorentzVector PosTop(0, 0, 0, 0);
-  TLorentzVector NegTop(0, 0, 0, 0);
+      // top quark parents for boosting and basis construction
+      TLorentzVector PosTop(0, 0, 0, 0);
+      TLorentzVector NegTop(0, 0, 0, 0);
+      if(BestZprimeCandidate->lepton().charge() > 0){ // Positively charged Lepton => "Leptonic" top QUARK is POSitively charged
+        PosTop.SetPtEtaPhiE(BestZprimeCandidate->top_leptonic_v4().pt(), 
+                            BestZprimeCandidate->top_leptonic_v4().eta(), 
+                            BestZprimeCandidate->top_leptonic_v4().phi(), 
+                            BestZprimeCandidate->top_leptonic_v4().energy());
+        NegTop.SetPtEtaPhiE(BestZprimeCandidate->top_hadronic_v4().pt(), 
+                            BestZprimeCandidate->top_hadronic_v4().eta(), 
+                            BestZprimeCandidate->top_hadronic_v4().phi(), 
+                            BestZprimeCandidate->top_hadronic_v4().energy());
+      }
+      else if (BestZprimeCandidate->lepton().charge() < 0){ // Negatively charged Lepton => "Leptonic" top ANTI-QUARK is NEGatively charged
+        PosTop.SetPtEtaPhiE(BestZprimeCandidate->top_hadronic_v4().pt(), 
+                            BestZprimeCandidate->top_hadronic_v4().eta(), 
+                            BestZprimeCandidate->top_hadronic_v4().phi(), 
+                            BestZprimeCandidate->top_hadronic_v4().energy());
+        NegTop.SetPtEtaPhiE(BestZprimeCandidate->top_leptonic_v4().pt(), 
+                            BestZprimeCandidate->top_leptonic_v4().eta(), 
+                            BestZprimeCandidate->top_leptonic_v4().phi(), 
+                            BestZprimeCandidate->top_leptonic_v4().energy());
+      }
+      TLorentzVector ttbar = PosTop + NegTop; // ttbar 4vector
 
-      // POSITIVE LEPTON CONFIGURATION => Positive charged lepton has Positive Top mother
-  if(BestZprimeCandidate->lepton().charge() > 0){
-    // Define ttbar system
-    PosTop.SetPtEtaPhiE(BestZprimeCandidate->top_leptonic_v4().pt(), 
-                        BestZprimeCandidate->top_leptonic_v4().eta(), 
-                        BestZprimeCandidate->top_leptonic_v4().phi(), 
-                        BestZprimeCandidate->top_leptonic_v4().energy());
-    NegTop.SetPtEtaPhiE(BestZprimeCandidate->top_hadronic_v4().pt(), 
-                        BestZprimeCandidate->top_hadronic_v4().eta(), 
-                        BestZprimeCandidate->top_hadronic_v4().phi(), 
-                        BestZprimeCandidate->top_hadronic_v4().energy());
-  }
-  else if (BestZprimeCandidate->lepton().charge() < 0){
-    PosTop.SetPtEtaPhiE(BestZprimeCandidate->top_hadronic_v4().pt(), 
-                        BestZprimeCandidate->top_hadronic_v4().eta(), 
-                        BestZprimeCandidate->top_hadronic_v4().phi(), 
-                        BestZprimeCandidate->top_hadronic_v4().energy());
-    NegTop.SetPtEtaPhiE(BestZprimeCandidate->top_leptonic_v4().pt(), 
-                        BestZprimeCandidate->top_leptonic_v4().eta(), 
-                        BestZprimeCandidate->top_leptonic_v4().phi(), 
-                        BestZprimeCandidate->top_leptonic_v4().energy());
-  }
+      // Lab-frame variables
+      float beta = TMath::Abs(PosTop.Pz() + NegTop.Pz()) / (PosTop.E() + NegTop.E());
+      evt.set(h_beta_CR2, beta); // relativistic beta
+
+      float dyreco = -999.0;
+      if (BestZprimeCandidate->lepton().charge()>0) {
+        dyreco = TMath::Abs(BestZprimeCandidate->top_leptonic_v4().Rapidity()) - TMath::Abs(BestZprimeCandidate->top_hadronic_v4().Rapidity());} 
+      else {
+        dyreco = TMath::Abs(BestZprimeCandidate->top_hadronic_v4().Rapidity()) - TMath::Abs(BestZprimeCandidate->top_leptonic_v4().Rapidity());}
+      evt.set(h_dyreco_CR2, dyreco); // charge asymmetry
+
+      //--------- Boost into ttbar CoM-Frame ---------//
+      // Center of Mass frame copies of 4vectors
+      TLorentzVector PosTop_CoM = PosTop;
+      TLorentzVector NegTop_CoM = NegTop;
+      TLorentzVector lep_top_lep_CoM = lep_top_lep;
+      TLorentzVector had_top_b_CoM = had_top_b;
+      // Boost with negative of ttbar boost vector
+      PosTop_CoM.Boost(-1*ttbar.BoostVector());
+      NegTop_CoM.Boost(-1*ttbar.BoostVector());
+      lep_top_lep_CoM.Boost(-1*ttbar.BoostVector());
+      had_top_b_CoM.Boost(-1*ttbar.BoostVector());
+
+
+      //-------------------------------------------------------------- Build Bernreuther basis --------------------------------------------------------------//
+      // Required axes from CoM frame
+      TVector3 beam_axis(0,0,1);                                                                      // Beam unit vector
+      TVector3 k_axis = PosTop_CoM.Vect().Unit();                                                     // direction of top quark momentum in ttbar CoM frame
+      double cos_PosTop_beam = PosTop_CoM.Vect().Unit().Dot(beam_axis);                               // Cosine of scattering angle, "y" in Bernreuther et al.
+      double abs_sin_PosTop_beam = sqrt(1 - cos_PosTop_beam*cos_PosTop_beam);                         // Sine of scattering angle,   "r" in Bernreuther et al.
+      TVector3 r_axis = ( (1./abs_sin_PosTop_beam) * (beam_axis - cos_PosTop_beam * k_axis) ).Unit(); // orthogonal to k_axis and lies in production plane
+      TVector3 n_axis = ( (1./abs_sin_PosTop_beam) * beam_axis.Cross(k_axis) ).Unit();                // orthogonal to k_axis and production plane
+      double sign_cos_PosTop_beam = (cos_PosTop_beam > 0.) ? 1. : -1.;                                // Bose symmetry factor
+      double sign_rapidity = (dyreco > 0.) ? 1. : -1.;                                                // Charge asymmetry (in lab-frame) factor
+
+      // Basis vectors
+      TVector3 kbase = k_axis;
+      TVector3 rbase = sign_cos_PosTop_beam * r_axis;
+      TVector3 nbase = sign_cos_PosTop_beam * n_axis;
+      // CA-corrected basis vectors
+      TVector3 kStar = sign_rapidity * k_axis;
+      TVector3 rStar = sign_rapidity * sign_cos_PosTop_beam * r_axis;
+
       
-  TLorentzVector ttbar = PosTop + NegTop;
-  TLorentzVector lep_top_lep_CoM = lep_top_lep;
-    // Boost into ttbar CoM-Frame <<<------- Step 1//
-    lep_top_lep_CoM.Boost(-1.*ttbar.BoostVector());
-    TLorentzVector had_top_b_CoM = had_top_b;
-    had_top_b_CoM.Boost(-ttbar.BoostVector());
-    TLorentzVector PosTop_CoM = PosTop;
-    PosTop_CoM.Boost(-ttbar.BoostVector());
-    TLorentzVector NegTop_CoM = NegTop;
-    NegTop_CoM.Boost(-ttbar.BoostVector());
-    // Beam unit vector in COM frame Step 2
-    TVector3 beam_axis(0,0,1);
-    // Calculating top scattering angle for PosTop only
-    double cos_PosTop_beam = PosTop_CoM.Vect().Unit().Dot(beam_axis);
-    double sin_PosTop_beam = sqrt(1 - cos_PosTop_beam*cos_PosTop_beam);
-  
-    // The sign of cos_PosTop_beam to account for Bose symmetry
-    double sign_cos_PosTop_beam = (cos_PosTop_beam > 0.) ? 1. : -1.;
-    // // The sign based on PosTop and NegTop's rapidity
-    // double sign_rapidity = (PosTop.Rapidity() >= NegTop.Rapidity()) ? 1. : -1.;
-  
-    // Bernreuther basis vectors
-    TVector3 kbase = PosTop_CoM.Vect().Unit();
-    TVector3 rbase = ( (sign_cos_PosTop_beam/sin_PosTop_beam)*(beam_axis - cos_PosTop_beam * kbase) ).Unit(); /// check with Lin about numerator
-    TVector3 nbase = ( (sign_cos_PosTop_beam/sin_PosTop_beam)*beam_axis.Cross(kbase) ).Unit();
-  
-    
-    TLorentzVector lep_top_lep_Rest = lep_top_lep_CoM;
-    TLorentzVector had_top_b_Rest = had_top_b_CoM;
-    TLorentzVector PosTop_Rest = PosTop_CoM;
-    TLorentzVector NegTop_Rest = NegTop_CoM;
-    
-    if(BestZprimeCandidate->lepton().charge() > 0){
-      lep_top_lep_Rest.Boost(-1.*PosTop_CoM.BoostVector()); // lepton has Positive Top mother
-      had_top_b_Rest.Boost(-1.*NegTop_CoM.BoostVector());   // b-jet has Negative Top mother
-    }
-    else if (BestZprimeCandidate->lepton().charge() < 0){
-      lep_top_lep_Rest.Boost(-1.*NegTop_CoM.BoostVector()); // lepton has Negative Top mother
-      had_top_b_Rest.Boost(-1.*PosTop_CoM.BoostVector());   // b-jet has Positive Top mother
-    }
-    //Step 4, calculating the angular variables in the ttbar rest frame
-    float bquark_phi = TMath::ATan2(had_top_b_Rest.Vect().Dot(nbase), had_top_b_Rest.Vect().Dot(rbase));
-    float lep_phi = TMath::ATan2(lep_top_lep_Rest.Vect().Dot(nbase), lep_top_lep_Rest.Vect().Dot(rbase));
-  
-    float dphi_CR2= 0.;
-    
-    float sphi_CR2 = lep_phi + bquark_phi;
-    if(sphi_CR2 > TMath::Pi()) {
-      sphi_CR2 = sphi_CR2 - 2.*TMath::Pi();
-    }
-    if(sphi_CR2 < -1.*TMath::Pi()) {
-      sphi_CR2 = sphi_CR2 + 2.*TMath::Pi();
-    }
-    if(BestZprimeCandidate->lepton().charge() > 0){ // lepton is Positive Top's Decay Product
-      dphi_CR2 = lep_phi - bquark_phi;
-    }
-    if(BestZprimeCandidate->lepton().charge() < 0){
-      dphi_CR2 = bquark_phi - lep_phi;
-    }
-    if(dphi_CR2 > TMath::Pi()){
-      dphi_CR2 = dphi_CR2 - 2.*TMath::Pi();
-    }
-    if(dphi_CR2 < -1.*TMath::Pi()) {
-      dphi_CR2 = dphi_CR2 + 2.*TMath::Pi();
-    }
-  
-  
-  evt.set(h_Sigma_phi_CR2,-10);
-  evt.set(h_Delta_phi_CR2,-10);
-  evt.set(h_Sigma_phi_1_CR2,-10);
-  evt.set(h_Sigma_phi_2_CR2,-10);
-  evt.set(h_dyreco_1_CR2,-10);
-  evt.set(h_dyreco_2_CR2,-10);
-  evt.set(h_Delta_phi_1_CR2,-10);
-  evt.set(h_Delta_phi_2_CR2,-10);
-  evt.set(h_Sigma_phi_1_CR2_0_500,-10);
-  evt.set(h_Sigma_phi_1_CR2_500_750,-10);
-  evt.set(h_Sigma_phi_1_CR2_750_1000,-10);
-  evt.set(h_Sigma_phi_1_CR2_1000_1500,-10);
-  evt.set(h_Sigma_phi_1_CR2_1500_Inf,-10);
-  evt.set(h_Sigma_phi_2_CR2_0_500,-10);
-  evt.set(h_Sigma_phi_2_CR2_500_750,-10);
-  evt.set(h_Sigma_phi_2_CR2_750_1000,-10);
-  evt.set(h_Sigma_phi_2_CR2_1000_1500,-10);
-  evt.set(h_Sigma_phi_2_CR2_1500_Inf,-10);
-  evt.set(h_dyreco_1_CR2_0_500,-10);
-  evt.set(h_dyreco_1_CR2_500_750,-10);
-  evt.set(h_dyreco_1_CR2_750_1000,-10);
-  evt.set(h_dyreco_1_CR2_1000_1500,-10);
-  evt.set(h_dyreco_1_CR2_1500_Inf,-10);
-  evt.set(h_dyreco_2_CR2_0_500,-10);
-  evt.set(h_dyreco_2_CR2_500_750,-10);
-  evt.set(h_dyreco_2_CR2_750_1000,-10);
-  evt.set(h_dyreco_2_CR2_1000_1500,-10);
-  evt.set(h_dyreco_2_CR2_1500_Inf,-10);
-  evt.set(h_dyreco_1_CR2_0_700,-10);
-  evt.set(h_dyreco_1_CR2_700_900,-10);
-  evt.set(h_dyreco_1_CR2_900_Inf,-10);
-  evt.set(h_dyreco_2_CR2_0_700,-10);
-  evt.set(h_dyreco_2_CR2_700_900,-10);
-  evt.set(h_dyreco_2_CR2_900_Inf,-10);
-  evt.set(h_Sigma_phi_1_CR2_0_700,-10);
-  evt.set(h_Sigma_phi_1_CR2_700_900,-10);
-  evt.set(h_Sigma_phi_1_CR2_900_Inf,-10);
-  evt.set(h_Sigma_phi_2_CR2_0_700,-10);
-  evt.set(h_Sigma_phi_2_CR2_700_900,-10);
-  evt.set(h_Sigma_phi_2_CR2_900_Inf,-10);  
-  evt.set(h_Sigma_phi_CR2,sphi_CR2);
-  evt.set(h_Delta_phi_CR2,dphi_CR2);
-  evt.set(h_dyreco_CR2,-10);
-  float dy_reco_CR2=0;
-  // ZprimeCandidate* BestZprimeCandidate = evt.get(h_BestZprimeCandidateChi2);
-  if (BestZprimeCandidate->lepton().charge()>0) {
-    dy_reco_CR2 = TMath::Abs(BestZprimeCandidate->top_leptonic_v4().Rapidity()) - TMath::Abs(BestZprimeCandidate->top_hadronic_v4().Rapidity()); 
-  } else {
-    dy_reco_CR2 = TMath::Abs(BestZprimeCandidate->top_hadronic_v4().Rapidity()) - TMath::Abs(BestZprimeCandidate->top_leptonic_v4().Rapidity()); 
-  }
-  evt.set(h_dyreco_CR2,dy_reco_CR2);
-  float Mass_tt = BestZprimeCandidate->Zprime_v4().M();
+      //------------------- Boost spin-analyzers into top quark Rest-Frames -------------------//
+      TLorentzVector lep_top_lep_Rest = lep_top_lep_CoM;
+      TLorentzVector had_top_b_Rest   = had_top_b_CoM;
+      
+      // Mother depends on lepton charge
+      if(BestZprimeCandidate->lepton().charge() > 0){
+        lep_top_lep_Rest.Boost(-1.*PosTop_CoM.BoostVector()); // lepton has Positive Top mother
+        had_top_b_Rest.Boost(-1.*NegTop_CoM.BoostVector());   // b-jet has Negative Top mother
+      }
+      else if (BestZprimeCandidate->lepton().charge() < 0){
+        lep_top_lep_Rest.Boost(-1.*NegTop_CoM.BoostVector()); // lepton has Negative Top mother
+        had_top_b_Rest.Boost(-1.*PosTop_CoM.BoostVector());   // b-jet has Positive Top mother
+      }
 
-  if(pt_hadTop > pt_hadTop_thresh && dy_reco_CR2 >0){
-    evt.set(h_Sigma_phi_1_CR2,sphi_CR2);
-    if(Mass_tt>=0 && Mass_tt < 500){
-      evt.set(h_Sigma_phi_1_CR2_0_500,sphi_CR2);
-    }
-    if(Mass_tt>=500 && Mass_tt < 750){
-      evt.set(h_Sigma_phi_1_CR2_500_750,sphi_CR2);
-    }
-    if(Mass_tt>=750 && Mass_tt < 1000){
-      evt.set(h_Sigma_phi_1_CR2_750_1000,sphi_CR2);
-    }
-    if(Mass_tt>=1000 && Mass_tt < 1500){
-      evt.set(h_Sigma_phi_1_CR2_1000_1500,sphi_CR2);
-    }
-    if(Mass_tt>=1500){
-      evt.set(h_Sigma_phi_1_CR2_1500_Inf,sphi_CR2);
-    }
-    if(Mass_tt>=0 && Mass_tt < 700){
-      evt.set(h_Sigma_phi_1_CR2_0_700,sphi_CR2);
-    }
-    if(Mass_tt>=700 && Mass_tt < 1000){
-      evt.set(h_Sigma_phi_1_CR2_700_900,sphi_CR2);
-    }
-    if(Mass_tt>=1000){
-      evt.set(h_Sigma_phi_1_CR2_900_Inf,sphi_CR2);
-    }
-  }
-  if(pt_hadTop > pt_hadTop_thresh && dy_reco_CR2 <0){
-    evt.set(h_Sigma_phi_2_CR2,sphi_CR2);
-    if(Mass_tt>=0 && Mass_tt < 500){
-      evt.set(h_Sigma_phi_2_CR2_0_500,sphi_CR2);
-    }
-    if(Mass_tt>=500 && Mass_tt < 750){
-      evt.set(h_Sigma_phi_2_CR2_500_750,sphi_CR2);
-    }
-    if(Mass_tt>=750 && Mass_tt < 1000){
-      evt.set(h_Sigma_phi_2_CR2_750_1000,sphi_CR2);
-    }
-    if(Mass_tt>=1000 && Mass_tt < 1500){
-      evt.set(h_Sigma_phi_2_CR2_1000_1500,sphi_CR2);
-    }
-    if(Mass_tt>=1500){
-      evt.set(h_Sigma_phi_2_CR2_1500_Inf,sphi_CR2);
-    }
-    if(Mass_tt>=0 && Mass_tt < 700){
-      evt.set(h_Sigma_phi_2_CR2_0_700,sphi_CR2);
-    }
-    if(Mass_tt>=700 && Mass_tt < 1000){
-      evt.set(h_Sigma_phi_2_CR2_700_900,sphi_CR2);
-    }
-    if(Mass_tt>=1000){
-      evt.set(h_Sigma_phi_2_CR2_900_Inf,sphi_CR2);
-    }
-  }
+    
+      //------------------------------------------- Spin Correlation variables -------------------------------------------//
+      float cosTheta1k_antiLep = 99.;
+      float cosTheta1r_antiLep = 99.;
+      float cosTheta1n_antiLep = 99.;
+      float cosTheta1kStar_antiLep = 99.;
+      float cosTheta1rStar_antiLep = 99.;
+      float cosTheta2k_Lep = 99.;
+      float cosTheta2r_Lep = 99.;
+      float cosTheta2n_Lep = 99.;
+      float cosTheta2kStar_Lep = 99.;
+      float cosTheta2rStar_Lep = 99.;
 
-  if(pt_hadTop < pt_hadTop_thresh && dphi_CR2 >0){
-    evt.set(h_dyreco_1_CR2,dy_reco_CR2);
-    if(Mass_tt>=0 && Mass_tt < 500){
-      evt.set(h_dyreco_1_CR2_0_500,dy_reco_CR2);
-    }
-    if(Mass_tt>=500 && Mass_tt < 750){
-      evt.set(h_dyreco_1_CR2_500_750,dy_reco_CR2);
-    }
-    if(Mass_tt>=750 && Mass_tt < 1000){
-      evt.set(h_dyreco_1_CR2_750_1000,dy_reco_CR2);
-    }
-    if(Mass_tt>=1000 && Mass_tt < 1500){
-      evt.set(h_dyreco_1_CR2_1000_1500,dy_reco_CR2);
-    }
-    if(Mass_tt>=1500){
-      evt.set(h_dyreco_1_CR2_1500_Inf,dy_reco_CR2);
-    }
-    if(Mass_tt>=0 && Mass_tt < 700){
-      evt.set(h_dyreco_1_CR2_0_700,dy_reco_CR2);
-    }
-    if(Mass_tt>=700 && Mass_tt < 1000){
-      evt.set(h_dyreco_1_CR2_700_900,dy_reco_CR2);
-    }
-    if(Mass_tt>=1000){
-      evt.set(h_dyreco_1_CR2_900_Inf,dy_reco_CR2);
-    }
-  }
-  if(pt_hadTop < pt_hadTop_thresh && dphi_CR2 <0){
-    evt.set(h_dyreco_2_CR2,dy_reco_CR2);
-    if(Mass_tt>=0 && Mass_tt < 500){
-      evt.set(h_dyreco_2_CR2_0_500,dy_reco_CR2);
-    }
-    if(Mass_tt>=500 && Mass_tt < 750){
-      evt.set(h_dyreco_2_CR2_500_750,dy_reco_CR2);
-    }
-    if(Mass_tt>=750 && Mass_tt < 1000){
-      evt.set(h_dyreco_2_CR2_750_1000,dy_reco_CR2);
-    }
-    if(Mass_tt>=1000 && Mass_tt < 1500){
-      evt.set(h_dyreco_2_CR2_1000_1500,dy_reco_CR2);
-    }
-    if(Mass_tt>=1500){
-      evt.set(h_dyreco_2_CR2_1500_Inf,dy_reco_CR2);
-    }
-    if(Mass_tt>=0 && Mass_tt < 700){
-      evt.set(h_dyreco_2_CR2_0_700,dy_reco_CR2);
-    }
-    if(Mass_tt>=700 && Mass_tt < 1000){
-      evt.set(h_dyreco_2_CR2_700_900,dy_reco_CR2);
-    }
-    if(Mass_tt>=1000){
-      evt.set(h_dyreco_2_CR2_900_Inf,dy_reco_CR2);
-    }
-  }
-  if(pt_hadTop < pt_hadTop_thresh){
-    evt.set(h_Delta_phi_1_CR2,dphi_CR2);
-  }
-  if(pt_hadTop > pt_hadTop_thresh){
-    evt.set(h_Delta_phi_2_CR2,dphi_CR2);
-  }
+      float cosTheta1k = 99.;
+      float cosTheta1r = 99.;
+      float cosTheta1n = 99.;
+      float cosTheta1kStar = 99.;
+      float cosTheta1rStar = 99.;
+      float cosTheta2k = 99.;
+      float cosTheta2r = 99.;
+      float cosTheta2n = 99.;
+      float cosTheta2kStar = 99.;
+      float cosTheta2rStar = 99.;
+
+      float CHel = 99.;
+      float CHel_P3n = 99.;
+
+      // Use only (anti)leptons as spin-analyzers
+      if(BestZprimeCandidate->lepton().charge() > 0){// anti-lepton
+        cosTheta1k_antiLep = lep_top_lep_Rest.Vect().Unit().Dot(kbase);
+        cosTheta1r_antiLep = lep_top_lep_Rest.Vect().Unit().Dot(rbase);
+        cosTheta1n_antiLep = lep_top_lep_Rest.Vect().Unit().Dot(nbase);
+        cosTheta1kStar_antiLep = lep_top_lep_Rest.Vect().Unit().Dot(kStar);
+        cosTheta1rStar_antiLep = lep_top_lep_Rest.Vect().Unit().Dot(rStar);
+      }
+      else if (BestZprimeCandidate->lepton().charge() < 0){// lepton 
+        cosTheta2k_Lep = lep_top_lep_Rest.Vect().Unit().Dot(kbase);
+        cosTheta2r_Lep = lep_top_lep_Rest.Vect().Unit().Dot(rbase);
+        cosTheta2n_Lep = lep_top_lep_Rest.Vect().Unit().Dot(nbase);
+        cosTheta2kStar_Lep = lep_top_lep_Rest.Vect().Unit().Dot(kStar);
+        cosTheta2rStar_Lep = lep_top_lep_Rest.Vect().Unit().Dot(rStar);
+      }
+      // top polarization via anti-leptons only
+      evt.set(h_cosTheta1k_antiLep_CR2, cosTheta1k_antiLep);
+      evt.set(h_cosTheta1r_antiLep_CR2, cosTheta1r_antiLep);
+      evt.set(h_cosTheta1n_antiLep_CR2, cosTheta1n_antiLep);
+      evt.set(h_cosTheta1kStar_antiLep_CR2, cosTheta1kStar_antiLep);
+      evt.set(h_cosTheta1rStar_antiLep_CR2, cosTheta1rStar_antiLep);
+      // antitop polarization via leptons only
+      evt.set(h_cosTheta2k_Lep_CR2, cosTheta2k_Lep);
+      evt.set(h_cosTheta2r_Lep_CR2, cosTheta2r_Lep);
+      evt.set(h_cosTheta2n_Lep_CR2, cosTheta2n_Lep);
+      evt.set(h_cosTheta2kStar_Lep_CR2, cosTheta2kStar_Lep);
+      evt.set(h_cosTheta2rStar_Lep_CR2, cosTheta2rStar_Lep);
+
+      // Assign spin-analyzers depending on lepton charge
+      if(BestZprimeCandidate->lepton().charge() > 0){
+        // top quark spin-analyzer is lepton
+        cosTheta1k = lep_top_lep_Rest.Vect().Unit().Dot(kbase);
+        cosTheta1r = lep_top_lep_Rest.Vect().Unit().Dot(rbase);
+        cosTheta1n = lep_top_lep_Rest.Vect().Unit().Dot(nbase);
+        cosTheta1kStar = lep_top_lep_Rest.Vect().Unit().Dot(kStar);
+        cosTheta1rStar = lep_top_lep_Rest.Vect().Unit().Dot(rStar);
+        // antitop spin-analyzer is b-jet
+        cosTheta2k = had_top_b_Rest.Vect().Unit().Dot(kbase);
+        cosTheta2r = had_top_b_Rest.Vect().Unit().Dot(rbase);
+        cosTheta2n = had_top_b_Rest.Vect().Unit().Dot(nbase);
+        cosTheta2kStar = had_top_b_Rest.Vect().Unit().Dot(kStar);
+        cosTheta2rStar = had_top_b_Rest.Vect().Unit().Dot(rStar);
+      }
+      else if (BestZprimeCandidate->lepton().charge() < 0){
+        // top quark spin-analyzer is b-jet
+        cosTheta1k = had_top_b_Rest.Vect().Unit().Dot(kbase);
+        cosTheta1r = had_top_b_Rest.Vect().Unit().Dot(rbase);
+        cosTheta1n = had_top_b_Rest.Vect().Unit().Dot(nbase);
+        cosTheta1kStar = had_top_b_Rest.Vect().Unit().Dot(kStar);
+        cosTheta1rStar = had_top_b_Rest.Vect().Unit().Dot(rStar);
+        // antitop spin-analyzer is lepton
+        cosTheta2k = lep_top_lep_Rest.Vect().Unit().Dot(kbase);
+        cosTheta2r = lep_top_lep_Rest.Vect().Unit().Dot(rbase);
+        cosTheta2n = lep_top_lep_Rest.Vect().Unit().Dot(nbase);
+        cosTheta2kStar = lep_top_lep_Rest.Vect().Unit().Dot(kStar);
+        cosTheta2rStar = lep_top_lep_Rest.Vect().Unit().Dot(rStar);
+      }
+      // top daughter polarizations
+      evt.set(h_cosTheta1k_CR2, cosTheta1k);
+      evt.set(h_cosTheta1r_CR2, cosTheta1r);
+      evt.set(h_cosTheta1n_CR2, cosTheta1n);
+      evt.set(h_cosTheta1kStar_CR2, cosTheta1kStar);
+      evt.set(h_cosTheta1rStar_CR2, cosTheta1rStar);
+      // antitop daughter polarizations
+      evt.set(h_cosTheta2k_CR2, cosTheta2k);
+      evt.set(h_cosTheta2r_CR2, cosTheta2r);
+      evt.set(h_cosTheta2n_CR2, cosTheta2n);
+      evt.set(h_cosTheta2kStar_CR2, cosTheta2kStar);
+      evt.set(h_cosTheta2rStar_CR2, cosTheta2rStar);
+
+      // correlation matrix elements
+      evt.set(h_Cnn_CR2, cosTheta1n * cosTheta2n);
+      evt.set(h_Cnr_CR2, cosTheta1n * cosTheta2r);
+      evt.set(h_Cnk_CR2, cosTheta1n * cosTheta2k);
+      evt.set(h_Crn_CR2, cosTheta1r * cosTheta2n);
+      evt.set(h_Crr_CR2, cosTheta1r * cosTheta2r);
+      evt.set(h_Crk_CR2, cosTheta1r * cosTheta2k);
+      evt.set(h_Ckn_CR2, cosTheta1k * cosTheta2n);
+      evt.set(h_Ckr_CR2, cosTheta1k * cosTheta2r);
+      evt.set(h_Ckk_CR2, cosTheta1k * cosTheta2k);
+      // sum and differences of cross correlations
+      evt.set(h_Crk_plus_CR2, cosTheta1r * cosTheta2k + cosTheta1k * cosTheta2r);
+      evt.set(h_Crk_minus_CR2, cosTheta1r * cosTheta2k - cosTheta1k * cosTheta2r);
+      evt.set(h_Cnr_plus_CR2, cosTheta1n * cosTheta2r + cosTheta1r * cosTheta2n);
+      evt.set(h_Cnr_minus_CR2, cosTheta1n * cosTheta2r - cosTheta1r * cosTheta2n);
+      evt.set(h_Cnk_plus_CR2, cosTheta1n * cosTheta2k + cosTheta1k * cosTheta2n);
+      evt.set(h_Cnk_minus_CR2, cosTheta1n * cosTheta2k - cosTheta1k * cosTheta2n);
+
+      // entanglement variables, inclusive
+      CHel = lep_top_lep_Rest.Vect().Unit().Dot(had_top_b_Rest.Vect().Unit());
+      CHel_P3n = cosTheta1k * cosTheta2k + cosTheta1r * cosTheta2r - cosTheta1n * cosTheta2n;
+      evt.set(h_cHel_CR2, CHel);
+      evt.set(h_cHel_P3n_CR2, CHel_P3n);
+
+      // entanglement variables, near-threshold
+      if(ttbar.M() < 400.){evt.set(h_cHel_Mtt300_400_CR2, CHel);
+        // near-threshold and non-relativistic
+        if(beta < 0.9){evt.set(h_cHel_Mtt300_400_betaLT0p9_CR2, CHel);}
+      }
+
+      // entanglement variables, boosted
+      if(ttbar.M() > 800.){evt.set(h_cHel_P3n_Mtt800_Inf_CR2, CHel_P3n);
+        // boosted and central
+        if(TMath::Abs(cos_PosTop_beam) < 0.4){evt.set(h_cHel_P3n_Mtt800_Inf_cosThetaLT0p4_CR2, CHel_P3n);}
+      }
+
+      // Baumgart et al. variables
+      // defined using phi-coordinate wrt Bernreuther nr-plane
+      float lep_top_lep_phi = atan2(lep_top_lep_Rest.Vect().Unit().Dot(rbase), lep_top_lep_Rest.Vect().Unit().Dot(nbase));
+      float had_top_b_phi   = atan2(had_top_b_Rest.Vect().Unit().Dot(rbase),   had_top_b_Rest.Vect().Unit().Dot(nbase));
+
+      // sphi and dphi = PosTopDecayProd_phi +- NegTopDecayProd_phi
+      float sphi = lep_top_lep_phi + had_top_b_phi;   // sum is independent of order
+      float dphi = -99.;                              // initialize with dummy value
+      if(BestZprimeCandidate->lepton().charge() > 0){ // lepton is Positive Top's Decay Product
+        dphi = lep_top_lep_phi - had_top_b_phi;
+      }
+      if(BestZprimeCandidate->lepton().charge() < 0){ // b-jet is Positive Top's Decay Product
+        dphi = had_top_b_phi - lep_top_lep_phi;
+      }
+      
+      // Map back into original domain if necessary
+      if(sphi > TMath::Pi()) sphi = sphi - 2*TMath::Pi();
+      if(sphi < -TMath::Pi()) sphi = sphi + 2*TMath::Pi();
+      if(dphi > TMath::Pi()) dphi = dphi - 2*TMath::Pi();
+      if(dphi < -TMath::Pi()) dphi = dphi + 2*TMath::Pi();
+      evt.set(h_Sigma_phi_CR2, sphi);
+      evt.set(h_Delta_phi_CR2, dphi);
+
+      // Plot dphi and sphi for high-pt range && positive dy_reco
+      if(pt_hadTop > pt_hadTop_thresh && dyreco >0){
+        evt.set(h_Sigma_phi_1_CR2, sphi);
+        evt.set(h_Delta_phi_1_CR2, dphi);
+      }
+      // Plot dphi and sphi for high-pt range && negative dy_reco
+      if(pt_hadTop > pt_hadTop_thresh && dyreco <0){
+        evt.set(h_Sigma_phi_2_CR2, sphi);
+        evt.set(h_Delta_phi_2_CR2, dphi);
+      }
+      // Plot dy_reco for low-pt ranges && positive sphi
+      if(pt_hadTop < pt_hadTop_thresh && sphi >0){
+        evt.set(h_dyreco_s1_CR2, dyreco);
+      }
+      // Plot dy_reco for low-pt ranges && negative sphi
+      if(pt_hadTop < pt_hadTop_thresh && sphi <0){
+        evt.set(h_dyreco_s2_CR2, dyreco);
+      }
+      // Plot dy_reco for low-pt ranges && positive dphi
+      if(pt_hadTop < pt_hadTop_thresh && dphi >0){
+        evt.set(h_dyreco_d1_CR2, dyreco);
+      }
+      // Plot dy_reco for low-pt ranges && negative dphi
+      if(pt_hadTop < pt_hadTop_thresh && dphi <0){
+        evt.set(h_dyreco_d2_CR2, dyreco);
+      }
+
+      // Plot all for high-pt ranges
+      if(pt_hadTop > pt_hadTop_thresh){
+        evt.set(h_Sigma_phi_high_CR2, sphi);
+        evt.set(h_Delta_phi_high_CR2, dphi);
+        evt.set(h_dyreco_high_CR2, dyreco);
+      }
+      // Plot all for low-pt ranges
+      if(pt_hadTop < pt_hadTop_thresh){
+        evt.set(h_Sigma_phi_low_CR2, sphi);
+        evt.set(h_Delta_phi_low_CR2, dphi);
+        evt.set(h_dyreco_low_CR2, dyreco);
+      }
+
+    }// end b-tagging condition
+
+  }// end chi2 reconstruction condition
+
   return true;
 }
 

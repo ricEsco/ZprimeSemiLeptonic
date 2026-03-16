@@ -293,7 +293,6 @@ public:
 protected:
 
   bool debug;
-  // bool isEFT;
   
   // Cleaners
   std::unique_ptr<MuonCleaner>     muon_cleaner_low, muon_cleaner_high;
@@ -673,7 +672,7 @@ ZprimeAnalysisModule_applyNN::ZprimeAnalysisModule_applyNN(uhh2::Context& ctx){
   string trigger_mu_A, trigger_mu_B, trigger_mu_C, trigger_mu_D, trigger_mu_E, trigger_mu_F;
   string trigger_A, trigger_B;
   string trigger_ph_A;
-  isMuon = false; isElectron = false, isEFT=false;
+  isMuon = false; isElectron = false; isEFT=false;
   if(ctx.get("channel") == "muon") isMuon = true;
   if(ctx.get("sample") == "eft") isEFT = true;
   if(ctx.get("channel") == "electron") isElectron = true;
@@ -1046,8 +1045,6 @@ ZprimeAnalysisModule_applyNN::ZprimeAnalysisModule_applyNN(uhh2::Context& ctx){
   // lumihists_Weights_PS.reset(new LuminosityHists(ctx, "Lumi_Weights_PS"));
   // lumihists_Chi2.reset(new LuminosityHists(ctx, "Lumi_Chi2"));
   
-  // *** CHANGED ***
-  // bool isEFT = false; // default false
 
  if(isMC){
     TString sample_name = "";
@@ -1072,17 +1069,10 @@ ZprimeAnalysisModule_applyNN::ZprimeAnalysisModule_applyNN(uhh2::Context& ctx){
       sample_name = "Diboson";
     }  
 
-    // *** CHANGED ***: set isEFT if sample_name == "TTbar_EFT"
-    // if(sample_name == "TTbar_EFT") {
-    //   isEFT = true;
-    // } else {
-    //   isEFT = false;
-    // }
-    if (debug)cout << "is it EFT? " << isEFT << endl;
   
     // 2D b-tag SF reading with the new logic (EFT or others):
     if(isMuon){
-      TFile* f_btag2Dsf_muon = new TFile("/data/dust/user/deleokse/RunII_106_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/macros/src/files_BTagSF/customBtagSF_muon_"+year+".root");
+      TFile* f_btag2Dsf_muon = new TFile("/data/dust/user/ricardo/uhh2-106X_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/macros/src/files_BTagSF/customBtagSF_muon_"+year+".root");
       if(isEFT){
         ratio_hist_muon = (TH2F*)f_btag2Dsf_muon->Get("N_Jets_vs_HT_TTbar");
       }
@@ -1092,7 +1082,7 @@ ZprimeAnalysisModule_applyNN::ZprimeAnalysisModule_applyNN(uhh2::Context& ctx){
       ratio_hist_muon->SetDirectory(0);
     }
     else if(!isMuon){
-      TFile* f_btag2Dsf_ele = new TFile("/data/dust/user/deleokse/RunII_106_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/macros/src/files_BTagSF/customBtagSF_electron_"+year+".root");
+      TFile* f_btag2Dsf_ele = new TFile("/data/dust/user/ricardo/uhh2-106X_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/macros/src/files_BTagSF/customBtagSF_electron_"+year+".root");
       if(isEFT){
         ratio_hist_ele = (TH2F*)f_btag2Dsf_ele->Get("N_Jets_vs_HT_TTbar");
       }
@@ -1711,90 +1701,94 @@ bool ZprimeAnalysisModule_applyNN::process(uhh2::Event& event){
   if(Chi2_selection->passes(event)){ 
     fill_histograms(event, "AfterChi2");
   }
-  // VariablesEFTSR_module->process(event);
-  // if(debug) cout << "done EFT SR" << endl;
-  // VariablesEFTCR1_module->process(event);
-  // if(debug) cout << "done EFT CR1" << endl;
+  
 
-  // VariablesEFTCR2_module->process(event);
-  // if(debug) cout << "done EFT CR2" << endl;
+  
+  
 
   // DNN categories: out0=TTbar, out1=ST, out2=WJets
   if( out0 == max_score ){
-    fill_histograms(event, "DNN_output0_nochi2");
-    if(debug) cout << "signal DNN output0" << endl;
+    VariablesEFTSR_module->process(event);
+    if(debug) cout << "done EFT SR" << endl;
 
-    if(Chi2_selection->passes(event)){  // cut on chi2<30 - only in SR == out0)
-      // cout << "signal DNN output0 chi2" << endl;
-      fill_histograms(event, "DNN_output0");     
+    fill_histograms(event, "DNN_output0_nochi2");
+    if(Chi2_selection->passes(event)){  // cut on chi2<30 - only in SR
+      fill_histograms(event, "DNN_output0");
+
+      // Cut on event topology  
       if(ZprimeTopTag_selection->passes(event)){
-        fill_histograms(event, "DNN_output0_TopTag");
+        fill_histograms(event, "DNN_output0_TopTag");      // Merged topology
       }
-      else{fill_histograms(event, "DNN_output0_NoTopTag");}
-      // if(debug) cout << "done with output0" << endl;
-    }//Chi2
-  }//out0
+      else{fill_histograms(event, "DNN_output0_NoTopTag"); // Resolved topology
+      }
+    }
+  }
 
   if( out1 == max_score ){
+    VariablesEFTCR1_module->process(event);
+    if(debug) cout << "done EFT CR1" << endl;
+
     fill_histograms(event, "DNN_output1");
     if(Chi2_selection->passes(event)){ 
       fill_histograms(event,"DNN_output1_chi2");
     }
-  }//out1
+  }
  
   if( out2 == max_score ){
+    VariablesEFTCR2_module->process(event);
+    if(debug) cout << "done EFT CR2" << endl;
+
     fill_histograms(event, "DNN_output2");
     if(Chi2_selection->passes(event)){ 
       fill_histograms(event,"DNN_output2_chi2");
     }
-  }//out2
+  }
 
-  // if(debug) cout << "done with DNNs" << endl;
-  // if(debug) cout << "done" << endl;
+  if(debug) cout << "done with DNNs" << endl;
+  if(debug) cout << "done" << endl;
 
   // Calculate structure constants for EFT weights
   // This accesses EFT weights starting at index 202 in event.genInfo->systweights()
   // and calculates structure constants that can be used to compute weights for any WC values
 
   // calculates the structure constants for each event.
-  // if(debug) cout << "before structure constants" << endl;
-  // if(debug) cout << "isEFT: " << isEFT << endl;
-  // if(isEFT){
-  //   if(debug) cout<<" should not be in here if not EFT" << endl;
-  //   structure_constants_calculator->process(event);
-  // }
+  if(debug) cout << "isEFT: " << isEFT << endl;
+  if(isEFT){
+    if(debug) cout<<" should not be in here if not EFT" << endl;
+    structure_constants_calculator->process(event);
+  }
   // Shows the number of structure constants stored in the event
   // Displays the first few structure constants
   // Shows the constant term (SM point) and a few linear terms
   // Prints for the first 5 EFT events
   
   // Debug output for structure constants (only for first few events)
-  // if (debug && isEFT) {static int event_counter = 0;
-  //   cout << "about to check structure constants debug " << endl;
-  //   if (event_counter < 5) {
-  //     // Get the structure constants from the event
-  //     if (event.is_valid(h_structure_constants)) {
-  //       std::vector<float> structure_constants = event.get(h_structure_constants);
+  if (debug && isEFT) {static int event_counter = 0;
+    cout << "about to check structure constants debug " << endl;
+    if (event_counter < 5) {
+      // Get the structure constants from the event
+      if (event.is_valid(h_structure_constants)) {
+        std::vector<float> structure_constants = event.get(h_structure_constants);
         
-  //       std::cout << "===== Structure Constants Debug (Event " << event_counter << ") =====" << std::endl;
-  //       std::cout << "Number of structure constants: " << structure_constants.size() << std::endl;
+        std::cout << "===== Structure Constants Debug (Event " << event_counter << ") =====" << std::endl;
+        std::cout << "Number of structure constants: " << structure_constants.size() << std::endl;
         
-  //       if (!structure_constants.empty()) {
-  //         // Print first few constants
-  //         std::cout << "First few constants: ";
-  //         for (size_t i = 0; i < std::min(size_t(10), structure_constants.size()); ++i) {
-  //           std::cout << structure_constants[i] << " ";
-  //         }
-  //         std::cout << std::endl;
-  //       }
+        if (!structure_constants.empty()) {
+          // Print first few constants
+          std::cout << "First few constants: ";
+          for (size_t i = 0; i < std::min(size_t(10), structure_constants.size()); ++i) {
+            std::cout << structure_constants[i] << " ";
+          }
+          std::cout << std::endl;
+        }
         
-  //       // Increment counter after printing
-  //       event_counter++;
-  //     } else {
-  //       std::cout << "Structure constants not found in event!" << std::endl;
-  //     }
-  //   }
-  // }
+        // Increment counter after printing
+        event_counter++;
+      } else {
+        std::cout << "Structure constants not found in event!" << std::endl;
+      }
+    }
+  }
   if(debug) cout << "moving on to next event" << endl;
   return true;
 }
