@@ -127,6 +127,8 @@ protected:
   unique_ptr<Selection> met_sel;
   unique_ptr<Selection> htlep_sel;
   unique_ptr<Selection> sel_1btag, sel_2btag;
+  unique_ptr<Selection> TopTagVetoSelection;
+  unique_ptr<Selection> DeltaEta_selection;
 
   // ttbar reconstruction
   unique_ptr<ZprimeCandidateBuilder> CandidateBuilder;  // reconstructs ttbar candidates when possible
@@ -135,7 +137,7 @@ protected:
   unique_ptr<Selection> Chi2_selection;                 // selects candidates with chi2 < chi2_max (30.)
   unique_ptr<Selection> Chi2CandidateMatched_selection; // selects candidates with chi2 < chi2_max and CorrectMatch discriminant dr < 10.
   unique_ptr<Selection> TTbarMatchable_selection;       // selects events where ttbar gen particles can be deltaR matched to corresponding reco objects
-  unique_ptr<Selection> ZprimeTopTag_selection;         // selects events where ttbar system was reconstructed with chi2 discriminator
+  unique_ptr<Selection> ZprimeTopTag_selection;         // selects events with AK8 top-tag was found with lepton outside cone
   
   // NN variables handles
   unique_ptr<Variables_NN> Variables_module;
@@ -519,13 +521,19 @@ ZprimeAnalysisModule::ZprimeAnalysisModule(uhh2::Context& ctx){
     Jet2_selection.reset(new NJetSelection(2, -1, JetId(PtEtaCut(jet2_pt, 2.5))));
   }
 
-  // b-tagging modules (ask for >= 1 or >=2 btagged jets in event)
+  // b-tagging modules (require >= 1 or >=2 btagged jets in event)
   sel_1btag.reset(new NJetSelection(1, -1, id_btag));
   sel_2btag.reset(new NJetSelection(2,-1, id_btag));
 
   // MET and HTlep
   met_sel.reset(new METCut  (MET_cut   , uhh2::infinity));
   htlep_sel.reset(new HTlepCut(HT_lep_cut, uhh2::infinity));
+
+  // top-tag veto (require <=1 top-tagged jet in event)
+  TopTagVetoSelection.reset(new TopTag_VetoSelection(ctx, mode));
+
+  // Cut on DeltaEta(j1,j2) < 1.5 to reduce QCD spikes
+  DeltaEta_selection.reset(new DeltaEtaSelection());
 
  // Chi2 for reconstructed ttbar candidates
   Chi2_selection.reset(new Chi2Cut(ctx, 0., chi2_max));
@@ -641,28 +649,36 @@ ZprimeAnalysisModule::ZprimeAnalysisModule(uhh2::Context& ctx){
   
   // Book histograms
   vector<string> histogram_tags = {
-    "Weights_Init", "Weights_HEM", "Weights_PU", "Weights_Lumi", "Weights_TopPt", "Weights_MCScale", "Weights_Prefiring", "Weights_PS", "Weights_TopTag_SF", "Weights_TopMistag_SF", 
+    "Weights_Init", 
+    "Weights_HEM", 
+    "Weights_PU", "Weights_Lumi", "Weights_TopPt", "Weights_MCScale", "Weights_Prefiring", "Weights_PS", 
+    "Weights_TopTag_SF", "Weights_TopMistag_SF", 
+
     "Muon1_LowPt", "Muon1_HighPt", "Muon1_Tot", 
+    "1Mu1Ele_LowPt", "1Mu1Ele_HighPt", "1Mu1Ele_Tot", // electronTriggerSF measurement in muon channel
     "Ele1_LowPt", "Ele1_HighPt", "Ele1_Tot", 
-    "1Mu1Ele_LowPt", "1Mu1Ele_HighPt", "1Mu1Ele_Tot", 
-    "IdMuon_SF", 
+    
     "IdEle_SF", 
     "IsoMuon_SF", 
+    "IdMuon_SF", 
     "RecoEle_SF", 
     "MuonReco_SF", 
-    "TriggerMuon", 
-    "TriggerEle", "TriggerMuon_SF", 
-    "TwoDCut_Muon", "TwoDCut_Muon_low1",
-    "CHS_Before",
-    "TwoDCut_Muon_low2",
-    "TwoDCut_Ele", "TwoDCut_Ele_low1", "TwoDCut_Ele_low2", 
+
+    "TriggerMuon", "TriggerEle", 
+    "TriggerMuon_SF", 
+
+    "TwoDCut_Muon", "TwoDCut_Ele",
+    "CHS_Before", "CHS_After", 
     "Jet1", "Jet2", 
     "MET", "HTlep", 
-    "BeforeBtagSF", "AfterBtagSF", "AfterCustomBtagSF", 
-    "Btags1", 
+    "BeforeBtagSF", "AfterBtagSF", "AfterCustomBtagSF", "Btags1", 
     "NLOCorrections", 
     "TriggerEle_SF", 
-    "TTbarCandidate", "CorrectMatchDiscriminator", "Chi2Discriminator", 
+    "TopTagVeto", "DeltaEtaCut",
+    "TTbarCandidate", 
+    "CorrectMatchDiscriminator", "Chi2Discriminator",
+    "PassChi2Cut",
+    "SR_Merged", "SR_Resolved",
     "NNInputsBeforeReweight"};
   book_histograms(ctx, histogram_tags);
   
@@ -943,7 +959,8 @@ bool ZprimeAnalysisModule::process(uhh2::Event& event){
   }
 
 
-  // electrons (includes some isMuon statements for eleTrigger SF measurement in muon channel)
+  // electrons 
+  // (includes some isMuon statements for eleTrigger SF measurement in muon channel)
   double electron_pt_high(120.); // electron category pT threshold <------ already defined above, might delete redundancy
   bool ele_is_low = false;       // boolean for low-pT electron category
   bool ele_is_high = false;      // boolean for high-pT electron category
@@ -1004,8 +1021,8 @@ bool ZprimeAnalysisModule::process(uhh2::Event& event){
   //////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  ////// Apply various lepton ID SF, ISOlation SF, RECOnstruction SF,Trigger Selection & SF, Nlepton Selection, and 2D Selection) //////
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  ////// lepton ID_SF, ISO_SF (low-pT muon only), RECO_SF, Trigger Selection & SF, Nlepton Selection, and 2D Selection //////
 
   // electronID SF
   if(isMuon && !isEleTriggerMeasurement){ // muon channel withOUT eleTriggerSF measurement
@@ -1236,6 +1253,7 @@ bool ZprimeAnalysisModule::process(uhh2::Event& event){
   ///////// Jet Matching: CHS to PUPPI /////////
   AK4PuppiCHS_matching->process(event);
   h_CHSMatchHists->fill(event);
+  fill_histograms(event, "CHS_After");
   if(debug) cout << "after matching" << endl;
 
 
@@ -1314,10 +1332,8 @@ bool ZprimeAnalysisModule::process(uhh2::Event& event){
   if(!AK4PuppiCHS_BTagging->passes(event)) return false;
   fill_histograms(event, "Btags1");
   h_CHSMatchHists_afterBTag->fill(event);
-
   ///////////////////////////////////////////////////////// End b-tagging section //////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 
   // Higher Order Corrections: EWK & QCD NLO //
   NLOCorrections_module->process(event);
@@ -1328,33 +1344,48 @@ bool ZprimeAnalysisModule::process(uhh2::Event& event){
   if(!isEleTriggerMeasurement) sf_ele_trigger->process(event);
   fill_histograms(event, "TriggerEle_SF");
 
+  // Veto events with >= 2 TopTagged large-R jets
+  if(!TopTagVetoSelection->passes(event)) return false;
+  fill_histograms(event, "TopTagVeto");
 
-  ////// Build all possible ttbar candidates //////
+  // Veto events with DeltaEta(j1, j2) > 1.5 to suppress multijet background
+  if(!DeltaEta_selection->passes(event)) return false;
+  fill_histograms(event, "DeltaEtaCut");
+
+
+  ////////////////////// ttbar system reconstruction //////////////////////
+
+  // build all possible candidates in event
   CandidateBuilder->process(event);
   fill_histograms(event, "TTbarCandidate");
   if(debug) cout << "CandidateBuilder: ok" << endl;
 
-
-  ////// Extract CorrectMatch discriminator from ttbar candidates //////
+  // Extract CorrectMatch discriminator from ttbar candidates
   if(!isEFT){ // exclude EFT samples
     CorrectMatchDiscriminatorZprime->process(event);
     fill_histograms(event, "CorrectMatchDiscriminator");
     if(debug) cout << "CorrectMatchDiscriminatorZprime: ok" << endl;
   }
 
-
-  //// Extract chi2 discriminator from ttbar candidates ////
+  // Extract chi2 discriminator from ttbar candidates
   Chi2DiscriminatorZprime->process(event);
   fill_histograms(event, "Chi2Discriminator");
   if(debug) cout << "Chi2DiscriminatorZprime: ok" << endl;
 
+  // Select events whose chi2 candidates have chi2 < 30
+  if(Chi2Cut_selection->passes(event)){fill_histograms(event, "PassChi2Cut");
+    if(ZprimeTopTag_selection->passes(event)){ 
+      fill_histograms(event, "SR_Merged");}      // top-tag found
+    else{fill_histograms(event, "SR_Resolved");} // no top-tag found
+  }
+  else{fill_histograms(event, "FailChi2Cut");}  
 
-  ////////////////// Variables for DNN //////////////////
+
+  ///////////////// Variables for DNN //////////////////
   sort_by_pt<Jet>(*event.jets);
   Variables_module->process(event);
   fill_histograms(event, "NNInputsBeforeReweight");
   if(debug) cout << "NNInputsBeforeReweight: ok" << endl;
-
 
   // gen-variables for template method-- might delete //
   if(event.is_valid(h_xi_gen_in)) {
