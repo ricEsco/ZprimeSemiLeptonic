@@ -1,5 +1,5 @@
 import sys
-sys.path.insert(1, '/nfs/dust/cms/user/deleokse/MC_UL_prod/CMSSW_10_6_28/src/UHH2/common/UHH2-datasets/')
+sys.path.insert(1, '/data/dust/user/deleokse/MC_UL_prod/CMSSW_10_6_28/src/UHH2/common/UHH2-datasets/')
 
 from CrossSectionHelperSignals import *
 

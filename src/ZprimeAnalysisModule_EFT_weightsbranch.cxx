@@ -695,7 +695,7 @@ ZprimeAnalysisModule_EFT_weightsbranch::ZprimeAnalysisModule_EFT_weightsbranch(u
     }
 
     if(isMuon){
-      TFile* f_btag2Dsf = new TFile("/data/dust/user/deleokse/RunII_106_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/macros/src/files_BTagSF/customBtagSF_muon_"+year+".root");
+      TFile* f_btag2Dsf = new TFile("/data/dust/user/ricardo/uhh2-106X_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/macros/src/files_BTagSF/customBtagSF_muon_"+year+".root");
       if(isEFT){
         // *** CHANGED *** For EFT muon: always use TTbar
         ratio_hist_muon = (TH2F*)f_btag2Dsf->Get("N_Jets_vs_HT_TTbar");
@@ -706,7 +706,7 @@ ZprimeAnalysisModule_EFT_weightsbranch::ZprimeAnalysisModule_EFT_weightsbranch(u
       ratio_hist_muon->SetDirectory(0);
     }
     else if(!isMuon){
-      TFile* f_btag2Dsf = new TFile("/data/dust/user/deleokse/RunII_106_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/macros/src/files_BTagSF/customBtagSF_electron_"+year+".root");
+      TFile* f_btag2Dsf = new TFile("/data/dust/user/ricardo/uhh2-106X_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/macros/src/files_BTagSF/customBtagSF_electron_"+year+".root");
       if(isEFT){
         ratio_hist_ele = (TH2F*)f_btag2Dsf->Get("N_Jets_vs_HT_TTbar");
       } 

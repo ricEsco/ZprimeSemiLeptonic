@@ -875,6 +875,8 @@ bool MEPartonFinder::process(uhh2::Event& evt){
 ////////////////////////////////////////////////
 
 Variables_NN::Variables_NN(uhh2::Context& ctx, TString mode): mode_(mode){
+  // cout << "Initializing Variables_NN with mode " << mode_ << endl;
+
   h_BestZprimeCandidateChi2 = ctx.get_handle<ZprimeCandidate*>("ZprimeCandidateBestChi2");
   h_is_zprime_reconstructed_chi2 = ctx.get_handle<bool>("is_zprime_reconstructed_chi2");
   h_CHSjets_matched = ctx.get_handle<std::vector<Jet>>("CHS_matched");
@@ -1096,6 +1098,7 @@ Variables_NN::Variables_NN(uhh2::Context& ctx, TString mode): mode_(mode){
 }
 
 bool Variables_NN::process(uhh2::Event& evt){
+  // cout << "[Variables_NN::process] starting DNN variables " << endl;
 
   double weight = evt.weight;
   evt.set(h_eventweight, -10);
@@ -1407,14 +1410,88 @@ bool Variables_NN::process(uhh2::Event& evt){
   ////////////////////////////////////////////////////////////////////////////////////////////
   ///////////// Variables from reconstructed ttbar system for EFT interpretation /////////////
   ////////////////////////////////////////////////////////////////////////////////////////////
-
+  // cout << "[Variables_NN::process] starting SpinCorr variables " << endl;
   bool is_zprime_reconstructed_chi2 = evt.get(h_is_zprime_reconstructed_chi2); // reconstruction method boolean
   evt.set(h_chi2, -10);  // chi^2 of ttbar reconstruction
   evt.set(h_M_tt, -10);  // invariant mass of ttbar system
   evt.set(h_beta, -10);  // relativistic-beta of ttbar system
   evt.set(h_dyreco,-10); // Charge asymmetry of ttbar system
-  
+
+  // spin-analyzer (leptons-only) projections
+  evt.set(h_cosTheta1k_antiLep, -10);
+  evt.set(h_cosTheta1r_antiLep, -10);
+  evt.set(h_cosTheta1n_antiLep, -10);
+  evt.set(h_cosTheta1kStar_antiLep, -10);
+  evt.set(h_cosTheta1rStar_antiLep, -10);
+  evt.set(h_cosTheta2k_Lep, -10);
+  evt.set(h_cosTheta2r_Lep, -10);
+  evt.set(h_cosTheta2n_Lep, -10);
+  evt.set(h_cosTheta2kStar_Lep, -10);
+  evt.set(h_cosTheta2rStar_Lep, -10);
+
+  // spin-analyzer projections
+  evt.set(h_cosTheta1k, -10);
+  evt.set(h_cosTheta1r, -10);
+  evt.set(h_cosTheta1n, -10);
+  evt.set(h_cosTheta1kStar, -10);
+  evt.set(h_cosTheta1rStar, -10);
+  evt.set(h_cosTheta2k, -10);
+  evt.set(h_cosTheta2r, -10);
+  evt.set(h_cosTheta2n, -10);
+  evt.set(h_cosTheta2kStar, -10);
+  evt.set(h_cosTheta2rStar, -10);
+
+  // Correlation elements
+  evt.set(h_Cnn, -10);
+  evt.set(h_Cnr, -10);
+  evt.set(h_Cnk, -10);
+  evt.set(h_Crn, -10);
+  evt.set(h_Crr, -10);
+  evt.set(h_Crk, -10);
+  evt.set(h_Ckn, -10);
+  evt.set(h_Ckr, -10);
+  evt.set(h_Ckk, -10);
+  // linear combinations
+  evt.set(h_Crk_plus, -10);
+  evt.set(h_Crk_minus, -10);
+  evt.set(h_Cnr_plus, -10);
+  evt.set(h_Cnr_minus, -10);
+  evt.set(h_Cnk_plus, -10);
+  evt.set(h_Cnk_minus, -10);
+
+  // Entanglement witnesses
+  evt.set(h_cHel, -10);
+  evt.set(h_cHel_Mtt300_400, -10);
+  evt.set(h_cHel_Mtt300_400_betaLT0p9, -10);
+
+  evt.set(h_cHel_P3n, -10);
+  evt.set(h_cHel_P3n_Mtt800_Inf, -10);
+  evt.set(h_cHel_P3n_Mtt800_Inf_cosThetaLT0p4, -10);
+
+  // Baumgart et al. variables
+  evt.set(h_Sigma_phi, -10);
+  evt.set(h_Delta_phi, -10);
+  // Baumgart variables with cut on charge asymmetry
+  evt.set(h_Sigma_phi_1, -10);
+  evt.set(h_Sigma_phi_2, -10);
+  evt.set(h_Delta_phi_1, -10);
+  evt.set(h_Delta_phi_2, -10);
+  // Charge asymmetry with cut on Baumgart variables
+  evt.set(h_dyreco_s1, -10);
+  evt.set(h_dyreco_s2, -10);
+  evt.set(h_dyreco_d1, -10);
+  evt.set(h_dyreco_d2, -10);
+  // all three variables in high/low pt cuts
+  evt.set(h_Sigma_phi_high, -10); 
+  evt.set(h_Delta_phi_high, -10); 
+  evt.set(h_dyreco_high   , -10); 
+  evt.set(h_Sigma_phi_low , -10); 
+  evt.set(h_Delta_phi_low , -10); 
+  evt.set(h_dyreco_low    , -10); 
+  // cout << "[Variables_NN::process] set SpinCorr variables " << endl;
+
   if(is_zprime_reconstructed_chi2){
+    // cout << "[Variables_NN::process]   inside is_zprime_reconstructed " << endl;
     ZprimeCandidate* BestZprimeCandidate = evt.get(h_BestZprimeCandidateChi2); // Best ttbar-system reconstruction based on chi^2 discriminator
     float chi2 = BestZprimeCandidate->discriminator("chi2_total");
     float Mass_tt = BestZprimeCandidate->Zprime_v4().M();
@@ -1484,6 +1561,7 @@ bool Variables_NN::process(uhh2::Event& evt){
     TLorentzVector lep_top_lep(0, 0, 0, 0); // Lepton 4-vector
 
     if(passes_btagging){ // only define angular variables if event passes b-tag WP-cut
+      // cout << "[Variables_NN::process]   inside passes_btagging " << endl;
       // b-jet from Resolved topology
       if(!is_toptag_reconstruction){ // Defined as hadronic AK4-jet with highest deepJet bscore
         for(unsigned int i=0; i< BestZprimeCandidate->jets_hadronic().size(); i++){
@@ -1592,7 +1670,7 @@ bool Variables_NN::process(uhh2::Event& evt){
         had_top_b_Rest.Boost(-1.*PosTop_CoM.BoostVector());   // b-jet has Positive Top mother
       }
 
-    
+      // cout << "[Variables_NN::process]   spin analyzers defined " << endl;
       //------------------------------------------- Spin Correlation variables -------------------------------------------//
       float cosTheta1k_antiLep = 99.;
       float cosTheta1r_antiLep = 99.;
@@ -1618,6 +1696,10 @@ bool Variables_NN::process(uhh2::Event& evt){
 
       float CHel = 99.;
       float CHel_P3n = 99.;
+
+      // cout << "[Variables_NN::process]   ttbar system mass via ttbar.M() and Mass_tt is " << ttbar.M() << " and " << Mass_tt << endl;
+      // cout << "[Variables_NN::process]   lepton charge and ttbar mass is " << BestZprimeCandidate->lepton().charge() << " and " << ttbar.M() << endl;
+      // cout << "[Variables_NN::process]     setting lepton-polarizations " << endl;
 
       // Use only (anti)leptons as spin-analyzers
       if(BestZprimeCandidate->lepton().charge() > 0){// anti-lepton
@@ -1646,6 +1728,8 @@ bool Variables_NN::process(uhh2::Event& evt){
       evt.set(h_cosTheta2n_Lep, cosTheta2n_Lep);
       evt.set(h_cosTheta2kStar_Lep, cosTheta2kStar_Lep);
       evt.set(h_cosTheta2rStar_Lep, cosTheta2rStar_Lep);
+
+      // cout << "[Variables_NN::process]     setting SA-polarizations " << endl;
 
       // Assign spin-analyzers depending on lepton charge
       if(BestZprimeCandidate->lepton().charge() > 0){
@@ -1689,6 +1773,8 @@ bool Variables_NN::process(uhh2::Event& evt){
       evt.set(h_cosTheta2kStar, cosTheta2kStar);
       evt.set(h_cosTheta2rStar, cosTheta2rStar);
 
+      // cout << "[Variables_NN::process]     setting C_ij elements " << endl;
+
       // correlation matrix elements
       evt.set(h_Cnn, cosTheta1n * cosTheta2n);
       evt.set(h_Cnr, cosTheta1n * cosTheta2r);
@@ -1706,6 +1792,8 @@ bool Variables_NN::process(uhh2::Event& evt){
       evt.set(h_Cnr_minus, cosTheta1n * cosTheta2r - cosTheta1r * cosTheta2n);
       evt.set(h_Cnk_plus, cosTheta1n * cosTheta2k + cosTheta1k * cosTheta2n);
       evt.set(h_Cnk_minus, cosTheta1n * cosTheta2k - cosTheta1k * cosTheta2n);
+
+      // cout << "[Variables_NN::process]     setting entanglement witnesses " << endl;
 
       // entanglement variables, inclusive
       CHel = lep_top_lep_Rest.Vect().Unit().Dot(had_top_b_Rest.Vect().Unit());
@@ -1725,14 +1813,15 @@ bool Variables_NN::process(uhh2::Event& evt){
         if(TMath::Abs(cos_PosTop_beam) < 0.4){evt.set(h_cHel_P3n_Mtt800_Inf_cosThetaLT0p4, CHel_P3n);}
       }
 
-      // Baumgart et al. variables
+      // cout << "[Variables_NN::process]     setting Baumgart variables " << endl;
+
       // defined using phi-coordinate wrt Bernreuther nr-plane
       float lep_top_lep_phi = atan2(lep_top_lep_Rest.Vect().Unit().Dot(rbase), lep_top_lep_Rest.Vect().Unit().Dot(nbase));
       float had_top_b_phi   = atan2(had_top_b_Rest.Vect().Unit().Dot(rbase),   had_top_b_Rest.Vect().Unit().Dot(nbase));
 
       // sphi and dphi = PosTopDecayProd_phi +- NegTopDecayProd_phi
       float sphi = lep_top_lep_phi + had_top_b_phi;   // sum is independent of order
-      float dphi = -99.;                              // initialize with dummy value
+      float dphi = 99.;                               // initialize with dummy value
       if(BestZprimeCandidate->lepton().charge() > 0){ // lepton is Positive Top's Decay Product
         dphi = lep_top_lep_phi - had_top_b_phi;
       }
@@ -1747,6 +1836,8 @@ bool Variables_NN::process(uhh2::Event& evt){
       if(dphi < -TMath::Pi()) dphi = dphi + 2*TMath::Pi();
       evt.set(h_Sigma_phi, sphi);
       evt.set(h_Delta_phi, dphi);
+
+      // cout << "[Variables_NN::process]     setting Baumgart with dyreco cuts " << endl;
 
       // Plot dphi and sphi for high-pt range && positive dy_reco
       if(pt_hadTop > pt_hadTop_thresh && dyreco >0){
@@ -3438,54 +3529,51 @@ TopPtReweighting::TopPtReweighting(uhh2::Context& ctx,
   ////
 
   PuppiCHS_matching::PuppiCHS_matching(uhh2::Context& ctx){
-
     h_CHSjets = ctx.get_handle< std::vector<Jet> >("jetsAk4CHS");
     h_CHS_matched_ = ctx.declare_event_output<vector<Jet>>("CHS_matched");
-   
-
+  
   }
 
   bool PuppiCHS_matching::process(uhh2::Event& event){
 
     vector<Jet> CHSjets = event.get(h_CHSjets);
-    
     std::vector<Jet> matched_jets;
     std::vector<Jet> matched_jets_PUPPI;
     JetPFID CHS_matched_Tight  = JetPFID(JetPFID::WP_TIGHT_CHS);
 
-    for(const Jet & jet : *event.jets){ // PUPPI jets
+    // loop over PUPPI jets
+    for(const Jet & jet : *event.jets){ 
       double deltaR_min = 99;
-     
-      // if (CHSjets.at(0).pt()<50)continue;
 
-      // if (CHSjets.at(1).pt()<45)continue;
-      for(const Jet & CHSjet : CHSjets){ // CHS jets
-        if (CHSjets.at(0).pt()<50)continue;
-        if(CHS_matched_Tight(CHSjet,event)){ 
-        // cout << "it passes tight ID" <<endl;
-        double deltaR_CHS = deltaR(jet,CHSjet);
-        if(deltaR_CHS<deltaR_min) deltaR_min = deltaR_CHS;
+      // loop over CHS jets
+      for(const Jet & CHSjet : CHSjets){ 
+        if(CHSjets.at(0).pt() < 50) continue; // make sure leading CHS jet has pT > 50 GeV
+
+        if(CHS_matched_Tight(CHSjet, event)){ // check if CHS jet passes tight WP
+          double deltaR_CHS = deltaR(jet, CHSjet);
+          if(deltaR_CHS < deltaR_min) deltaR_min = deltaR_CHS;
         }
-      } // end CHS loop
+      } // end first CHS loop
 
-      if(deltaR_min>0.2) continue;
+      if(deltaR_min > 0.2) continue;
 
+      // loop over CHS jets again to find matching jet
       for(const Jet & CHSjet : CHSjets){
-        if(CHS_matched_Tight(CHSjet,event)){ 
-          if(deltaR(jet,CHSjet)!=deltaR_min) continue;
+        if(CHS_matched_Tight(CHSjet, event)){ 
+          if(deltaR(jet, CHSjet) != deltaR_min) continue;
           else{
             matched_jets.emplace_back(CHSjet);
             matched_jets_PUPPI.emplace_back(jet);
           }
         }
       }
-    // }
+
     } // end PUPPI loop
+
     std::swap(matched_jets_PUPPI, *event.jets);
     event.set(h_CHS_matched_, matched_jets);
     if(event.jets->size()==0) return false;
     return true;
-    
   }
 
   ////
@@ -3513,7 +3601,7 @@ TopPtReweighting::TopPtReweighting(uhh2::Context& ctx,
       // cout << "pt: "<<event.muons->at(0).pt()<<endl;
       // cout << "cos: "<<cosh(event.muons->at(0).eta())<<endl;
       float Tot_P = event.muons->at(0).pt()*cosh(event.muons->at(0).eta());
-    //  cout << "Calculated pt"<<endl;
+      //  cout << "Calculated pt"<<endl;
       if(year == Year::isUL16preVFP || year == Year::isUL16postVFP){
         if( abs(event.muons->at(0).eta()) <= 1.6){
           if( 50 < Tot_P && Tot_P <= 100)   { event.set(h_muonrecSF_nominal, 0.9914); event.set(h_muonrecSF_up, 0.9914+0.0008); event.set(h_muonrecSF_down, 0.9914-0.0008); event.weight *= 0.9914; }
@@ -3582,7 +3670,7 @@ TopPtReweighting::TopPtReweighting(uhh2::Context& ctx,
         }
       }
     }
-
+    // cout << "[ZprimeSemiLeptonicModules] muonRECO SF: ok" << endl;
 
     return true;
   }
