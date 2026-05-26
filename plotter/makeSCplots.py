@@ -18,15 +18,20 @@ Log=options.isLog
 ### Options stuff --------------------------------------------------------------------------------------------------------------------
 
 
-# Channel info
+### Channel info
 if channel=="ele":
     _channelText = "e+jets"
     plotDirectory = "/data/dust/user/ricardo/output_uhh2_Entanglement_Reco/UL18/electron/plots/"
     _fileDir = "/data/dust/user/ricardo/output_uhh2_Entanglement_Reco/UL18/electron/workdir_Zprime_Analysis_UL18_electron_entanglement/"
 else:
     _channelText = "#mu+jets"
-    plotDirectory = "/data/dust/user/ricardo/output_uhh2_Entanglement_Reco/UL18/muon/plots/"
-    _fileDir = "/data/dust/user/ricardo/output_uhh2_Entanglement_Reco/UL18/muon"
+    plotDirectory = "/data/dust/user/ricardo/output_uhh2_Entanglement_Reco/UL18/preDNNwTtag/muon/plots/SR_Merged/6bin"
+    _fileDir =      "/data/dust/user/ricardo/output_uhh2_Entanglement_Reco/UL18/preDNNwTtag/muon/workdir_Analysis_UL18_muon/"
+
+### ROOT directory of histograms
+# histDir = "PassChi2Cut_General"
+histDir = "SR_Merged_General"
+
 print "channel is ", channel
 print "Input directory:", _fileDir
 print "Output directory:", plotDirectory, "\n"
@@ -124,12 +129,14 @@ else:
 
 
 ### The sample_names array has filenames of samples that will contribute to each plot
-sample_names = ["TTToSemiLeptonic", "TTTo2L2Nu", "TTToHadronic", "ST", "WJets", "QCD"]
+sample_names = ["TTToSemiLeptonic_1", "TTToSemiLeptonic_2", "TTTo2L2Nu", "TTToHadronic"]
+# sample_names = ["TTToSemiLeptonic_1", "TTToSemiLeptonic_2", "TTTo2L2Nu", "TTToHadronic", "ST", "WJets", "QCD"]
 
 
 ### The stackList dictionary maps the list of samples to their color
 # All three TTbar decay channels
-stackList = {"TTToSemiLeptonic":[kRed], "TTTo2L2Nu":[kRed+2], "TTToHadronic":[kRed-7], "ST":[kBlue], "WJets":[kGreen],  "QCD":[kYellow]}
+stackList = {"TTToSemiLeptonic_1":[kRed], "TTToSemiLeptonic_2":[kRed], "TTTo2L2Nu":[kRed+2], "TTToHadronic":[kRed-7]}
+# stackList = {"TTToSemiLeptonic_1":[kRed], "TTToSemiLeptonic_2":[kRed], "TTTo2L2Nu":[kRed+2], "TTToHadronic":[kRed-7], "ST":[kBlue], "WJets":[kGreen],  "QCD":[kYellow]}
 
 ### end User input section i.e. modify each time new set of plots are being generated ------------------------------------------------------------------------------------
 
@@ -211,7 +218,7 @@ pad1.cd()
 
 ### We loop through each histogram and fill it with the different samples
 for histName in histograms:
-    legend = TLegend(0.7,0.7,0.9,0.9)
+    legend = TLegend(0.68,0.7,0.9,0.9)
     legend.SetNColumns(2)
     legend.SetBorderSize(0)
     legend.SetFillColor(0)
@@ -219,18 +226,19 @@ for histName in histograms:
     print "--- Working on the", histName, "histogram ---"
     for sample in sample_names:
         #print "sample is", sample
-        _file[sample] = TFile("%s/uhh2.AnalysisModuleRunner.MC.%s.root"%(_fileDir,sample),"read")
+        _file[sample] = TFile("%s/uhh2.AnalysisModuleRunner.MC.%s.root" % (_fileDir, sample),"read")
         # tree_MC[histName][sample]=_file[sample].Get("DNN_output0_General")
         # tree_MC[histName][sample].Draw("%s>>h_%s_%s(%i,%f,%f)"%(histName,histName,sample,histograms[histName][2],histograms[histName][3][0],histograms[histName][3][1]))
         # hist[histName][sample] = tree_MC[histName][sample].GetHistogram()
-        hist[histName][sample]=_file[sample].Get("DNN_output0_General/%s"%histName)
+        # hist[histName][sample]=_file[sample].Get("DNN_output0_General/%s"%histName)
+        hist[histName][sample]=_file[sample].Get("%s/%s" % (histDir, histName))
         hist[histName][sample].SetFillColor(stackList[sample][0])
         hist[histName][sample].SetLineColor(stackList[sample][0])
         hist[histName][sample].SetYTitle(histograms[histName][1])    
         print "Filling with", sample
         stack[histName].Add(hist[histName][sample])
-        # rebin by a factor of 4
-        hist[histName][sample].Rebin(4)
+        # rebin by a factor of 4 for 24/4 = 6 bins total
+        hist[histName][sample].Rebin(4)     # optional
         # Normalize by bin width (0.08333333)
         binWidth = 0.3333333
         for b in range(1, hist[histName][sample].GetNbinsX()+1):
@@ -278,9 +286,9 @@ for histName in histograms:
     pad1.Update()
 
     if Log:
-        canvas.SaveAs("%s/%s_log.png"%(plotDirectory,histName))
+        canvas.SaveAs("%s/%s_log_from%s.png"%(plotDirectory, histName, histDir))
     else:
-        canvas.SaveAs("%s/%s.png"%(plotDirectory,histName))
+        canvas.SaveAs("%s/%s_from%s.png"%(plotDirectory, histName, histDir))
     print "\n"
 
 print "Congratulations, you've successfully generated some Plots."

@@ -87,7 +87,7 @@ protected:
 
   // Reweighting modules
   unique_ptr<DeepAK8TopTagger> TopTaggerDeepAK8;
-  unique_ptr<AnalysisModule> PUWeight_module, LumiWeight_module, MCScale_module;
+  unique_ptr<AnalysisModule>   PUWeight_module, LumiWeight_module, MCScale_module;
   unique_ptr<TopPtReweighting> TopPtReweight_module;
   // Prefiring weights applied manually
   unique_ptr<PSWeights> ps_weights;
@@ -131,7 +131,7 @@ protected:
   unique_ptr<Selection> DeltaEta_selection;
 
   // ttbar reconstruction
-  unique_ptr<ZprimeCandidateBuilder> CandidateBuilder;  // reconstructs ttbar candidates when possible
+  unique_ptr<ZprimeCandidateBuilder> CandidateBuilder;                         // creates all possible permutations (candidates) of the ttbar system
   unique_ptr<ZprimeChi2Discriminator> Chi2DiscriminatorZprime;                 // extracts chi2(reco, avg) from reconstructed candidates and sets bestCandidate pointer to candidate with lowest chi2
   unique_ptr<ZprimeCorrectMatchDiscriminator> CorrectMatchDiscriminatorZprime; // extracts dr(gen, reco) from reconstructed candidates and sets bestCandidate pointer to candidate with lowest dr
   unique_ptr<Selection> Chi2_selection;                 // selects candidates with chi2 < chi2_max (30.)
@@ -144,11 +144,8 @@ protected:
 
 
   // Do not use the following modules-- might delete these
-  unique_ptr<CommonModules> common; // already applied in pre-selection, not used here-- might delete
   unique_ptr<HOTVRTopTagger> TopTaggerHOTVR; // don't use HOTVR-- might delete
   unique_ptr<AnalysisModule> hadronic_top;   // only used for HOTVR-- might delete
-  unique_ptr<Selection> SignSplit; // only used for splitting interference samples by sign-- might delete
-
 
 
   ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -176,15 +173,14 @@ protected:
   Event::Handle<ZprimeCandidate*> h_BestZprimeCandidateCorrectMatch;
 
   // Gen-level variables
-  std::unique_ptr<TTbarGenProducer> ttgenprod;
-  uhh2::Event::Handle<TTbarGen> h_ttbargen;
+  Event::Handle<TTbarGen> h_ttbargen;
+  unique_ptr<TTbarGenProducer> ttgenprod;
   
   // Angular variables
   Event::Handle<float> h_pt_hadTop;     // pt of hadronic top-jet(s)
   Event::Handle<float> h_pt_hadTop_res; // pt of hadronic top-jet from resolved topology
   Event::Handle<float> h_pt_hadTop_mer; // pt of hadronic top-jets from merged topology
 
-  //Event::Handle<float> h_deltaR_min;  // Smallest deltaR(hadronicjet, AK4CHSmatchedjet)
   Event::Handle<float> h_res_jet_bscore;       // bScores of resolved jets before ANY of MY btagging requirements
   Event::Handle<float> h_mer_subjet_bscore;    // bScores of merged subjets before ANY of MY btagging requirements
   Event::Handle<float> h_bscore_max;           // Largest bScores of hadronic b-(sub)jets after WP cut
@@ -210,17 +206,16 @@ protected:
   lumihists_Chi2;
 
   // PUPPI CHS match module
-  std::unique_ptr<PuppiCHS_matching> AK4PuppiCHS_matching;
-  // PUPPI CHS match - btagging
-  std::unique_ptr<Selection> AK4PuppiCHS_BTagging;
+  unique_ptr<PuppiCHS_matching> AK4PuppiCHS_matching;
+  // b-tagging (on CHS matched jets) module
+  unique_ptr<Selection> AK4PuppiCHS_BTagging;
 
   // Histograms with matched CHS jets
-  // std::unique_ptr<Hists> h_CHSMatchHists_beforematching;
-  std::unique_ptr<Hists> h_CHSMatchHists;
-  std::unique_ptr<Hists> h_CHSMatchHists_beforeBTagSF;
-  std::unique_ptr<Hists> h_CHSMatchHists_afterBTagSF;
-  std::unique_ptr<Hists> h_CHSMatchHists_after2DBTagSF;
-  std::unique_ptr<Hists> h_CHSMatchHists_afterBTag;
+  unique_ptr<Hists> h_CHSMatchHists;
+  unique_ptr<Hists> h_CHSMatchHists_beforeBTagSF;
+  unique_ptr<Hists> h_CHSMatchHists_afterBTagSF;
+  unique_ptr<Hists> h_CHSMatchHists_after2DBTagSF;
+  unique_ptr<Hists> h_CHSMatchHists_afterBTag;
 
 
   /////////////////////////////////////////////////////////////
@@ -265,12 +260,7 @@ void ZprimeAnalysisModule::fill_histograms(uhh2::Event& event, string tag){
 */
 
 ZprimeAnalysisModule::ZprimeAnalysisModule(uhh2::Context& ctx){
-
   debug = false;
-
-  // Access to gen-level particles
-  ttgenprod.reset(new TTbarGenProducer(ctx));
-  h_ttbargen = ctx.get_handle<TTbarGen>("ttbargen");
 
   for(auto & kv : ctx.get_all()){
     cout << " " << kv.first << " = " << kv.second << endl;
@@ -282,6 +272,10 @@ ZprimeAnalysisModule::ZprimeAnalysisModule(uhh2::Context& ctx){
   // dataset type
   isMC = (ctx.get("dataset_type") == "MC");
   isPhoton = (ctx.get("dataset_version").find("SinglePhoton") != std::string::npos);
+
+  // Access to gen-level particles
+  if(isMC) ttgenprod.reset(new TTbarGenProducer(ctx, "ttbargen"));
+  h_ttbargen = ctx.get_handle<TTbarGen>("ttbargen");
 
   // Jet collection
   ishotvr = (ctx.get("is_hotvr") == "true");
@@ -328,26 +322,10 @@ ZprimeAnalysisModule::ZprimeAnalysisModule(uhh2::Context& ctx){
   ////////////////////////////////////////////////////////////////////////////////////////////////////
   /////////////////////////////////////////// LEPTON STUFF ///////////////////////////////////////////
 
-  /////////////////////////////////////////////////////////////////////////////////////
-  //////////////////////////// begin IDs for CommonModules ////////////////////////////
-  ElectronId eleID_veto = ElectronTagID(Electron::mvaEleID_Fall17_noIso_V2_wp90);
-  const ElectronId electronID_veto(AndId<Electron>(PtEtaSCCut(15., 2.5), eleID_veto));
-  MuonId muID_veto  = MuonID(Muon::CutBasedIdTight);
-  const MuonId muonID_veto(AndId<Muon>(PtEtaCut(15., 2.4), muID_veto));
-  common.reset(new CommonModules()); // applied in pre-selection, not used here-- might delete this section
-  common->set_muon_id(muonID_veto);
-  common->set_electron_id(electronID_veto);
-  //////////////////////////// end IDs for CommonModules ////////////////////////////
-  ///////////////////////////////////////////////////////////////////////////////////
-
-  // set pT thresholds for categories
+  // set lepton pT thresholds for high/low categories
   double electron_pt_low;
-  if(isUL17){
-    electron_pt_low = 38.; // UL17 ele trigger threshold is 35 (HLT_Ele35WPTight _Gsf) -> be above turn on
-  }
-  else{
-    electron_pt_low = 35.;
-  }
+  if(isUL17){electron_pt_low = 38.;} // UL17 ele trigger (HLT_Ele35WPTight _Gsf) threshold is 35 GeV
+  else{electron_pt_low = 35.;}
   double electron_pt_high(120.);
   double muon_pt_low(30.);
   double muon_pt_high(55.);
@@ -410,10 +388,6 @@ ZprimeAnalysisModule::ZprimeAnalysisModule(uhh2::Context& ctx){
   double a_toppt = 0.0615;  // par a TopPt Reweighting
   double b_toppt = -0.0005; // par b TopPt Reweighting
   // const TopJetId toptagID = AndId<TopJet>(HOTVRTopTag(0.8, 140.0, 220.0, 50.0), Tau32Groomed(0.56));
-
-  
-  
-
 
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -522,7 +496,7 @@ ZprimeAnalysisModule::ZprimeAnalysisModule(uhh2::Context& ctx){
   // top-tag veto (require <=1 top-tagged jet in event)
   TopTagVetoSelection.reset(new TopTag_VetoSelection(ctx, mode));
 
-  // Cut on DeltaEta(j1,j2) < 1.5 to reduce QCD spikes
+  // Cut on DeltaEta(j1,j2) < 3 to reduce QCD spikes
   DeltaEta_selection.reset(new DeltaEtaSelection());
 
  // Chi2 for reconstructed ttbar candidates
@@ -534,16 +508,6 @@ ZprimeAnalysisModule::ZprimeAnalysisModule(uhh2::Context& ctx){
   // HEM issue in 2018, veto on leptons and jets
   HEM_selection.reset(new HEMSelection(ctx));
 
-  /////////////////////////////////////////////////////////////////////////////////////////////////////////
-  //////////////////////////// begin Split interference signal samples by sign ////////////////////////////
-  if(ctx.get("dataset_version").find("_int") != std::string::npos){ // don't use interference samples-- might delete this section
-    if     (ctx.get("dataset_version").find("_pos") != std::string::npos) SignSplit.reset(new SignSelection("pos"));
-    else if(ctx.get("dataset_version").find("_neg") != std::string::npos) SignSplit.reset(new SignSelection("neg"));
-    else SignSplit.reset(new uhh2::AndSelection(ctx));
-  }
-  else SignSplit.reset(new uhh2::AndSelection(ctx));
-  //////////////////////////// end Split interference signal samples by sign //////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
   // Variables for DNN
@@ -569,7 +533,6 @@ ZprimeAnalysisModule::ZprimeAnalysisModule(uhh2::Context& ctx){
   // PUPPI CHS match modules & hists
   AK4PuppiCHS_matching.reset(new PuppiCHS_matching(ctx)); // match AK4 PUPPI jets to AK4 CHS jets for b-tagging
   AK4PuppiCHS_BTagging.reset(new PuppiCHS_BTagging(ctx)); // b-tagging on matched CHS jets
-  // h_CHSMatchHists_beforematching.reset(new ZprimeSemiLeptonicCHSMatchHists(ctx, "CHSMatch_beformatching"));
   h_CHSMatchHists.reset(new ZprimeSemiLeptonicCHSMatchHists(ctx, "CHSMatch"));
   h_CHSMatchHists_beforeBTagSF.reset(new ZprimeSemiLeptonicCHSMatchHists(ctx, "CHSMatch_beforeBTagSF"));
   h_CHSMatchHists_afterBTagSF.reset(new ZprimeSemiLeptonicCHSMatchHists(ctx, "CHSMatch_afterBTagSF"));
@@ -786,6 +749,9 @@ bool ZprimeAnalysisModule::process(uhh2::Event& event){
   event.set(h_dphi_low, -10); 
   event.set(h_dphi_high, -10);
 
+  // Process TTbarGen to set gen-level ttbar system variables
+  if(isMC && ttgenprod) ttgenprod->process(event);
+  if(debug) cout << "[ZprimeAnalysisModule] TTbarGen processed: ok" << endl;
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////
   //////////////////////////// Application of various weights to event.weight ////////////////////////////
@@ -799,6 +765,7 @@ bool ZprimeAnalysisModule::process(uhh2::Event& event){
   else if(isdeepAK8){ 
     TopTaggerDeepAK8->process(event); // Creates DeepAK8TopTag Jet collection based on pT, SDmass, and discriminant scores
     hadronic_top->process(event); // only needed for HOTVR jets-- will likely delete
+    if(debug) cout << "[ZprimeAnalysisModule] TopTaggerDeepAK8: ok" << endl;
   }
 
   // Initial weight (gen weight * pileup weight from preselection)
@@ -867,7 +834,7 @@ bool ZprimeAnalysisModule::process(uhh2::Event& event){
   ////////////////////////// Start: Cleaning lepton collections with ID based on pT///////////////////////////////
 
   // muons
-  double muon_pt_high(55.);  // muon category pT threshold <------ already defined above, might delete redundancy
+  double muon_pt_high(55.);  // muon category pT threshold
   bool muon_is_low = false;  // boolean for low-pT muon category
   bool muon_is_high = false; // boolean for high-pT muon category
 
@@ -875,7 +842,7 @@ bool ZprimeAnalysisModule::process(uhh2::Event& event){
   if(isMuon){
     vector<Muon>* muons = event.muons;
     for(unsigned int i=0; i<muons->size(); i++){
-      if(event.muons->at(i).pt()<muon_pt_high){
+      if(event.muons->at(i).pt() < muon_pt_high){
         muon_is_low = true;}
       else{muon_is_high = true;}
     }
@@ -909,7 +876,7 @@ bool ZprimeAnalysisModule::process(uhh2::Event& event){
 
   // electrons 
   // (includes some isMuon statements for eleTrigger SF measurement in muon channel)
-  double electron_pt_high(120.); // electron category pT threshold <------ already defined above, might delete redundancy
+  double electron_pt_high(120.); // electron category pT threshold
   bool ele_is_low = false;       // boolean for low-pT electron category
   bool ele_is_high = false;      // boolean for high-pT electron category
 
@@ -1181,7 +1148,7 @@ bool ZprimeAnalysisModule::process(uhh2::Event& event){
   if(debug) cout << "[ZprimeAnalysisModule] N leptons ok: Nelectrons= " << event.electrons->size() << ", Nmuons= " << event.muons->size() << endl;
 
 
-  //////////////////////////////// 2D-cut selection ////////////////////////////////
+  //////////////////////////////// 2D-cut selection on high-pT leptons ONLY ////////////////////////////////
   // muon channel withOUT eleTrigger SF measurement in high-pT category
   if(isMuon && !isEleTriggerMeasurement && muon_is_high){ 
     if(!TwoDCut_selection->passes(event)) return false;
@@ -1203,12 +1170,12 @@ bool ZprimeAnalysisModule::process(uhh2::Event& event){
     if(!TwoDCut_selection->passes(event)) return false;
     if(debug) cout << "[ZprimeAnalysisModule] 2D-cut on high-pT lepton Selection in EleTriggerMeasurement: passed" << endl;
   }
-  //////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
   if(debug) cout << "[ZprimeAnalysisModule] before matching" << endl;
-  fill_histograms(event,"CHS_Before");
+  fill_histograms(event, "CHS_Before");
 
   ///////// Jet Matching: CHS to PUPPI /////////
   AK4PuppiCHS_matching->process(event);
@@ -1268,7 +1235,7 @@ bool ZprimeAnalysisModule::process(uhh2::Event& event){
   fill_histograms(event, "AfterBtagSF");
   h_CHSMatchHists_afterBTagSF->fill(event);
 
-  // Apply custom SF to correct for b-tag SF shape effects on NJets/HT
+  // Apply custom SF to correct for b-tag SF shape effects on NJets/HT (HT := sum of jet pTs)
   if(isMC && isMuon){
     float custom_sf;
     vector<Jet>* jets = event.jets;
@@ -1331,7 +1298,7 @@ bool ZprimeAnalysisModule::process(uhh2::Event& event){
   
 
   // Extract CorrectMatch discriminator from ttbar candidates
-  if(!isEFT){ // exclude EFT samples until we make sure they have the expected gen-collection
+  if(isMC){ // exclude EFT samples until we make sure they have the expected gen-collection
     CorrectMatchDiscriminatorZprime->process(event);
     if(debug) cout << "[ZprimeAnalysisModule] CorrectMatchDiscriminator: ok" << endl;
     fill_histograms(event, "CorrectMatchDiscriminator");

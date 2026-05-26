@@ -804,7 +804,7 @@ void ZprimeSemiLeptonicHists::init(){
 
 void ZprimeSemiLeptonicHists::fill(const Event & event){
   double weight = event.weight;
-
+  bool debug = false;
   /*
   █      ██ ███████ ████████ ███████
   █      ██ ██         ██    ██
@@ -813,6 +813,7 @@ void ZprimeSemiLeptonicHists::fill(const Event & event){
   █  █████  ███████    ██    ███████
   */
 
+  if(debug) cout << "[ZprimeSemiLeptonicHists] Filling Jets" << endl;
   //CHS jets
   vector<Jet> CHSjets = event.get(h_CHSjets);
   for(unsigned int i=0; i<CHSjets.size(); i++){
@@ -828,8 +829,8 @@ void ZprimeSemiLeptonicHists::fill(const Event & event){
   int Njets = jets->size();
   N_jets->Fill(Njets, weight);
 
-  if(debug) cout << "[ZprimeSemiLeptonicHists] CHSjets size: " << CHSjets.size() << endl;
-  if(debug) cout << "[ZprimeSemiLeptonicHists] PUPPIjets size: " << jets->size() << endl;
+  if(debug) cout << "[ZprimeSemiLeptonicHists]   CHSjets size: " << CHSjets.size() << endl;
+  if(debug) cout << "[ZprimeSemiLeptonicHists]   PUPPIjets size: " << jets->size() << endl;
 
   for (unsigned int i=0; i<CHSjets.size(); i++){
     double dRmin_CHSPuppi = 99999.;
@@ -897,6 +898,7 @@ void ZprimeSemiLeptonicHists::fill(const Event & event){
   */
 
   if(ishotvr){
+    if(debug) cout << "[ZprimeSemiLeptonicHists] Filling HOTVR" << endl;
     vector<TopJet>* HOTVRjets = event.topjets;
     unsigned int NHOTVRjets = HOTVRjets->size();
     N_HOTVRjets->Fill(NHOTVRjets, weight);
@@ -1079,6 +1081,7 @@ void ZprimeSemiLeptonicHists::fill(const Event & event){
   */
 
   if(isdeepAK8){
+    if(debug) cout << "[ZprimeSemiLeptonicHists] Filling AK8PUPPI" << endl;
     vector<TopJet>* AK8Puppijets = event.toppuppijets;
     unsigned int NAK8Puppijets = 0;
     for(unsigned int i=0; i<AK8Puppijets->size(); i++){
@@ -1308,8 +1311,8 @@ void ZprimeSemiLeptonicHists::fill(const Event & event){
 
     }
 
-    if(debug) cout << "[ZprimeSemiLeptonicHists] N_AK8Puppi jets: " << NAK8Puppijets << endl;
-    if(debug) cout << "[ZprimeSemiLeptonicHists] N_AK8Puppi TopTagged jets: " << NAK8PuppiTaggedjets << endl;
+    if(debug) cout << "[ZprimeSemiLeptonicHists]   N_AK8Puppi jets: " << NAK8Puppijets << endl;
+    if(debug) cout << "[ZprimeSemiLeptonicHists]   N_AK8Puppi TopTagged jets: " << NAK8PuppiTaggedjets << endl;
 
     N_AK8Puppijets->Fill(NAK8Puppijets, weight);
     N_AK8PuppiTaggedjets->Fill(NAK8PuppiTaggedjets, weight);
@@ -1326,11 +1329,11 @@ void ZprimeSemiLeptonicHists::fill(const Event & event){
   ██      ██  ██████   ██████  ██   ████ ███████
   */
 
-
+  if(debug) cout << "[ZprimeSemiLeptonicHists] Filling muons" << endl;
   vector<Muon>* muons = event.muons;
   int Nmuons = muons->size();
   N_mu->Fill(Nmuons, weight);
-  if(debug) cout << "[ZprimeSemiLeptonicHists] N_muons: " << Nmuons << endl;
+  if(debug) cout << "[ZprimeSemiLeptonicHists]   N_muons: " << Nmuons << endl;
 
   for(int i=0; i<Nmuons; i++){
 
@@ -1401,12 +1404,12 @@ void ZprimeSemiLeptonicHists::fill(const Event & event){
   ███████ ███████ ███████  ██████    ██    ██   ██  ██████  ██   ████ ███████
   */
 
-
+  if(debug) cout << "[ZprimeSemiLeptonicHists] Filling electrons" << endl;
   vector<Electron>* electrons = event.electrons;
   int Nelectrons = electrons->size();
   N_ele->Fill(Nelectrons, weight);
 
-  if(debug) cout << "[ZprimeSemiLeptonicHists] N_electrons: " << Nelectrons << endl;
+  if(debug) cout << "[ZprimeSemiLeptonicHists]   N_electrons: " << Nelectrons << endl;
 
   for(int i=0; i<Nelectrons; i++){
     N_ele_charge->Fill(electrons->at(i).charge(), weight);
@@ -2140,7 +2143,7 @@ void ZprimeSemiLeptonicHists::fill(const Event & event){
 
   if(debug) cout << "[ZprimeSemiLeptonicHists] before NN in hists" << endl;
   if(NN){
-    if(debug) cout << "[ZprimeSemiLeptonicHists] ... inside NN" << endl;
+    if(debug) cout << "[ZprimeSemiLeptonicHists]   ... inside NN" << endl;
     for(int i=0; i<Nmuons; i++){
       NN_Mu_pt->Fill(muons->at(i).pt(),weight);
       NN_Mu_eta->Fill(muons->at(i).eta(),weight);
@@ -2301,7 +2304,7 @@ void ZprimeSemiLeptonicHists::fill(const Event & event){
     }
   //NN
   }
-  if(debug) cout << "[ZprimeSemiLeptonicHists] ... after NN in hists" << endl;
+  if(debug) cout << "[ZprimeSemiLeptonicHists]   ... after NN in hists" << endl;
  
   
 
