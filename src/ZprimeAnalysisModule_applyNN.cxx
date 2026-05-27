@@ -39,18 +39,17 @@
 #include <UHH2/ZprimeSemiLeptonic/include/ZprimeSemiLeptonicModules.h>
 #include <UHH2/ZprimeSemiLeptonic/include/TTbarLJHists.h>
 #include <UHH2/ZprimeSemiLeptonic/include/ZprimeSemiLeptonicHists.h>
-#include <UHH2/ZprimeSemiLeptonic/include/ZprimeSemiLeptonicSystematicsHists.h>
-#include <UHH2/ZprimeSemiLeptonic/include/ZprimeSemiLeptonicPDFHists.h>
-#include <UHH2/ZprimeSemiLeptonic/include/ZprimeSemiLeptonicMulticlassNNHists.h>
+#include <UHH2/ZprimeSemiLeptonic/include/ZprimeSemiLeptonicSystematicsHists.h>  // not in analysis module
+#include <UHH2/ZprimeSemiLeptonic/include/ZprimeSemiLeptonicPDFHists.h>          // not in analysis module
+#include <UHH2/ZprimeSemiLeptonic/include/ZprimeSemiLeptonicMulticlassNNHists.h> // not in analysis module
 #include <UHH2/ZprimeSemiLeptonic/include/ZprimeSemiLeptonicGeneratorHists.h>
 #include <UHH2/ZprimeSemiLeptonic/include/ZprimeSemiLeptonicCHSMatchHists.h>
-#include <UHH2/ZprimeSemiLeptonic/include/ZprimeSemiLeptonicMistagHists.h>
+#include <UHH2/ZprimeSemiLeptonic/include/ZprimeSemiLeptonicMistagHists.h>       // not in analysis module
 #include <UHH2/ZprimeSemiLeptonic/include/ZprimeCandidate.h>
 #include <UHH2/ZprimeSemiLeptonic/include/ElecTriggerSF.h>
 #include <UHH2/ZprimeSemiLeptonic/include/TopTagScaleFactor.h>
 #include <UHH2/ZprimeSemiLeptonic/include/TopMistagScaleFactor.h>
 
-#include <UHH2/common/include/TTbarGen.h>
 #include <UHH2/common/include/TTbarReconstruction.h>
 #include <UHH2/common/include/ReconstructionHypothesisDiscriminators.h>
 
@@ -375,17 +374,15 @@ protected:
 
   // NN variables handles
   unique_ptr<Variables_NN> Variables_module;
-  unique_ptr<Variables_EFT_SR> VariablesEFTSR_module;
-  unique_ptr<Variables_EFT_CR1> VariablesEFTCR1_module;
-  unique_ptr<Variables_EFT_CR2> VariablesEFTCR2_module;
+  // unique_ptr<Variables_EFT_SR> VariablesEFTSR_module;
+  // unique_ptr<Variables_EFT_CR1> VariablesEFTCR1_module;
+  // unique_ptr<Variables_EFT_CR2> VariablesEFTCR2_module;
 
-  // TTbarGen handle
+  // Gen-level variables
   Event::Handle<TTbarGen> h_ttbargen;
   std::unique_ptr<TTbarGenProducer> ttgenprod;
 
   //Handles
-  Event::Handle<bool> h_is_zprime_reconstructed_chi2, h_is_zprime_reconstructed_correctmatch;
-  Event::Handle<float> h_chi2;
   Event::Handle<float> h_weight;
   Event::Handle<float> h_weight_pu, h_weight_pu_up, h_weight_pu_down;
   Event::Handle<float> h_eventweight_SR;
@@ -405,8 +402,13 @@ protected:
   // uhh2::Event::Handle<float> h_mtt_gen;
   // uhh2::Event::Handle<float> h_DeltaY_gen;
 
-  
-  uhh2::Event::Handle<ZprimeCandidate*> h_BestZprimeCandidateChi2;
+  // ttbar reconstruction
+  Event::Handle<float> h_chi2;
+  Event::Handle<bool> h_is_zprime_reconstructed_chi2;
+  Event::Handle<ZprimeCandidate*> h_BestZprimeCandidateChi2;
+
+  Event::Handle<bool> h_is_zprime_reconstructed_correctmatch;
+  Event::Handle<ZprimeCandidate*> h_BestZprimeCandidateCorrectMatch;
 
   float inv_mass(const LorentzVector& p4){ return p4.isTimelike() ? p4.mass() : -sqrt(-p4.mass2()); }
 
@@ -621,8 +623,8 @@ void ZprimeAnalysisModule_applyNN::fill_histograms(uhh2::Event& event, string ta
 
 ZprimeAnalysisModule_applyNN::ZprimeAnalysisModule_applyNN(uhh2::Context& ctx){
   // Print out for running locally
-  debug = true;
-  // debug = false;
+  // debug = true;
+  debug = false;
 
   for(auto & kv : ctx.get_all()){
     cout << " " << kv.first << " = " << kv.second << endl;
@@ -822,9 +824,9 @@ ZprimeAnalysisModule_applyNN::ZprimeAnalysisModule_applyNN(uhh2::Context& ctx){
 
   // DNN Categorization modules
   Variables_module.reset(new Variables_NN(ctx, mode)); // variables for NN
-  VariablesEFTSR_module.reset(new Variables_EFT_SR(ctx, mode)); // variables for EFT SR
-  VariablesEFTCR1_module.reset(new Variables_EFT_CR1(ctx, mode)); // variables for EFT CR1
-  VariablesEFTCR2_module.reset(new Variables_EFT_CR2(ctx, mode)); // variables for EFT CR2
+  // VariablesEFTSR_module.reset(new Variables_EFT_SR(ctx, mode)); // variables for EFT SR
+  // VariablesEFTCR1_module.reset(new Variables_EFT_CR1(ctx, mode)); // variables for EFT CR1
+  // VariablesEFTCR2_module.reset(new Variables_EFT_CR2(ctx, mode)); // variables for EFT CR2
 
   // Variations for DeltaY variables?
   h_DeltaY_reco_SystVariations_Inclusive_SR.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "DeltaY_reco_SystVariations_Inclusive_SR"));
@@ -1117,9 +1119,8 @@ bool ZprimeAnalysisModule_applyNN::process(uhh2::Event& event){
  if(debug) cout << " run.event: " << event.run << ". " << event.event << endl;
 
  // Process TTbarGen first
- if (isMC && event.is_valid(h_ttbargen) && ttgenprod) {
-   ttgenprod->process(event);
- }
+ if(isMC && ttgenprod) ttgenprod->process(event);
+ if(debug) cout << "[ZprimeAnalysisModule_applyNN] TTbarGen processed: ok" << endl;
 
   // Initialize reco flags with false
   event.set(h_is_zprime_reconstructed_chi2, false);
@@ -1270,7 +1271,7 @@ bool ZprimeAnalysisModule_applyNN::process(uhh2::Event& event){
       else{ele_is_high = true;}
     }
     if(debug && event_counter <= 5) 
-    cout << "[ZprimeAnalysisModule_applyNN - DEBUG] Finished looping over electrons" << endl;
+  if(debug) cout << "[ZprimeAnalysisModule_applyNN] Finished looping over electrons" << endl;
   }
   sort_by_pt<Electron>(*event.electrons);
   
@@ -1471,14 +1472,13 @@ bool ZprimeAnalysisModule_applyNN::process(uhh2::Event& event){
 
   // SR
   if(out0 == max_score){
-    VariablesEFTSR_module->process(event);
-    if(debug) cout << "[ZprimeAnalysisModule_applyNN] Processed EFT SR Variables module" << endl;
-
     // SR events, inclusive in event topology
     fill_histograms(event, "SR");
+    // VariablesEFTSR_module->process(event);
+    if(debug) cout << "[ZprimeAnalysisModule_applyNN] Processed EFT SR Variables module" << endl;
 
-    // cut on chi2
-    if(Chi2_selection->passes(event)){  // cut on chi2 < 30
+    // cut on chi2 < 30
+    if(Chi2_selection->passes(event)){
       fill_histograms(event, "SR_PassesChi2");
 
       // Cut on event topology 
@@ -1491,10 +1491,10 @@ bool ZprimeAnalysisModule_applyNN::process(uhh2::Event& event){
 
   // CR1
   if( out1 == max_score ){
-    VariablesEFTCR1_module->process(event);
+    fill_histograms(event, "CR1");
+    // VariablesEFTCR1_module->process(event);
     if(debug) cout << "[ZprimeAnalysisModule_applyNN] Done EFT CR1" << endl;
 
-    fill_histograms(event, "CR1");
     if(Chi2_selection->passes(event)){ 
       fill_histograms(event,"CR1_PassesChi2");
     }
@@ -1502,10 +1502,10 @@ bool ZprimeAnalysisModule_applyNN::process(uhh2::Event& event){
  
   // CR2
   if( out2 == max_score ){
-    VariablesEFTCR2_module->process(event);
+    fill_histograms(event, "CR2");
+    // VariablesEFTCR2_module->process(event);
     if(debug) cout << "[ZprimeAnalysisModule_applyNN] Done EFT CR2" << endl;
 
-    fill_histograms(event, "CR2");
     if(Chi2_selection->passes(event)){ 
       fill_histograms(event,"CR2_PassesChi2");
     }
@@ -1529,7 +1529,7 @@ bool ZprimeAnalysisModule_applyNN::process(uhh2::Event& event){
   
   // Debug output for structure constants (only for first few events)
   if (debug && isEFT) {static int event_counter = 0;
-    cout << "[ZprimeAnalysisModule_applyNN] Checking structure constants debug " << endl;
+    if(debug) cout << "[ZprimeAnalysisModule_applyNN] Checking structure constants" << endl;
     if (event_counter < 5) {
       // Get the structure constants from the event
       if (event.is_valid(h_structure_constants)) {

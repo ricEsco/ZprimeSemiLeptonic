@@ -1990,6 +1990,78 @@ bool Variables_EFT_SR::process(uhh2::Event& evt){
   evt.set(h_eventweight_SR, -10);
   evt.set(h_eventweight_SR, weight);
 
+  // spin-analyzer (leptons-only) projections
+  evt.set(h_cosTheta1k_antiLep_SR, -10);
+  evt.set(h_cosTheta1r_antiLep_SR, -10);
+  evt.set(h_cosTheta1n_antiLep_SR, -10);
+  evt.set(h_cosTheta1kStar_antiLep_SR, -10);
+  evt.set(h_cosTheta1rStar_antiLep_SR, -10);
+  evt.set(h_cosTheta2k_Lep_SR, -10);
+  evt.set(h_cosTheta2r_Lep_SR, -10);
+  evt.set(h_cosTheta2n_Lep_SR, -10);
+  evt.set(h_cosTheta2kStar_Lep_SR, -10);
+  evt.set(h_cosTheta2rStar_Lep_SR, -10);
+
+  // spin-analyzer projections
+  evt.set(h_cosTheta1k_SR, -10);
+  evt.set(h_cosTheta1r_SR, -10);
+  evt.set(h_cosTheta1n_SR, -10);
+  evt.set(h_cosTheta1kStar_SR, -10);
+  evt.set(h_cosTheta1rStar_SR, -10);
+  evt.set(h_cosTheta2k_SR, -10);
+  evt.set(h_cosTheta2r_SR, -10);
+  evt.set(h_cosTheta2n_SR, -10);
+  evt.set(h_cosTheta2kStar_SR, -10);
+  evt.set(h_cosTheta2rStar_SR, -10);
+
+  // Correlation elements
+  evt.set(h_Cnn_SR, -10);
+  evt.set(h_Cnr_SR, -10);
+  evt.set(h_Cnk_SR, -10);
+  evt.set(h_Crn_SR, -10);
+  evt.set(h_Crr_SR, -10);
+  evt.set(h_Crk_SR, -10);
+  evt.set(h_Ckn_SR, -10);
+  evt.set(h_Ckr_SR, -10);
+  evt.set(h_Ckk_SR, -10);
+  // linear combinations
+  evt.set(h_Crk_plus_SR, -10);
+  evt.set(h_Crk_minus_SR, -10);
+  evt.set(h_Cnr_plus_SR, -10);
+  evt.set(h_Cnr_minus_SR, -10);
+  evt.set(h_Cnk_plus_SR, -10);
+  evt.set(h_Cnk_minus_SR, -10);
+
+  // Entanglement witnesses
+  evt.set(h_cHel_SR, -10);
+  evt.set(h_cHel_Mtt300_400_SR, -10);
+  evt.set(h_cHel_Mtt300_400_betaLT0p9_SR, -10);
+
+  evt.set(h_cHel_P3n_SR, -10);
+  evt.set(h_cHel_P3n_Mtt800_Inf_SR, -10);
+  evt.set(h_cHel_P3n_Mtt800_Inf_cosThetaLT0p4_SR, -10);
+
+  // Baumgart et al. variables
+  evt.set(h_Sigma_phi_SR, -10);
+  evt.set(h_Delta_phi_SR, -10);
+  // Baumgart variables with cut on charge asymmetry
+  evt.set(h_Sigma_phi_1_SR, -10);
+  evt.set(h_Sigma_phi_2_SR, -10);
+  evt.set(h_Delta_phi_1_SR, -10);
+  evt.set(h_Delta_phi_2_SR, -10);
+  // Charge asymmetry with cut on Baumgart variables
+  evt.set(h_dyreco_s1_SR, -10);
+  evt.set(h_dyreco_s2_SR, -10);
+  evt.set(h_dyreco_d1_SR, -10);
+  evt.set(h_dyreco_d2_SR, -10);
+  // all three variables in high/low pt cuts
+  evt.set(h_Sigma_phi_high_SR, -10); 
+  evt.set(h_Delta_phi_high_SR, -10); 
+  evt.set(h_dyreco_high_SR   , -10); 
+  evt.set(h_Sigma_phi_low_SR , -10); 
+  evt.set(h_Delta_phi_low_SR , -10); 
+  evt.set(h_dyreco_low_SR    , -10); 
+
   bool is_zprime_reconstructed_chi2 = evt.get(h_is_zprime_reconstructed_chi2); // reconstruction method boolean
   evt.set(h_chi2_SR, -10);  // chi^2 of ttbar reconstruction
   evt.set(h_M_tt_SR, -10);  // invariant mass of ttbar system
@@ -2473,6 +2545,79 @@ bool Variables_EFT_CR1::process(uhh2::Event& evt){
   evt.set(h_eventweight_CR1, -10);
   evt.set(h_eventweight_CR1, weight);
 
+  // spin-analyzer (leptons-only) projections
+  evt.set(h_cosTheta1k_antiLep_CR1, -10);
+  evt.set(h_cosTheta1r_antiLep_CR1, -10);
+  evt.set(h_cosTheta1n_antiLep_CR1, -10);
+  evt.set(h_cosTheta1kStar_antiLep_CR1, -10);
+  evt.set(h_cosTheta1rStar_antiLep_CR1, -10);
+  evt.set(h_cosTheta2k_Lep_CR1, -10);
+  evt.set(h_cosTheta2r_Lep_CR1, -10);
+  evt.set(h_cosTheta2n_Lep_CR1, -10);
+  evt.set(h_cosTheta2kStar_Lep_CR1, -10);
+  evt.set(h_cosTheta2rStar_Lep_CR1, -10);
+
+  // spin-analyzer projections
+  evt.set(h_cosTheta1k_CR1, -10);
+  evt.set(h_cosTheta1r_CR1, -10);
+  evt.set(h_cosTheta1n_CR1, -10);
+  evt.set(h_cosTheta1kStar_CR1, -10);
+  evt.set(h_cosTheta1rStar_CR1, -10);
+  evt.set(h_cosTheta2k_CR1, -10);
+  evt.set(h_cosTheta2r_CR1, -10);
+  evt.set(h_cosTheta2n_CR1, -10);
+  evt.set(h_cosTheta2kStar_CR1, -10);
+  evt.set(h_cosTheta2rStar_CR1, -10);
+
+  // Correlation elements
+  evt.set(h_Cnn_CR1, -10);
+  evt.set(h_Cnr_CR1, -10);
+  evt.set(h_Cnk_CR1, -10);
+  evt.set(h_Crn_CR1, -10);
+  evt.set(h_Crr_CR1, -10);
+  evt.set(h_Crk_CR1, -10);
+  evt.set(h_Ckn_CR1, -10);
+  evt.set(h_Ckr_CR1, -10);
+  evt.set(h_Ckk_CR1, -10);
+  // linear combinations
+  evt.set(h_Crk_plus_CR1, -10);
+  evt.set(h_Crk_minus_CR1, -10);
+  evt.set(h_Cnr_plus_CR1, -10);
+  evt.set(h_Cnr_minus_CR1, -10);
+  evt.set(h_Cnk_plus_CR1, -10);
+  evt.set(h_Cnk_minus_CR1, -10);
+
+  // Entanglement witnesses
+  evt.set(h_cHel_CR1, -10);
+  evt.set(h_cHel_Mtt300_400_CR1, -10);
+  evt.set(h_cHel_Mtt300_400_betaLT0p9_CR1, -10);
+
+  evt.set(h_cHel_P3n_CR1, -10);
+  evt.set(h_cHel_P3n_Mtt800_Inf_CR1, -10);
+  evt.set(h_cHel_P3n_Mtt800_Inf_cosThetaLT0p4_CR1, -10);
+
+  // Baumgart et al. variables
+  evt.set(h_Sigma_phi_CR1, -10);
+  evt.set(h_Delta_phi_CR1, -10);
+  // Baumgart variables with cut on charge asymmetry
+  evt.set(h_Sigma_phi_1_CR1, -10);
+  evt.set(h_Sigma_phi_2_CR1, -10);
+  evt.set(h_Delta_phi_1_CR1, -10);
+  evt.set(h_Delta_phi_2_CR1, -10);
+  // Charge asymmetry with cut on Baumgart variables
+  evt.set(h_dyreco_s1_CR1, -10);
+  evt.set(h_dyreco_s2_CR1, -10);
+  evt.set(h_dyreco_d1_CR1, -10);
+  evt.set(h_dyreco_d2_CR1, -10);
+  // all three variables in high/low pt cuts
+  evt.set(h_Sigma_phi_high_CR1, -10); 
+  evt.set(h_Delta_phi_high_CR1, -10); 
+  evt.set(h_dyreco_high_CR1   , -10); 
+  evt.set(h_Sigma_phi_low_CR1 , -10); 
+  evt.set(h_Delta_phi_low_CR1 , -10); 
+  evt.set(h_dyreco_low_CR1    , -10); 
+  
+
   bool is_zprime_reconstructed_chi2 = evt.get(h_is_zprime_reconstructed_chi2); // reconstruction method boolean
   evt.set(h_chi2_CR1, -10);  // chi^2 of ttbar reconstruction
   evt.set(h_M_tt_CR1, -10);  // invariant mass of ttbar system
@@ -2955,6 +3100,79 @@ bool Variables_EFT_CR2::process(uhh2::Event& evt){
   double weight = evt.weight;
   evt.set(h_eventweight_CR2, -10);
   evt.set(h_eventweight_CR2, weight);
+
+  // spin-analyzer (leptons-only) projections
+  evt.set(h_cosTheta1k_antiLep_CR2, -10);
+  evt.set(h_cosTheta1r_antiLep_CR2, -10);
+  evt.set(h_cosTheta1n_antiLep_CR2, -10);
+  evt.set(h_cosTheta1kStar_antiLep_CR2, -10);
+  evt.set(h_cosTheta1rStar_antiLep_CR2, -10);
+  evt.set(h_cosTheta2k_Lep_CR2, -10);
+  evt.set(h_cosTheta2r_Lep_CR2, -10);
+  evt.set(h_cosTheta2n_Lep_CR2, -10);
+  evt.set(h_cosTheta2kStar_Lep_CR2, -10);
+  evt.set(h_cosTheta2rStar_Lep_CR2, -10);
+
+  // spin-analyzer projections
+  evt.set(h_cosTheta1k_CR2, -10);
+  evt.set(h_cosTheta1r_CR2, -10);
+  evt.set(h_cosTheta1n_CR2, -10);
+  evt.set(h_cosTheta1kStar_CR2, -10);
+  evt.set(h_cosTheta1rStar_CR2, -10);
+  evt.set(h_cosTheta2k_CR2, -10);
+  evt.set(h_cosTheta2r_CR2, -10);
+  evt.set(h_cosTheta2n_CR2, -10);
+  evt.set(h_cosTheta2kStar_CR2, -10);
+  evt.set(h_cosTheta2rStar_CR2, -10);
+
+  // Correlation elements
+  evt.set(h_Cnn_CR2, -10);
+  evt.set(h_Cnr_CR2, -10);
+  evt.set(h_Cnk_CR2, -10);
+  evt.set(h_Crn_CR2, -10);
+  evt.set(h_Crr_CR2, -10);
+  evt.set(h_Crk_CR2, -10);
+  evt.set(h_Ckn_CR2, -10);
+  evt.set(h_Ckr_CR2, -10);
+  evt.set(h_Ckk_CR2, -10);
+  // linear combinations
+  evt.set(h_Crk_plus_CR2, -10);
+  evt.set(h_Crk_minus_CR2, -10);
+  evt.set(h_Cnr_plus_CR2, -10);
+  evt.set(h_Cnr_minus_CR2, -10);
+  evt.set(h_Cnk_plus_CR2, -10);
+  evt.set(h_Cnk_minus_CR2, -10);
+
+  // Entanglement witnesses
+  evt.set(h_cHel_CR2, -10);
+  evt.set(h_cHel_Mtt300_400_CR2, -10);
+  evt.set(h_cHel_Mtt300_400_betaLT0p9_CR2, -10);
+
+  evt.set(h_cHel_P3n_CR2, -10);
+  evt.set(h_cHel_P3n_Mtt800_Inf_CR2, -10);
+  evt.set(h_cHel_P3n_Mtt800_Inf_cosThetaLT0p4_CR2, -10);
+
+  // Baumgart et al. variables
+  evt.set(h_Sigma_phi_CR2, -10);
+  evt.set(h_Delta_phi_CR2, -10);
+  // Baumgart variables with cut on charge asymmetry
+  evt.set(h_Sigma_phi_1_CR2, -10);
+  evt.set(h_Sigma_phi_2_CR2, -10);
+  evt.set(h_Delta_phi_1_CR2, -10);
+  evt.set(h_Delta_phi_2_CR2, -10);
+  // Charge asymmetry with cut on Baumgart variables
+  evt.set(h_dyreco_s1_CR2, -10);
+  evt.set(h_dyreco_s2_CR2, -10);
+  evt.set(h_dyreco_d1_CR2, -10);
+  evt.set(h_dyreco_d2_CR2, -10);
+  // all three variables in high/low pt cuts
+  evt.set(h_Sigma_phi_high_CR2, -10); 
+  evt.set(h_Delta_phi_high_CR2, -10); 
+  evt.set(h_dyreco_high_CR2   , -10); 
+  evt.set(h_Sigma_phi_low_CR2 , -10); 
+  evt.set(h_Delta_phi_low_CR2 , -10); 
+  evt.set(h_dyreco_low_CR2    , -10); 
+
 
   bool is_zprime_reconstructed_chi2 = evt.get(h_is_zprime_reconstructed_chi2); // reconstruction method boolean
   evt.set(h_chi2_CR2, -10);  // chi^2 of ttbar reconstruction
