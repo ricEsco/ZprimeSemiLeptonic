@@ -245,11 +245,15 @@ void NeuralNetworkModule::CreateInputs(Event & event){
   double mean_val[59];
   double std_val[59];
 
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   ///////////////////////////////////////////////////////////// LEPTON-SPECIFIC NN SETTINGS /////////////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////// DON'T FORGET TO CHANGE! ///////////////////////////////////////////////////////////////
-  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  ifstream normfile ("/data/dust/user/beozek/uuh2-106X_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/KerasNN/NN_DeepAK8_UL17_muon/NormInfo.txt", ios::in); //Muon
-  // ifstream normfile ("/data/dust/user/beozek/uuh2-106X_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/KerasNN/NN_DeepAK8_UL17_ele/NormInfo.txt", ios::in); //Electron
+  
+  //////////////////////////////////////////////// ONLY UNCOMMENT LINE CORRESPONDING TO LEPTON FLAVOR YOU WANT TO RUN ////////////////////////////////////////////////
+  //Muon
+  ifstream normfile ("/data/dust/user/ricardo/uhh2-106X_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/KerasNN/NN_DeepAK8_UL17_muon/NormInfo.txt", ios::in);
+  //Electron
+  // ifstream normfile ("/data/dust/user/ricardo/uhh2-106X_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/KerasNN/NN_DeepAK8_UL17_ele/NormInfo.txt", ios::in);
   
   if(!normfile.good()) throw runtime_error("NeuralNetworkModule: The specified norm file does not exist.");
   if (normfile.is_open()){
@@ -264,9 +268,7 @@ void NeuralNetworkModule::CreateInputs(Event & event){
   }
   NNInputs.push_back( tensorflow::Tensor(tensorflow::DT_FLOAT, {1, 59}));
 
-  ///////////////////////////////////////////////////////////// LEPTON-SPECIFIC NN SETTINGS /////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////// DON'T FORGET TO CHANGE! ///////////////////////////////////////////////////////////////
-  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////// ONLY UNCOMMENT LINE CORRESPONDING TO LEPTON FLAVOR YOU WANT TO RUN ////////////////////////////////////////////////
   //Muon
   vector<uhh2::Event::Handle<float>> inputs = {
     h_Ak4_j1_E, h_Ak4_j1_deepjetbscore, h_Ak4_j1_eta, h_Ak4_j1_m, h_Ak4_j1_phi, h_Ak4_j1_pt, 
@@ -278,6 +280,7 @@ void NeuralNetworkModule::CreateInputs(Event & event){
     h_Ak8_j2_E, h_Ak8_j2_eta, h_Ak8_j2_mSD, h_Ak8_j2_phi, h_Ak8_j2_pt, h_Ak8_j2_tau21, h_Ak8_j2_tau32, 
     h_Ak8_j3_E, h_Ak8_j3_eta, h_Ak8_j3_mSD, h_Ak8_j3_phi, h_Ak8_j3_pt, h_Ak8_j3_tau21, h_Ak8_j3_tau32, 
     h_MET_phi, h_MET_pt, h_Mu_E, h_Mu_eta, h_Mu_phi, h_Mu_pt, h_N_Ak4, h_N_Ak8}; // in alphabetical order to match NormInfo.txt
+
   // //Electron
   // vector<uhh2::Event::Handle<float>> inputs = {
   //   h_Ak4_j1_E, h_Ak4_j1_deepjetbscore, h_Ak4_j1_eta, h_Ak4_j1_m, h_Ak4_j1_phi, h_Ak4_j1_pt, 
@@ -289,6 +292,11 @@ void NeuralNetworkModule::CreateInputs(Event & event){
   //   h_Ak8_j2_E, h_Ak8_j2_eta, h_Ak8_j2_mSD, h_Ak8_j2_phi, h_Ak8_j2_pt, h_Ak8_j2_tau21, h_Ak8_j2_tau32, 
   //   h_Ak8_j3_E, h_Ak8_j3_eta, h_Ak8_j3_mSD, h_Ak8_j3_phi, h_Ak8_j3_pt, h_Ak8_j3_tau21, h_Ak8_j3_tau32, 
   //   h_Ele_E, h_Ele_eta, h_Ele_phi, h_Ele_pt, h_MET_phi, h_MET_pt, h_N_Ak4, h_N_Ak8}; // in alphabetical order to match NormInfo.txt
+
+  ///////////////////////////////////////////////////////////// LEPTON-SPECIFIC NN SETTINGS /////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////// DON'T FORGET TO CHANGE! ///////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
   for(int i = 0; i < 59; ++i){
     // cout<<"looping over NN inputs "<< i <<endl;
     NNInputs.at(0).tensor<float, 2>()(0,i)  = (event.get(inputs.at(i))   - mean_val[i]) / (std_val[i]);
@@ -399,9 +407,6 @@ protected:
 
   
   uhh2::Event::Handle<ZprimeCandidate*> h_BestZprimeCandidateChi2;
-
-  // Lumi hists
-  std::unique_ptr<Hists> lumihists_Weights_Init, lumihists_Weights_PU, lumihists_Weights_Lumi, lumihists_Weights_TopPt, lumihists_Weights_MCScale, lumihists_Weights_PS, lumihists_Chi2;
 
   float inv_mass(const LorentzVector& p4){ return p4.isTimelike() ? p4.mass() : -sqrt(-p4.mass2()); }
 
@@ -618,12 +623,14 @@ ZprimeAnalysisModule_applyNN::ZprimeAnalysisModule_applyNN(uhh2::Context& ctx){
   // Print out for running locally
   debug = true;
   // debug = false;
+
   for(auto & kv : ctx.get_all()){
     cout << " " << kv.first << " = " << kv.second << endl;
   }
 
   // Configuration
   isMC =      (ctx.get("dataset_type") == "MC");
+
   ishotvr =   (ctx.get("is_hotvr") == "true");
   isdeepAK8 = (ctx.get("is_deepAK8") == "true");
   TString mode = "hotvr";
@@ -643,7 +650,13 @@ ZprimeAnalysisModule_applyNN::ZprimeAnalysisModule_applyNN(uhh2::Context& ctx){
   if(ctx.get("channel") == "muon")     isMuon = true;
   if(ctx.get("channel") == "electron") isElectron = true;
   if(ctx.get("sample") == "eft")       isEFT = true;
-  // isEleTriggerMeasurement = (ctx.get("isTriggerMeasurement") == "true");
+  
+  
+  // Access to gen-level particles
+  if(isMC) ttgenprod.reset(new TTbarGenProducer(ctx, "ttbargen"));
+  h_ttbargen = ctx.get_handle<TTbarGen>("ttbargen");
+
+
 
   // Lepton IDs
   ElectronId eleID_low  = ElectronTagID(Electron::mvaEleID_Fall17_iso_V2_wp80);
@@ -778,37 +791,47 @@ ZprimeAnalysisModule_applyNN::ZprimeAnalysisModule_applyNN(uhh2::Context& ctx){
   Chi2CandidateMatched_selection.reset(new Chi2CandidateMatchedSelection(ctx));
   ZprimeTopTag_selection.reset(new ZprimeTopTagSelection(ctx));
   HEM_selection.reset(new HEMSelection(ctx)); // HEM issue in 2018, veto on leptons and jets
-  DeltaEta_selection.reset(new DeltaEtaSelection()); // Cut on DeltaEta(j1,j2) < 3 to reduce QCD spikes
 
-  // Categorization modules
-  Variables_module.reset(new Variables_NN(ctx, mode)); // variables for NN
-  VariablesEFTSR_module.reset(new Variables_EFT_SR(ctx, mode)); // variables for EFT SR
-  VariablesEFTCR1_module.reset(new Variables_EFT_CR1(ctx, mode)); // variables for EFT CR1
-  VariablesEFTCR2_module.reset(new Variables_EFT_CR2(ctx, mode)); // variables for EFT CR2
+  
 
 
-  // if(!isEleTriggerMeasurement) SystematicsModule.reset(new ZprimeSemiLeptonicSystematicsModule(ctx));
 
   // Top Taggers
   TopTaggerHOTVR.reset(new HOTVRTopTagger(ctx));
   TopTaggerDeepAK8.reset(new DeepAK8TopTagger(ctx));
 
-  // TopTags veto
-  TopTagVetoSelection.reset(new TopTag_VetoSelection(ctx, mode));
 
-  // Zprime candidate builder
+
+
+  
+
+
+  // ttbar reconstruction candidate builder
   CandidateBuilder.reset(new ZprimeCandidateBuilder(ctx, mode));
 
-  // Zprime discriminators
-  Chi2DiscriminatorZprime.reset(new ZprimeChi2Discriminator(ctx));
+  // ttbar reconstruction discriminators
+  Chi2DiscriminatorZprime.reset(new ZprimeChi2Discriminator(ctx)); // chi2 discriminator
   h_is_zprime_reconstructed_chi2 = ctx.get_handle<bool>("is_zprime_reconstructed_chi2");
-  CorrectMatchDiscriminatorZprime.reset(new ZprimeCorrectMatchDiscriminator(ctx));
-  h_is_zprime_reconstructed_correctmatch = ctx.get_handle<bool>("is_zprime_reconstructed_correctmatch");
   h_BestZprimeCandidateChi2 = ctx.get_handle<ZprimeCandidate*>("ZprimeCandidateBestChi2");
+  CorrectMatchDiscriminatorZprime.reset(new ZprimeCorrectMatchDiscriminator(ctx)); // correctMatch discriminator
+  h_is_zprime_reconstructed_correctmatch = ctx.get_handle<bool>("is_zprime_reconstructed_correctmatch");
+  h_BestZprimeCandidateCorrectMatch = ctx.get_handle<ZprimeCandidate*>("ZprimeCandidateBestCorrectMatch");
 
-  // Handles to access to gen-level particles
-  if(isMC) ttgenprod.reset(new TTbarGenProducer(ctx, "ttbargen", true));
-  h_ttbargen = ctx.get_handle<TTbarGen>("ttbargen");
+
+
+
+  // DNN Categorization modules
+  Variables_module.reset(new Variables_NN(ctx, mode)); // variables for NN
+  VariablesEFTSR_module.reset(new Variables_EFT_SR(ctx, mode)); // variables for EFT SR
+  VariablesEFTCR1_module.reset(new Variables_EFT_CR1(ctx, mode)); // variables for EFT CR1
+  VariablesEFTCR2_module.reset(new Variables_EFT_CR2(ctx, mode)); // variables for EFT CR2
+
+  // Variations for DeltaY variables?
+  h_DeltaY_reco_SystVariations_Inclusive_SR.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "DeltaY_reco_SystVariations_Inclusive_SR"));
+  h_DeltaY_reco_PDFVariations_Inclusive_SR.reset(new ZprimeSemiLeptonicPDFHists(ctx, "DeltaY_reco_PDFVariations_Inclusive_SR"));
+  if (debug) cout << "[ZprimeAnalysisModule_applyNN - DEBUG] DeltaY_reco_PDFVariations_Inclusive_SR created successfully!" << endl;
+
+
 
   // Event output handles
   h_weight = ctx.declare_event_output<float> ("weight");
@@ -870,57 +893,44 @@ ZprimeAnalysisModule_applyNN::ZprimeAnalysisModule_applyNN(uhh2::Context& ctx){
   h_Sigma_phi_2_CR2=ctx.declare_event_output<float>("Sigma_phi_2_CR2");
 
 
-
-  // Histogram folders module
-  if(debug) cout << "[ZprimeAnalysisModule_applyNN - DEBUG] About to create CHSMatchHists..." << endl;
-  h_CHSMatchHists.reset(new ZprimeSemiLeptonicCHSMatchHists(ctx, "CHSMatch"));
-  if(debug) cout << "[ZprimeAnalysisModule_applyNN - DEBUG] CHSMatchHists created successfully!" << endl;
-
-  // b-tagging selections
-  sel_1btag.reset(new NJetSelection(1, -1, id_btag));
-  sel_2btag.reset(new NJetSelection(2, -1, id_btag));
-
-  if (debug) cout << "[ZprimeAnalysisModule_applyNN - DEBUG] About to create DeltaY_reco_SystVariations_Inclusive_SR..." << endl;
-  h_DeltaY_reco_SystVariations_Inclusive_SR.reset(new ZprimeSemiLeptonicSystematicsHists(ctx, "DeltaY_reco_SystVariations_Inclusive_SR"));
-  if (debug) cout << "[ZprimeAnalysisModule_applyNN - DEBUG] DeltaY_reco_SystVariations_Inclusive_SR created successfully!" << endl;
-  h_DeltaY_reco_PDFVariations_Inclusive_SR.reset(new ZprimeSemiLeptonicPDFHists(ctx, "DeltaY_reco_PDFVariations_Inclusive_SR"));
-  if (debug) cout << "[ZprimeAnalysisModule_applyNN - DEBUG] DeltaY_reco_PDFVariations_Inclusive_SR created successfully!" << endl;
   
   // Strings that define a histogram folder
   vector<string> histogram_tags = {
   "Weights_Init", 
-  "Weights_HEM", "Weights_PU", "Weights_Lumi", "Weights_TopPt", "Weights_MCScale", "Weights_Prefiring", "Weights_PS", 
+  "Weights_HEM", 
+  "Weights_PU", "Weights_Lumi", "Weights_TopPt", "Weights_MCScale", "Weights_Prefiring", "Weights_PS", 
   "Weights_TopTag_SF", "Weights_TopMistag_SF",
-  "TwoDCut_Muon_low1", "IdEle_SF", "IsoMuon_SF", "IdMuon_SF", "RecoEle_SF", "MuonReco_SF", "TriggerMuon_SF", 
+
+  "IdEle_SF", 
+  "IsoMuon_SF", 
+  "IdMuon_SF", 
+  "RecoEle_SF", 
+  "RecoMuon_SF", 
+  
+  "TriggerMuon_SF", 
+
   "BeforeBtagSF", "AfterBtagSF", "AfterCustomBtagSF",
   "NLOCorrections",
   "TriggerEle_SF", 
   "AfterBaseline",
-  "PassesChi2_beforeDNN", "PassesChi2_wTopTag_beforeDNN", "PassesChi2_wNoTopTag_beforeDNN", "FailsChi2_beforeDNN",
-  "TopTagVeto", "DeltaEtaCut",
-  "SR", "PassesChi2_afterDNN_SR", "PassesChi2_wTopTag_afterDNN_SR", "PassesChi2_wNoTopTag_afterDNN_SR", "FailsChi2_afterDNN_SR",
-  "CR1","PassesChi2_afterDNN_CR1",
-  "CR2","PassesChi2_afterDNN_CR2",
-  };
 
-  // Book histograms module
-  if(debug) cout << "[ZprimeAnalysisModule_applyNN - DEBUG] About to book histograms..." << endl;
+  "TTbarCandidate", 
+  "CorrectMatchDiscriminator", "Chi2Discriminator",
+  "PassChi2", "PassChi2_Merged", "PassChi2_Resolved", "FailChi2",
+  "SR", "SR_PassesChi2", "SR_PassesChi2_Merged", "SR_PassesChi2_Resolved", "SR_FailsChi2",
+  "CR1","CR1_PassesChi2",
+  "CR2","CR2_PassesChi2",
+  };
   book_histograms(ctx, histogram_tags);
-  if (debug) cout << "[ZprimeAnalysisModule_applyNN - DEBUG] After book histograms" << endl;
+
 
   // Multiclass NN output histograms
   h_MulticlassNN_output.reset(new ZprimeSemiLeptonicMulticlassNNHists(ctx, "MulticlassNN"));
-  if(debug) cout << "[ZprimeAnalysisModule_applyNN - DEBUG] MulticlassNNHists created successfully!" << endl;
+  if(debug) cout << "[ZprimeAnalysisModule_applyNN] MulticlassNNHists created successfully!" << endl;
 
-  // lumihists_Weights_Init.reset(new LuminosityHists(ctx, "Lumi_Weights_Init"));
-  // lumihists_Weights_PU.reset(new LuminosityHists(ctx, "Lumi_Weights_PU"));
-  // lumihists_Weights_Lumi.reset(new LuminosityHists(ctx, "Lumi_Weights_Lumi"));
-  // lumihists_Weights_TopPt.reset(new LuminosityHists(ctx, "Lumi_Weights_TopPt"));
-  // lumihists_Weights_MCScale.reset(new LuminosityHists(ctx, "Lumi_Weights_MCScale"));
-  // lumihists_Weights_PS.reset(new LuminosityHists(ctx, "Lumi_Weights_PS"));
-  // lumihists_Chi2.reset(new LuminosityHists(ctx, "Lumi_Chi2"));
   
-  // Identify MC sample and apply appropriate b-tagging SF histogram for 2D reweighting
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////// Handling dataset sample name, includig EFT samples //////////////////////////////////////////////////////////////
   if(isMC){
     TString sample_name = "";
     vector<TString> names = {"MC_EFT_Mttbar_0-700_UL17", "MC_EFT_Mttbar_700-900_UL17", "MC_EFT_Mttbar_900-Inf_UL17","ST", "WJets", "DY", "QCD"};
@@ -943,6 +953,12 @@ ZprimeAnalysisModule_applyNN::ZprimeAnalysisModule_applyNN(uhh2::Context& ctx){
       || (ctx.get("dataset_version").find("WZ") != std::string::npos) ) {
       sample_name = "Diboson";
     }  
+    // *** CHANGED ***: set isEFT if sample_name == "TTbar_EFT"
+    if(sample_name == "TTbar_EFT") {
+      isEFT = true;
+    } else {
+      isEFT = false;
+    }
 
     // 2D b-tag SF reading with the new logic (EFT or others):
     if(isMuon){
@@ -1147,82 +1163,105 @@ bool ZprimeAnalysisModule_applyNN::process(uhh2::Event& event){
   event.set(h_NNoutput1, 0);
   event.set(h_NNoutput2, 0);
 
-  //Tagger
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////
+  //////////////////////////// Application of various weights to event.weight ////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  // Begin HOTVR module-- don't use, might delete //
   if(ishotvr){
     TopTaggerHOTVR->process(event);
     hadronic_top->process(event);
-  }else if(isdeepAK8){
-    TopTaggerDeepAK8->process(event);
-    hadronic_top->process(event);
   }
-  if(debug) cout<<"[ZprimeAnalysisModule_applyNN - DEBUG] Top Tagger ok"<<endl;
+  else if(isdeepAK8){ 
+    TopTaggerDeepAK8->process(event); // Creates DeepAK8TopTag Jet collection based on pT, SDmass, and discriminant scores
+    hadronic_top->process(event); // only needed for HOTVR jets-- will likely delete
+    if(debug) cout << "[ZprimeAnalysisModule_applyNN] TopTaggerDeepAK8: ok" << endl;
+  }
 
-  // Fill ZprimeSemiLeptonicHists in Weights_Init folder with initial weight
+  // Initial weight (gen weight * pileup weight from preselection)
   fill_histograms(event, "Weights_Init");
-  
-  // HEM veto for 2018 data and MC
+
+  // HEM veto for 2018 data and MC on eta and phi of jets and leptons in specific runs
   if(!HEM_selection->passes(event)){
     if(!isMC) return false;
-    else event.weight = event.weight*(1-0.64774715284); // calculated following instructions ar https://twiki.cern.ch/twiki/bin/view/CMS/PdmV2018Analysis
+    else event.weight = event.weight*(1-0.64774715284); // see https://twiki.cern.ch/twiki/bin/view/CMS/PdmV2018Analysis for calculation
   }
+  if(debug) cout << "[ZprimeAnalysisModule_applyNN] HEM Selection: passed" << endl;
   fill_histograms(event, "Weights_HEM");
 
   // pileup weight
   PUWeight_module->process(event);
+  if(debug) cout << "[ZprimeAnalysisModule_applyNN] PUWeight: ok" << endl;
   fill_histograms(event, "Weights_PU");
-  // lumihists_Weights_PU->fill(event);
-
+  
   // lumi weight
   LumiWeight_module->process(event);
+  if(debug) cout << "[ZprimeAnalysisModule_applyNN] LumiWeight: ok" << endl;
   fill_histograms(event, "Weights_Lumi");
-  // lumihists_Weights_Lumi->fill(event);
 
   // top pt reweighting
   TopPtReweight_module->process(event);
+  if(debug) cout << "[ZprimeAnalysisModule_applyNN] TopPtReweight: ok" << endl;
   fill_histograms(event, "Weights_TopPt");
-  // lumihists_Weights_TopPt->fill(event);
 
   // MC scale
   MCScale_module->process(event);
+  if(debug) cout << "[ZprimeAnalysisModule_applyNN] MCScale: ok" << endl;
   fill_histograms(event, "Weights_MCScale");
-  // lumihists_Weights_MCScale->fill(event);
 
   // Prefiring weights
-  if (isMC) {
+  if(isMC){
     if (Prefiring_direction == "nominal") event.weight *= event.prefiringWeight;
     else if (Prefiring_direction == "up") event.weight *= event.prefiringWeightUp;
     else if (Prefiring_direction == "down") event.weight *= event.prefiringWeightDown;
   }
+  if(debug) cout << "[ZprimeAnalysisModule_applyNN] Prefiring: ok" << endl;
   fill_histograms(event, "Weights_Prefiring");
 
   // Write PSWeights from genInfo to own branch in output tree
   ps_weights->process(event);
+  if(debug) cout << "[ZprimeAnalysisModule_applyNN] Weights_PS: ok" << endl;
   fill_histograms(event, "Weights_PS");
-  // lumihists_Weights_PS->fill(event);
 
   // DeepAK8 TopTag SFs
   if(isdeepAK8) sf_toptag->process(event);
+  if(debug) cout << "[ZprimeAnalysisModule_applyNN] TopTag_SF: ok" << endl;
   fill_histograms(event, "Weights_TopTag_SF");
+
+  // DeepAK8 TopMistag SFs
   if(isdeepAK8) sf_topmistag->process(event);
+  if(debug) cout << "[ZprimeAnalysisModule_applyNN] TopMistag_SF: ok" << endl;
   fill_histograms(event, "Weights_TopMistag_SF");
 
-  // Identify lepton as high pT or low pT and sort by pT
-  double muon_pt_high(55.);
-  bool muon_is_low = false;
-  bool muon_is_high = false;
+
+  /////////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////////////////////////// Lepton SF's //////////////////////////////////////////
+
+  // categorize muons by pT
+  double muon_pt_high(55.);  // muon category pT threshold
+  bool muon_is_low = false;  // boolean for low-pT muon category
+  bool muon_is_high = false; // boolean for high-pT muon category
+
+  // Set muon booleans based on muon pT threshold
   if(isMuon){
     vector<Muon>* muons = event.muons;
     for(unsigned int i=0; i<muons->size(); i++){
-      if(event.muons->at(i).pt()<=muon_pt_high){
+      if(event.muons->at(i).pt() < muon_pt_high){
         muon_is_low = true;}
       else{muon_is_high = true;}
     }
   }
   sort_by_pt<Muon>(*event.muons);
 
-  double electron_pt_high(120.);
-  bool ele_is_low = false;
-  bool ele_is_high = false;
+
+  // categorize electrons by pT
+  // (includes some isMuon statements for eleTrigger SF measurement in muon channel)
+  double electron_pt_high(120.); // electron category pT threshold
+  bool ele_is_low = false;       // boolean for low-pT electron category
+  bool ele_is_high = false;      // boolean for high-pT electron category
+
+  // Set electron category booleans based on pT
+  // but first remove ECAL-gap electrons
   if(isElectron){
     vector<Electron>* electrons = event.electrons;
     for(unsigned int i=0; i<electrons->size(); i++){
@@ -1230,116 +1269,92 @@ bool ZprimeAnalysisModule_applyNN::process(uhh2::Event& event){
         ele_is_low = true;}
       else{ele_is_high = true;}
     }
-    if(debug && event_counter <= 5) cout << "[ZprimeAnalysisModule_applyNN - DEBUG] Finished looping over electrons" << endl;
+    if(debug && event_counter <= 5) 
+    cout << "[ZprimeAnalysisModule_applyNN - DEBUG] Finished looping over electrons" << endl;
   }
   sort_by_pt<Electron>(*event.electrons);
   
 
-  // TwoD for low pt muons
-  if(isMuon && muon_is_low){
-    if (debug)cout <<"two d for muon"<<endl;
-    if(!TwoDCut_selection_low1->passes(event)) return false;
-    fill_histograms(event, "TwoDCut_Muon_low1");
-  }
-
-  // TwoD for low pt electrons
-  // if(isElectron && ele_is_low){
-  //   if (debug)cout <<"two d for ele"<<endl;
-  //   if(!TwoDCut_selection_low1->passes(event)) return false;
-  // }
-  // fill_histograms(event, "TwoDCut_low1");
-  if(debug)  cout<<"[ZprimeAnalysisModule_applyNN - DEBUG] done 2D low cut"<<endl;
-
-
-  // apply electron id scale factors
-  if(isMuon) {sf_ele_id_dummy->process(event);}
+  // electronID SF
+  if(isMuon){ sf_ele_id_dummy->process(event);}
   if(isElectron){
-    if     (ele_is_low) {sf_ele_id_low->process(event);}
-    else if(ele_is_high){sf_ele_id_high->process(event);}
+    if     (ele_is_low){ sf_ele_id_low->process(event);}  // low-pT eleID SF
+    else if(ele_is_high){sf_ele_id_high->process(event);} // high-pT eleID SF
+    if(debug) cout << "[ZprimeAnalysisModule_applyNN] electronID SF: ok" << endl;
     fill_histograms(event, "IdEle_SF");
   }
 
-  // apply muon isolation scale factors (low pT only)
+  // muonISO SF, both stat&syst but low-pT ONLY
   if(isMuon){
     if(muon_is_low){
-      if(debug)  cout<<"doing muon iso low"<<endl;
       sf_muon_iso_stat_low->process(event);
-      sf_muon_iso_syst_low->process(event);
-    }
+      sf_muon_iso_syst_low->process(event);}
     else if(muon_is_high){
-      if(debug)  cout<<"doing muon iso high"<<endl;
-      sf_muon_iso_stat_low_dummy->process(event);
-      sf_muon_iso_syst_low_dummy->process(event);
-    }
+      sf_muon_iso_stat_low_dummy->process(event);  // dummy stat SFs for high-pT muons
+      sf_muon_iso_syst_low_dummy->process(event);} // dummy syst SFs for high-pT muons
+    if(debug) cout << "[ZprimeAnalysisModule_applyNN] muonISO SF: ok" << endl;
     fill_histograms(event, "IsoMuon_SF");
   }
-
-  if(isElectron){
-     if(debug)  cout<<"doing muon iso dummy"<<endl;
+  if(isElectron){ // dummy muonISO SFs for electron channel
     sf_muon_iso_stat_low_dummy->process(event);
     sf_muon_iso_syst_low_dummy->process(event);
   }
 
-  // apply muon id scale factors
+  // muonID SF, both stat&syst and high&low-pT
   if(isMuon){
     if(muon_is_low){
-      if(debug)  cout<<"doing muon id low"<<endl;
       sf_muon_id_stat_low->process(event);
-      sf_muon_id_syst_low->process(event);
-    }
+      sf_muon_id_syst_low->process(event);}
     else if(muon_is_high){
-       if(debug)  cout<<"doing muon id high"<<endl;
       sf_muon_id_stat_high->process(event);
-      sf_muon_id_syst_low->process(event);
-    }
+      sf_muon_id_syst_high->process(event);}
+    if(debug) cout << "[ZprimeAnalysisModule_applyNN] muonID SF: ok" << endl;
     fill_histograms(event, "IdMuon_SF");
   }
-
-  if(isElectron){
-    if(debug)  cout<<"doing muon id dummy"<<endl;
+  if(isElectron){ // dummy muonID SFs for electron channel
     sf_muon_id_stat_dummy->process(event);
     sf_muon_id_syst_dummy->process(event);
   }
 
-  // apply electron reco scale factors
+  // electronRECO SF
   if(isMuon){sf_ele_reco_dummy->process(event);}
   if(isElectron){sf_ele_reco->process(event);
+    if(debug) cout << "[ZprimeAnalysisModule_applyNN] electronRECO SF: ok" << endl;
     fill_histograms(event, "RecoEle_SF");
   }
 
-  // apply muon reco scale factors
+  // muonRECO SF
   sf_muon_reco->process(event);
-  fill_histograms(event, "MuonReco_SF");
-   
+  fill_histograms(event, "RecoMuon_SF");
 
-  // apply lepton trigger scale factors
+
+  ////////////////////// muonTrigger SF //////////////////////
   if(isMuon){
-    if(muon_is_low){
-       if(debug)  cout<<"doing muon trigger low"<<endl;
-      sf_muon_trigger_stat_low->process(event);
-      sf_muon_trigger_syst_low->process(event);
+    if(muon_is_low){ // low-pT
+      sf_muon_trigger_stat_low->process(event); // stat SF
+      sf_muon_trigger_syst_low->process(event); // syst SF
     }
-    if(muon_is_high){
-      if(debug)  cout<<"doing muon trigger high"<<endl;
-      sf_muon_trigger_stat_high->process(event);
-      sf_muon_trigger_syst_high->process(event);
+    if(muon_is_high){ // high-pT
+      sf_muon_trigger_stat_high->process(event); // stat SF
+      sf_muon_trigger_syst_high->process(event); // syst SF
     }
+    if(debug) cout << "[ZprimeAnalysisModule_applyNN] muonTrigger SF: ok" << endl;
     fill_histograms(event, "TriggerMuon_SF");
   }
-  if(isElectron){
-    if(debug)  cout<<"doing muon trigger dummy"<<endl;
+  if(isElectron){ // dummy muonTrigger SFs for electron channel
     sf_muon_trigger_stat_dummy->process(event);
     sf_muon_trigger_syst_dummy->process(event);
   }
-  if(debug) cout << "leptons: ok" << endl;
 
-  //Fill histograms before BTagging SF - used to extract Custom BTag SF in (NJets,HT)
+
+  // Fill histograms before b-tagging SF - used to extract Custom BTag SF in (NJets,HT)
+  if(debug) cout << "[ZprimeAnalysisModule_applyNN] before b-tagging" << endl;
   fill_histograms(event, "BeforeBtagSF");
-  // btag shape sf (Ak4 chs jets)
-  sf_btagging->process(event);
+  sf_btagging->process(event); // Apply b-tag Shape SF 
   fill_histograms(event, "AfterBtagSF");
+  if(debug) cout << "[ZprimeAnalysisModule_applyNN] b-tag SF: ok" << endl;
 
-  // apply custom SF to correct for BTag SF shape effects on NJets/HT
+  // Apply custom SF to correct for b-tag SF shape effects on NJets/HT (HT := sum of jet pTs)
   if(isMC && isMuon){
     float custom_sf;
     vector<Jet>* jets = event.jets;
@@ -1347,8 +1362,8 @@ bool ZprimeAnalysisModule_applyNN::process(uhh2::Event& event){
     double st_jets = 0.;
     for(const auto & jet : *jets) st_jets += jet.pt();
     custom_sf = ratio_hist_muon->GetBinContent( ratio_hist_muon->GetXaxis()->FindBin(Njets), ratio_hist_muon->GetYaxis()->FindBin(st_jets) );
-
     event.weight *= custom_sf;
+    if(debug) cout << "[ZprimeAnalysisModule_applyNN] custom SF in muon channel: ok" << endl;
   }
   if(isMC && !isMuon){
     float custom_sf;
@@ -1357,43 +1372,78 @@ bool ZprimeAnalysisModule_applyNN::process(uhh2::Event& event){
     double st_jets = 0.;
     for(const auto & jet : *jets) st_jets += jet.pt();
     custom_sf = ratio_hist_ele->GetBinContent( ratio_hist_ele->GetXaxis()->FindBin(Njets), ratio_hist_ele->GetYaxis()->FindBin(st_jets) );
-
     event.weight *= custom_sf;
+    if(debug) cout << "[ZprimeAnalysisModule_applyNN] custom SF in electron channel: ok" << endl;
   }
   fill_histograms(event, "AfterCustomBtagSF");
   
-  // Higher order corrections - EWK & QCD NLO
+  // Higher Order Corrections: EWK & QCD NLO
   NLOCorrections_module->process(event);
+  if(debug) cout << "[ZprimeAnalysisModule_applyNN] NLO Correction: ok" << endl;
   fill_histograms(event, "NLOCorrections");
-  
-  //apply ele trigger sf
+
+
+  // electronTrigger SF
   sf_ele_trigger->process(event);
+  if(debug) cout << "[ZprimeAnalysisModule_applyNN] electronTrigger SF: ok" << endl;
   fill_histograms(event, "TriggerEle_SF");
+
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////// Done applying SF's to baseline selection /////////////////////////////////////////////
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   fill_histograms(event, "AfterBaseline");
 
-  // Reconstruct all possible ttbar cadidates
+  // build all possible candidates in event
   CandidateBuilder->process(event);
-  if(debug) cout << "CandidateBuilder: ok" << endl;
-  // Choose best ttbar reconstruction based on chi2 discriminator
-  Chi2DiscriminatorZprime->process(event);
-  if(debug) cout << "Chi2DiscriminatorZprime: ok" << endl;
+  if(debug) cout << "[ZprimeAnalysisModule_applyNN] CandidateBuilder: ok" << endl;
+  fill_histograms(event, "TTbarCandidate");
   
-  //check SR and CR without DNN
-  if(Chi2_selection->passes(event)){fill_histograms(event, "PassesChi2_beforeDNN");
-    if(ZprimeTopTag_selection->passes(event)){fill_histograms(event, "PassesChi2_wTopTag_beforeDNN");}
-    else{fill_histograms(event, "PassesChi2_wNoTopTag_beforeDNN");}
+
+  // Extract CorrectMatch discriminator from ttbar candidates
+  if(isMC){ // exclude EFT samples until we make sure they have the expected gen-collection
+    CorrectMatchDiscriminatorZprime->process(event);
+    if(debug) cout << "[ZprimeAnalysisModule_applyNN] CorrectMatchDiscriminator: ok" << endl;
+    fill_histograms(event, "CorrectMatchDiscriminator");
   }
-  else{fill_histograms(event, "FailsChi2_beforeDNN");}
+
+  // Extract chi2 discriminator from ttbar candidates
+  Chi2DiscriminatorZprime->process(event);
+  if(debug) cout << "[ZprimeAnalysisModule_applyNN] Chi2Discriminator: ok" << endl;
+  fill_histograms(event, "Chi2Discriminator");
+
+
+
+  // Select events whose chi2 candidates have chi2 < 30
+  if(Chi2_selection->passes(event)){
+    if(debug) cout << "[ZprimeAnalysisModule_applyNN] Chi2 Selection: passed" << endl;
+    fill_histograms(event, "PassChi2");
+    
+    // Merged topology
+    if(ZprimeTopTag_selection->passes(event)){ 
+      if(debug) cout << "[ZprimeAnalysisModule_applyNN] TopTag Selection: passed" << endl;
+      fill_histograms(event, "PassChi2_Merged");   
+    }
+    // Resolved topology
+    else{
+      if(debug) cout << "[ZprimeAnalysisModule_applyNN] TopTag Selection: failed" << endl;
+      fill_histograms(event, "PassChi2_Resolved"); 
+    } 
+  }
+  else{fill_histograms(event, "FailChi2");}
+
+
 
   // Variables for NN
+  sort_by_pt<Jet>(*event.jets);
   Variables_module->process(event);
-  if(debug) cout << "Variables_module: ok" << endl;
+  if(debug) cout << "[ZprimeAnalysisModule_applyNN] Variables_module: ok" << endl;
 
   // NN module
   NNModule->process(event);
   std::vector<tensorflow::Tensor> NNoutputs = NNModule->GetOutputs();
 
-  if(debug) cout << "starting DNN" << endl;
+  if(debug) cout << "[ZprimeAnalysisModule_applyNN] Starting DNN" << endl;
   event.set(h_NNoutput0, (double)(NNoutputs[0].tensor<float, 2>()(0,0)));
   event.set(h_NNoutput1, (double)(NNoutputs[0].tensor<float, 2>()(0,1)));
   event.set(h_NNoutput2, (double)(NNoutputs[0].tensor<float, 2>()(0,2)));
@@ -1403,6 +1453,7 @@ bool ZprimeAnalysisModule_applyNN::process(uhh2::Event& event){
   double out2 = (double)(NNoutputs[0].tensor<float, 2>()(0,2));
   vector<double> out_event = {out0, out1, out2};
 
+  // Assign each event a DNN-category based on highest score of the three output nodes
   // h_MulticlassNN_output->fill(event);
   double max_score = 0.0;
   for (int i = 0; i < 3; i++){
@@ -1410,15 +1461,8 @@ bool ZprimeAnalysisModule_applyNN::process(uhh2::Event& event){
       max_score = out_event[i];
     }
   }
-  if (debug) cout <<"done setting scores" <<endl;
+  if (debug) cout <<"[ZprimeAnalysisModule_applyNN] Done setting scores" <<endl;
 
-  // Veto events with >= 2 TopTagged large-R jets
-  if(!TopTagVetoSelection->passes(event)) return false;
-  fill_histograms(event, "TopTagVeto");
-
-  // Veto events with DeltaEta(j1, j2) > 1.5 to suppress multijet background
-  if(!DeltaEta_selection->passes(event)) return false;
-  fill_histograms(event, "DeltaEtaCut");
 
   //////////////////////////////////////////////////////////////////
   ///////////////////////// DNN categories /////////////////////////
@@ -1428,53 +1472,53 @@ bool ZprimeAnalysisModule_applyNN::process(uhh2::Event& event){
   // SR
   if(out0 == max_score){
     VariablesEFTSR_module->process(event);
-    if(debug) cout << "Processed EFT SR Variables module" << endl;
+    if(debug) cout << "[ZprimeAnalysisModule_applyNN] Processed EFT SR Variables module" << endl;
 
     // SR events, inclusive in event topology
     fill_histograms(event, "SR");
 
     // cut on chi2
     if(Chi2_selection->passes(event)){  // cut on chi2 < 30
-      fill_histograms(event, "PassesChi2_afterDNN_SR");
+      fill_histograms(event, "SR_PassesChi2");
 
       // Cut on event topology 
       if(ZprimeTopTag_selection->passes(event)){
-           fill_histograms(event, "PassesChi2_wTopTag_afterDNN_SR");}   // Merged topology
-      else{fill_histograms(event, "PassesChi2_wNoTopTag_afterDNN_SR");} // Resolved topology
+           fill_histograms(event, "SR_PassesChi2_Merged");}   // Merged topology
+      else{fill_histograms(event, "SR_PassesChi2_Resolved");} // Resolved topology
     }
-    else{fill_histograms(event, "FailsChi2_afterDNN_SR");}
+    else{fill_histograms(event, "SR_FailsChi2");}
   }
 
   // CR1
   if( out1 == max_score ){
     VariablesEFTCR1_module->process(event);
-    if(debug) cout << "done EFT CR1" << endl;
+    if(debug) cout << "[ZprimeAnalysisModule_applyNN] Done EFT CR1" << endl;
 
     fill_histograms(event, "CR1");
     if(Chi2_selection->passes(event)){ 
-      fill_histograms(event,"PassesChi2_afterDNN_CR1");
+      fill_histograms(event,"CR1_PassesChi2");
     }
   }
  
   // CR2
   if( out2 == max_score ){
     VariablesEFTCR2_module->process(event);
-    if(debug) cout << "done EFT CR2" << endl;
+    if(debug) cout << "[ZprimeAnalysisModule_applyNN] Done EFT CR2" << endl;
 
     fill_histograms(event, "CR2");
     if(Chi2_selection->passes(event)){ 
-      fill_histograms(event,"PassesChi2_afterDNN_CR2");
+      fill_histograms(event,"CR2_PassesChi2");
     }
   }
 
-  if(debug) cout << "done with DNN regions" << endl;
+  if(debug) cout << "[ZprimeAnalysisModule_applyNN] Done with DNN regions" << endl;
 
 
   // Calculate structure constants for EFT weights
   // This accesses EFT weights starting at index 202 in event.genInfo->systweights()
   // and calculates structure constants that can be used to compute weights for any WC values
   // calculates the structure constants for each event.
-  if(debug) cout << "isEFT: " << isEFT << endl;
+  if(debug) cout << "[ZprimeAnalysisModule_applyNN] isEFT: " << isEFT << endl;
   if(isEFT){structure_constants_calculator->process(event);}
 
 
@@ -1485,18 +1529,18 @@ bool ZprimeAnalysisModule_applyNN::process(uhh2::Event& event){
   
   // Debug output for structure constants (only for first few events)
   if (debug && isEFT) {static int event_counter = 0;
-    cout << "about to check structure constants debug " << endl;
+    cout << "[ZprimeAnalysisModule_applyNN] Checking structure constants debug " << endl;
     if (event_counter < 5) {
       // Get the structure constants from the event
       if (event.is_valid(h_structure_constants)) {
         std::vector<float> structure_constants = event.get(h_structure_constants);
         
-        std::cout << "===== Structure Constants Debug (Event " << event_counter << ") =====" << std::endl;
-        std::cout << "Number of structure constants: " << structure_constants.size() << std::endl;
+        std::cout << "[ZprimeAnalysisModule_applyNN] ===== Structure Constants Debug (Event " << event_counter << ") =====" << std::endl;
+        std::cout << "[ZprimeAnalysisModule_applyNN] Number of structure constants: " << structure_constants.size() << std::endl;
         
         if (!structure_constants.empty()) {
           // Print first few constants
-          std::cout << "First few constants: ";
+          std::cout << "[ZprimeAnalysisModule_applyNN] First few constants: ";
           for (size_t i = 0; i < std::min(size_t(10), structure_constants.size()); ++i) {
             std::cout << structure_constants[i] << ", ";
           }
@@ -1506,11 +1550,11 @@ bool ZprimeAnalysisModule_applyNN::process(uhh2::Event& event){
         // Increment counter after printing
         event_counter++;
       } else {
-        std::cout << "Structure constants not found in event!" << std::endl;
+        std::cout << "[ZprimeAnalysisModule_applyNN] Structure constants not found in event!" << std::endl;
       }
     }
   }
-  if(debug) cout << "moving on to next event" << endl;
+  if(debug) cout << "[ZprimeAnalysisModule_applyNN] Moving on to next event" << endl;
   return true;
 }
 

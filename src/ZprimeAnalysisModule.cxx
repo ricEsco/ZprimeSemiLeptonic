@@ -199,7 +199,7 @@ protected:
   lumihists_Weights_Init, lumihists_Weights_PU, lumihists_Weights_Lumi, lumihists_Weights_TopPt, lumihists_Weights_MCScale, lumihists_Weights_PS, 
   lumihists_Muon1_LowPt, lumihists_Muon1_HighPt, lumihists_Ele1_LowPt, lumihists_Ele1_HighPt, 
   lumihists_TriggerMuon, lumihists_TriggerEle, 
-  lumihists_TwoDCut_Muon, lumihists_TwoDCut_Ele, 
+  lumihists_TwoDCut_Muon, lumihists_TwoDCut_Muon_LowPt, lumihists_TwoDCut_Ele, 
   lumihists_Jet1, lumihists_Jet2, 
   lumihists_MET, 
   lumihists_HTlep, 
@@ -438,8 +438,10 @@ ZprimeAnalysisModule::ZprimeAnalysisModule(uhh2::Context& ctx){
   sf_ele_reco_dummy.reset(new uhh2::ElectronRecoScaleFactors(ctx, boost::none, boost::none, boost::none, boost::none, true));
 
   //////////////////////////////////////////// Jets ////////////////////////////////////////////
-  // b-tag SF
-  sf_btagging.reset(new MCBTagDiscriminantReweighting(ctx, BTag::algo::DEEPJET, "CHS_matched"));
+    
+  // Top Taggers
+  TopTaggerHOTVR.reset(new HOTVRTopTagger(ctx));
+  TopTaggerDeepAK8.reset(new DeepAK8TopTagger(ctx));
 
   // Top-tags
   hadronic_top.reset(new HadronicTop(ctx)); // only used for HOTVR-- might delete
@@ -447,8 +449,9 @@ ZprimeAnalysisModule::ZprimeAnalysisModule(uhh2::Context& ctx){
   // Top-tag SF's
   sf_toptag.reset(new TopTagScaleFactor(ctx));
   sf_topmistag.reset(new TopMistagScaleFactor(ctx));
-  
 
+  // b-tag SF
+  sf_btagging.reset(new MCBTagDiscriminantReweighting(ctx, BTag::algo::DEEPJET, "CHS_matched"));
 
   ////////////////////////////// Selection modules //////////////////////////////
 
@@ -514,9 +517,7 @@ ZprimeAnalysisModule::ZprimeAnalysisModule(uhh2::Context& ctx){
   Variables_module.reset(new Variables_NN(ctx, mode));
   // if(!isEleTriggerMeasurement) SystematicsModule.reset(new ZprimeSemiLeptonicSystematicsModule(ctx));
 
-  // Top Taggers
-  TopTaggerHOTVR.reset(new HOTVRTopTagger(ctx));
-  TopTaggerDeepAK8.reset(new DeepAK8TopTagger(ctx));
+  
 
   // ttbar reconstruction candidate builder
   CandidateBuilder.reset(new ZprimeCandidateBuilder(ctx, mode));
@@ -553,6 +554,7 @@ ZprimeAnalysisModule::ZprimeAnalysisModule(uhh2::Context& ctx){
   lumihists_TriggerMuon.reset(new LuminosityHists(ctx, "Lumi_TriggerMuon"));
   lumihists_TriggerEle.reset(new LuminosityHists(ctx, "Lumi_TriggerEle"));
   lumihists_TwoDCut_Muon.reset(new LuminosityHists(ctx, "Lumi_TwoDCut_Muon"));
+  lumihists_TwoDCut_Muon_LowPt.reset(new LuminosityHists(ctx, "Lumi_TwoDCut_Muon_LowPt"));
   lumihists_TwoDCut_Ele.reset(new LuminosityHists(ctx, "Lumi_TwoDCut_Ele"));
   lumihists_Jet1.reset(new LuminosityHists(ctx, "Lumi_Jet1"));
   lumihists_Jet2.reset(new LuminosityHists(ctx, "Lumi_Jet2"));
@@ -620,19 +622,19 @@ ZprimeAnalysisModule::ZprimeAnalysisModule(uhh2::Context& ctx){
     "TriggerMuon", "TriggerEle", 
     "TriggerMuon_SF", 
 
-    "TwoDCut_Muon", "TwoDCut_Ele",
+    "TwoDCut_Muon", "TwoDCut_Muon_LowPt", "TwoDCut_Ele",
     "CHS_Before", "CHS_After", 
     "Jet1", "Jet2", 
     "MET", "HTlep", 
+
     "BeforeBtagSF", "AfterBtagSF", "AfterCustomBtagSF", "Btags1", 
     "NLOCorrections", 
     "TriggerEle_SF", 
+
     "TopTagVeto", "DeltaEtaCut",
     "TTbarCandidate", 
     "CorrectMatchDiscriminator", "Chi2Discriminator",
-    "PassChi2Cut",
-    "SR_Merged", "SR_Resolved",
-    "FailChi2Cut",
+    "PassChi2Cut", "SR_Merged", "SR_Resolved", "FailChi2Cut",
     "NNInputsBeforeReweight"};
   book_histograms(ctx, histogram_tags);
   
@@ -831,7 +833,7 @@ bool ZprimeAnalysisModule::process(uhh2::Event& event){
 
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  ////////////////////////// Start: Cleaning lepton collections with ID based on pT///////////////////////////////
+  ////////////////////////// Start: Cleaning lepton collections with ID based on pT //////////////////////////////
 
   // muons
   double muon_pt_high(55.);  // muon category pT threshold
@@ -861,12 +863,14 @@ bool ZprimeAnalysisModule::process(uhh2::Event& event){
         muon_cleaner_low->process(event);                // clean low-pT muons
       if(!NMuon1_selection->passes(event)) return false; // require ==1 muon after cleaning
         fill_histograms(event, "Muon1_LowPt");
+        lumihists_Muon1_LowPt->fill(event);
     }
     if(muon_is_high){
       if(!NMuon1_selection->passes(event)) return false; // require ==1 muon
       muon_cleaner_high->process(event);                 // clean high-pT muons
       if(!NMuon1_selection->passes(event)) return false; // require ==1 muon after cleaning
       fill_histograms(event, "Muon1_HighPt");
+      lumihists_Muon1_HighPt->fill(event);
     }
     if( !(muon_is_high || muon_is_low) ) return false; // require ==1 muon in event
     if(debug) cout << "[ZprimeAnalysisModule] muonID cleaner: ok" << endl;
@@ -923,12 +927,14 @@ bool ZprimeAnalysisModule::process(uhh2::Event& event){
       electron_cleaner_low->process(event);             // clean low-pT electrons
       if(!NEle1_selection->passes(event)) return false; // require ==1 electron after cleaning
       fill_histograms(event, "Ele1_LowPt");
+      lumihists_Ele1_LowPt->fill(event);
     }
     if(ele_is_high){
       if(!NEle1_selection->passes(event)) return false; // require ==1 electron
       electron_cleaner_high->process(event);            // clean high-pT electrons
       if(!NEle1_selection->passes(event)) return false; // require ==1 electron after cleaning
       fill_histograms(event, "Ele1_HighPt");
+      lumihists_Ele1_HighPt->fill(event);
     }
     if( !(ele_is_high || ele_is_low)) return false;     // require ==1 electron in event
     if(debug) cout << "[ZprimeAnalysisModule] electronID cleaner: ok" << endl;
@@ -1148,14 +1154,23 @@ bool ZprimeAnalysisModule::process(uhh2::Event& event){
   if(debug) cout << "[ZprimeAnalysisModule] N leptons ok: Nelectrons= " << event.electrons->size() << ", Nmuons= " << event.muons->size() << endl;
 
 
-  //////////////////////////////// 2D-cut selection on high-pT leptons ONLY ////////////////////////////////
-  // muon channel withOUT eleTrigger SF measurement in high-pT category
+  //////////////////////////////// 2D-cut selection [dr(lep,jet) OR pTrel(lep,jet)] on high-pT leptons and low-pT muons ///////////////////////////////////
+  // muon channel (withOUT eleTrigger SF measurement) in high-pT category
   if(isMuon && !isEleTriggerMeasurement && muon_is_high){ 
-    if(!TwoDCut_selection->passes(event)) return false;
+    if(!TwoDCut_selection->passes(event)) return false; // dr >0.4 OR pTrel >25 GeV
     if(debug) cout << "[ZprimeAnalysisModule] 2D-cut on high-pT muon Selection: passed" << endl;
   }
   fill_histograms(event, "TwoDCut_Muon");
-  lumihists_TwoDCut_Muon->fill(event); // Fill lumihist after 2D-cut on high-pT muons
+  lumihists_TwoDCut_Muon->fill(event);
+
+
+  // TwoD for low-pT muons
+  if(isMuon && muon_is_low){
+    if(!TwoDCut_selection_low1->passes(event)) return false;// dr >0.3 OR pTrel >10 GeV
+    if(debug)cout <<"[ZprimeAnalysisModule] 2D-cut on low-pT muons: passed"<<endl;
+  }
+   fill_histograms(event, "TwoDCut_Muon_LowPt");
+   lumihists_TwoDCut_Muon_LowPt->fill(event);
 
   // electron channel in high-pT category
   if(isElectron && ele_is_high){
@@ -1170,7 +1185,7 @@ bool ZprimeAnalysisModule::process(uhh2::Event& event){
     if(!TwoDCut_selection->passes(event)) return false;
     if(debug) cout << "[ZprimeAnalysisModule] 2D-cut on high-pT lepton Selection in EleTriggerMeasurement: passed" << endl;
   }
-  ////////////////////////////////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
@@ -1313,6 +1328,7 @@ bool ZprimeAnalysisModule::process(uhh2::Event& event){
   if(Chi2_selection->passes(event)){
     if(debug) cout << "[ZprimeAnalysisModule] Chi2 Selection: passed" << endl;
     fill_histograms(event, "PassChi2Cut");
+    lumihists_Chi2->fill(event);
     if(ZprimeTopTag_selection->passes(event)){ 
       if(debug) cout << "[ZprimeAnalysisModule] TopTag Selection: passed" << endl; // top-tag found
       fill_histograms(event, "SR_Merged");   
