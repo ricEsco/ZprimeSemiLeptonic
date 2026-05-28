@@ -36,7 +36,7 @@ using namespace uhh2;
 
 ZprimeSemiLeptonicHists::ZprimeSemiLeptonicHists(uhh2::Context& ctx, const std::string& dirname):
 Hists(ctx, dirname) {
-  bool debug = false;
+  bool debug = true;
 
   is_mc = ctx.get("dataset_type") == "MC";
   ishotvr = (ctx.get("is_hotvr") == "true");
@@ -84,7 +84,7 @@ Hists(ctx, dirname) {
 }
 
 void ZprimeSemiLeptonicHists::init(){
-  if(debug) cout << "[ZprimeSemiLeptonicHists] Initializing histograms" << endl;
+  std::cout << "[ZprimeSemiLeptonicHists] Initializing histograms" << endl;
 
   //CHS jets
   CHS_pt_jet   = book<TH1F>("CHS_pt_jet", "p_{T}^{jets} [GeV]", 45, 0, 900);
@@ -804,7 +804,7 @@ void ZprimeSemiLeptonicHists::init(){
 
 void ZprimeSemiLeptonicHists::fill(const Event & event){
   double weight = event.weight;
-  bool debug = false;
+  bool debug = true;
   /*
   █      ██ ███████ ████████ ███████
   █      ██ ██         ██    ██
@@ -1336,7 +1336,7 @@ void ZprimeSemiLeptonicHists::fill(const Event & event){
   if(debug) cout << "[ZprimeSemiLeptonicHists]   N_muons: " << Nmuons << endl;
 
   for(int i=0; i<Nmuons; i++){
-
+    if(debug) cout << "[ZprimeSemiLeptonicHists]   pT_muon[" << i << "]: " << muons->at(i).pt() << endl;
     N_mu_charge->Fill(muons->at(i).charge(), weight);
     pt_mu->Fill(muons->at(i).pt(),weight);
     eta_mu->Fill(muons->at(i).eta(),weight);

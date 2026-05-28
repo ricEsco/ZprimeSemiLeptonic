@@ -199,10 +199,11 @@ protected:
   lumihists_Weights_Init, lumihists_Weights_PU, lumihists_Weights_Lumi, lumihists_Weights_TopPt, lumihists_Weights_MCScale, lumihists_Weights_PS, 
   lumihists_Muon1_LowPt, lumihists_Muon1_HighPt, lumihists_Ele1_LowPt, lumihists_Ele1_HighPt, 
   lumihists_TriggerMuon, lumihists_TriggerEle, 
-  lumihists_TwoDCut_Muon, lumihists_TwoDCut_Muon_LowPt, lumihists_TwoDCut_Ele, 
+  lumihists_TwoDCut_Muon, lumihists_TwoDCut_Ele, 
   lumihists_Jet1, lumihists_Jet2, 
   lumihists_MET, 
-  lumihists_HTlep, 
+  lumihists_HTlep,
+  lumihists_TwoDCut_Muon_LowPt,
   lumihists_Chi2;
 
   // PUPPI CHS match module
@@ -260,7 +261,7 @@ void ZprimeAnalysisModule::fill_histograms(uhh2::Event& event, string tag){
 */
 
 ZprimeAnalysisModule::ZprimeAnalysisModule(uhh2::Context& ctx){
-  debug = false;
+  debug = true;
 
   for(auto & kv : ctx.get_all()){
     cout << " " << kv.first << " = " << kv.second << endl;
@@ -554,12 +555,12 @@ ZprimeAnalysisModule::ZprimeAnalysisModule(uhh2::Context& ctx){
   lumihists_TriggerMuon.reset(new LuminosityHists(ctx, "Lumi_TriggerMuon"));
   lumihists_TriggerEle.reset(new LuminosityHists(ctx, "Lumi_TriggerEle"));
   lumihists_TwoDCut_Muon.reset(new LuminosityHists(ctx, "Lumi_TwoDCut_Muon"));
-  lumihists_TwoDCut_Muon_LowPt.reset(new LuminosityHists(ctx, "Lumi_TwoDCut_Muon_LowPt"));
   lumihists_TwoDCut_Ele.reset(new LuminosityHists(ctx, "Lumi_TwoDCut_Ele"));
   lumihists_Jet1.reset(new LuminosityHists(ctx, "Lumi_Jet1"));
   lumihists_Jet2.reset(new LuminosityHists(ctx, "Lumi_Jet2"));
   lumihists_MET.reset(new LuminosityHists(ctx, "Lumi_MET"));
   lumihists_HTlep.reset(new LuminosityHists(ctx, "Lumi_HTlep"));
+  lumihists_TwoDCut_Muon_LowPt.reset(new LuminosityHists(ctx, "Lumi_TwoDCut_Muon_LowPt"));
   lumihists_Chi2.reset(new LuminosityHists(ctx, "Lumi_Chi2"));
 
 
@@ -1155,12 +1156,14 @@ bool ZprimeAnalysisModule::process(uhh2::Event& event){
   }
 
 
-  //////////////////////////////////////// Nlepton selection: require ==1 electron or ==1 muon in event ////////////////////////////////////////
+  /////////////////////////////////////////////////////////////// Nlepton selection ///////////////////////////////////////////////////////////////
+  // when NOT doing eleTrigger SF measurement
   if(!isEleTriggerMeasurement){ 
-    // when NOT doing eleTrigger SF measurement
-    if((event.muons->size()+event.electrons->size()) != 1) return false;} // require (==1electron & ==0muon) or (==0electron & ==1muon) in event
-    // when DOING eleTrigger SF measurement
-    else{ if( event.muons->size() != 1 && event.electrons->size() != 1) return false; // require (==1electron & ==1muon) in event
+    if((event.muons->size() + event.electrons->size()) != 1) return false; // require (==1electron & ==0muon) or (==0electron & ==1muon) in event
+  }
+  // when DOING eleTrigger SF measurement
+  else{ 
+    if( event.muons->size() != 1 && event.electrons->size() != 1) return false; // require (==1electron & ==1muon) in event
   }
   if(debug) cout << "[ZprimeAnalysisModule] N leptons ok: Nelectrons= " << event.electrons->size() << ", Nmuons= " << event.muons->size() << endl;
 
@@ -1289,8 +1292,7 @@ bool ZprimeAnalysisModule::process(uhh2::Event& event){
   if(debug) cout << "[ZprimeAnalysisModule] NLO Correction: ok" << endl;
   fill_histograms(event, "NLOCorrections");
 
-
-  //////////////////// electronTrigger SF ////////////////////
+  // electronTrigger SF 
   if(!isEleTriggerMeasurement) sf_ele_trigger->process(event);
   if(debug) cout << "[ZprimeAnalysisModule] electronTrigger SF: ok" << endl;
   fill_histograms(event, "TriggerEle_SF");
@@ -1302,134 +1304,129 @@ bool ZprimeAnalysisModule::process(uhh2::Event& event){
 
   // Veto events with DeltaEta(j1, j2) > 3 to suppress multijet background
   if(!DeltaEta_selection->passes(event)){
-    fill_histograms(event, "DeltaEtaCut_FAIL");
-    return false;
+    if(debug) cout << "[ZprimeAnalysisModule] DeltaEta(j1, j2) Selection: failed" << endl;
+    fill_histograms(event, "DeltaEtaCut_FAIL"); // Fill histograms for events that fail DeltaEta cut to check for multijet background contamination
+    return false;                               // before vetoing them from rest of selection
   }
   if(debug) cout << "[ZprimeAnalysisModule] DeltaEta(j1, j2) Selection: passed" << endl;
   fill_histograms(event, "DeltaEtaCut_PASS");
 
 
-  // TwoD for low-pT muons (dr >0.3 OR pTrel >10 GeV)
-  if(isMuon && muon_is_low){
-    if(!TwoDCut_selection_low1->passes(event)){
-      ////////////////////////////// Events that FAIL the low-pT muon 2D cut //////////////////////////////
-      fill_histograms(event, "TwoDCut_Muon_LowPt_FAIL");
-      if(debug)cout <<"[ZprimeAnalysisModule] 2D-cut on low-pT muons: failed"<<endl;   
+  // // TwoD for low-pT muons (dr >0.3 OR pTrel >10 GeV)
+  // if(isMuon && muon_is_low){
+  //   if(!TwoDCut_selection_low1->passes(event)){
+  //     //////////////////////////////////// Events that FAIL the low-pT muon 2D cut ////////////////////////////////////
+  //     if(debug) cout <<"[ZprimeAnalysisModule] 2D-cut on low-pT muons: failed"<<endl;   
+  //     fill_histograms(event, "TwoDCut_Muon_LowPt_FAIL");
 
-      // build all possible candidates in event
-      CandidateBuilder->process(event);
-      if(debug) cout << "[ZprimeAnalysisModule] CandidateBuilder: ok" << endl;
-      if(isMC){ 
-        CorrectMatchDiscriminatorZprime->process(event); // Extract CorrectMatch discriminator from ttbar candidates
-        if(debug) cout << "[ZprimeAnalysisModule] CorrectMatchDiscriminator: ok" << endl;
-      }
-      Chi2DiscriminatorZprime->process(event);// Extract chi2 discriminator from ttbar candidates
-      if(debug) cout << "[ZprimeAnalysisModule] Chi2Discriminator: ok" << endl;
+  //     // build all possible candidates and extract discriminators
+  //     CandidateBuilder->process(event);
+  //     if(debug) cout << "[ZprimeAnalysisModule] CandidateBuilder: ok" << endl;
+  //     if(isMC) CorrectMatchDiscriminatorZprime->process(event);
+  //     if(isMC && debug) cout << "[ZprimeAnalysisModule] CorrectMatchDiscriminator: ok" << endl;
+  //     Chi2DiscriminatorZprime->process(event);
+  //     if(debug) cout << "[ZprimeAnalysisModule] Chi2Discriminator: ok" << endl;
 
-      // Select events whose chi2 candidates have chi2 < 30
-      if(Chi2_selection->passes(event)){ // <----------------------------------------------------------- chi2 cut
-        if(debug) cout << "[ZprimeAnalysisModule] Chi2 Selection: passed" << endl;
-        fill_histograms(event, "PassChi2Cut_FAILlowpT2Dcut");
-        if(ZprimeTopTag_selection->passes(event)){ 
-          if(debug) cout << "[ZprimeAnalysisModule] TopTag Selection: passed" << endl; // top-tag found
-          fill_histograms(event, "SR_Merged_FAILlowpT2Dcut");   
-        }
-        else{
-          if(debug) cout << "[ZprimeAnalysisModule] TopTag Selection: failed" << endl; // no top-tag found
-          fill_histograms(event, "SR_Resolved_FAILlowpT2Dcut"); 
-        } 
-      }
-      else{fill_histograms(event, "FailChi2Cut_FAILlowpT2Dcut");}
+  //     // Select events whose chi2 candidates have chi2 < 30
+  //     if(Chi2_selection->passes(event)){ // <---------------------------------------------------------------- chi2 cut
+  //       if(debug) cout << "[ZprimeAnalysisModule] Chi2 Selection: passed" << endl;
+  //       fill_histograms(event, "PassChi2Cut_FAILlowpT2Dcut");
+  //       if(ZprimeTopTag_selection->passes(event)){ 
+  //         if(debug) cout << "[ZprimeAnalysisModule] TopTag Selection: passed" << endl; // top-tag found
+  //         fill_histograms(event, "SR_Merged_FAILlowpT2Dcut");   
+  //       }
+  //       else{
+  //         if(debug) cout << "[ZprimeAnalysisModule] TopTag Selection: failed" << endl; // no top-tag found
+  //         fill_histograms(event, "SR_Resolved_FAILlowpT2Dcut"); 
+  //       } 
+  //     }
+  //     else{
+  //       if(debug) cout << "[ZprimeAnalysisModule] Chi2 Selection: failed" << endl;
+  //       fill_histograms(event, "FailChi2Cut_FAILlowpT2Dcut");
+  //     }
 
-      // return false;
-    }
+  //   } // end code block for events that FAIL low-pT muon 2D cut
+  //   else{
+  //     //////////////////////////////////// Events that PASS the low-pT muon 2D cut ////////////////////////////////////
+  //     if(debug)cout <<"[ZprimeAnalysisModule] 2D-cut on low-pT muons: passed"<<endl;  
+  //     fill_histograms(event, "TwoDCut_Muon_LowPt_PASS");
+  //     lumihists_TwoDCut_Muon_LowPt->fill(event);
 
-    ////////////////////////////// Events that PASS the low-pT muon 2D cut //////////////////////////////
-    fill_histograms(event, "TwoDCut_Muon_LowPt_PASS");
-    lumihists_TwoDCut_Muon_LowPt->fill(event);
-    if(debug)cout <<"[ZprimeAnalysisModule] 2D-cut on low-pT muons: passed"<<endl;   
+  //     // build all possible candidates and extract discriminators
+  //     CandidateBuilder->process(event); 
+  //     if(debug) cout << "[ZprimeAnalysisModule] CandidateBuilder: ok" << endl;
+  //     if(isMC) CorrectMatchDiscriminatorZprime->process(event);
+  //     if(isMC && debug) cout << "[ZprimeAnalysisModule] CorrectMatchDiscriminator: ok" << endl;
+  //     Chi2DiscriminatorZprime->process(event);
+  //     if(debug) cout << "[ZprimeAnalysisModule] Chi2Discriminator: ok" << endl;
 
-    // build all possible candidates in event
-    CandidateBuilder->process(event);
-    if(debug) cout << "[ZprimeAnalysisModule] CandidateBuilder: ok" << endl;
+  //     //////////////////////// check matchable and correct match selections BEFORE Chi2 cut //////////////////////////
+  //     if(isMC && TTbarMatchable_selection->passes(event)){                                                          //
+  //       if(debug) cout << "[ZprimeAnalysisModule] TTbarMatchable Selection before chi2: passed" << endl;            //
+  //       fill_histograms(event, "MatchableBeforeChi2Cut");}                                                          //
+  //     if(isMC && CorrectMatchDiscriminatorZprime->process(event)){                                                  //
+  //       if(debug) cout << "[ZprimeAnalysisModule] CorrectMatchDiscriminator selection before chi2: passed" << endl; //
+  //       fill_histograms(event, "CorrectMatchBeforeChi2Cut");}                                                       //
+  //     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+  //     // Select events whose chi2 candidates have chi2 < 30
+  //     if(Chi2_selection->passes(event)){ // <---------------------------------------------------------------- chi2 cut
+  //       if(debug) cout << "[ZprimeAnalysisModule] Chi2 Selection: passed" << endl;
+  //       fill_histograms(event, "PassChi2Cut_PASSlowpT2Dcut");
+  //       lumihists_Chi2->fill(event);
 
-    // check matchable
-    if(TTbarMatchable_selection->passes(event)){
-      if(debug) cout << "[ZprimeAnalysisModule] TTbarMatchable Selection before chi2: passed" << endl;
-      fill_histograms(event, "MatchableBeforeChi2Cut");
-    }
-    // check correct match
-    if(CorrectMatchDiscriminatorZprime->process(event)){
-      if(debug) cout << "[ZprimeAnalysisModule] CorrectMatchDiscriminator before chi2: ok" << endl;
-      fill_histograms(event, "CorrectMatchBeforeChi2Cut");
-    }
+  //       //////////////////////// check matchable and correct match selections AFTER Chi2 cut /////////////////////////
+  //       if(isMC && TTbarMatchable_selection->passes(event)){                                                        //
+  //         if(debug) cout << "[ZprimeAnalysisModule] TTbarMatchable Selection after chi2 selection: passed" << endl; //
+  //         fill_histograms(event, "Matchable");}                                                                     //
+  //       if(isMC && CorrectMatchDiscriminatorZprime->process(event)){                                                //
+  //         if(debug) cout << "[ZprimeAnalysisModule] CorrectMatchDiscriminator after chi2 selection: ok" << endl;    //
+  //         fill_histograms(event, "CorrectMatch");}                                                                  //
+  //       //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+  //       ///////////////// Variables for DNN //////////////////
+  //       sort_by_pt<Jet>(*event.jets);
+  //       Variables_module->process(event);
+  //       if(debug) cout << "[ZprimeAnalysisModule] DNNvariables_PASSED: ok" << endl;
+  //       fill_histograms(event, "DNNvariables_PASSlowpT2Dcut");
 
-    // Extract chi2 discriminator from ttbar candidates
-    Chi2DiscriminatorZprime->process(event);
-    if(debug) cout << "[ZprimeAnalysisModule] Chi2Discriminator: ok" << endl;
+  //       // Topologies
+  //       if(ZprimeTopTag_selection->passes(event)){ // Merged
+  //         if(debug) cout << "[ZprimeAnalysisModule] TopTag Selection: passed" << endl; 
+  //         fill_histograms(event, "SR_Merged_PASSlowpT2Dcut");
 
-    // Select events whose chi2 candidates have chi2 < 30
-    if(Chi2_selection->passes(event)){ // <----------------------------------------------------------- chi2 cut
-      if(debug) cout << "[ZprimeAnalysisModule] Chi2 Selection: passed" << endl;
-      fill_histograms(event, "PassChi2Cut_PASSlowpT2Dcut");
-      lumihists_Chi2->fill(event);
+  //         ////////////// check matchable and correct match selections AFTER Chi2 cut in Merged ////
+  //         if(isMC && TTbarMatchable_selection->passes(event)){                                   //
+  //           if(debug) cout << "[ZprimeAnalysisModule] TTbarMatchable Selection: passed" << endl; //
+  //           fill_histograms(event, "Matchable_Merged");}                                         //
+  //         if(isMC && CorrectMatchDiscriminatorZprime->process(event)){                           //
+  //           if(debug) cout << "[ZprimeAnalysisModule] CorrectMatchDiscriminator: ok" << endl;    //
+  //           fill_histograms(event, "CorrectMatch_Merged");}                                      //
+  //         /////////////////////////////////////////////////////////////////////////////////////////
+  //       }
+  //       else{ // Resolved
+  //         if(debug) cout << "[ZprimeAnalysisModule] TopTag Selection: failed" << endl; 
+  //         fill_histograms(event, "SR_Resolved_PASSlowpT2Dcut");
 
-      // check matchable
-      if(TTbarMatchable_selection->passes(event)){
-        if(debug) cout << "[ZprimeAnalysisModule] TTbarMatchable Selection: passed" << endl;
-        fill_histograms(event, "Matchable");
-      }
-      // check correct match
-      if(CorrectMatchDiscriminatorZprime->process(event)){
-        if(debug) cout << "[ZprimeAnalysisModule] CorrectMatchDiscriminator: ok" << endl;
-        fill_histograms(event, "CorrectMatch");
-      }
+  //         ////////////// check matchable and correct match selections AFTER Chi2 cut in Resolved //
+  //         if(isMC && TTbarMatchable_selection->passes(event)){                                   //
+  //           if(debug) cout << "[ZprimeAnalysisModule] TTbarMatchable Selection: passed" << endl; //
+  //           fill_histograms(event, "Matchable_Resolved");}                                       //
+  //         if(isMC && CorrectMatchDiscriminatorZprime->process(event)){                           //
+  //           if(debug) cout << "[ZprimeAnalysisModule] CorrectMatchDiscriminator: ok" << endl;    //
+  //           fill_histograms(event, "CorrectMatch_Resolved");}                                    //
+  //         /////////////////////////////////////////////////////////////////////////////////////////
+  //       }
 
+  //     } // end code block for events that PASS chi2 cut
+  //     else{
+  //       if(debug) cout << "[ZprimeAnalysisModule] Chi2 Selection: failed" << endl;
+  //       fill_histograms(event, "FailChi2Cut_PASSlowpT2Dcut");
+  //     }// end code block for events that FAIL chi2 cut
+      
+  //   } // end code block for events that PASS low-pT muon 2D cut
 
-
-      // Topologies
-      if(ZprimeTopTag_selection->passes(event)){ 
-        if(debug) cout << "[ZprimeAnalysisModule] TopTag Selection: passed" << endl; // Merged
-        fill_histograms(event, "SR_Merged_PASSlowpT2Dcut");
-
-        // check matchable
-        if(TTbarMatchable_selection->passes(event)){
-          if(debug) cout << "[ZprimeAnalysisModule] TTbarMatchable Selection: passed" << endl;
-          fill_histograms(event, "Matchable_Merged");
-        }
-        // check correct match
-        if(CorrectMatchDiscriminatorZprime->process(event)){
-          if(debug) cout << "[ZprimeAnalysisModule] CorrectMatchDiscriminator: ok" << endl;
-          fill_histograms(event, "CorrectMatch_Merged");
-        }
-
-      }
-      else{
-        if(debug) cout << "[ZprimeAnalysisModule] TopTag Selection: failed" << endl; // Resolved
-        fill_histograms(event, "SR_Resolved_PASSlowpT2Dcut");
-
-        // check matchable
-        if(TTbarMatchable_selection->passes(event)){
-          if(debug) cout << "[ZprimeAnalysisModule] TTbarMatchable Selection: passed" << endl;
-          fill_histograms(event, "Matchable_Resolved");
-        }
-        // check correct match
-        if(CorrectMatchDiscriminatorZprime->process(event)){
-          if(debug) cout << "[ZprimeAnalysisModule] CorrectMatchDiscriminator: ok" << endl;
-          fill_histograms(event, "CorrectMatch_Resolved");
-        }
-      } 
-    }
-    else{fill_histograms(event, "FailChi2Cut_PASSlowpT2Dcut");}
-
-    ///////////////// Variables for DNN //////////////////
-    sort_by_pt<Jet>(*event.jets);
-    Variables_module->process(event);
-    if(debug) cout << "[ZprimeAnalysisModule] DNNvariables_PASSED: ok" << endl;
-    fill_histograms(event, "DNNvariables_PASSlowpT2Dcut");
-  }
+  // } // end (isMuon && muon_is_low) condition
 
   return true;
 }

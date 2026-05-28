@@ -875,7 +875,7 @@ bool MEPartonFinder::process(uhh2::Event& evt){
 ////////////////////////////////////////////////
 
 Variables_NN::Variables_NN(uhh2::Context& ctx, TString mode): mode_(mode){
-  // cout << "Initializing Variables_NN with mode " << mode_ << endl;
+  std::cout << "[ZprimeSemiLeptonicModules] Initializing Variables_NN with mode: " << mode_ << endl;
 
   h_BestZprimeCandidateChi2 = ctx.get_handle<ZprimeCandidate*>("ZprimeCandidateBestChi2");
   h_is_zprime_reconstructed_chi2 = ctx.get_handle<bool>("is_zprime_reconstructed_chi2");
@@ -1098,7 +1098,7 @@ Variables_NN::Variables_NN(uhh2::Context& ctx, TString mode): mode_(mode){
 }
 
 bool Variables_NN::process(uhh2::Event& evt){
-  // cout << "[Variables_NN::process] starting DNN variables " << endl;
+  std::cout << "[ZprimeSemiLeptonicModules] Variables_NN::process" << endl;
 
   double weight = evt.weight;
   evt.set(h_eventweight, -10);
@@ -1194,9 +1194,14 @@ bool Variables_NN::process(uhh2::Event& evt){
   vector<Jet>* Ak4jets = evt.jets;
   int NAk4jets = Ak4jets->size();
   evt.set(h_N_Ak4, NAk4jets);
-
+  std::cout << "[ZprimeSemiLeptonicModules] Number of AK4 jets: " << NAk4jets << endl;
+  
   for(int i=0; i<NAk4jets; i++){
     if(i==0){
+      std::cout << "[ZprimeSemiLeptonicModules]   AK4 jet1 pt: " << Ak4jets->at(0).pt() << endl;
+      std::cout << "[ZprimeSemiLeptonicModules]   AK4 jet1 eta: " << Ak4jets->at(0).eta() << endl;
+      std::cout << "[ZprimeSemiLeptonicModules]   AK4 jet1 phi: " << Ak4jets->at(0).phi() << endl;
+      std::cout << "[ZprimeSemiLeptonicModules]   AK4 jet1 energy: " << Ak4jets->at(0).energy() << endl;
       evt.set(h_Ak4_j1_pt, Ak4jets->at(i).pt());
       evt.set(h_Ak4_j1_eta, Ak4jets->at(i).eta());
       evt.set(h_Ak4_j1_phi, Ak4jets->at(i).phi());
@@ -1403,9 +1408,11 @@ bool Variables_NN::process(uhh2::Event& evt){
   } // end hotvr mode
 
   // random generator with eta-dependant random seed for k-fold validation
+  std::cout << "[ZprimeSemiLeptonicModules] About to define rand with AK4 jet0 phi as seed " << endl;
   double leading_jet_phi = Ak4jets->at(0).v4().phi();
   std::srand((int)(1000 * leading_jet_phi));
   evt.set(h_uniform_random, ((double) rand()) / RAND_MAX);
+  std::cout << "[ZprimeSemiLeptonicModules] Just after defining rand with AK4 jet0 phi as seed " << endl;
 
   ////////////////////////////////////////////////////////////////////////////////////////////
   ///////////// Variables from reconstructed ttbar system for EFT interpretation /////////////
@@ -3753,11 +3760,14 @@ TopPtReweighting::TopPtReweighting(uhh2::Context& ctx,
   }
 
   bool PuppiCHS_matching::process(uhh2::Event& event){
-
+    cout << "[ZprimeSemiLeptonicModules]  Starting PuppiCHSmatching::process() "<<endl;
     vector<Jet> CHSjets = event.get(h_CHSjets);
     std::vector<Jet> matched_jets;
     std::vector<Jet> matched_jets_PUPPI;
     JetPFID CHS_matched_Tight  = JetPFID(JetPFID::WP_TIGHT_CHS);
+
+    std::cout << "[ZprimeSemiLeptonicModules]   N CHS jets: "<<CHSjets.size()<<endl;
+    std::cout << "[ZprimeSemiLeptonicModules]   N PUPPI jets: "<<event.jets->size()<<endl;
 
     // loop over PUPPI jets
     for(const Jet & jet : *event.jets){ 
@@ -3790,6 +3800,8 @@ TopPtReweighting::TopPtReweighting(uhh2::Context& ctx,
 
     std::swap(matched_jets_PUPPI, *event.jets);
     event.set(h_CHS_matched_, matched_jets);
+    std::cout << "[ZprimeSemiLeptonicModules]   N matched CHS jets: "<<matched_jets.size()<<endl;
+    std::cout << "[ZprimeSemiLeptonicModules]   N matched PUPPI jets: "<<matched_jets_PUPPI.size()<<endl;
     if(event.jets->size()==0) return false;
     return true;
   }

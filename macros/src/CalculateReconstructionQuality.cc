@@ -32,7 +32,7 @@ void AnalysisTool::CalculateReconstructionQuality(){
   TString filename_base = "";
   if(AnalysisTool::do_puppi) filename_base = base_path_puppi;
   else filename_base = base_path_chs;
-  filename_base += "/NOMINAL/uhh2.AnalysisModuleRunner.MC.RSGluon_M";
+  filename_base += "/NOMINAL/uhh2.AnalysisModuleRunner.MC.";
 
   vector<float> before_matchable, before_correct_matchable, after_matchable, after_correct_matchable;
   for(unsigned int i=0; i<masses.size(); i++){
