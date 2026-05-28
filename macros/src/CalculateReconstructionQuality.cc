@@ -42,12 +42,12 @@ void AnalysisTool::CalculateReconstructionQuality(){
     TFile* f_in = new TFile(filename, "READ");
 
     // Get number of events, matchable, and correctly matched before and after the chi2
-    float n_before           = ((TH1F*)(f_in->Get("STlepPlusMet_General/sum_event_weights")))->Integral();
+    float n_before           = ((TH1F*)(f_in->Get("TwoDCut_Muon_LowPt_PASS/sum_event_weights")))->Integral();
     float n_before_matchable = ((TH1F*)(f_in->Get("MatchableBeforeChi2Cut_General/sum_event_weights")))->Integral();
     float n_before_correct   = ((TH1F*)(f_in->Get("CorrectMatchBeforeChi2Cut_General/sum_event_weights")))->Integral();
-    float n_after           = ((TH1F*)(f_in->Get("Chi2_General/sum_event_weights")))->Integral();
-    float n_after_matchable = ((TH1F*)(f_in->Get("Matchable_General/sum_event_weights")))->Integral();
-    float n_after_correct   = ((TH1F*)(f_in->Get("CorrectMatch_General/sum_event_weights")))->Integral();
+    float n_after            = ((TH1F*)(f_in->Get("PassChi2Cut_PASSlowpT2Dcut_General/sum_event_weights")))->Integral();
+    float n_after_matchable  = ((TH1F*)(f_in->Get("Matchable_General/sum_event_weights")))->Integral();
+    float n_after_correct    = ((TH1F*)(f_in->Get("CorrectMatch_General/sum_event_weights")))->Integral();
 
     // Calculate fractions
     float frac_matchable_before = n_before_matchable / n_before;
