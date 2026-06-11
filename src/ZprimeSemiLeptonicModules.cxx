@@ -288,6 +288,9 @@ ZprimeChi2Discriminator::ZprimeChi2Discriminator(uhh2::Context& ctx){
 }
 
 bool ZprimeChi2Discriminator::process(uhh2::Event& event){
+  // Always initialize to false so downstream modules (e.g. SpinCorrelations) can safely
+  // call event.get() on this handle even when no candidates are built.
+  event.set(h_is_zprime_reconstructed_, false);
 
   vector<ZprimeCandidate>& candidates = event.get(h_ZprimeCandidates_);
   if(candidates.size() < 1) return false;
@@ -364,7 +367,7 @@ ZprimeCorrectMatchDiscriminator::ZprimeCorrectMatchDiscriminator(uhh2::Context& 
 }
 
 bool ZprimeCorrectMatchDiscriminator::process(uhh2::Event& event){
-
+  event.set(h_is_zprime_reconstructed_, false);
   if(!is_mc) return false;
 
   // Check if event contains == 2 top quarks

@@ -1220,7 +1220,6 @@ bool ZprimeAnalysisModule::process(uhh2::Event& event){
   if(debug) cout << "[ZprimeAnalysisModule] DeltaEta(j1, j2) Selection: passed" << endl;
   fill_histograms(event, "DeltaEtaCut_PASS");
 
-
   // TwoD for low-pT muons (dr >0.3 OR pTrel >10 GeV)
   if(isMuon && muon_is_low){
     if(debug) cout << "[ZprimeAnalysisModule] 2D-cut on low-pT muons: before"<<endl;
