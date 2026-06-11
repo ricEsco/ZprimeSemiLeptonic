@@ -467,6 +467,7 @@ bool ZprimeCorrectMatchDiscriminator::process(uhh2::Event& event){
       const TopJet* topjet = candidates.at(i).tophad_topjet_ptr();
 
       // Match b-quark
+      // TO-DO: match gen_b to SD subjet with highest bscore within 0.1 (same as lepton)
       dr = deltaR(ttbargen.BHad(), *topjet);
       if(dr > 0.8){
         candidates.at(i).set_discriminators("correct_match", 9999999);
@@ -875,12 +876,10 @@ bool MEPartonFinder::process(uhh2::Event& evt){
 ////////////////////////////////////////////////
 
 Variables_NN::Variables_NN(uhh2::Context& ctx, TString mode): mode_(mode){
-  std::cout << "[ZprimeSemiLeptonicModules] Initializing Variables_NN with mode: " << mode_ << endl;
+  bool debug = false;
+  if(debug) std::cout << "[ZprimeSemiLeptonicModules] Initializing Variables_NN with mode: " << mode_ << endl;
 
-  h_BestZprimeCandidateChi2 = ctx.get_handle<ZprimeCandidate*>("ZprimeCandidateBestChi2");
-  h_is_zprime_reconstructed_chi2 = ctx.get_handle<bool>("is_zprime_reconstructed_chi2");
   h_CHSjets_matched = ctx.get_handle<std::vector<Jet>>("CHS_matched");
-  h_eventweight = ctx.declare_event_output<float> ("eventweight");
 
   ///  MUONS
   h_Mu_pt = ctx.declare_event_output<float>("Mu_pt");
@@ -1004,105 +1003,12 @@ Variables_NN::Variables_NN(uhh2::Context& ctx, TString mode): mode_(mode){
   }
 
   // random number for k-fold validation
-  h_uniform_random = ctx.declare_event_output<float>("uniform_random");
-
-  ///////////
-  /// EFT ///
-  ///////////
-  // Booleans to identify era
-  isUL16preVFP=false; isUL16postVFP=false; isUL17=false; isUL18 =false;
-  isUL16preVFP  = (ctx.get("dataset_version").find("UL16preVFP")  != std::string::npos);
-  isUL16postVFP = (ctx.get("dataset_version").find("UL16postVFP") != std::string::npos);
-  isUL17        = (ctx.get("dataset_version").find("UL17")        != std::string::npos);
-  isUL18        = (ctx.get("dataset_version").find("UL18")        != std::string::npos);
-  // ttbar system variables
-  h_chi2 = ctx.declare_event_output<float>("chi2");
-  h_M_tt = ctx.declare_event_output<float>("M_tt");
-  h_beta = ctx.declare_event_output<float>("beta");
-  h_dyreco = ctx.declare_event_output<float>("dyreco"); // charge asymmetry
-
-  // spin-analyzer (leptons-only) projections
-  h_cosTheta1k_antiLep = ctx.declare_event_output<float>("cosTheta1k_antiLep");
-  h_cosTheta1r_antiLep = ctx.declare_event_output<float>("cosTheta1r_antiLep");
-  h_cosTheta1n_antiLep = ctx.declare_event_output<float>("cosTheta1n_antiLep");
-  h_cosTheta1kStar_antiLep = ctx.declare_event_output<float>("cosTheta1kStar_antiLep");
-  h_cosTheta1rStar_antiLep = ctx.declare_event_output<float>("cosTheta1rStar_antiLep");
-  h_cosTheta2k_Lep = ctx.declare_event_output<float>("cosTheta2k_Lep");
-  h_cosTheta2r_Lep = ctx.declare_event_output<float>("cosTheta2r_Lep");
-  h_cosTheta2n_Lep = ctx.declare_event_output<float>("cosTheta2n_Lep");
-  h_cosTheta2kStar_Lep = ctx.declare_event_output<float>("cosTheta2kStar_Lep");
-  h_cosTheta2rStar_Lep = ctx.declare_event_output<float>("cosTheta2rStar_Lep");
-
-  // spin-analyzer projections
-  h_cosTheta1k = ctx.declare_event_output<float>("cosTheta1k");
-  h_cosTheta1r = ctx.declare_event_output<float>("cosTheta1r");
-  h_cosTheta1n = ctx.declare_event_output<float>("cosTheta1n");
-  h_cosTheta1kStar = ctx.declare_event_output<float>("cosTheta1kStar");
-  h_cosTheta1rStar = ctx.declare_event_output<float>("cosTheta1rStar");
-  h_cosTheta2k = ctx.declare_event_output<float>("cosTheta2k");
-  h_cosTheta2r = ctx.declare_event_output<float>("cosTheta2r");
-  h_cosTheta2n = ctx.declare_event_output<float>("cosTheta2n");
-  h_cosTheta2kStar = ctx.declare_event_output<float>("cosTheta2kStar");
-  h_cosTheta2rStar = ctx.declare_event_output<float>("cosTheta2rStar");
-
-  // Correlation elements
-  h_Cnn = ctx.declare_event_output<float>("Cnn");
-  h_Cnr = ctx.declare_event_output<float>("Cnr");
-  h_Cnk = ctx.declare_event_output<float>("Cnk");
-  h_Crn = ctx.declare_event_output<float>("Crn");
-  h_Crr = ctx.declare_event_output<float>("Crr");
-  h_Crk = ctx.declare_event_output<float>("Crk");
-  h_Ckn = ctx.declare_event_output<float>("Ckn");
-  h_Ckr = ctx.declare_event_output<float>("Ckr");
-  h_Ckk = ctx.declare_event_output<float>("Ckk");
-  // linear combinations
-  h_Crk_plus = ctx.declare_event_output<float>("Crk_plus");
-  h_Crk_minus = ctx.declare_event_output<float>("Crk_minus");
-  h_Cnr_plus = ctx.declare_event_output<float>("Cnr_plus");
-  h_Cnr_minus = ctx.declare_event_output<float>("Cnr_minus");
-  h_Cnk_plus = ctx.declare_event_output<float>("Cnk_plus");
-  h_Cnk_minus = ctx.declare_event_output<float>("Cnk_minus");
-
-  // Entanglement witnesses
-  h_cHel = ctx.declare_event_output<float>("cHel");
-  h_cHel_Mtt300_400 = ctx.declare_event_output<float>("cHel_Mtt300_400");
-  h_cHel_Mtt300_400_betaLT0p9 = ctx.declare_event_output<float>("cHel_Mtt300_400_betaLT0p9");
-
-  h_cHel_P3n = ctx.declare_event_output<float>("cHel_P3n");
-  h_cHel_P3n_Mtt800_Inf = ctx.declare_event_output<float>("cHel_P3n_Mtt800_Inf");
-  h_cHel_P3n_Mtt800_Inf_cosThetaLT0p4 = ctx.declare_event_output<float>("cHel_P3n_Mtt800_Inf_cosThetaLT0p4");
-
-  // Baumgart et al. variables
-  h_Sigma_phi = ctx.declare_event_output<float>("Sigma_phi");
-  h_Delta_phi = ctx.declare_event_output<float>("Delta_phi");
-
-  // Baumgart variables with cut on charge asymmetry
-  h_Sigma_phi_1=ctx.declare_event_output<float>("Sigma_phi_1");
-  h_Sigma_phi_2=ctx.declare_event_output<float>("Sigma_phi_2");
-  h_Delta_phi_1=ctx.declare_event_output<float>("Delta_phi_1");
-  h_Delta_phi_2=ctx.declare_event_output<float>("Delta_phi_2");
-  // Charge asymmetry with cut on Baumgart variables
-  h_dyreco_s1 = ctx.declare_event_output<float>("dyreco_s1");
-  h_dyreco_s2 = ctx.declare_event_output<float>("dyreco_s2");
-  h_dyreco_d1 = ctx.declare_event_output<float>("dyreco_d1");
-  h_dyreco_d2 = ctx.declare_event_output<float>("dyreco_d2");
-
-  // all three variables in high/low pt cuts
-  h_Sigma_phi_high = ctx.declare_event_output<float>("Sigma_phi_high");
-  h_Delta_phi_high = ctx.declare_event_output<float>("Delta_phi_high");
-  h_dyreco_high    = ctx.declare_event_output<float>("dyreco_high");
-  h_Sigma_phi_low = ctx.declare_event_output<float>("Sigma_phi_low");
-  h_Delta_phi_low = ctx.declare_event_output<float>("Delta_phi_low");
-  h_dyreco_low    = ctx.declare_event_output<float>("dyreco_low");
-  
+  h_uniform_random = ctx.declare_event_output<float>("uniform_random");  
 }
 
 bool Variables_NN::process(uhh2::Event& evt){
-  std::cout << "[ZprimeSemiLeptonicModules] Variables_NN::process" << endl;
-
-  double weight = evt.weight;
-  evt.set(h_eventweight, -10);
-  evt.set(h_eventweight, weight);
+  bool debug = false;
+  if(debug) std::cout << "[ZprimeSemiLeptonicModules] Variables_NN::process" << endl;
 
   /////////   MUONS
   evt.set(h_Mu_pt, -10);
@@ -1194,14 +1100,14 @@ bool Variables_NN::process(uhh2::Event& evt){
   vector<Jet>* Ak4jets = evt.jets;
   int NAk4jets = Ak4jets->size();
   evt.set(h_N_Ak4, NAk4jets);
-  std::cout << "[ZprimeSemiLeptonicModules] Number of AK4 jets: " << NAk4jets << endl;
+  if(debug) std::cout << "[ZprimeSemiLeptonicModules] Number of AK4 jets: " << NAk4jets << endl;
   
   for(int i=0; i<NAk4jets; i++){
     if(i==0){
-      std::cout << "[ZprimeSemiLeptonicModules]   AK4 jet1 pt: " << Ak4jets->at(0).pt() << endl;
-      std::cout << "[ZprimeSemiLeptonicModules]   AK4 jet1 eta: " << Ak4jets->at(0).eta() << endl;
-      std::cout << "[ZprimeSemiLeptonicModules]   AK4 jet1 phi: " << Ak4jets->at(0).phi() << endl;
-      std::cout << "[ZprimeSemiLeptonicModules]   AK4 jet1 energy: " << Ak4jets->at(0).energy() << endl;
+      if(debug) std::cout << "[ZprimeSemiLeptonicModules]   AK4 jet1 pt: " << Ak4jets->at(0).pt() << endl;
+      if(debug) std::cout << "[ZprimeSemiLeptonicModules]   AK4 jet1 eta: " << Ak4jets->at(0).eta() << endl;
+      if(debug) std::cout << "[ZprimeSemiLeptonicModules]   AK4 jet1 phi: " << Ak4jets->at(0).phi() << endl;
+      if(debug) std::cout << "[ZprimeSemiLeptonicModules]   AK4 jet1 energy: " << Ak4jets->at(0).energy() << endl;
       evt.set(h_Ak4_j1_pt, Ak4jets->at(i).pt());
       evt.set(h_Ak4_j1_eta, Ak4jets->at(i).eta());
       evt.set(h_Ak4_j1_phi, Ak4jets->at(i).phi());
@@ -1408,16 +1314,118 @@ bool Variables_NN::process(uhh2::Event& evt){
   } // end hotvr mode
 
   // random generator with eta-dependant random seed for k-fold validation
-  std::cout << "[ZprimeSemiLeptonicModules] About to define rand with AK4 jet0 phi as seed " << endl;
   double leading_jet_phi = Ak4jets->at(0).v4().phi();
   std::srand((int)(1000 * leading_jet_phi));
   evt.set(h_uniform_random, ((double) rand()) / RAND_MAX);
-  std::cout << "[ZprimeSemiLeptonicModules] Just after defining rand with AK4 jet0 phi as seed " << endl;
 
-  ////////////////////////////////////////////////////////////////////////////////////////////
-  ///////////// Variables from reconstructed ttbar system for EFT interpretation /////////////
-  ////////////////////////////////////////////////////////////////////////////////////////////
-  // cout << "[Variables_NN::process] starting SpinCorr variables " << endl;
+  return true;
+}
+
+
+SpinCorrelations::SpinCorrelations(uhh2::Context& ctx, TString mode): mode_(mode){
+  bool debug = false;
+  if(debug) cout << "[SpinCorrelations::SpinCorrelations] constructor called with mode: " << mode_ << endl;
+
+  h_BestZprimeCandidateChi2 = ctx.get_handle<ZprimeCandidate*>("ZprimeCandidateBestChi2");
+  h_is_zprime_reconstructed_chi2 = ctx.get_handle<bool>("is_zprime_reconstructed_chi2");
+  h_CHSjets_matched = ctx.get_handle<std::vector<Jet>>("CHS_matched");
+  h_eventweight = ctx.declare_event_output<float> ("eventweight");
+
+  // Booleans to identify era
+  isUL16preVFP=false; isUL16postVFP=false; isUL17=false; isUL18 =false;
+  isUL16preVFP  = (ctx.get("dataset_version").find("UL16preVFP")  != std::string::npos);
+  isUL16postVFP = (ctx.get("dataset_version").find("UL16postVFP") != std::string::npos);
+  isUL17        = (ctx.get("dataset_version").find("UL17")        != std::string::npos);
+  isUL18        = (ctx.get("dataset_version").find("UL18")        != std::string::npos);
+  // ttbar system variables
+  h_chi2 = ctx.declare_event_output<float>("chi2");
+  h_M_tt = ctx.declare_event_output<float>("M_tt");
+  h_beta = ctx.declare_event_output<float>("beta");
+  h_dyreco = ctx.declare_event_output<float>("dyreco"); // charge asymmetry
+
+  // spin-analyzer (leptons-only) projections
+  h_cosTheta1k_antiLep = ctx.declare_event_output<float>("cosTheta1k_antiLep");
+  h_cosTheta1r_antiLep = ctx.declare_event_output<float>("cosTheta1r_antiLep");
+  h_cosTheta1n_antiLep = ctx.declare_event_output<float>("cosTheta1n_antiLep");
+  h_cosTheta1kStar_antiLep = ctx.declare_event_output<float>("cosTheta1kStar_antiLep");
+  h_cosTheta1rStar_antiLep = ctx.declare_event_output<float>("cosTheta1rStar_antiLep");
+  h_cosTheta2k_Lep = ctx.declare_event_output<float>("cosTheta2k_Lep");
+  h_cosTheta2r_Lep = ctx.declare_event_output<float>("cosTheta2r_Lep");
+  h_cosTheta2n_Lep = ctx.declare_event_output<float>("cosTheta2n_Lep");
+  h_cosTheta2kStar_Lep = ctx.declare_event_output<float>("cosTheta2kStar_Lep");
+  h_cosTheta2rStar_Lep = ctx.declare_event_output<float>("cosTheta2rStar_Lep");
+
+  // spin-analyzer projections
+  h_cosTheta1k = ctx.declare_event_output<float>("cosTheta1k");
+  h_cosTheta1r = ctx.declare_event_output<float>("cosTheta1r");
+  h_cosTheta1n = ctx.declare_event_output<float>("cosTheta1n");
+  h_cosTheta1kStar = ctx.declare_event_output<float>("cosTheta1kStar");
+  h_cosTheta1rStar = ctx.declare_event_output<float>("cosTheta1rStar");
+  h_cosTheta2k = ctx.declare_event_output<float>("cosTheta2k");
+  h_cosTheta2r = ctx.declare_event_output<float>("cosTheta2r");
+  h_cosTheta2n = ctx.declare_event_output<float>("cosTheta2n");
+  h_cosTheta2kStar = ctx.declare_event_output<float>("cosTheta2kStar");
+  h_cosTheta2rStar = ctx.declare_event_output<float>("cosTheta2rStar");
+
+  // Correlation elements
+  h_Cnn = ctx.declare_event_output<float>("Cnn");
+  h_Cnr = ctx.declare_event_output<float>("Cnr");
+  h_Cnk = ctx.declare_event_output<float>("Cnk");
+  h_Crn = ctx.declare_event_output<float>("Crn");
+  h_Crr = ctx.declare_event_output<float>("Crr");
+  h_Crk = ctx.declare_event_output<float>("Crk");
+  h_Ckn = ctx.declare_event_output<float>("Ckn");
+  h_Ckr = ctx.declare_event_output<float>("Ckr");
+  h_Ckk = ctx.declare_event_output<float>("Ckk");
+  // linear combinations
+  h_Crk_plus = ctx.declare_event_output<float>("Crk_plus");
+  h_Crk_minus = ctx.declare_event_output<float>("Crk_minus");
+  h_Cnr_plus = ctx.declare_event_output<float>("Cnr_plus");
+  h_Cnr_minus = ctx.declare_event_output<float>("Cnr_minus");
+  h_Cnk_plus = ctx.declare_event_output<float>("Cnk_plus");
+  h_Cnk_minus = ctx.declare_event_output<float>("Cnk_minus");
+
+  // Entanglement witnesses
+  h_cHel = ctx.declare_event_output<float>("cHel");
+  h_cHel_Mtt300_400 = ctx.declare_event_output<float>("cHel_Mtt300_400");
+  h_cHel_Mtt300_400_betaLT0p9 = ctx.declare_event_output<float>("cHel_Mtt300_400_betaLT0p9");
+
+  h_cHel_P3n = ctx.declare_event_output<float>("cHel_P3n");
+  h_cHel_P3n_Mtt800_Inf = ctx.declare_event_output<float>("cHel_P3n_Mtt800_Inf");
+  h_cHel_P3n_Mtt800_Inf_cosThetaLT0p4 = ctx.declare_event_output<float>("cHel_P3n_Mtt800_Inf_cosThetaLT0p4");
+
+  // Baumgart et al. variables
+  h_Sigma_phi = ctx.declare_event_output<float>("Sigma_phi");
+  h_Delta_phi = ctx.declare_event_output<float>("Delta_phi");
+
+  // Baumgart variables with cut on charge asymmetry
+  h_Sigma_phi_1=ctx.declare_event_output<float>("Sigma_phi_1");
+  h_Sigma_phi_2=ctx.declare_event_output<float>("Sigma_phi_2");
+  h_Delta_phi_1=ctx.declare_event_output<float>("Delta_phi_1");
+  h_Delta_phi_2=ctx.declare_event_output<float>("Delta_phi_2");
+  // Charge asymmetry with cut on Baumgart variables
+  h_dyreco_s1 = ctx.declare_event_output<float>("dyreco_s1");
+  h_dyreco_s2 = ctx.declare_event_output<float>("dyreco_s2");
+  h_dyreco_d1 = ctx.declare_event_output<float>("dyreco_d1");
+  h_dyreco_d2 = ctx.declare_event_output<float>("dyreco_d2");
+
+  // all three variables in high/low pt cuts
+  h_Sigma_phi_high = ctx.declare_event_output<float>("Sigma_phi_high");
+  h_Delta_phi_high = ctx.declare_event_output<float>("Delta_phi_high");
+  h_dyreco_high    = ctx.declare_event_output<float>("dyreco_high");
+  h_Sigma_phi_low = ctx.declare_event_output<float>("Sigma_phi_low");
+  h_Delta_phi_low = ctx.declare_event_output<float>("Delta_phi_low");
+  h_dyreco_low    = ctx.declare_event_output<float>("dyreco_low");
+}
+
+bool SpinCorrelations::process(uhh2::Event& evt){
+  bool debug = false;
+  if(debug) std::cout << "[ZprimeSemiLeptonicModules] SpinCorrelations::process" << endl;
+
+  double weight = evt.weight;
+  evt.set(h_eventweight, -10);
+  evt.set(h_eventweight, weight);
+
   bool is_zprime_reconstructed_chi2 = evt.get(h_is_zprime_reconstructed_chi2); // reconstruction method boolean
   evt.set(h_chi2, -10);  // chi^2 of ttbar reconstruction
   evt.set(h_M_tt, -10);  // invariant mass of ttbar system
@@ -1904,7 +1912,7 @@ Variables_EFT_SR::Variables_EFT_SR(uhh2::Context& ctx, TString mode): mode_(mode
   h_BestZprimeCandidateChi2 = ctx.get_handle<ZprimeCandidate*>("ZprimeCandidateBestChi2");
   h_is_zprime_reconstructed_chi2 = ctx.get_handle<bool>("is_zprime_reconstructed_chi2");
   h_CHSjets_matched = ctx.get_handle<std::vector<Jet>>("CHS_matched");
-  h_eventweight_SR = ctx.declare_event_output<float> ("eventweight");
+  h_eventweight_SR = ctx.declare_event_output<float> ("eventweight_SR");
   isUL16preVFP=false; isUL16postVFP=false; isUL17=false; isUL18 =false;
   isUL16preVFP  = (ctx.get("dataset_version").find("UL16preVFP")  != std::string::npos);
   isUL16postVFP = (ctx.get("dataset_version").find("UL16postVFP") != std::string::npos);
@@ -2463,7 +2471,7 @@ Variables_EFT_CR1::Variables_EFT_CR1(uhh2::Context& ctx, TString mode): mode_(mo
   h_BestZprimeCandidateChi2 = ctx.get_handle<ZprimeCandidate*>("ZprimeCandidateBestChi2");
   h_is_zprime_reconstructed_chi2 = ctx.get_handle<bool>("is_zprime_reconstructed_chi2");
   h_CHSjets_matched = ctx.get_handle<std::vector<Jet>>("CHS_matched");
-  h_eventweight_CR1 = ctx.declare_event_output<float> ("eventweight");
+  h_eventweight_CR1 = ctx.declare_event_output<float> ("eventweight_CR1");
 
   // ttbar system variables
   h_chi2_CR1 = ctx.declare_event_output<float>("chi2_CR1");
@@ -3018,7 +3026,7 @@ Variables_EFT_CR2::Variables_EFT_CR2(uhh2::Context& ctx, TString mode): mode_(mo
   h_BestZprimeCandidateChi2 = ctx.get_handle<ZprimeCandidate*>("ZprimeCandidateBestChi2");
   h_is_zprime_reconstructed_chi2 = ctx.get_handle<bool>("is_zprime_reconstructed_chi2");
   h_CHSjets_matched = ctx.get_handle<std::vector<Jet>>("CHS_matched");
-  h_eventweight_CR2 = ctx.declare_event_output<float> ("eventweight");
+  h_eventweight_CR2 = ctx.declare_event_output<float> ("eventweight_CR2");
 
   // ttbar system variables
   h_chi2_CR2 = ctx.declare_event_output<float>("chi2_CR2");
@@ -3760,14 +3768,15 @@ TopPtReweighting::TopPtReweighting(uhh2::Context& ctx,
   }
 
   bool PuppiCHS_matching::process(uhh2::Event& event){
-    cout << "[ZprimeSemiLeptonicModules]  Starting PuppiCHSmatching::process() "<<endl;
+    bool debug = false;
+    if(debug) cout << "[ZprimeSemiLeptonicModules]  Starting PuppiCHSmatching::process() "<<endl;
     vector<Jet> CHSjets = event.get(h_CHSjets);
     std::vector<Jet> matched_jets;
     std::vector<Jet> matched_jets_PUPPI;
     JetPFID CHS_matched_Tight  = JetPFID(JetPFID::WP_TIGHT_CHS);
 
-    std::cout << "[ZprimeSemiLeptonicModules]   N CHS jets: "<<CHSjets.size()<<endl;
-    std::cout << "[ZprimeSemiLeptonicModules]   N PUPPI jets: "<<event.jets->size()<<endl;
+    if(debug) std::cout << "[ZprimeSemiLeptonicModules]   N CHS jets: "<<CHSjets.size()<<endl;
+    if(debug) std::cout << "[ZprimeSemiLeptonicModules]   N PUPPI jets: "<<event.jets->size()<<endl;
 
     // loop over PUPPI jets
     for(const Jet & jet : *event.jets){ 
@@ -3800,8 +3809,8 @@ TopPtReweighting::TopPtReweighting(uhh2::Context& ctx,
 
     std::swap(matched_jets_PUPPI, *event.jets);
     event.set(h_CHS_matched_, matched_jets);
-    std::cout << "[ZprimeSemiLeptonicModules]   N matched CHS jets: "<<matched_jets.size()<<endl;
-    std::cout << "[ZprimeSemiLeptonicModules]   N matched PUPPI jets: "<<matched_jets_PUPPI.size()<<endl;
+    if(debug) std::cout << "[ZprimeSemiLeptonicModules]   N matched CHS jets: "<<matched_jets.size()<<endl;
+    if(debug) std::cout << "[ZprimeSemiLeptonicModules]   N matched PUPPI jets: "<<matched_jets_PUPPI.size()<<endl;
     if(event.jets->size()==0) return false;
     return true;
   }

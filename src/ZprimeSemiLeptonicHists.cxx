@@ -36,7 +36,7 @@ using namespace uhh2;
 
 ZprimeSemiLeptonicHists::ZprimeSemiLeptonicHists(uhh2::Context& ctx, const std::string& dirname):
 Hists(ctx, dirname) {
-  bool debug = true;
+  bool debug = false;
 
   is_mc = ctx.get("dataset_type") == "MC";
   ishotvr = (ctx.get("is_hotvr") == "true");
@@ -84,7 +84,7 @@ Hists(ctx, dirname) {
 }
 
 void ZprimeSemiLeptonicHists::init(){
-  std::cout << "[ZprimeSemiLeptonicHists] Initializing histograms" << endl;
+  if(debug) cout << "[ZprimeSemiLeptonicHists] Initializing histograms" << endl;
 
   //CHS jets
   CHS_pt_jet   = book<TH1F>("CHS_pt_jet", "p_{T}^{jets} [GeV]", 45, 0, 900);
@@ -507,7 +507,7 @@ void ZprimeSemiLeptonicHists::init(){
   STlep_rebin   = book<TH1F>("STlep_rebin", "S_{T}^{lep} [GeV]", 45, 0, 900);
   STlep_rebin2  = book<TH1F>("STlep_rebin2", "S_{T}^{lep} [GeV]", 30, 0, 1500);
   STlep_rebin3  = book<TH1F>("STlep_rebin3", "S_{T}^{lep} [GeV]", 15, 0, 1500);
-  eventweight   = book<TH1F>("eventweight", "event weight", 2210, -10, 2200);
+  event_weight   = book<TH1F>("event_weight", "event weight", 2210, -10, 2200);
 
   // Zprime reconstruction
   toplep_pt         = book<TH1F>("toplep_pt", "p_{T}^{t,lep} [GeV]", 70, 0, 7000);
@@ -804,7 +804,7 @@ void ZprimeSemiLeptonicHists::init(){
 
 void ZprimeSemiLeptonicHists::fill(const Event & event){
   double weight = event.weight;
-  bool debug = true;
+  bool debug = false;
   /*
   █      ██ ███████ ████████ ███████
   █      ██ ██         ██    ██
@@ -1518,7 +1518,7 @@ void ZprimeSemiLeptonicHists::fill(const Event & event){
   STlep_rebin2->Fill(ht_lep, weight);
   STlep_rebin3->Fill(ht_lep, weight);
 
-  eventweight->Fill(weight, 1);
+  event_weight->Fill(weight);
 
   // Zprime reco method bools
   bool is_zprime_reconstructed_chi2 = event.get(h_is_zprime_reconstructed_chi2);

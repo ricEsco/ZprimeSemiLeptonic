@@ -27,12 +27,8 @@ public:
 private:
   bool do_puppi;
   TString tag;
-  TString base_path_puppi;
-  TString base_path_chs;
-  TString path_theta;
-  std::vector<float> signalmasses;
-  std::vector<TString> signalmasses_str;
-
-
+  TString path;
+  std::vector<TString> CMcuts;
+  std::vector<TString> CMcuts_str;
 
 };

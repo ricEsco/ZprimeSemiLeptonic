@@ -25,19 +25,22 @@ using namespace std;
 
 void AnalysisTool::CalculateReconstructionQuality(){
 
+  vector<TString> CMcuts = AnalysisTool::CMcuts;
 
-  vector<float> masses = AnalysisTool::signalmasses;
-  vector<TString> masses_str = AnalysisTool::signalmasses_str;
+  // make x-values for TGraph: enumerating the indices of CMcuts
+  std::vector<float> x_values;
+  for(unsigned int i=0; i<CMcuts.size(); i++){
+    x_values.emplace_back(i);
+  }
 
   TString filename_base = "";
-  if(AnalysisTool::do_puppi) filename_base = base_path_puppi;
-  else filename_base = base_path_chs;
-  filename_base += "/NOMINAL/uhh2.AnalysisModuleRunner.MC.";
+  filename_base = path;
+  filename_base += "TTToSemiLeptonic";
 
   vector<float> before_matchable, before_correct_matchable, after_matchable, after_correct_matchable;
-  for(unsigned int i=0; i<masses.size(); i++){
+  for(unsigned int i=0; i<CMcuts.size(); i++){
 
-    TString filename = filename_base + masses_str[i] + ".root";
+    TString filename = filename_base + ".root";
 
     TFile* f_in = new TFile(filename, "READ");
 
@@ -45,6 +48,7 @@ void AnalysisTool::CalculateReconstructionQuality(){
     float n_before           = ((TH1F*)(f_in->Get("TwoDCut_Muon_LowPt_PASS/sum_event_weights")))->Integral();
     float n_before_matchable = ((TH1F*)(f_in->Get("MatchableBeforeChi2Cut_General/sum_event_weights")))->Integral();
     float n_before_correct   = ((TH1F*)(f_in->Get("CorrectMatchBeforeChi2Cut_General/sum_event_weights")))->Integral();
+
     float n_after            = ((TH1F*)(f_in->Get("PassChi2Cut_PASSlowpT2Dcut_General/sum_event_weights")))->Integral();
     float n_after_matchable  = ((TH1F*)(f_in->Get("Matchable_General/sum_event_weights")))->Integral();
     float n_after_correct    = ((TH1F*)(f_in->Get("CorrectMatch_General/sum_event_weights")))->Integral();
@@ -69,11 +73,14 @@ void AnalysisTool::CalculateReconstructionQuality(){
   }
 
   // Put everything in TGraphs
-  TGraph* g_before_matchable = new TGraph(before_matchable.size(), &masses[0], &before_matchable[0]);
-  TGraph* g_before_correct_matchable = new TGraph(before_correct_matchable.size(), &masses[0], &before_correct_matchable[0]);
-  TGraph* g_after_matchable = new TGraph(after_matchable.size(), &masses[0], &after_matchable[0]);
-  TGraph* g_after_correct_matchable = new TGraph(after_correct_matchable.size(), &masses[0], &after_correct_matchable[0]);
+  // TGraph (Int_t n, const Float_t *x, const Float_t *y)
+  TGraph* g_before_matchable =         new TGraph(before_matchable.size(),         &x_values[0], &before_matchable[0]);
+  TGraph* g_before_correct_matchable = new TGraph(before_correct_matchable.size(), &x_values[0], &before_correct_matchable[0]);
+  TGraph* g_after_matchable =          new TGraph(after_matchable.size(),          &x_values[0], &after_matchable[0]);
+  TGraph* g_after_correct_matchable =  new TGraph(after_correct_matchable.size(),  &x_values[0], &after_correct_matchable[0]);
 
+  // Matchable graph style
+  // Before chi2
   g_before_matchable->SetLineWidth(2);
   g_before_matchable->SetLineColor(kRed-4);
   g_before_matchable->GetYaxis()->SetRangeUser(0., 1.);
@@ -83,10 +90,13 @@ void AnalysisTool::CalculateReconstructionQuality(){
   g_before_matchable->GetYaxis()->SetTitleOffset(1.2);
   g_before_matchable->GetXaxis()->SetTitleSize(0.042);
   g_before_matchable->SetTitle("");
-
+  // After chi2
   g_after_matchable->SetLineWidth(2);
   g_after_matchable->SetLineColor(kAzure+1);
 
+
+  // CorrectMatch graph style
+  // Before chi2
   g_before_correct_matchable->SetLineWidth(2);
   g_before_correct_matchable->SetLineColor(kRed-4);
   g_before_correct_matchable->GetYaxis()->SetRangeUser(0., 1.);
@@ -96,10 +106,12 @@ void AnalysisTool::CalculateReconstructionQuality(){
   g_before_correct_matchable->GetYaxis()->SetTitleOffset(1.2);
   g_before_correct_matchable->GetXaxis()->SetTitleSize(0.042);
   g_before_correct_matchable->SetTitle("");
-
+  // After chi2
   g_after_correct_matchable->SetLineWidth(2);
   g_after_correct_matchable->SetLineColor(kAzure+1);
 
+
+  // Matchable canvas info, draw, etc.
   TCanvas* c = new TCanvas("c", "c", 600, 600);
   g_before_matchable->Draw("AL");
   g_after_matchable->Draw("SAME L");
@@ -118,6 +130,7 @@ void AnalysisTool::CalculateReconstructionQuality(){
   c->SaveAs(outname + ".eps");
   c->SaveAs(outname + ".pdf");
 
+  // CorrectMatch canvas info, draw, etc.
   TCanvas* c2 = new TCanvas("c2", "c2", 600, 600);
   g_before_correct_matchable->Draw("AL");
   g_after_correct_matchable->Draw("SAME L");
@@ -136,6 +149,7 @@ void AnalysisTool::CalculateReconstructionQuality(){
   c2->SaveAs(outname + ".eps");
   c2->SaveAs(outname + ".pdf");
 
+  // Clean up
   delete g_after_matchable;
   delete g_after_correct_matchable;
   delete g_before_matchable;

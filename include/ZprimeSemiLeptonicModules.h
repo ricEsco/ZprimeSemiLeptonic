@@ -159,10 +159,7 @@ public:
   virtual bool process(uhh2::Event&) override;
 
 private:
-  uhh2::Event::Handle<bool> h_is_zprime_reconstructed_chi2;
-  uhh2::Event::Handle<ZprimeCandidate*> h_BestZprimeCandidateChi2;
   uhh2::Event::Handle<std::vector<Jet> > h_CHSjets_matched;
-  uhh2::Event::Handle<float> h_eventweight;
   uhh2::Event::Handle<float> h_Mu_pt, h_Mu_eta, h_Mu_phi, h_Mu_E;
   uhh2::Event::Handle<float> h_Ele_pt, h_Ele_eta, h_Ele_phi, h_Ele_E;
   uhh2::Event::Handle<float> h_MET_pt, h_MET_phi;
@@ -181,6 +178,24 @@ private:
   uhh2::Event::Handle<float> h_Ak4_j5_pt, h_Ak4_j5_eta, h_Ak4_j5_phi, h_Ak4_j5_E, h_Ak4_j5_m, h_Ak4_j5_deepjetbscore;
   uhh2::Event::Handle<float> h_Ak4_j6_pt, h_Ak4_j6_eta, h_Ak4_j6_phi, h_Ak4_j6_E, h_Ak4_j6_m, h_Ak4_j6_deepjetbscore;
   uhh2::Event::Handle<float> h_uniform_random;
+  TString mode_;
+};
+
+
+
+/////////////////////////////////////////////////////////////////////////
+//////////////////     Spin Correlation variabless     //////////////////
+/////////////////////////////////////////////////////////////////////////
+class SpinCorrelations : uhh2::AnalysisModule{
+public:
+  explicit SpinCorrelations(uhh2::Context&, TString mode);
+  virtual bool process(uhh2::Event&) override;
+
+private:
+  uhh2::Event::Handle<bool> h_is_zprime_reconstructed_chi2;
+  uhh2::Event::Handle<ZprimeCandidate*> h_BestZprimeCandidateChi2;
+  uhh2::Event::Handle<std::vector<Jet> > h_CHSjets_matched;
+  uhh2::Event::Handle<float> h_eventweight;
   bool isUL16preVFP, isUL16postVFP, isUL17, isUL18;
   uhh2::Event::Handle<float> h_chi2, h_M_tt, h_beta, h_dyreco;
   uhh2::Event::Handle<float> h_cosTheta1k_antiLep, h_cosTheta1r_antiLep, h_cosTheta1n_antiLep, h_cosTheta1kStar_antiLep, h_cosTheta1rStar_antiLep;
@@ -197,6 +212,7 @@ private:
   uhh2::Event::Handle<float> h_Sigma_phi_high, h_Sigma_phi_low, h_Delta_phi_high, h_Delta_phi_low, h_dyreco_high, h_dyreco_low;
   TString mode_;
 };
+
 
 /////////////////////////////////////////////////////////////////////////
 ////////////////////////////     EFT SR     /////////////////////////////
@@ -228,6 +244,7 @@ class Variables_EFT_SR : uhh2::AnalysisModule{
   TString mode_;
 };
 
+
 //////////////////////////////////////////////////////////////////////////
 ////////////////////////////     EFT CR1     /////////////////////////////
 //////////////////////////////////////////////////////////////////////////
@@ -257,6 +274,7 @@ class Variables_EFT_CR1 : uhh2::AnalysisModule{
   uhh2::Event::Handle<float> h_Sigma_phi_high_CR1, h_Sigma_phi_low_CR1, h_Delta_phi_high_CR1, h_Delta_phi_low_CR1, h_dyreco_high_CR1, h_dyreco_low_CR1;
   TString mode_;
 };
+
 
 //////////////////////////////////////////////////////////////////////////
 ////////////////////////////     EFT CR2     /////////////////////////////

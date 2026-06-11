@@ -346,7 +346,7 @@ int argc = 2;
   // cout << "Additional hists for debugging..." << endl;
   // CompareHists(h_pt_mc[0], h_pt_mc[1], "p_{T}", "Compare_MC")
 
-  return 0;
+  return;
 }
 
 // ==================================================================================================
