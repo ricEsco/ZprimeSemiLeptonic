@@ -4,15 +4,15 @@
 
 **Scope.** Understand how `ZprimeCandidateBuilder` (`src/ZprimeSemiLeptonicModules.cxx`, lines 82–269) reconstructs the t̄t system across the different event scenarios, then evaluate where the reconstruction can be tuned so that the **lepton** and the **hadronic-side b‑jet** directions — the two inputs to the spin‑analyzer angle — are preserved as precisely as possible, since their angular resolution sets the dilution of the measured coefficient.
 
-**Target observable.** `CHel_P3n`, defined in `src/ZprimeSemiLeptonicHists.cxx:1897`, filled into the histogram `cHel_P3n_Mtt800_Inf` (`:1908`) for events with `M(t̄t) > 800 GeV`:
+**Target observable.** `CHel_P3n`, defined in `src/ZprimeSemiLeptonicHists.cxx:1910`, filled into the histogram `cHel_P3n_Mtt800_Inf` (`:1926`) for events with `M(t̄t) > 800 GeV`:
 
 ```cpp
-CHel_P3n = cosTheta1k*cosTheta2k + cosTheta1r*cosTheta2r - cosTheta1n*cosTheta2n;   // :1897
+CHel_P3n = cosTheta1k*cosTheta2k + cosTheta1r*cosTheta2r - cosTheta1n*cosTheta2n;   // :1910
 ```
 
-`cosTheta1{k,r,n}` and `cosTheta2{k,r,n}` are the projections of the two spin analyzers — the **charged lepton** and the **hadronic b‑jet** — onto the Bernreuther {k, r, n} helicity basis, each evaluated in its own parent‑top rest frame (`:1836–1863`). `CHel_P3n` is therefore, per event, a direct function of the reconstructed **lepton direction**, the reconstructed **hadronic b‑jet direction**, and the two reconstructed **top 4‑vectors** that define the rest frames and the basis. Every one of those comes out of `ZprimeCandidateBuilder` + the χ² selection.
+`cosTheta1{k,r,n}` and `cosTheta2{k,r,n}` are the projections of the two spin analyzers — the **charged lepton** and the **hadronic b‑jet** — onto the Bernreuther {k, r, n} helicity basis, each evaluated in its own parent‑top rest frame (`:1848–1876`). `CHel_P3n` is therefore, per event, a direct function of the reconstructed **lepton direction**, the reconstructed **hadronic b‑jet direction**, and the two reconstructed **top 4‑vectors** that define the rest frames and the basis. Every one of those comes out of `ZprimeCandidateBuilder` + the χ² selection.
 
-**From distribution to measured coefficient.** The measured quantity is not the per‑event `CHel_P3n` but a *coefficient* extracted from its distribution: `coefficient = multiplier × A_FB`, the forward/backward asymmetry of the `cHel` distribution split at 0 (`macros/extractCoeff.py`, `multiplier = 5`). Since that split sits exactly at `cHel = 0`, `A_FB ≡ ⟨sign(cHel)⟩`, so the coefficient is now mapped across the measurement plane with two `TProfile2D`s — `cHel_coeff_Mtt_vs_cosThetaStar` and `cHel_P3n_coeff_Mtt_vs_cosThetaStar` (`Hists.cxx`, booked ~`:595`, filled ~`:1926`; x = `cos_PosTop_beam`, y = `m_{t̄t}` up to 2 TeV) — whose per‑cell mean of `5·sign(cHel)` equals the coefficient and whose bin error equals its statistical uncertainty. A 1D `cos_ThetaStar` histogram of the Bernreuther production angle (the plane's x‑axis) was added alongside. These maps are the instrument for **watching the reconstruction bias migrate across the measurement plane**, and are where the optimizations below should be judged.
+**From distribution to measured coefficient.** The measured quantity is not the per‑event `CHel_P3n` but a *coefficient* extracted from its distribution: `coefficient = multiplier × A_FB`, the forward/backward asymmetry of the `cHel` distribution split at 0 (`macros/extractCoeff.py`, `multiplier = 5`). Since that split sits exactly at `cHel = 0`, `A_FB ≡ ⟨sign(cHel)⟩`, so the coefficient is now mapped across the measurement plane with two `TProfile2D`s — `cHel_coeff_Mtt_vs_cosThetaStar` and `cHel_P3n_coeff_Mtt_vs_cosThetaStar` (`Hists.cxx`, booked ~`:596`, filled ~`:1916`; x = `cos_PosTop_beam`, y = `m_{t̄t}` up to 2 TeV) — whose per‑cell mean of `5·sign(cHel)` equals the coefficient and whose bin error equals its statistical uncertainty. A 1D `cos_ThetaStar` histogram of the Bernreuther production angle (the plane's x‑axis) was added alongside. These maps are the instrument for **watching the reconstruction bias migrate across the measurement plane**, and are where the optimizations below should be judged.
 
 > **TL;DR of the evaluation.** The builder enumerates jet→top assignments combinatorially and the χ² discriminator picks the candidate **using top masses only** — b‑tagging, jet‑direction quality, and the neutrino‑solution ambiguity play *no role* in selection. The b‑jet that enters `CHel_P3n` is then chosen *post‑hoc* in the Hists module as the highest‑b‑score jet among whatever the builder happened to assign to the hadronic top. The largest, cheapest gains for `CHel_P3n` come from making candidate **selection b‑tag‑aware** and from **constraining the hadronic‑top assignment to contain the b**, because both the b‑jet identity *and* the rest‑frame boost applied to it depend on the full hadronic‑top assignment.
 
@@ -25,9 +25,9 @@ flowchart LR
     A["Event: leptons, jets,<br/>MET, AK8 top-tags"] --> B["ZprimeCandidateBuilder<br/>(Modules.cxx 82-269)<br/><i>builds ALL candidates</i>"]
     B --> C["ZprimeChi2Discriminator<br/>(Modules.cxx 290-337)<br/><i>picks best by top-mass &chi;&sup2;</i>"]
     C --> D["BestZprimeCandidateChi2"]
-    D --> E["ZprimeSemiLeptonicHists<br/>(Hists.cxx ~1531-1911)<br/><i>select had b-jet, build basis,<br/>boost to rest frames</i>"]
-    E --> F["per-event CHel_P3n<br/>(Hists.cxx 1897)"]
-    F --> G["coefficient maps<br/>cHel(_P3n)_coeff_Mtt_vs_cosThetaStar<br/>= 5&middot;sign(cHel) profiled over (cos&Theta;, m_tt)<br/>(Hists.cxx ~595 / ~1926)"]
+    D --> E["ZprimeSemiLeptonicHists<br/>(Hists.cxx ~1543-1916)<br/><i>select had b-jet, build basis,<br/>boost to rest frames</i>"]
+    E --> F["per-event CHel_P3n<br/>(Hists.cxx 1910)"]
+    F --> G["coefficient maps<br/>cHel(_P3n)_coeff_Mtt_vs_cosThetaStar<br/>= 5&middot;sign(cHel) profiled over (cos&Theta;, m_tt)<br/>(Hists.cxx ~596 / ~1916)"]
     G --> H["MEASUREMENT:<br/>entanglement coefficient<br/>in the boosted region<br/><i>(phase space set from this map)</i>"]
     style B fill:#cfe8ff,stroke:#1f6feb
     style C fill:#ffe8c2,stroke:#d29922
@@ -37,9 +37,9 @@ flowchart LR
     style H fill:#ffd7d7,stroke:#cf222e
 ```
 
-The chain terminates not in a fixed slice but in the `(cosΘ, m_{t̄t})` coefficient maps: the **measurement region is the boosted, high‑`m_{t̄t}` band where SM top‑quark entanglement re‑emerges**, and its exact `m_{t̄t}` / `cosΘ` boundaries are to be **read off these maps**, not assumed a priori. The legacy `cHel_P3n_Mtt800_Inf` histogram (`:1908`) is just a single placeholder slice at 800 GeV; the maps generalize it so the cut can be chosen from what the data/MC actually show.
+The chain terminates not in a fixed slice but in the `(cosΘ, m_{t̄t})` coefficient maps: the **measurement region is the boosted, high‑`m_{t̄t}` band where SM top‑quark entanglement re‑emerges**, and its exact `m_{t̄t}` / `cosΘ` boundaries are to be **read off these maps**, not assumed a priori. The legacy `cHel_P3n_Mtt800_Inf` histogram (`:1926`) is just a single placeholder slice at 800 GeV; the maps generalize it so the cut can be chosen from what the data/MC actually show.
 
-The histogram block consumes `h_BestZprimeCandidateChi2` (`Hists.cxx:1531`), i.e. the **χ²‑selected** candidate — not the correct‑match one. So the χ² discriminator is the gate that decides which reconstruction feeds the angle.
+The histogram block consumes `h_BestZprimeCandidateChi2` (`Hists.cxx:1543`), i.e. the **χ²‑selected** candidate — not the correct‑match one. So the χ² discriminator is the gate that decides which reconstruction feeds the angle.
 
 ---
 
@@ -179,25 +179,25 @@ The lowest‑χ² candidate is stored as `ZprimeCandidateBestChi2` (`:329–334`
 
 ```mermaid
 flowchart TD
-    A["BestZprimeCandidateChi2"] --> B["Pick hadronic b-jet =<br/>jet/subjet with MAX b-score<br/>(resolved: DeepJet AK4, :1656-1663)<br/>(merged: DeepCSV subjet, :1666-1673)"]
-    A --> C["lepton 4-vector (precise)<br/>:1700-1702"]
-    A --> D["PosTop / NegTop =<br/>top_lep / top_had by charge<br/>:1704-1725"]
-    D --> E["Boost all to ttbar CoM<br/>:1731-1741"]
-    E --> F["Build Bernreuther {k,r,n}<br/>from PosTop dir + beam<br/>:1744-1761"]
-    B --> G["Boost b-jet to its parent-top rest frame<br/>:1764-1776"]
+    A["BestZprimeCandidateChi2"] --> B["Pick hadronic b-jet =<br/>jet/subjet with MAX b-score<br/>(resolved: DeepJet AK4, :1668-1674)<br/>(merged: DeepCSV subjet, :1678-1685)"]
+    A --> C["lepton 4-vector (precise)<br/>:1712-1714"]
+    A --> D["PosTop / NegTop =<br/>top_lep / top_had by charge<br/>:1716-1737"]
+    D --> E["Boost all to ttbar CoM<br/>:1743-1753"]
+    E --> F["Build Bernreuther {k,r,n}<br/>from PosTop dir + beam<br/>:1756-1774"]
+    B --> G["Boost b-jet to its parent-top rest frame<br/>:1777-1789"]
     C --> G
-    G --> H["cosTheta1/2 {k,r,n} = analyzer . basis<br/>:1836-1863"]
-    H --> I["CHel_P3n = c1k c2k + c1r c2r - c1n c2n<br/>:1897"]
+    G --> H["cosTheta1/2 {k,r,n} = analyzer . basis<br/>:1848-1876"]
+    H --> I["CHel_P3n = c1k c2k + c1r c2r - c1n c2n<br/>:1910"]
     style B fill:#ffd7d7,stroke:#cf222e
     style I fill:#f5d0fe,stroke:#a371f7
 ```
 
 Two consequences worth emphasizing:
 
-- The **b‑jet identity is decided in the Hists module, not the builder** (`:1656–1673`), by maximum b‑score over the hadronic jets the builder produced. If the builder put the true b on the leptonic side, no post‑hoc pick can recover it.
-- The b‑jet is boosted into the **hadronic‑top rest frame defined by `top_hadronic_v4`** (`:1771/1775`), and the whole {k,r,n} basis is built from `PosTop` (`:1747`). Both depend on the *entire* hadronic‑top assignment and on the ν solution — so jet‑assignment errors rotate the b direction **even when the b jet itself is correct**.
+- The **b‑jet identity is decided in the Hists module, not the builder** (`:1668–1685`), by maximum b‑score over the hadronic jets the builder produced. If the builder put the true b on the leptonic side, no post‑hoc pick can recover it.
+- The b‑jet is boosted into the **hadronic‑top rest frame defined by `top_hadronic_v4`** (`:1784/1788`), and the whole {k,r,n} basis is built from `PosTop` (`:1759`). Both depend on the *entire* hadronic‑top assignment and on the ν solution — so jet‑assignment errors rotate the b direction **even when the b jet itself is correct**.
 
-The code already books a diagnostic for exactly this: `deltaR_hadTop_bGen` = ΔR(reco b, gen b) in the merged topology (`:1692–1694`). That handle is the natural figure of merit for the b‑direction (see §6).
+The code already books a diagnostic for exactly this: `deltaR_hadTop_bGen` = ΔR(reco b, gen b) in the merged topology (`:1704–1706`). That handle is the natural figure of merit for the b‑direction (see §6).
 
 ---
 
@@ -207,7 +207,7 @@ The code already books a diagnostic for exactly this: `deltaR_hadTop_bGen` = ΔR
 |---|---|---|---|
 | **Lepton direction** | `find_primary_lepton` | **Excellent** (detector lepton) | Essentially none — leave as is. |
 | **Hadronic b‑jet identity** | post‑hoc max b‑score over builder's hadronic jets | **Fragile** | True b assigned to leptonic side, or never grouped into had top ⇒ wrong jet picked. χ² can't see this. |
-| **Hadronic b‑jet direction** | AK4 PUPPI jet (resolved) / AK8 subjet (merged) | **Moderate** | Jet angular resolution; b‑score from CHS jet but kinematics from PUPPI jet (resolved, `:1656–1663`) → identity/direction can come from different objects. |
+| **Hadronic b‑jet direction** | AK4 PUPPI jet (resolved) / AK8 subjet (merged) | **Moderate** | Jet angular resolution; b‑score from CHS jet but kinematics from PUPPI jet (resolved, `:1668–1674`) → identity/direction can come from different objects. |
 | **Hadronic‑top boost (`top_hadronic_v4`)** | Σ of assigned had jets / AK8 v4 | **Coupled** | Wrong/missing jets in had top rotate & rescale the rest‑frame boost applied to the b. |
 | **Leptonic‑top boost & basis (`PosTop`)** | lepton+ν+jets; ν pₙ branch | **Coupled** | Wrong ν solution or wrong lep‑side jets tilt the {k,r,n} basis for *both* analyzers. |
 
@@ -240,7 +240,7 @@ float score = chi2_had + chi2_lep + btag_penalty;           // tune w1,w2 on cor
 
 **Expected effect.** Higher correct‑match fraction ⇒ the right jet is available as the b *and* the hadronic‑top boost is built from the right jets ⇒ less dilution of `cosTheta2{k,r,n}`. This is the single largest lever for `CHel_P3n`.
 
-**Cost/risk.** Must re‑tune `w1,w2` (and ideally re‑derive the χ² mass means/σ) on `ZprimeCorrectMatchDiscriminator` truth (`:355–529`). Keep the pure‑χ² path available for systematics comparison.
+**Cost/risk.** Must re‑tune `w1,w2` (and ideally re‑derive the χ² mass means/σ) on `ZprimeCorrectMatchDiscriminator` truth (`:354–529`). Keep the pure‑χ² path available for systematics comparison.
 
 ### P2 — Constrain/prune the combinatorics so the hadronic top must contain a b
 
@@ -261,7 +261,7 @@ if (max_bscore(tophadjets) < WP_medium) continue;                    // NEW: had
 
 ### P3 — Resolve the neutrino two‑fold ambiguity deliberately
 
-**Problem.** When `discriminant > 0` both pₙ solutions enter (`:68–77`); the χ² picks one only through its weak mass effect, yet the choice tilts `top_leptonic_v4` → `PosTop` → the **entire {k,r,n} basis** (`Hists.cxx:1747`).
+**Problem.** When `discriminant > 0` both pₙ solutions enter (`:68–77`); the χ² picks one only through its weak mass effect, yet the choice tilts `top_leptonic_v4` → `PosTop` → the **entire {k,r,n} basis** (`Hists.cxx:1759`).
 
 **Where.** `reconstruct_neutrino` (`:50–79`) and/or the selection.
 
@@ -279,9 +279,9 @@ if (max_bscore(tophadjets) < WP_medium) continue;                    // NEW: had
 
 ### P4 — Make the b‑jet kinematics and the b‑score come from the same object (resolved)
 
-**Problem.** In resolved mode the b is *identified* by the **CHS‑matched** jet's DeepJet score but its **4‑vector is taken from the PUPPI** `jets_hadronic()` jet (`Hists.cxx:1628–1629` vs `:1659–1662`). The matching is nearest‑ΔR and can disagree, so identity and direction can reference slightly different objects.
+**Problem.** In resolved mode the b is *identified* by the **CHS‑matched** jet's DeepJet score but its **4‑vector is taken from the PUPPI** `jets_hadronic()` jet (`Hists.cxx:1640–1641` vs `:1671–1674`). The matching is nearest‑ΔR and can disagree, so identity and direction can reference slightly different objects.
 
-**Where.** `Hists.cxx:1617–1663` (and the identical logic in `ZprimeAnalysisModule_EFT.cxx:1225–1265`).
+**Where.** `Hists.cxx:1628–1685` (and the identical logic in `ZprimeAnalysisModule_EFT.cxx:1225–1265`).
 
 **Sketch.** Decide the b on the matched pair and read the direction from a single, consistent source (prefer the PUPPI jet direction for kinematics, but guard the match):
 
@@ -310,11 +310,11 @@ had_top_b = jets_hadronic[best].v4();                // single source of directi
 
 ### P6 — Use the best directional proxy in the merged topology
 
-**Problem.** Merged mode takes the b as the AK8 **subjet** with max **DeepCSV** (`Hists.cxx:1666–1673`). Subjet axes are coarser than the b‑hadron flight direction, and DeepCSV is the older tagger.
+**Problem.** Merged mode takes the b as the AK8 **subjet** with max **DeepCSV** (`Hists.cxx:1678–1685`). Subjet axes are coarser than the b‑hadron flight direction, and DeepCSV is the older tagger.
 
-**Where.** `Hists.cxx:1640–1673`.
+**Where.** `Hists.cxx:1652–1685`.
 
-**Options.** Evaluate (a) ParticleNet/DeepJet subjet scores if available, (b) using the subjet with the highest *charged*‑constituent‑weighted axis, and (c) the existing `deltaR_hadTop_bGen` (`:1692`) to quantify which proxy is closest to the gen b.
+**Options.** Evaluate (a) ParticleNet/DeepJet subjet scores if available, (b) using the subjet with the highest *charged*‑constituent‑weighted axis, and (c) the existing `deltaR_hadTop_bGen` (`:1706`) to quantify which proxy is closest to the gen b.
 
 **Expected effect.** Directly reduces b‑direction dilution in the high‑`M(t̄t)` (most boosted) regime that `cHel_P3n_Mtt800_Inf` targets.
 
@@ -327,8 +327,8 @@ had_top_b = jets_hadronic[best].v4();                // single source of directi
 For a measurement the bar is not "sharper resolution" but **a coefficient that is unbiased after correction, with the smallest dilution**. The repo already contains most of the machinery; the validation loop is:
 
 1. **Reco‑vs‑gen coefficient bias across the plane.** The decisive test: book the same `cHel_P3n_coeff_Mtt_vs_cosThetaStar` `TProfile2D` at gen level (truth lepton + truth hadronic b, truth tops) and at reco level, then take the **reco − gen** difference map. A flat, near‑zero difference means the reconstruction does not bias the coefficient; any structure (especially toward high `m_{t̄t}`) is the systematic to fix. This is the primary figure of merit, replacing the old single‑slice check.
-2. **Correct‑match fraction.** Run `ZprimeCorrectMatchDiscriminator` (`:355–529`) and compare the χ²‑selected candidate to the correct‑match candidate before/after each change. Target: fraction of events where χ² picks the truth‑matched assignment — the upstream driver of the bias in step 1.
-3. **b‑direction resolution.** Histogram `deltaR_hadTop_bGen` (`:1692–1694`) — extend it to the resolved topology too (currently merged‑only) and split by `(cosΘ, m_{t̄t})` cell. This is the microscopic cause of dilution.
+2. **Correct‑match fraction.** Run `ZprimeCorrectMatchDiscriminator` (`:354–529`) and compare the χ²‑selected candidate to the correct‑match candidate before/after each change. Target: fraction of events where χ² picks the truth‑matched assignment — the upstream driver of the bias in step 1.
+3. **b‑direction resolution.** Histogram `deltaR_hadTop_bGen` (`:1704–1706`) — extend it to the resolved topology too (currently merged‑only) and split by `(cosΘ, m_{t̄t})` cell. This is the microscopic cause of dilution.
 4. **Dilution factor.** From the reco‑vs‑gen `CHel_P3n` migration, extract the per‑cell dilution `D_reco/D_gen`; the optimizations should push it toward 1, uniformly across the plane (uniformity matters more than the average for a measurement, since non‑uniform dilution distorts the entangled/separable boundary).
 5. **Basis stability.** Check `cos_ThetaStar` (now booked) and the ν‑solution choice distributions don't develop a reco bias vs gen — a tilt in the production angle would shift events across `cosΘ` columns and migrate the boundary (P3).
 6. **Closure on the entanglement conclusion.** Confirm the *sign/threshold* of the measured coefficient in the **boosted measurement region** (the high‑`m_{t̄t}` band where entanglement re‑emerges) is recovered after correction — i.e. the optimization does not move the "entangled vs separable" verdict by reconstruction alone. Use the reco‑vs‑gen coefficient map (step 1) to **define the measurement phase space**: pick the `m_{t̄t}` floor / `cosΘ` window where the coefficient is both entangled at gen level *and* low‑bias after reconstruction, rather than imposing a fixed cut up front.
@@ -359,18 +359,18 @@ flowchart LR
 | Resolved (AK4) combinatorics `3^n` | same | 157–202 |
 | Merged (top‑tag) combinatorics `2^n` | same | 203–264 |
 | `ZprimeChi2Discriminator` (mass‑only) | same | 272–337 |
-| `ZprimeCorrectMatchDiscriminator` (truth) | same | 355–529 |
+| `ZprimeCorrectMatchDiscriminator` (truth) | same | 354–529 |
 | `ZprimeCandidate` members/setters | `include/ZprimeCandidate.h` | 7–62 |
-| b‑jet selection (resolved/merged) | `src/ZprimeSemiLeptonicHists.cxx` | 1617–1673 |
-| Top 4‑vectors by charge | same | 1704–1725 |
-| Boost to ttbar CoM | same | 1731–1741 |
-| Bernreuther {k,r,n} basis | same | 1744–1761 |
-| Boost analyzers to top rest frames | same | 1764–1776 |
-| `cosTheta1/2 {k,r,n}` projections | same | 1836–1863 |
-| **`CHel_P3n` definition** | same | **1897** |
-| **`cHel_P3n_Mtt800_Inf` fill** | same | **1908–1910** |
-| **Coefficient maps `cHel(_P3n)_coeff_Mtt_vs_cosThetaStar` (book / fill)** | same | **~595 / ~1926** |
-| **`cos_ThetaStar` production‑angle hist (book / fill)** | same | **~589 / ~1925** |
+| b‑jet selection (resolved/merged) | `src/ZprimeSemiLeptonicHists.cxx` | 1628–1685 |
+| Top 4‑vectors by charge | same | 1716–1737 |
+| Boost to ttbar CoM | same | 1743–1753 |
+| Bernreuther {k,r,n} basis | same | 1756–1774 |
+| Boost analyzers to top rest frames | same | 1777–1789 |
+| `cosTheta1/2 {k,r,n}` projections | same | 1848–1876 |
+| **`CHel_P3n` definition** | same | **1910** |
+| **`cHel_P3n_Mtt800_Inf` fill** | same | **1926–1928** |
+| **Coefficient maps `cHel(_P3n)_coeff_Mtt_vs_cosThetaStar` (book / fill)** | same | **~596 / ~1916** |
+| **`cos_ThetaStar` production‑angle hist (book / fill)** | same | **~531 / ~1766** |
 | Coefficient extraction (`5 × A_FB`, multiplier table) | `macros/.../extractCoeff.py` | — |
 | Same b/lepton logic (Δφ/Σφ) duplicate | `src/ZprimeAnalysisModule_EFT.cxx` | 1225–1356 |
-| `deltaR_hadTop_bGen` diagnostic | `src/ZprimeSemiLeptonicHists.cxx` | 1692–1694 |
+| `deltaR_hadTop_bGen` diagnostic | `src/ZprimeSemiLeptonicHists.cxx` | 1704–1706 |
