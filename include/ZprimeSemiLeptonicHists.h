@@ -13,6 +13,7 @@
 #include <vector>
 
 #include <TLorentzVector.h>
+#include <TProfile2D.h>
 
 class ZprimeSemiLeptonicHists: public uhh2::Hists {
 public:
@@ -52,6 +53,7 @@ protected:
   TH1F *toplep_pt, *toplep_eta, *toplep_phi, *toplep_m, *tophad_pt, *tophad_eta, *tophad_phi, *tophad_m, *ditop_mass, *ditop_absDeltaPhi, *ditop_deltaEta, *ditop_absDeltaEta, *ditop_deltaR, *M_Zprime, *M_Zprime_rebin, *M_Zprime_rebin2, *M_Zprime_rebin3, *M_Zprime_rebin4, *M_Zprime_rebin5, *M_Zprime_rebin6, *M_Zprime_rebin7, *M_Zprime_rebin8, *chi2_Zprime, *chi2_Zprime_rebin, *chi2_Zprime_rebin2, *M_tophad, *M_toplep, *M_Zprime_ak4, *M_Zprime_ak4_rebin, *M_Zprime_ak4_rebin2, *M_Zprime_ak4_rebin3, *M_Zprime_ak4_rebin4, *M_Zprime_ak4_rebin5, *M_Zprime_ak4_rebin6, *M_Zprime_ak4_rebin7, *chi2_Zprime_ak4, *chi2_Zprime_ak4_rebin, *chi2_Zprime_ak4_rebin2, *M_tophad_ak4, *M_toplep_ak4, *M_Zprime_ttag, *M_Zprime_ttag_rebin, *M_Zprime_ttag_rebin2, *M_Zprime_ttag_rebin3, *M_Zprime_ttag_rebin4, *M_Zprime_ttag_rebin5, *M_Zprime_ttag_rebin6, *M_Zprime_ttag_rebin7, *chi2_Zprime_ttag, *chi2_Zprime_ttag_rebin, *chi2_Zprime_ttag_rebin2, *M_tophad_ttag, *M_tophad_ttag_M, *M_tophad_ttag_v4, *M_toplep_ttag, *M_tophad_dr_ak4, *M_toplep_dr_ak4, *M_tophad_dr_ttag, *M_toplep_dr_ttag, *dr_discr_Zprime, *M_Zprime_dr, *M_Zprime_dr_rebin, *M_Zprime_dr_rebin2, *M_Zprime_dr_rebin3, *S11, *S12, *S13, *S22, *S23, *S33, *sum_event_weights;
   TH1F *DeltaY_reco_high, *DeltaY_reco_low, *DeltaY_reco_s1, *DeltaY_reco_s2,*DeltaY_reco_d1, *DeltaY_reco_d2, *Sigma_phi_1, *Sigma_phi_2, *Sigma_phi_high, *Sigma_phi_low, *Sigma_phi, *Delta_phi,*Delta_phi_1, *Delta_phi_2, *Delta_phi_high, *Delta_phi_low;
   TH1F *beta_ttbar, *deltaR_hadTop_bGen;
+  TH1F *cos_ThetaStar;
   TH1F *cos_theta1k, *cos_theta1r, *cos_theta1n, *cos_theta1kStar, *cos_theta1rStar, *cos_theta1k_antiLep, *cos_theta1r_antiLep, *cos_theta1n_antiLep, *cos_theta1kStar_antiLep, *cos_theta1rStar_antiLep, *cos_theta2k, *cos_theta2r, *cos_theta2n, *cos_theta2kStar, *cos_theta2rStar, *cos_theta2k_Lep, *cos_theta2r_Lep, *cos_theta2n_Lep, *cos_theta2kStar_Lep, *cos_theta2rStar_Lep;
   TH1F *Cnn, *Cnr, *Cnk, *Crn, *Crr, *Crk, *Ckn, *Ckr, *Ckk, *Crk_plus, *Crk_minus, *Cnr_plus, *Cnr_minus, *Cnk_plus, *Cnk_minus;
   TH1F *cHel, *cHel_Mtt300_400, *cHel_Mtt300_400_betaLT0p9;
@@ -87,6 +89,10 @@ protected:
   TH1F *h_M_tt_SR, *h_chi2_SR, *h_M_tt_CR1, *h_chi2_CR1, *h_M_tt_CR2, *h_chi2_CR2; 
 
   TH2F *N_Jets_vs_HT, *mttbar_vs_costhetastar, *costhetastar_vs_mttbar, *response_matrix;
+
+  // 2D maps of the spin-correlation coefficient (multiplier * FB-asymmetry of the cHel distribution,
+  // cf. macros extractCoeff.py) as a function of top scattering angle cos(theta*) [x] and M(ttbar) [y].
+  TProfile2D *cHel_coeff_Mtt_vs_cosThetaStar, *cHel_P3n_coeff_Mtt_vs_cosThetaStar;
 
   uhh2::Event::Handle< std::vector<TopJet> > h_AK8TopTags;
   uhh2::Event::Handle< std::vector<Jet> > h_CHSjets_matched;

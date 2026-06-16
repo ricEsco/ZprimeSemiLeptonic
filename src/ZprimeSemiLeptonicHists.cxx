@@ -16,6 +16,7 @@
 #include "TH1F.h"
 #include "TH1.h"
 #include "TH2D.h"
+#include "TProfile2D.h"
 #include "TFile.h"
 #include <iostream>
 
@@ -527,6 +528,7 @@ void ZprimeSemiLeptonicHists::init(){
   // ttbar system
   beta_ttbar    = book<TH1F>("beta_ttbar", "beta_{t#bar{t}}", 50, 0, 1);
   deltaR_hadTop_bGen = book<TH1F>("deltaR_hadTop_bGen", "#DeltaR(hadronic top, b quark from hadronic top)", 60, 0, 3);
+  cos_ThetaStar = book<TH1F>("cos_ThetaStar", "production scattering angle;cos#Theta;Events", 20, -1., 1.);
   //------------------------------------- Spin correlation variables -------------------------------------//
   // antiLepton exclusive
   cos_theta1k_antiLep = book<TH1F>("cos_theta1k_antiLep", "cos(#theta_{antilep}^{k})",24, -1, 1);
@@ -583,6 +585,16 @@ void ZprimeSemiLeptonicHists::init(){
   // boosted and central
   cHel_P3n_Mtt800_Inf               = book<TH1F>("cHel_P3n_Mtt800_Inf",               "cos(#phi_{(P3n)lb}) (M_{tt} > 800 GeV)",24, -1, 1);
   cHel_P3n_Mtt800_Inf_cosThetaLT0p4 = book<TH1F>("cHel_P3n_Mtt800_Inf_cosThetaLT0p4", "cos(#phi_{(P3n)lb}) (M_{tt} > 800 GeV, |cos(#theta)| < 0.4)",24, -1, 1);
+
+  // 2D maps of the spin-correlation coefficient as a function of cos(theta*) [x] and M(ttbar) [y].
+  // Each cell stores the profile MEAN of (multiplier * sign(cHel)); since the FB-asymmetry of the cHel distribution split at cHel=0 equals <sign(cHel)>, the cell content reproduces
+  // coefficient = multiplier * A_FB 
+  // x = cos(theta*): 10 uniform bins in [-1, 1].
+  // y = M(ttbar)   : variable bins
+  double cosThetaStar_edges[11] = {-1.0, -0.8, -0.6, -0.4, -0.2, 0.0, 0.2, 0.4, 0.6, 0.8, 1.0};
+  double Mtt_edges[20]          = {350., 400., 450., 500., 550., 600., 650., 700., 750., 800., 850., 900., 950., 1000., 1100., 1200., 1300., 1400., 1500., 2000.};
+  cHel_coeff_Mtt_vs_cosThetaStar     = book<TProfile2D>("cHel_coeff_Mtt_vs_cosThetaStar",     "Spin-corr. coeff. from cos(#phi_{lb}) FB-asymmetry;cos#theta*;M_{t#bar{t}} [GeV];coefficient (5#timesA_{FB})",     10, cosThetaStar_edges, 19, Mtt_edges);
+  cHel_P3n_coeff_Mtt_vs_cosThetaStar = book<TProfile2D>("cHel_P3n_coeff_Mtt_vs_cosThetaStar", "Spin-corr. coeff. from cos(#phi_{(P3n)lb}) FB-asymmetry;cos#theta*;M_{t#bar{t}} [GeV];coefficient (5#timesA_{FB})", 10, cosThetaStar_edges, 19, Mtt_edges);
 
   // Baumgart angular variables
   Sigma_phi             = book<TH1F>("Sigma_phi", "#Sigma #phi ",16, -3.2, 3.2);
@@ -1751,6 +1763,7 @@ void ZprimeSemiLeptonicHists::fill(const Event & event){
       TVector3 n_axis = ( (1./abs_sin_PosTop_beam) * beam_axis.Cross(k_axis) ).Unit();                // orthogonal to production plane
       double sign_cos_PosTop_beam = (cos_PosTop_beam > 0.) ? 1. : -1.;                                // Bose symmetry factor
       double sign_rapidity = (dyreco > 0.) ? 1. : -1.;                                                // Charge asymmetry (in lab-frame) factor
+      cos_ThetaStar->Fill(cos_PosTop_beam, weight);
 
       // Basis vectors
       TVector3 kbase = k_axis;
@@ -1897,6 +1910,11 @@ void ZprimeSemiLeptonicHists::fill(const Event & event){
       CHel_P3n = cosTheta1k * cosTheta2k + cosTheta1r * cosTheta2r - cosTheta1n * cosTheta2n;
       cHel->Fill(CHel, weight);
       cHel_P3n->Fill(CHel_P3n, weight);
+
+      // 2D entanglement witness maps
+      const double cHel_coeff_multiplier = 5.; // matches extractCoeff.py multiplier for cHel / cHel_P3n
+      cHel_coeff_Mtt_vs_cosThetaStar->Fill(cos_PosTop_beam, ttbar.M(), cHel_coeff_multiplier * (CHel     >= 0. ? 1. : -1.), weight);
+      cHel_P3n_coeff_Mtt_vs_cosThetaStar->Fill(cos_PosTop_beam, ttbar.M(), cHel_coeff_multiplier * (CHel_P3n >= 0. ? 1. : -1.), weight);
 
       // near-threshold
       if(ttbar.M() < 400.){cHel_Mtt300_400->Fill(CHel, weight);
