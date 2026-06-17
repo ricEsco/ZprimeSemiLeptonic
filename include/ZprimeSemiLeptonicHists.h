@@ -93,6 +93,7 @@ protected:
   // 2D maps of the spin-correlation coefficient (multiplier * FB-asymmetry of the cHel distribution,
   // cf. macros extractCoeff.py) as a function of top scattering angle cos(theta*) [x] and M(ttbar) [y].
   TProfile2D *cHel_coeff_Mtt_vs_cosThetaStar, *cHel_P3n_coeff_Mtt_vs_cosThetaStar;
+  TProfile2D *cHel_coeff_Mtt_vs_beta, *cHel_P3n_coeff_Mtt_vs_beta;
 
   uhh2::Event::Handle< std::vector<TopJet> > h_AK8TopTags;
   uhh2::Event::Handle< std::vector<Jet> > h_CHSjets_matched;

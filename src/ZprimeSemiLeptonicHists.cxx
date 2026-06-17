@@ -587,14 +587,17 @@ void ZprimeSemiLeptonicHists::init(){
   cHel_P3n_Mtt800_Inf_cosThetaLT0p4 = book<TH1F>("cHel_P3n_Mtt800_Inf_cosThetaLT0p4", "cos(#phi_{(P3n)lb}) (M_{tt} > 800 GeV, |cos(#theta)| < 0.4)",24, -1, 1);
 
   // 2D maps of the spin-correlation coefficient as a function of cos(theta*) [x] and M(ttbar) [y].
-  // Each cell stores the profile MEAN of (multiplier * sign(cHel)); since the FB-asymmetry of the cHel distribution split at cHel=0 equals <sign(cHel)>, the cell content reproduces
-  // coefficient = multiplier * A_FB 
+  // Each cell stores the profile MEAN of (multiplier * sign(cHel)); since the FB-asymmetry of the cHel distribution split at cHel=0 equals <sign(cHel)>, the cell content reproduces coefficient = multiplier * A_FB 
   // x = cos(theta*): 10 uniform bins in [-1, 1].
   // y = M(ttbar)   : variable bins
   double cosThetaStar_edges[11] = {-1.0, -0.8, -0.6, -0.4, -0.2, 0.0, 0.2, 0.4, 0.6, 0.8, 1.0};
-  double Mtt_edges[20]          = {350., 400., 450., 500., 550., 600., 650., 700., 750., 800., 850., 900., 950., 1000., 1100., 1200., 1300., 1400., 1500., 2000.};
-  cHel_coeff_Mtt_vs_cosThetaStar     = book<TProfile2D>("cHel_coeff_Mtt_vs_cosThetaStar",     "Spin-corr. coeff. from cos(#phi_{lb}) FB-asymmetry;cos#theta*;M_{t#bar{t}} [GeV];coefficient (5#timesA_{FB})",     10, cosThetaStar_edges, 19, Mtt_edges);
-  cHel_P3n_coeff_Mtt_vs_cosThetaStar = book<TProfile2D>("cHel_P3n_coeff_Mtt_vs_cosThetaStar", "Spin-corr. coeff. from cos(#phi_{(P3n)lb}) FB-asymmetry;cos#theta*;M_{t#bar{t}} [GeV];coefficient (5#timesA_{FB})", 10, cosThetaStar_edges, 19, Mtt_edges);
+  double Mtt_edges[23]          = {200., 250., 300., 350., 400., 450., 500., 550., 600., 650., 700., 750., 800., 850., 900., 950., 1000., 1100., 1200., 1300., 1400., 1500., 2000.};
+  cHel_coeff_Mtt_vs_cosThetaStar     = book<TProfile2D>("cHel_coeff_Mtt_vs_cosThetaStar",     "Spin-corr. coeff. from cos(#phi_{lb}) FB-asymmetry;cos#theta*;M_{t#bar{t}} [GeV];coefficient (5#timesA_{FB})",     10, cosThetaStar_edges, 22, Mtt_edges);
+  cHel_P3n_coeff_Mtt_vs_cosThetaStar = book<TProfile2D>("cHel_P3n_coeff_Mtt_vs_cosThetaStar", "Spin-corr. coeff. from cos(#phi_{(P3n)lb}) FB-asymmetry;cos#theta*;M_{t#bar{t}} [GeV];coefficient (5#timesA_{FB})", 10, cosThetaStar_edges, 22, Mtt_edges);
+  // Similar 2D maps with beta of ttbar instead of cosThetaStar
+  double beta_edges[11] = {0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0};
+  cHel_coeff_Mtt_vs_beta     = book<TProfile2D>("cHel_coeff_Mtt_vs_beta",     "Spin-corr. coeff. from cos(#phi_{lb}) FB-asymmetry;#beta_{t#bar{t}};M_{t#bar{t}} [GeV];coefficient (5#timesA_{FB})",     10, beta_edges, 22, Mtt_edges);
+  cHel_P3n_coeff_Mtt_vs_beta = book<TProfile2D>("cHel_P3n_coeff_Mtt_vs_beta", "Spin-corr. coeff. from cos(#phi_{(P3n)lb}) FB-asymmetry;#beta_{t#bar{t}};M_{t#bar{t}} [GeV];coefficient (5#timesA_{FB})", 10, beta_edges, 22, Mtt_edges);
 
   // Baumgart angular variables
   Sigma_phi             = book<TH1F>("Sigma_phi", "#Sigma #phi ",16, -3.2, 3.2);
@@ -1683,30 +1686,26 @@ void ZprimeSemiLeptonicHists::fill(const Event & event){
                                                           BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).phi(), 
                                                           BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).energy());
         }
+      }
 
-        // dR between AK8-subjet to gen b-quark
-        if(debug) cout << "[ZprimeSemiLeptonicHists]   is_tt, is_mc, is_valid(h_ttbargen) is: " << is_tt << ", " << is_mc << ", " << event.is_valid(h_ttbargen) << endl;
-        if (is_tt && is_mc && event.is_valid(h_ttbargen)){ // only use for TTToSemileptonic samples
-          const auto& ttbargen = event.get(h_ttbargen);
-
-          if(debug) cout << "[ZprimeSemiLeptonicHists]   ttbargen.IsSemiLeptonicDecay is: " << ttbargen.IsSemiLeptonicDecay() << endl;
-          if(ttbargen.IsSemiLeptonicDecay()){
-            // TLorentzVector hadTop_b;
-            LorentzVector Gen_b = ttbargen.BHad().v4();
-            if(debug) cout << "[ZprimeSemiLeptonicHists]     Gen b quark pT, eta, phi, E: " << Gen_b.Pt() << ", " << Gen_b.Eta() << ", " << Gen_b.Phi() << ", " << Gen_b.E() << endl;
-            // Type-cast had_top_b into a LorentzVector for deltaR calculation
-            LorentzVector Reco_b;
-            Reco_b.SetPt(had_top_b.Pt());
-            Reco_b.SetEta(had_top_b.Eta());
-            Reco_b.SetPhi(had_top_b.Phi());
-            Reco_b.SetE(had_top_b.E());
-            if(debug) cout << "[ZprimeSemiLeptonicHists]     Reco b quark pT, eta, phi, E: " << Reco_b.Pt() << ", " << Reco_b.Eta() << ", " << Reco_b.Phi() << ", " << Reco_b.E() << endl;
-            float deltaR_Genb_Recob = deltaR(Gen_b, Reco_b);
-            if(debug) cout << "[ZprimeSemiLeptonicHists]     deltaR between gen b and reco b: " << deltaR_Genb_Recob << endl;
-            deltaR_hadTop_bGen->Fill(deltaR_Genb_Recob, weight);
-          }
+      // dR between reco hadronic b-jet and the gen b-quark from the hadronic top
+      // specific type of reco hadronic b-jet depends on reconstruction topology
+      if(debug) cout << "[ZprimeSemiLeptonicHists]   is_tt, is_mc, is_valid(h_ttbargen) is: " << is_tt << ", " << is_mc << ", " << event.is_valid(h_ttbargen) << endl;
+      if (is_tt && is_mc && event.is_valid(h_ttbargen)){ // only use for TTToSemileptonic samples
+        const auto& ttbargen = event.get(h_ttbargen);
+        if(debug) cout << "[ZprimeSemiLeptonicHists]   " << (is_toptag_reconstruction ? "Merged" : "Resolved")
+                       << " topology) and IsSemiLeptonicDecay = " << ttbargen.IsSemiLeptonicDecay() << endl;
+        if(ttbargen.IsSemiLeptonicDecay()){
+          LorentzVector Gen_b = ttbargen.BHad().v4();
+          LorentzVector Reco_b;
+          Reco_b.SetPt(had_top_b.Pt());
+          Reco_b.SetEta(had_top_b.Eta());
+          Reco_b.SetPhi(had_top_b.Phi());
+          Reco_b.SetE(had_top_b.E());
+          float deltaR_Genb_Recob = deltaR(Gen_b, Reco_b);
+          if(debug) cout << "[ZprimeSemiLeptonicHists]   deltaR(gen b, reco b): " << deltaR_Genb_Recob << endl;
+          deltaR_hadTop_bGen->Fill(deltaR_Genb_Recob, weight);
         }
-
       }
 
       TLorentzVector lep_top_lep(0, 0, 0, 0); // Lepton 4-vector
@@ -1905,28 +1904,35 @@ void ZprimeSemiLeptonicHists::fill(const Event & event){
       Cnk_plus->Fill(cosTheta1n * cosTheta2k + cosTheta1k * cosTheta2n, weight);
       Cnk_minus->Fill(cosTheta1n * cosTheta2k - cosTheta1k * cosTheta2n, weight);
 
-      // entanglement variables
+      // Opening angle between lepton and hadronic b-jet in ttbar helicity frame
       CHel = lep_top_lep_Rest.Vect().Unit().Dot(had_top_b_Rest.Vect().Unit());
-      CHel_P3n = cosTheta1k * cosTheta2k + cosTheta1r * cosTheta2r - cosTheta1n * cosTheta2n;
       cHel->Fill(CHel, weight);
-      cHel_P3n->Fill(CHel_P3n, weight);
-
-      // 2D entanglement witness maps
-      const double cHel_coeff_multiplier = 5.; // matches extractCoeff.py multiplier for cHel / cHel_P3n
-      cHel_coeff_Mtt_vs_cosThetaStar->Fill(cos_PosTop_beam, ttbar.M(), cHel_coeff_multiplier * (CHel     >= 0. ? 1. : -1.), weight);
-      cHel_P3n_coeff_Mtt_vs_cosThetaStar->Fill(cos_PosTop_beam, ttbar.M(), cHel_coeff_multiplier * (CHel_P3n >= 0. ? 1. : -1.), weight);
-
       // near-threshold
       if(ttbar.M() < 400.){cHel_Mtt300_400->Fill(CHel, weight);
         // near-threshold and "slow"
-        if(beta < 0.9){cHel_Mtt300_400_betaLT0p9->Fill(CHel, weight);}
+        if(beta < 0.9){cHel_Mtt300_400_betaLT0p9->Fill(CHel, weight);} 
       }
-
+      
+      // Opening angle between lepton and hadronic b-jet in ttbar helicity frame
+      // with n-component of one analyzer flipped -> sensitive to C11+C22-C33
+      CHel_P3n = cosTheta1k * cosTheta2k + cosTheta1r * cosTheta2r - cosTheta1n * cosTheta2n;
+      cHel_P3n->Fill(CHel_P3n, weight);
       // boosted
       if(ttbar.M() > 800.){cHel_P3n_Mtt800_Inf->Fill(CHel_P3n, weight);
         // boosted and central
-        if(TMath::Abs(cos_PosTop_beam) < 0.4){cHel_P3n_Mtt800_Inf_cosThetaLT0p4->Fill(CHel_P3n, weight);}
+        if(TMath::Abs(cos_PosTop_beam) < 0.4){cHel_P3n_Mtt800_Inf_cosThetaLT0p4->Fill(CHel_P3n, weight);} 
       }
+
+      // 2D entanglement witness (D and Dtilde) maps using multiplier from spin-analyzing powers of b-quark and lepton = 2/(0.4*0.999)*Asymm
+      const double cHel_coeff_multiplier = 5.; 
+      // Mtt vs cosThetaStar
+      cHel_coeff_Mtt_vs_cosThetaStar->Fill(cos_PosTop_beam,     ttbar.M(), cHel_coeff_multiplier * (CHel     >= 0. ? 1. : -1.), weight);
+      cHel_P3n_coeff_Mtt_vs_cosThetaStar->Fill(cos_PosTop_beam, ttbar.M(), cHel_coeff_multiplier * (CHel_P3n >= 0. ? 1. : -1.), weight);
+      // Mtt vs beta
+      cHel_coeff_Mtt_vs_beta->Fill(beta,     ttbar.M(), cHel_coeff_multiplier * (CHel     >= 0. ? 1. : -1.), weight);
+      cHel_P3n_coeff_Mtt_vs_beta->Fill(beta, ttbar.M(), cHel_coeff_multiplier * (CHel_P3n >= 0. ? 1. : -1.), weight);
+
+
 
       // Baumgart et al. angles depend on phi wrt Bernreuther nbase
       float lep_top_lep_phi = atan2(lep_top_lep_Rest.Vect().Unit().Dot(rbase), lep_top_lep_Rest.Vect().Unit().Dot(nbase));
