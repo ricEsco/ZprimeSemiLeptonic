@@ -527,7 +527,7 @@ void ZprimeSemiLeptonicHists::init(){
   
   // ttbar system
   beta_ttbar    = book<TH1F>("beta_ttbar", "beta_{t#bar{t}}", 50, 0, 1);
-  deltaR_hadTop_bGen = book<TH1F>("deltaR_hadTop_bGen", "#DeltaR(hadronic top, b quark from hadronic top)", 60, 0, 3);
+  deltaR_hadTop_bGen = book<TH1F>("deltaR_hadTop_bGen", "#DeltaR(reco b-jet, gen b-quark) from hadronic-top", 60, 0, 3);
   cos_ThetaStar = book<TH1F>("cos_ThetaStar", "production scattering angle;cos#Theta;Events", 20, -1., 1.);
   //------------------------------------- Spin correlation variables -------------------------------------//
   // antiLepton exclusive
