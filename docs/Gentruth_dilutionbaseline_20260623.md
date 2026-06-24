@@ -106,9 +106,28 @@ The per-event reco spin-correlation values are stored as AnalysisTree branches (
 
 ---
 
-## 4. Effects of Mass Migration (important for interpreting the baseline)
+## 4. Baseline Bias
 
-Using `dilution_map.py` it was found the reconstructed `m_tt` is substantially smeared relative to truth (dominated by the neutrino-pₙ two-fold ambiguity-- *need to clarify exactly what this means and if can be mitigated by a physically motivated solution*).  
+Using the offline reco and gen variables in `dilution_map.py`, we look in the **gen-level boosted** region, `m_tt^gen > 800 GeV`, and compare the values of our observables computed from reconstruction/generator variables. The 2D dilution map and gen/reco D̃ maps in the boosted regime are stored in `dilution_map_boosted.root`.
+
+Since the values are computed on **identical, event-weighted events** defined by the event's gen-level m_tt value, any difference in these values indicates a bias induced by our reconstruction:
+
+| Observable | reco | gen (truth) | reco / gen |
+|---|---|---|---|
+| **D̃** (`cHel_P3n`) | **0.2771** | **0.2195** | **≈ 1.26** |
+| D (`cHel`, sanity) | 0.0414 | 0.0444 | ~0.93 |
+
+### The reconstruction overestimates the boosted D̃ by ~26 %
+
+Because the bias is an *overestimate*, the current reconstruction would bias a measured entanglement value **high** — a real systematic, not benign dilution-toward-zero. Thus, we define the **P1 success criterion** be to drive this ratio toward 1.0 (and flatten the per-cell 2D ratio map toward unity).  
+
+> The 1.26 reco/gen ratio is from a full-pass over the `TTToSemileptonic` events that pass our baseline selection and chi2 cut to contribute to our UL18 signal yield
+
+---
+
+## 5. Effects of Mass Migration
+
+Using `dilution_map.py` it was also found that the reconstructed `m_tt` is substantially smeared relative to truth (dominated by the neutrino-pₙ two-fold ambiguity-- *need to clarify exactly what this means and if can be mitigated by a physically motivated solution*).  
 This shows up directly in the different D̃ values computed in the equivalent reco vs gen bins:
 
 - D̃_reco over **reco-binned** `M_tt>800` = **0.1537**
@@ -118,28 +137,13 @@ Same reco-level `cHel_P3n` values — **only the event population differs** (rec
 
 ### The large gap indicates significant `m_tt` migration across the 800 GeV boundary
 
->Consequence: the **truth-binned** ratio (0.2771/0.1537 = 1.80) cleanly isolates the *coefficient* bias in this gen-mass bin and is the right number to watch for P1. A final measurement, however, will additionally need a **response / unfolding** treatment because the kinematic migration is itself a reconstruction effect. The 2D dilution map and gen/reco D̃ maps in the boosted regime are stored in `dilution_map_boosted.root`.
+ ---
+
+## Summary
+
+### The reco/gen ratio at fixed truth binning (0.2771/0.2195 = 1.26) isolates the coefficient bias and is the number P1 must drive to 1.0. Separately, the reco-binned→gen-binned shift (0.1537→0.2771, ×1.80) is the migration impact — same reco values, different populations — which a final measurement will absorb via a response/unfolding treatment
 
 ---
----
-
-## Headline result
-
-In the **truly boosted** region (`m_tt^gen > 800 GeV`), comparing reconstruction to generator truth on **identical, event-weighted events**:
-
-| Observable | reco | gen (truth) | reco / gen |
-|---|---|---|---|
-| **D̃** (`cHel_P3n`) | **0.2771** | **0.2195** | **≈ 1.26** |
-| D (`cHel`, sanity) | 0.0414 | 0.0444 | ~0.93 |
-
-**The reconstruction overestimates the boosted D̃ by ~26 %.**
-
-Because the bias is an *overestimate*, the current reconstruction would bias a measured entanglement value **high** — a real systematic, not benign dilution-toward-zero.  
-
-**P1 success criterion: drive this ratio toward 1.0** (and flatten the per-cell ratio map toward unity).
-
-> The 1.26 reco/gen ratio is from a full-pass over the `TTToSemileptonic` events that pass our baseline selection and chi2 cut to contribute to our UL18 signal yield
-
 ---
 
 ## A. Physics takeaways (reconstruction distortion)
