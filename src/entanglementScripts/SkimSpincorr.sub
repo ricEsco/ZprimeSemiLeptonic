@@ -1,0 +1,18 @@
+universe            = vanilla
+
+# run inside the EL7 container (CMSSW_10_6_28 is slc7-built)
++MySingularityImage = "/cvmfs/unpacked.cern.ch/registry.hub.docker.com/cmssw/el7:x86_64"
++MySingularityArgs  = "--bind /tmp:/tmp"
+
+executable          = SkimSpincorr.sh
+arguments           = $(Process)
+output              = condorOut/skim.$(Process).out
+error               = condorOut/skim.$(Process).err
+log                 = condorOut/skim.$(Process).log
+
+RequestCpus         = 1
+RequestMemory       = 3 GB
+RequestDisk         = 2 GB
++RequestRuntime     = 86400
+
+queue 4
