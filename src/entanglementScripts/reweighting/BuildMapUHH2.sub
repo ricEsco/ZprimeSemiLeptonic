@@ -1,0 +1,21 @@
+universe            = vanilla
++MySingularityImage  = "/cvmfs/unpacked.cern.ch/registry.hub.docker.com/cmssw/el7:x86_64"
++MySingularityArgs   = "--bind /tmp:/tmp"
+
+executable          = BuildMapUHH2.sh
+arguments           = "$(files)"
+output              = condorOut/map.$(Process).out
+error               = condorOut/map.$(Process).err
+log                 = condorOut/map.$(Process).log
+
+RequestCpus         = 1
+RequestMemory       = 2 GB
+RequestDisk         = 1 GB
++RequestRuntime     = 7200
+
+# be a good citizen on the shared pool: keep at most a few hundred jobs idle at once
+max_idle            = 300
+
+# one job per CHUNK: each line of chunklist_uhh2.txt is N space-separated ntuple paths,
+# assigned whole to $(files) and passed as N arguments to the executable.
+queue files from chunklist_uhh2.txt

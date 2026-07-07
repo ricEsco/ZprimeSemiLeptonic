@@ -2,6 +2,7 @@ from __future__ import print_function
 import ROOT
 
 fn = "/data/dust/user/ricardo/output_uhh2_Entanglement_Reco/UL18/preDNNselection/both/mergedFiles/uhh2.AnalysisModuleRunner.MC.TTToSemiLeptonic_muon.root"
+# fn = "/data/dust/group/cms/zprime-uhh/Presel_UL18_templatemethod/workdir_Preselection_UL18_templatemethod_ttbar_NNLOcorrectionatgen/uhh2.AnalysisModuleRunner.MC.TTToHadronic_UL18_69.root"
 f = ROOT.TFile.Open(fn)
 t = f.Get("AnalysisTree")
 print("entries:", t.GetEntries())
