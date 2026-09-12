@@ -36,11 +36,13 @@
 #include <UHH2/ZprimeSemiLeptonic/include/ZprimeSemiLeptonicHists.h>
 #include <UHH2/ZprimeSemiLeptonic/include/ZprimeSemiLeptonicGeneratorHists.h>
 #include <UHH2/ZprimeSemiLeptonic/include/ZprimeSemiLeptonicCHSMatchHists.h>
+#include <UHH2/ZprimeSemiLeptonic/include/ZprimeSemiLeptonicSystematicsModule.h>
+#include <UHH2/ZprimeSemiLeptonic/include/ZprimeSemiLeptonicSystematicsHists.h>
+#include <UHH2/ZprimeSemiLeptonic/include/ZprimeSemiLeptonicPDFHists.h>
 #include <UHH2/ZprimeSemiLeptonic/include/ZprimeCandidate.h>
 #include <UHH2/ZprimeSemiLeptonic/include/ElecTriggerSF.h>
 #include <UHH2/ZprimeSemiLeptonic/include/AK4JetCorrections.h>
 #include <UHH2/ZprimeSemiLeptonic/include/TopPuppiJetCorrections.h>
-//#include <UHH2/ZprimeSemiLeptonic/include/ZprimeSemiLeptonicSystematicsModule.h>
 #include <UHH2/ZprimeSemiLeptonic/include/TopTagScaleFactor.h>
 #include <UHH2/ZprimeSemiLeptonic/include/TopMistagScaleFactor.h>
 
@@ -62,7 +64,7 @@ using namespace uhh2;
 ██████  ███████ ██      ██ ██   ████ ██    ██    ██  ██████  ██   ████
 */
 
-class ZprimeAnalysisModule : public ModuleBASE {
+class ZprimeAnalysisModule: public ModuleBASE {
 
 public:
 
@@ -1234,13 +1236,13 @@ bool ZprimeAnalysisModule::process(uhh2::Event& event){
   ///////////////////////////////////////////////////////////////////////////////////////////
   /////////////////////////////// ttbar system reconstruction ///////////////////////////////
 
-  // Build all possible ttbar candidates and extract discriminators
+  // Build ALL ttbar system candidates
   CandidateBuilder->process(event);
   if(debug) cout << "[ZprimeAnalysisModule] CandidateBuilder: ok" << endl;
-
+  // Computes correct match discriminator for ttbar candidates
   if(isMC) CorrectMatchDiscriminatorZprime->process(event);
   if(isMC && debug) cout << "[ZprimeAnalysisModule] CorrectMatchDiscriminator: ok" << endl;
-
+  // Computes chi2 discriminator for ttbar candidates
   Chi2DiscriminatorZprime->process(event);
   if(debug) cout << "[ZprimeAnalysisModule] Chi2Discriminator: ok" << endl;
 
@@ -1257,10 +1259,12 @@ bool ZprimeAnalysisModule::process(uhh2::Event& event){
   if(isMC && CorrectMatchDiscriminatorZprime->process(event)){                                                  //
     if(debug) cout << "[ZprimeAnalysisModule] CorrectMatchDiscriminator selection before chi2: passed" << endl; //
     fill_histograms(event, "CorrectMatch_BeforeChi2Cut");}                                                      //
-  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  // Select events whose chi2 candidates have chi2 < 30
-  if(!Chi2_selection->passes(event)){ // <---------------------------------------------------------------- chi2 cut
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  //////////////////////////// Select events whose chi2 candidates have chi2 < 30 ////////////////////////////
+  // BestZprimeCandidate->discriminator("chi2_total") saved to AnalysisTree to reproduce this cut in skims //
+  if(!Chi2_selection->passes(event)){ // <--------------------------------------------------------------------------- chi2 cut
     if(debug) cout << "[ZprimeAnalysisModule] Chi2 Selection: failed" << endl;
     fill_histograms(event, "Chi2cut_FAIL");
     return false;
@@ -1277,13 +1281,14 @@ bool ZprimeAnalysisModule::process(uhh2::Event& event){
   if(isMC && CorrectMatchDiscriminatorZprime->process(event)){                                                //
     if(debug) cout << "[ZprimeAnalysisModule] CorrectMatchDiscriminator after chi2 selection: ok" << endl;    //
     fill_histograms(event, "CorrectMatch_AfterChi2cut");}                                                     //
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 
   /////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////// Define Event Topologies //////////////////////////////////
+  // is_toptag_reconstruction boolean saved to AnalysisTree to reproduce this cut in skims //
 
-  if(ZprimeTopTag_selection->passes(event)){ // Merged
+  if(ZprimeTopTag_selection->passes(event)){ // <-------------------------------------------------------------------- Merged
     if(debug) cout << "[ZprimeAnalysisModule] TopTag Selection: passed" << endl; 
     fill_histograms(event, "Merged");
 
@@ -1294,7 +1299,7 @@ bool ZprimeAnalysisModule::process(uhh2::Event& event){
     if(isMC && CorrectMatchDiscriminatorZprime->process(event)){                           //
       if(debug) cout << "[ZprimeAnalysisModule] CorrectMatchDiscriminator: ok" << endl;    //
       fill_histograms(event, "CorrectMatch_Merged");}                                      //
-    /////////////////////////////////////////////////////////////////////////////////////////
+
   }
   else{ // Resolved
     if(debug) cout << "[ZprimeAnalysisModule] TopTag Selection: failed" << endl; 
@@ -1307,7 +1312,7 @@ bool ZprimeAnalysisModule::process(uhh2::Event& event){
     if(isMC && CorrectMatchDiscriminatorZprime->process(event)){                           //
       if(debug) cout << "[ZprimeAnalysisModule] CorrectMatchDiscriminator: ok" << endl;    //
       fill_histograms(event, "CorrectMatch_Resolved");}                                    //
-    /////////////////////////////////////////////////////////////////////////////////////////
+
   }
 
   // Variables for DNN

@@ -1,0 +1,22 @@
+
+universe            = vanilla
++MySingularityImage  = "/cvmfs/unpacked.cern.ch/registry.hub.docker.com/cmssw/el7:x86_64"
++MySingularityArgs   = "--bind /tmp:/tmp"
+ 
+executable          = dump_ntuples_gen.sh
+arguments           = "$(files)"
+output              = condorOut/dump.$(Process).out
+error               = condorOut/dump.$(Process).err
+log                 = condorOut/dump.$(Process).log
+ 
+RequestCpus         = 1
+RequestMemory       = 2 GB
+RequestDisk         = 1 GB
++RequestRuntime     = 7200
+ 
+max_idle            = 300
+ 
+# one job per CHUNK: each line of chunklist_uhh2.txt is N space-separated ntuple paths,
+# assigned whole to $(files) and passed as N arguments to the executable (reuse the map's chunklist).
+queue files from chunklist_uhh2.txt
+ 

@@ -191,20 +191,26 @@ void ZprimeSemiLeptonicHists::init(){
   pt_mu_nearjet  = book<TH1F>("pt_mu_nearjet", "p_{T} (nearest jet to #mu)", 50, 0, 500);
   pt_ele_nearjet = book<TH1F>("pt_ele_nearjet", "p_{T} (nearest jet to e)", 50, 0, 500);
 
-  dRmin_ptrel_mu   = book<TH2F>("dRmin_ptrel_mu", "p_{T}^{rel}(#mu, jet) vs. #DeltaR_{min}(#mu, jet);#DeltaR_{min}(#mu, jet);p_{T}^{rel}(#mu, jet)", 60, 0, 3, 50, 0, 500);
-  dRmin_ptrel_mu1   = book<TH2F>("dRmin_ptrel_mu1", "p_{T}^{rel}(#mu1, jet) vs. #DeltaR_{min}(#mu1, jet);#DeltaR_{min}(#mu1, jet);p_{T}^{rel}(#mu1, jet)", 60, 0, 3, 50, 0, 500);
-  dRmin_ptrel_mu1_matched   = book<TH2F>("dRmin_ptrel_mu1_match", "p_{T}^{rel}(#mu1, jet) vs. #DeltaR_{min}(#mu1, jet);#DeltaR_{min}(#mu1, jet);p_{T}^{rel}(#mu1, jet)", 60, 0, 3, 50, 0, 500);
-  dRmin_pt_mu1     = book<TH2F>("dRmin_pt_mu1", "p_{T}(#mu1, jet) vs. #DeltaR_{min}(#mu1, jet); #DeltaR_{min}(#mu1, jet);p_{T}(#mu1, jet)", 60, 0, 3, 90, 0, 900);
-  dRmin_pt_mu1_matched   = book<TH2F>("dRmin_pt_mu1_match", "p_{T}(#mu1, jet) vs. #DeltaR_{min}(#mu1, jet); #DeltaR_{min}(#mu1, jet);p_{T}(#mu1, jet)", 60, 0, 3, 90, 0, 900);
-  ptrel_pt_mu1     = book<TH2F>("ptrel_pt_mu1", "p_{T}^{rel}(#mu1, jet) vs. p_{T}(#mu1); p_{T}^{rel}(#mu1, jet);p_{T}(#mu1)", 50, 0, 500, 90, 0, 900);
-  ptrel_pt_mu1_matched     = book<TH2F>("ptrel_pt_mu1_match", "p_{T}^{rel}(#mu1, jet) vs. p_{T}(#mu1); p_{T}^{rel}(#mu1, jet);p_{T}(#mu1)", 50, 0, 500, 90, 0, 900);
+  // 2D Histograms comparing pTrel vs. dRmin for muons and electrons
+  dRmin_ptrel_mu  = book<TH2F>("dRmin_ptrel_mu", "p_{T}^{rel}(#mu, jet) vs. #DeltaR_{min}(#mu, jet);#DeltaR_{min}(#mu, jet);p_{T}^{rel}(#mu, jet)", 60, 0, 3, 50, 0, 500);
+  dRmin_ptrel_mu1 = book<TH2F>("dRmin_ptrel_mu1", "p_{T}^{rel}(#mu1, jet) vs. #DeltaR_{min}(#mu1, jet);#DeltaR_{min}(#mu1, jet);p_{T}^{rel}(#mu1, jet)", 60, 0, 3, 50, 0, 500);
+  dRmin_pt_mu1    = book<TH2F>("dRmin_pt_mu1", "p_{T}(#mu1, jet) vs. #DeltaR_{min}(#mu1, jet); #DeltaR_{min}(#mu1, jet);p_{T}(#mu1, jet)", 60, 0, 3, 90, 0, 900);
+  ptrel_pt_mu1    = book<TH2F>("ptrel_pt_mu1", "p_{T}^{rel}(#mu1, jet) vs. p_{T}(#mu1); p_{T}^{rel}(#mu1, jet);p_{T}(#mu1)", 50, 0, 500, 90, 0, 900);
+
   dRmin_ptrel_ele  = book<TH2F>("dRmin_ptrel_ele", "p_{T}^{rel}(e, jet) vs. #DeltaR_{min}(e, jet);DeltaR_{min}(e, jet);p_{T}^{rel}(e, jet)", 60, 0, 3, 50, 0, 500);
-  dRmin_ptrel_ele1  = book<TH2F>("dRmin_ptrel_ele1", "p_{T}^{rel}(e1, jet) vs. #DeltaR_{min}(e1, jet);DeltaR_{min}(e1, jet);p_{T}^{rel}(e1, jet)", 60, 0, 3, 50, 0, 500);
-  dRmin_ptrel_ele1_matched  = book<TH2F>("dRmin_ptrel_ele1_match", "p_{T}^{rel}(e1, jet) vs. #DeltaR_{min}(e1, jet);DeltaR_{min}(e1, jet);p_{T}^{rel}(e1, jet)", 60, 0, 3, 50, 0, 500);
-  dRmin_pt_ele1     = book<TH2F>("dRmin_pt_ele1", "p_{T}(e1, jet) vs. #DeltaR_{min}(e1, jet); #DeltaR_{min}(e1, jet);p_{T}(e1, jet)", 60, 0, 3, 90, 0, 900);
-  ptrel_pt_ele1     = book<TH2F>("ptrel_pt_ele1", "p_{T}^{rel}(e1, jet) vs. p_{T}(e1); p_{T}^{rel}(e1, jet);p_{T}(e1)", 50, 0, 500, 90, 0, 900);
-  dRmin_pt_ele1_matched     = book<TH2F>("dRmin_pt_ele1_match", "p_{T}(e1, jet) vs. #DeltaR_{min}(e1, jet); #DeltaR_{min}(e1, jet);p_{T}(e1, jet)", 60, 0, 3, 90, 0, 900);
-  ptrel_pt_ele1_matched     = book<TH2F>("ptrel_pt_ele1_match", "p_{T}^{rel}(e1, jet) vs. p_{T}(e1); p_{T}^{rel}(e1, jet);p_{T}(e1)", 50, 0, 500, 90, 0, 900);
+  dRmin_ptrel_ele1 = book<TH2F>("dRmin_ptrel_ele1", "p_{T}^{rel}(e1, jet) vs. #DeltaR_{min}(e1, jet);DeltaR_{min}(e1, jet);p_{T}^{rel}(e1, jet)", 60, 0, 3, 50, 0, 500);
+  dRmin_pt_ele1    = book<TH2F>("dRmin_pt_ele1", "p_{T}(e1, jet) vs. #DeltaR_{min}(e1, jet); #DeltaR_{min}(e1, jet);p_{T}(e1, jet)", 60, 0, 3, 90, 0, 900);
+  ptrel_pt_ele1    = book<TH2F>("ptrel_pt_ele1", "p_{T}^{rel}(e1, jet) vs. p_{T}(e1); p_{T}^{rel}(e1, jet);p_{T}(e1)", 50, 0, 500, 90, 0, 900);
+
+  // 2D Histograms comparing pTrel vs. dRmin for muons and electrons after matching to CHS jets
+  dRmin_ptrel_mu1_matched = book<TH2F>("dRmin_ptrel_mu1_match", "p_{T}^{rel}(#mu1, jet) vs. #DeltaR_{min}(#mu1, jet);#DeltaR_{min}(#mu1, jet);p_{T}^{rel}(#mu1, jet)", 60, 0, 3, 50, 0, 500);
+  dRmin_pt_mu1_matched    = book<TH2F>("dRmin_pt_mu1_match", "p_{T}(#mu1, jet) vs. #DeltaR_{min}(#mu1, jet); #DeltaR_{min}(#mu1, jet);p_{T}(#mu1, jet)", 60, 0, 3, 90, 0, 900);
+  ptrel_pt_mu1_matched    = book<TH2F>("ptrel_pt_mu1_match", "p_{T}^{rel}(#mu1, jet) vs. p_{T}(#mu1); p_{T}^{rel}(#mu1, jet);p_{T}(#mu1)", 50, 0, 500, 90, 0, 900);
+
+  dRmin_ptrel_ele1_matched = book<TH2F>("dRmin_ptrel_ele1_match", "p_{T}^{rel}(e1, jet) vs. #DeltaR_{min}(e1, jet);DeltaR_{min}(e1, jet);p_{T}^{rel}(e1, jet)", 60, 0, 3, 50, 0, 500);
+  dRmin_pt_ele1_matched    = book<TH2F>("dRmin_pt_ele1_match", "p_{T}(e1, jet) vs. #DeltaR_{min}(e1, jet); #DeltaR_{min}(e1, jet);p_{T}(e1, jet)", 60, 0, 3, 90, 0, 900);
+  ptrel_pt_ele1_matched    = book<TH2F>("ptrel_pt_ele1_match", "p_{T}^{rel}(e1, jet) vs. p_{T}(e1); p_{T}^{rel}(e1, jet);p_{T}(e1)", 50, 0, 500, 90, 0, 900);
+
 
   // HOTVR jets
   N_HOTVRjets              = book<TH1F>("N_HOTVRjets", "N_{HOTVR jets}", 6, -0.5, 5.5);

@@ -1,0 +1,20 @@
+
+universe            = vanilla
++MySingularityImage  = "/cvmfs/unpacked.cern.ch/registry.hub.docker.com/cmssw/el7:x86_64"
++MySingularityArgs   = "--bind /tmp:/tmp"
+ 
+executable           = Inclusive_gen_closure.sh
+output               = condorOut/inclusiveGenClosure.$(Process).out
+error                = condorOut/inclusiveGenClosure.$(Process).err
+log                  = condorOut/inclusiveGenClosure.$(Process).log
+ 
+RequestCpus         = 1
+RequestMemory       = 32 GB
+RequestDisk         = 1 GB
+
+MaxJobRetirementTime = 108000
++RequestRuntime      = 108000
++TotalJobRuntime     = 108000
+
+queue
+ 

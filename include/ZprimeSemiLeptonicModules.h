@@ -192,24 +192,33 @@ public:
   virtual bool process(uhh2::Event&) override;
 
 private:
-  uhh2::Event::Handle<bool> h_is_zprime_reconstructed_chi2;
+  bool isUL16preVFP, isUL16postVFP, isUL17, isUL18;
   uhh2::Event::Handle<ZprimeCandidate*> h_BestZprimeCandidateChi2;
   uhh2::Event::Handle<std::vector<Jet> > h_CHSjets_matched;
+  uhh2::Event::Handle<bool> h_is_zprime_reconstructed_chi2;
+  uhh2::Event::Handle<bool> h_is_toptag_reconstruction;
   uhh2::Event::Handle<float> h_eventweight;
-  bool isUL16preVFP, isUL16postVFP, isUL17, isUL18;
-  uhh2::Event::Handle<float> h_chi2, h_M_tt, h_beta, h_dyreco;
+  uhh2::Event::Handle<float> h_chi2, h_M_tt, h_beta, h_pt_hadTop, h_absDeltaY, h_cos_PosTop_beam;
+
+  uhh2::Event::Handle<float> h_Top_pt, h_Top_eta, h_Top_phi, h_Top_E;
+  uhh2::Event::Handle<float> h_Antitop_pt, h_Antitop_eta, h_Antitop_phi, h_Antitop_E;
+  uhh2::Event::Handle<float> h_bHad_pt, h_bHad_eta, h_bHad_phi, h_bHad_E;
+  uhh2::Event::Handle<float> h_Lepton_pt, h_Lepton_eta, h_Lepton_phi, h_Lepton_E, h_Lepton_charge;
+
   uhh2::Event::Handle<float> h_cosTheta1k_antiLep, h_cosTheta1r_antiLep, h_cosTheta1n_antiLep, h_cosTheta1kStar_antiLep, h_cosTheta1rStar_antiLep;
   uhh2::Event::Handle<float> h_cosTheta2k_Lep,     h_cosTheta2r_Lep,     h_cosTheta2n_Lep,     h_cosTheta2kStar_Lep,     h_cosTheta2rStar_Lep;
   uhh2::Event::Handle<float> h_cosTheta1k, h_cosTheta1r, h_cosTheta1n, h_cosTheta1kStar, h_cosTheta1rStar;
   uhh2::Event::Handle<float> h_cosTheta2k, h_cosTheta2r, h_cosTheta2n, h_cosTheta2kStar, h_cosTheta2rStar;
+
   uhh2::Event::Handle<float> h_Cnn, h_Cnr, h_Cnk, h_Crn, h_Crr, h_Crk, h_Ckn, h_Ckr, h_Ckk;
   uhh2::Event::Handle<float> h_Crk_plus, h_Crk_minus, h_Cnr_plus, h_Cnr_minus, h_Cnk_plus, h_Cnk_minus;
   uhh2::Event::Handle<float> h_cHel,     h_cHel_Mtt300_400,     h_cHel_Mtt300_400_betaLT0p9;
   uhh2::Event::Handle<float> h_cHel_P3n, h_cHel_P3n_Mtt800_Inf, h_cHel_P3n_Mtt800_Inf_cosThetaLT0p4;
   uhh2::Event::Handle<float> h_Sigma_phi, h_Delta_phi;
+  
   uhh2::Event::Handle<float> h_Sigma_phi_1, h_Sigma_phi_2, h_Delta_phi_1, h_Delta_phi_2;
-  uhh2::Event::Handle<float> h_dyreco_s1, h_dyreco_s2, h_dyreco_d1, h_dyreco_d2;
-  uhh2::Event::Handle<float> h_Sigma_phi_high, h_Sigma_phi_low, h_Delta_phi_high, h_Delta_phi_low, h_dyreco_high, h_dyreco_low;
+  uhh2::Event::Handle<float> h_absDeltaY_s1, h_absDeltaY_s2, h_absDeltaY_d1, h_absDeltaY_d2;
+  uhh2::Event::Handle<float> h_Sigma_phi_high, h_Sigma_phi_low, h_Delta_phi_high, h_Delta_phi_low, h_absDeltaY_high, h_absDeltaY_low;
   TString mode_;
 };
 

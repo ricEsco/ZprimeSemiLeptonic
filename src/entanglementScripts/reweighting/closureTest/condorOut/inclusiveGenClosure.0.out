@@ -1,0 +1,27 @@
+=== host: batch1052.desy.de ===
+CentOS Linux release 7.9.2009 (Core)
+No Grid environment available for this OS.
+Adding DESY site environment.
+ROOT:   6.14/09
+Python:
+Starting gen_closure_cHel_P3n.py on 0 files at Thu Jul 16 23:15:41 CEST 2026
+observable: cHel_P3n   (map TTToSemiLeptonic/alpha_lb_cHel_P3n, gen branch gen_cHel_P3n)
+tree: gendump (467117033 entries)
+base weight: genweight
+
+selected 467117033 gen-semileptonic events
+
+=== gen forward-backward asymmetry A = (N+ - N-)/(N+ + N-) ; D-tilde = 5*A ===
+  nominal (no reweight) : A=-0.0017   D-tilde=-0.0084
+
+=== prefactor scan: A_up after f=+1 reweight (want A_up -> 0) ===
+   p(on A)  density=lambda   A_up        D-tilde_up     verdict
+     1      0.20*alpha_map   -0.0008    -0.0041    slope FLATTENED  <== correct prefactor
+     2      0.40*alpha_map   +0.0000    +0.0000    slope FLATTENED  <== correct prefactor
+     3      0.60*alpha_map   +0.0008    +0.0039    slope FLATTENED  <== correct prefactor
+     4      0.80*alpha_map   +0.0008    +0.0042    slope FLATTENED  <== correct prefactor
+     5      1.00*alpha_map   +0.0020    +0.0098    slope FLATTENED  <== correct prefactor
+
+  --> empirically-flat prefactor: p=2 (A_up=+0.0000).  Expected from alpha_a*alpha_b=0.4: p=2.
+wrote FullInclusive_gen_closure_cHel_P3n.pdf
+gen_closure_cHel_P3n.py finished (exit 0) at Fri Jul 17 03:10:22 CEST 2026

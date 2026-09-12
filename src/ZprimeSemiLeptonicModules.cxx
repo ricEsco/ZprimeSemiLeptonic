@@ -320,7 +320,6 @@ bool ZprimeChi2Discriminator::process(uhh2::Event& event){
     }
 
     float chi2 = chi2_had + chi2_lep;
-
     candidates.at(i).set_discriminators("chi2_hadronic", chi2_had);
     candidates.at(i).set_discriminators("chi2_leptonic", chi2_lep);
     candidates.at(i).set_discriminators("chi2_total", chi2);
@@ -1324,10 +1323,12 @@ SpinCorrelations::SpinCorrelations(uhh2::Context& ctx, TString mode): mode_(mode
   bool debug = false;
   if(debug) cout << "[SpinCorrelations::SpinCorrelations] constructor called with mode: " << mode_ << endl;
 
-  h_BestZprimeCandidateChi2 = ctx.get_handle<ZprimeCandidate*>("ZprimeCandidateBestChi2");
+  h_BestZprimeCandidateChi2      = ctx.get_handle<ZprimeCandidate*>("ZprimeCandidateBestChi2");
+  h_CHSjets_matched              = ctx.get_handle<std::vector<Jet>>("CHS_matched");
   h_is_zprime_reconstructed_chi2 = ctx.get_handle<bool>("is_zprime_reconstructed_chi2");
-  h_CHSjets_matched = ctx.get_handle<std::vector<Jet>>("CHS_matched");
-  h_eventweight = ctx.declare_event_output<float> ("eventweight");
+  
+  h_eventweight              = ctx.declare_event_output<float> ("eventweight");
+  h_is_toptag_reconstruction = ctx.declare_event_output<bool>("is_toptag_reconstruction");
 
   // Booleans to identify era
   isUL16preVFP=false; isUL16postVFP=false; isUL17=false; isUL18 =false;
@@ -1335,11 +1336,32 @@ SpinCorrelations::SpinCorrelations(uhh2::Context& ctx, TString mode): mode_(mode
   isUL16postVFP = (ctx.get("dataset_version").find("UL16postVFP") != std::string::npos);
   isUL17        = (ctx.get("dataset_version").find("UL17")        != std::string::npos);
   isUL18        = (ctx.get("dataset_version").find("UL18")        != std::string::npos);
+
   // ttbar system variables
   h_chi2 = ctx.declare_event_output<float>("chi2");
   h_M_tt = ctx.declare_event_output<float>("M_tt");
+  h_pt_hadTop = ctx.declare_event_output<float>("pt_hadTop");
   h_beta = ctx.declare_event_output<float>("beta");
-  h_dyreco = ctx.declare_event_output<float>("dyreco"); // charge asymmetry
+  h_absDeltaY = ctx.declare_event_output<float>("absDeltaY");
+  h_cos_PosTop_beam = ctx.declare_event_output<float>("cos_PosTop_beam");
+  // top and spin analyzer lab-frame 4-vectors
+  h_Top_pt = ctx.declare_event_output<float>("Top_pt");
+  h_Top_eta = ctx.declare_event_output<float>("Top_eta");
+  h_Top_phi = ctx.declare_event_output<float>("Top_phi");
+  h_Top_E = ctx.declare_event_output<float>("Top_E");
+  h_Antitop_pt = ctx.declare_event_output<float>("Antitop_pt");
+  h_Antitop_eta = ctx.declare_event_output<float>("Antitop_eta");
+  h_Antitop_phi = ctx.declare_event_output<float>("Antitop_phi");
+  h_Antitop_E = ctx.declare_event_output<float>("Antitop_E");
+  h_bHad_pt = ctx.declare_event_output<float>("bHad_pt");
+  h_bHad_eta = ctx.declare_event_output<float>("bHad_eta");
+  h_bHad_phi = ctx.declare_event_output<float>("bHad_phi");
+  h_bHad_E = ctx.declare_event_output<float>("bHad_E");
+  h_Lepton_pt = ctx.declare_event_output<float>("Lepton_pt");
+  h_Lepton_eta = ctx.declare_event_output<float>("Lepton_eta");
+  h_Lepton_phi = ctx.declare_event_output<float>("Lepton_phi");
+  h_Lepton_E = ctx.declare_event_output<float>("Lepton_E");
+  h_Lepton_charge = ctx.declare_event_output<float>("Lepton_charge");
 
   // spin-analyzer (leptons-only) projections
   h_cosTheta1k_antiLep = ctx.declare_event_output<float>("cosTheta1k_antiLep");
@@ -1402,18 +1424,18 @@ SpinCorrelations::SpinCorrelations(uhh2::Context& ctx, TString mode): mode_(mode
   h_Delta_phi_1=ctx.declare_event_output<float>("Delta_phi_1");
   h_Delta_phi_2=ctx.declare_event_output<float>("Delta_phi_2");
   // Charge asymmetry with cut on Baumgart variables
-  h_dyreco_s1 = ctx.declare_event_output<float>("dyreco_s1");
-  h_dyreco_s2 = ctx.declare_event_output<float>("dyreco_s2");
-  h_dyreco_d1 = ctx.declare_event_output<float>("dyreco_d1");
-  h_dyreco_d2 = ctx.declare_event_output<float>("dyreco_d2");
+  h_absDeltaY_s1 = ctx.declare_event_output<float>("absDeltaY_s1");
+  h_absDeltaY_s2 = ctx.declare_event_output<float>("absDeltaY_s2");
+  h_absDeltaY_d1 = ctx.declare_event_output<float>("absDeltaY_d1");
+  h_absDeltaY_d2 = ctx.declare_event_output<float>("absDeltaY_d2");
 
   // all three variables in high/low pt cuts
   h_Sigma_phi_high = ctx.declare_event_output<float>("Sigma_phi_high");
   h_Delta_phi_high = ctx.declare_event_output<float>("Delta_phi_high");
-  h_dyreco_high    = ctx.declare_event_output<float>("dyreco_high");
+  h_absDeltaY_high    = ctx.declare_event_output<float>("absDeltaY_high");
   h_Sigma_phi_low = ctx.declare_event_output<float>("Sigma_phi_low");
   h_Delta_phi_low = ctx.declare_event_output<float>("Delta_phi_low");
-  h_dyreco_low    = ctx.declare_event_output<float>("dyreco_low");
+  h_absDeltaY_low    = ctx.declare_event_output<float>("absDeltaY_low");
 }
 
 bool SpinCorrelations::process(uhh2::Event& evt){
@@ -1425,10 +1447,32 @@ bool SpinCorrelations::process(uhh2::Event& evt){
   evt.set(h_eventweight, weight);
 
   bool is_zprime_reconstructed_chi2 = evt.get(h_is_zprime_reconstructed_chi2); // reconstruction method boolean
-  evt.set(h_chi2, -10);  // chi^2 of ttbar reconstruction
-  evt.set(h_M_tt, -10);  // invariant mass of ttbar system
-  evt.set(h_beta, -10);  // relativistic-beta of ttbar system
-  evt.set(h_dyreco,-10); // Charge asymmetry of ttbar system
+  evt.set(h_chi2, -10);                        // chi^2 of BestChi2Candidate ttbar reconstruction
+  evt.set(h_M_tt, -10);                        // invariant mass of ttbar system
+  evt.set(h_is_toptag_reconstruction, false);  // event topology id of BestChi2Candidate
+  evt.set(h_pt_hadTop, -10);                   // pT of hadronically decaying top
+  evt.set(h_beta, -10);                        // relativistic-beta of ttbar system
+  evt.set(h_cos_PosTop_beam, -10);             // cosine of top scattering angle
+  evt.set(h_absDeltaY,-10);                    // Charge asymmetry of ttbar system
+
+  // top and spin analyzer lab-frame 4-vectors
+  evt.set(h_Top_pt, -10);
+  evt.set(h_Top_eta, -10);
+  evt.set(h_Top_phi, -10);
+  evt.set(h_Top_E, -10);
+  evt.set(h_Antitop_pt, -10);
+  evt.set(h_Antitop_eta, -10);
+  evt.set(h_Antitop_phi, -10);
+  evt.set(h_Antitop_E, -10);
+  evt.set(h_bHad_pt, -10);
+  evt.set(h_bHad_eta, -10);
+  evt.set(h_bHad_phi, -10);
+  evt.set(h_bHad_E, -10);
+  evt.set(h_Lepton_pt, -10);
+  evt.set(h_Lepton_eta, -10);
+  evt.set(h_Lepton_phi, -10);
+  evt.set(h_Lepton_E, -10);
+  evt.set(h_Lepton_charge, -10);
 
   // spin-analyzer (leptons-only) projections
   evt.set(h_cosTheta1k_antiLep, -10);
@@ -1490,17 +1534,17 @@ bool SpinCorrelations::process(uhh2::Event& evt){
   evt.set(h_Delta_phi_1, -10);
   evt.set(h_Delta_phi_2, -10);
   // Charge asymmetry with cut on Baumgart variables
-  evt.set(h_dyreco_s1, -10);
-  evt.set(h_dyreco_s2, -10);
-  evt.set(h_dyreco_d1, -10);
-  evt.set(h_dyreco_d2, -10);
+  evt.set(h_absDeltaY_s1, -10);
+  evt.set(h_absDeltaY_s2, -10);
+  evt.set(h_absDeltaY_d1, -10);
+  evt.set(h_absDeltaY_d2, -10);
   // all three variables in high/low pt cuts
   evt.set(h_Sigma_phi_high, -10); 
   evt.set(h_Delta_phi_high, -10); 
-  evt.set(h_dyreco_high   , -10); 
+  evt.set(h_absDeltaY_high   , -10); 
   evt.set(h_Sigma_phi_low , -10); 
   evt.set(h_Delta_phi_low , -10); 
-  evt.set(h_dyreco_low    , -10); 
+  evt.set(h_absDeltaY_low    , -10); 
   // cout << "[Variables_NN::process] set SpinCorr variables " << endl;
 
   if(is_zprime_reconstructed_chi2){
@@ -1512,10 +1556,12 @@ bool SpinCorrelations::process(uhh2::Event& evt){
     evt.set(h_M_tt, Mass_tt);
 
     bool is_toptag_reconstruction = BestZprimeCandidate->is_toptag_reconstruction(); // Reconstruction process id
+    evt.set(h_is_toptag_reconstruction, is_toptag_reconstruction);
     vector <Jet> AK4CHSjets_matched = evt.get(h_CHSjets_matched);                    // AK4Puppijets that have been matched to CHSjets
     vector <float> jets_hadronic_bscores;                                            // bScores vector for resolved hadronic jets
     float pt_hadTop_thresh = 150;                                                    // Define cut-variable as pt of hadTop for low/high regions
     float pt_hadTop = BestZprimeCandidate->top_hadronic_v4().pt();                   // pT of hadronic-top jet
+    evt.set(h_pt_hadTop, pt_hadTop);
     
     // Working points for DeepJet AK4-jet b-tagging, e.g., see https://btv-wiki.docs.cern.ch/ScaleFactors/Run2UL2016preVFP/#ak4-b-tagging for UL16preVFP
     float noTopTag_btag_WP_M;                       // Medium working point flag to cut on working point
@@ -1595,10 +1641,21 @@ bool SpinCorrelations::process(uhh2::Event& evt){
                                                           BestZprimeCandidate->tophad_topjet_ptr()->subjets().at(j).energy());
         }
       }
+      // b-jet from hadronic decay lab-frame 4-vector
+      evt.set(h_bHad_pt, had_top_b.Pt());
+      evt.set(h_bHad_eta, had_top_b.Eta());
+      evt.set(h_bHad_phi, had_top_b.Phi());
+      evt.set(h_bHad_E, had_top_b.E());
 
       // lepton
       LorentzVector lep = BestZprimeCandidate->lepton().v4();
       lep_top_lep.SetPtEtaPhiE(lep.pt(), lep.eta(), lep.phi(), lep.E());
+      // Lepton lab-frame 4-vector
+      evt.set(h_Lepton_pt, lep_top_lep.Pt());
+      evt.set(h_Lepton_eta, lep_top_lep.Eta());
+      evt.set(h_Lepton_phi, lep_top_lep.Phi());
+      evt.set(h_Lepton_E, lep_top_lep.E());
+      evt.set(h_Lepton_charge, BestZprimeCandidate->lepton().charge());
 
       // top quark parents for boosting and basis construction
       TLorentzVector PosTop(0, 0, 0, 0);
@@ -1623,18 +1680,29 @@ bool SpinCorrelations::process(uhh2::Event& evt){
                             BestZprimeCandidate->top_leptonic_v4().phi(), 
                             BestZprimeCandidate->top_leptonic_v4().energy());
       }
-      TLorentzVector ttbar = PosTop + NegTop; // ttbar 4vector
+      // Top and Antitop lab-frame 4-vectors
+      evt.set(h_Top_pt, PosTop.Pt());
+      evt.set(h_Top_eta, PosTop.Eta());
+      evt.set(h_Top_phi, PosTop.Phi());
+      evt.set(h_Top_E, PosTop.E());
+      evt.set(h_Antitop_pt, NegTop.Pt());
+      evt.set(h_Antitop_eta, NegTop.Eta());
+      evt.set(h_Antitop_phi, NegTop.Phi());
+      evt.set(h_Antitop_E, NegTop.E());
+
+      // ttbar 4vector
+      TLorentzVector ttbar = PosTop + NegTop;
 
       // Lab-frame variables
       float beta = TMath::Abs(PosTop.Pz() + NegTop.Pz()) / (PosTop.E() + NegTop.E());
       evt.set(h_beta, beta); // relativistic beta
       
-      float_t dyreco = -999.0;
+      float_t absDeltaY = -999.0;
       if (BestZprimeCandidate->lepton().charge()>0) {
-        dyreco = TMath::Abs(BestZprimeCandidate->top_leptonic_v4().Rapidity()) - TMath::Abs(BestZprimeCandidate->top_hadronic_v4().Rapidity());} 
+        absDeltaY = TMath::Abs(BestZprimeCandidate->top_leptonic_v4().Rapidity()) - TMath::Abs(BestZprimeCandidate->top_hadronic_v4().Rapidity());} 
       else {
-        dyreco = TMath::Abs(BestZprimeCandidate->top_hadronic_v4().Rapidity()) - TMath::Abs(BestZprimeCandidate->top_leptonic_v4().Rapidity());}
-      evt.set(h_dyreco, dyreco); // charge asymmetry
+        absDeltaY = TMath::Abs(BestZprimeCandidate->top_hadronic_v4().Rapidity()) - TMath::Abs(BestZprimeCandidate->top_leptonic_v4().Rapidity());}
+      evt.set(h_absDeltaY, absDeltaY); // charge asymmetry
 
       //--------- Boost into ttbar CoM-Frame ---------//
       // Center of Mass frame copies of 4vectors
@@ -1654,11 +1722,12 @@ bool SpinCorrelations::process(uhh2::Event& evt){
       TVector3 beam_axis(0,0,1);                                                                      // Beam unit vector
       TVector3 k_axis = PosTop_CoM.Vect().Unit();                                                     // direction of top quark momentum in ttbar CoM frame
       double cos_PosTop_beam = PosTop_CoM.Vect().Unit().Dot(beam_axis);                               // Cosine of scattering angle, "y" in Bernreuther et al.
+      evt.set(h_cos_PosTop_beam, cos_PosTop_beam);                                                    // save to AnalysisTree
       double abs_sin_PosTop_beam = sqrt(1 - cos_PosTop_beam*cos_PosTop_beam);                         // Sine of scattering angle,   "r" in Bernreuther et al.
       TVector3 r_axis = ( (1./abs_sin_PosTop_beam) * (beam_axis - cos_PosTop_beam * k_axis) ).Unit(); // orthogonal to k_axis and lies in production plane
       TVector3 n_axis = ( (1./abs_sin_PosTop_beam) * beam_axis.Cross(k_axis) ).Unit();                // orthogonal to k_axis and production plane
       double sign_cos_PosTop_beam = (cos_PosTop_beam > 0.) ? 1. : -1.;                                // Bose symmetry factor
-      double sign_rapidity = (dyreco > 0.) ? 1. : -1.;                                                // Charge asymmetry (in lab-frame) factor
+      double sign_rapidity = (absDeltaY > 0.) ? 1. : -1.;                                                // Charge asymmetry (in lab-frame) factor
 
       // Basis vectors
       TVector3 kbase = k_axis;
@@ -1850,46 +1919,46 @@ bool SpinCorrelations::process(uhh2::Event& evt){
       evt.set(h_Sigma_phi, sphi);
       evt.set(h_Delta_phi, dphi);
 
-      // cout << "[Variables_NN::process]     setting Baumgart with dyreco cuts " << endl;
+      // cout << "[Variables_NN::process]     setting Baumgart with absDeltaY cuts " << endl;
 
       // Plot dphi and sphi for high-pt range && positive dy_reco
-      if(pt_hadTop > pt_hadTop_thresh && dyreco >0){
+      if(pt_hadTop > pt_hadTop_thresh && absDeltaY >0){
         evt.set(h_Sigma_phi_1, sphi);
         evt.set(h_Delta_phi_1, dphi);
       }
       // Plot dphi and sphi for high-pt range && negative dy_reco
-      if(pt_hadTop > pt_hadTop_thresh && dyreco <0){
+      if(pt_hadTop > pt_hadTop_thresh && absDeltaY <0){
         evt.set(h_Sigma_phi_2, sphi);
         evt.set(h_Delta_phi_2, dphi);
       }
       // Plot dy_reco for low-pt ranges && positive sphi
       if(pt_hadTop < pt_hadTop_thresh && sphi >0){
-        evt.set(h_dyreco_s1, dyreco);
+        evt.set(h_absDeltaY_s1, absDeltaY);
       }
       // Plot dy_reco for low-pt ranges && negative sphi
       if(pt_hadTop < pt_hadTop_thresh && sphi <0){
-        evt.set(h_dyreco_s2, dyreco);
+        evt.set(h_absDeltaY_s2, absDeltaY);
       }
       // Plot dy_reco for low-pt ranges && positive dphi
       if(pt_hadTop < pt_hadTop_thresh && dphi >0){
-        evt.set(h_dyreco_d1, dyreco);
+        evt.set(h_absDeltaY_d1, absDeltaY);
       }
       // Plot dy_reco for low-pt ranges && negative dphi
       if(pt_hadTop < pt_hadTop_thresh && dphi <0){
-        evt.set(h_dyreco_d2, dyreco);
+        evt.set(h_absDeltaY_d2, absDeltaY);
       }
 
       // Plot all for high-pt ranges
       if(pt_hadTop > pt_hadTop_thresh){
         evt.set(h_Sigma_phi_high, sphi);
         evt.set(h_Delta_phi_high, dphi);
-        evt.set(h_dyreco_high, dyreco);
+        evt.set(h_absDeltaY_high, absDeltaY);
       }
       // Plot all for low-pt ranges
       if(pt_hadTop < pt_hadTop_thresh){
         evt.set(h_Sigma_phi_low, sphi);
         evt.set(h_Delta_phi_low, dphi);
-        evt.set(h_dyreco_low, dyreco);
+        evt.set(h_absDeltaY_low, absDeltaY);
       }
 
     }// end b-tagging condition

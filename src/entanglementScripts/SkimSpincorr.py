@@ -1,25 +1,26 @@
-# skim_spincorr.py  --  flat per-event reco+gen spin-correlation skim
-# ---------------------------------------------------------------------------
-# Reads the heavy UL18 TTToSemiLeptonic AnalysisTree files, copies the (already-saved) reco spin-correlation branches verbatim, recomputes the
-# gen-level spin-correlation variables from GenParticles via TTbarGenPy, and writes ONE light flat TTree ("entSkim") with reco_* and gen_* branches.
-#
-# Goal: a small file (no jet/AK8/HOTVR/GenParticle collections) from which any spin-correlation histogram can be remade, instead of re-reading the 230 GB
-# analysis output every time.
-#
-# Scope:
-#   - every tree entry is written (sentinels + flags let you filter offline)
-#   - TTToSemiLeptonic only (the gen ttbar recipe is exact here)
-#   - reco side = the reco spin-correlation branch list, copied through verbatim
-#   - gen side  = the SAME variables, recomputed at gen level (same definitions, same sentinel conventions) so reco_X and gen_X are directly comparable
-#
-# Sentinel conventions (mirror ZprimeSemiLeptonicModules.cxx exactly):
-#   -10  : variable not available this event (reco: not reconstructed/b-tagged ;
-#          gen: not semileptonic) OR a masked slice whose window is not satisfied
-#    99  : a lepton-only projection slot that the lepton is NOT in this event
-#          (e.g. cosTheta2k_Lep on an l+ event). Cut both out with abs(x) <= 1.
-#
-# CMSSW_10_6_28 / Python 2.7 / ROOT 6.14  (run inside the EL7 container)
-# ---------------------------------------------------------------------------
+"""
+Description:
+Objective is to skim the large UHH2 Analysis output files into a light flat TTree with reco and gen spin-correlation variables
+
+Reads the (UL18 TTToSemiLeptonic) AnalysisTree, copies the (already-saved) reco spin-correlation branches verbatim, 
+recomputes the gen-level spin-correlation variables from GenParticles via TTbarGenPy, 
+and writes ONE light flat TTree ("entSkim") with reco_* and gen_* branches.
+
+Scope:
+  - every tree entry is written (sentinels + flags let you filter offline)
+  - TTToSemiLeptonic only since we need ttbar system gen-particles
+  - reco observable = the reco spin-correlation observables branch already exists, copied through verbatim
+  - gen observable  = the SAME variables, recomputed at gen level (same definitions, same sentinel conventions)
+  -> reco_X and gen_X are directly comparable
+
+Sentinel conventions (mirror ZprimeSemiLeptonicModules.cxx exactly):
+    -10 : variable not available this event 
+            (reco: not reconstructed/b-tagged; gen: not semileptonic OR a masked slice whose window is not satisfied)
+     99 : a lepton-only projection slot that the lepton is NOT in this event
+            (e.g. cosTheta2k_Lep on an l+ event)
+
+CMSSW_10_6_28 / Python 2.7 / ROOT 6.14  (run inside the EL7 container)
+"""
 from __future__ import print_function
 import ROOT
 import math
@@ -31,12 +32,12 @@ ROOT.gROOT.SetBatch(True)
 ROOT.TH1.AddDirectory(False)
 # py2/py3 shim: Define xrange regardless of python version.
 try:
-    xrange
+    xrange # type: ignore
 except NameError:
     xrange = range
 
 # ----------------------------- config --------------------------------------
-base  = "/data/dust/user/ricardo/output_uhh2_Entanglement_Reco/UL18/preDNNselection/both/mergedFiles/"
+base  = "/data/dust/user/ricardo/output_uhh2_Entanglement_Reco/UL18/preDNNselection/both/mergedFiles/reprocessedSignalWtopologycut/"
 TAGS  = ["electron", "electron2", "muon", "muon2"]
 ALL_FILES = [base + "uhh2.AnalysisModuleRunner.MC.TTToSemiLeptonic_%s.root" % s for s in TAGS]
  
@@ -57,10 +58,12 @@ NOTF  = 99.0        # sentinel: lepton-only slot the lepton is not in (matches C
 PT_HADTOP_THRESH = 150.0   # ZprimeSemiLeptonicModules.cxx:1517 (Baumgart low/high split)
 # ---------------------------------------------------------------------------
 
-# Reco spin-correlation branches (ZprimeSemiLeptonicModules.cxx declare_event_output,
-# lines 1339-1416). Copied through verbatim with a reco_ prefix.
-RECO = [# variables used to filter events with
-        "chi2", "M_tt", "beta", "dyreco", # need to save 'cos_PosTop_beam' and 'pt_hadTop' next time I process analysis
+# Reco spin-correlation branches (ZprimeSemiLeptonicModules.cxx declare_event_output, lines 1339-1416).
+# Copied through verbatim with a reco_ prefix.
+RECO = [# Reco-Cuts to define boosted-central signal region
+        "chi2", "is_toptag_reconstruction",
+        # ttbar-system kinematics + charge asymmetry 
+        "M_tt", "beta", "dyreco", "cos_PosTop_beam", "pt_hadTop", 
         # lep-only projections and *Star asymmetry versions
         "cosTheta1k_antiLep", "cosTheta1r_antiLep", "cosTheta1n_antiLep", "cosTheta1kStar_antiLep", "cosTheta1rStar_antiLep",
         "cosTheta2k_Lep", "cosTheta2r_Lep", "cosTheta2n_Lep", "cosTheta2kStar_Lep", "cosTheta2rStar_Lep",
@@ -76,12 +79,10 @@ RECO = [# variables used to filter events with
         # Baumgart angular variables
         "Sigma_phi", "Sigma_phi_low", "Sigma_phi_high",
         "Delta_phi", "Delta_phi_low", "Delta_phi_high",
-        # need to save ttbar system kinematics from BestChi2Candidate next time I process analysis
         ]
 
 # gen counterparts, recomputed with the SAME definitions (validated by component_diag.py).
-# Parallel to RECO except: chi2 has no gen analog (dropped); cosThetaStar & pt_hadTop are
-# gen-available now (reco versions await the next reprocessing).
+# Parallel to RECO except chi2 has no gen analog
 GEN = [# ttbar-system kinematics + charge asymmetry (gen analogs of the reco "filter" block)
        "M_tt", "beta", "dyreco", "cosThetaStar", "pt_hadTop",
        # lep-only projections and *Star (99 on the slot the lepton is not in, like reco)
@@ -168,9 +169,8 @@ def _wrap(x):
 
 
 def gen_observables(ttg):
-    """Gen-level spin-correlation variables, recomputed with the SAME definitions and
-    sentinel conventions as ZprimeSemiLeptonicModules.cxx (1628-1893). Returns a dict
-    keyed exactly by GEN, or None if the production geometry is degenerate (top || beam)."""
+    """Gen-level spin-correlation variables, recomputed with the SAME definitions and sentinel conventions as ZprimeSemiLeptonicModules.cxx (1628-1893). 
+    Returns a dict keyed exactly by GEN, or None if the production geometry is degenerate (top || beam)."""
     lep = ttg.ChargedLepton()
     qpos = (lep.pdgId() < 0)                       # anti-lepton (l+, charge>0) <=> lepton from the top
     Top  = tlv(ttg.Top());  Anti = tlv(ttg.Antitop())
@@ -263,8 +263,8 @@ fout = ROOT.TFile(out, "RECREATE")
 fout.SetCompressionLevel(5)
 tree = ROOT.TTree("entSkim", "reco+gen spin-correlation per-event skim (TTToSemiLeptonic UL18)")
 
-wbuf = array('f', [0.0]); tree.Branch("eventweight", wbuf, "eventweight/F")
-gwbuf = array('f', [0.0]); tree.Branch("genweight",  gwbuf, "genweight/F")   # nominal generator weight -> use for gen, NEVER eventweight
+wbuf = array('f', [0.0]); tree.Branch("eventweight", wbuf, "eventweight/F")  # nominal reco weight
+gwbuf = array('f', [0.0]); tree.Branch("genweight",  gwbuf, "genweight/F")   # nominal gen weight
 fbuf = {n: array('i', [0]) for n in ("pass_reco", "gen_semilep", "gen_channel")}
 
 for n in fbuf:
@@ -299,7 +299,7 @@ for fn in files:
     t.SetBranchStatus("*", 0)
     t.SetBranchStatus("GenParticles*", 1)
     t.SetBranchStatus("eventweight", 1)
-    t.SetBranchStatus("*m_originalXWGTUP*", 1)   # nominal generator weight (cheap leaf; NEVER the 16 GB m_systweights)
+    t.SetBranchStatus("*m_originalXWGTUP*", 1)   # nominal generator weight
     for n in RECO:
         t.SetBranchStatus(n, 1)
     # systematic weights: enable only those present in THIS file (flavor sets differ)

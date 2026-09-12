@@ -16,6 +16,6 @@ echo "Python: $(python --version 2>&1)"         # MUST now read 2.7   (not 3.9)
 
 cd /data/dust/user/ricardo/uhh2-106X_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/src/entanglementScripts/
 
-echo "Starting SkimSpincorr.py (file ${IDX}) at $(date)"
-python SkimSpincorr.py ${IDX}
-echo "SkimSpincorr.py (file ${IDX}) finished (exit $?) at $(date)"
+echo "Starting makeAnalysisSkims.py (file ${IDX}) at $(date)"
+python makeAnalysisSkims.py ${IDX}
+echo "makeAnalysisSkims.py (file ${IDX}) finished (exit $?) at $(date)"

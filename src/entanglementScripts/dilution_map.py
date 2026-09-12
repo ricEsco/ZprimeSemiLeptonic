@@ -4,10 +4,15 @@ from array import array
 from ttbargen_py import TTbarGenPy
 ROOT.gROOT.SetBatch(True); ROOT.TH1.AddDirectory(False)
 
+
+
+# ---------------------------------------------- config ---------------------------------------------- #
 base="/data/dust/user/ricardo/output_uhh2_Entanglement_Reco/UL18/preDNNselection/both/mergedFiles/"
-files=[base+"uhh2.AnalysisModuleRunner.MC.TTToSemiLeptonic_%s.root"%s for s in ("electron","electron2","muon","muon2")]
+files=[base+"uhh2.AnalysisModuleRunner.MC.TTToSemiLeptonic_%s.root"%s 
+       for s in ("electron","electron2","muon","muon2")]
 NMAX=-1         # test with e.g. 200000 first; -1 = full (needed for per-cell boosted stats)
 MULT=5.0
+# ---------------------------------------------------------------------------------------------------- #
 
 def tlv(g):
     q=g.v4(); v=ROOT.TLorentzVector(); v.SetPtEtaPhiE(q.pt(),q.eta(),q.phi(),q.energy()); return v
