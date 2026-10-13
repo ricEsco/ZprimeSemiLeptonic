@@ -1,43 +1,49 @@
 from __future__ import print_function
 import ROOT
 ROOT.gROOT.SetBatch(True)
+import math as _math
 
-f = ROOT.TFile.Open("spincorr_skim_TTToSemiLeptonic_UL18.root")
-t = f.Get("entSkim")
-# gen distributions must use the GENERATOR weight (genweight)
-GENW = "genweight" if t.GetBranch("genweight") else "1" 
 
-# --- 1) a weighted histogram, boosted region, reco vs gen ---------------------
-hr = ROOT.TH1F("hr", "boosted #tilde{D} witness;cHel_P3n;events", 24, -1, 1)
-hg = ROOT.TH1F("hg", "gen;cHel_P3n;events", 24, -1, 1)
-# selection strings act directly on the branches; weight = eventweight
-t.Draw("reco_cHel_P3n>>hr", "eventweight*(pass_reco && reco_M_tt>800)", "goff")
-t.Draw("gen_cHel_P3n>>hg",  "%s*(gen_semilep && gen_M_tt>800)" % GENW, "goff")
-print("entries  reco(boosted)=%d  gen(boosted)=%d" % (hr.GetEntries(), hg.GetEntries()))
+# Input skim file
+inFile = ROOT.TFile.Open("reweighting/TTToSemiLeptonic_UL18_SCskim_electron.root")
 
-# --- 2) a coefficient (D-tilde = 5 * <sign(cHel_P3n)>) via a TProfile ---------
-# truth-binned boosted yardstick, identical (matched) events -> reproduces 1.26
-pr = ROOT.TProfile("pr", "reco", 1, 0, 1)
-pg = ROOT.TProfile("pg", "gen",  1, 0, 1)
-sel = "pass_reco && gen_semilep && gen_M_tt>800"
-t.Draw("5*(reco_cHel_P3n>=0 ? 1 : -1):0.5>>pr", "eventweight*(%s)" % sel, "goff")
-t.Draw("5*(gen_cHel_P3n>=0 ? 1 : -1):0.5>>pg",  "%s*(%s)" % (GENW, sel),  "goff")
-rr, gg = pr.GetBinContent(1), pg.GetBinContent(1)
-print("boosted Dtilde: reco=%.4f  gen=%.4f  reco/gen=%.2f" % (rr, gg, rr/gg if gg else 0))
+# TTree in skim file
+SkimTree = inFile.Get("SC_SkimTree")
+
+# GENERATOR weight (genweight)
+genWeight = "genweight" if SkimTree.GetBranch("genweight") else "1" 
+
+# # --- 1) a weighted histogram, boosted region, reco vs gen ---------------------
+# h_reco = ROOT.TH1F("h_reco", "boosted #tilde{D} witness;cHel_P3n;events", 24, -1, 1)
+# h_gen = ROOT.TH1F("h_gen", "gen;cHel_P3n;events", 24, -1, 1)
+# # selection strings act directly on the branches; weight = eventweight
+# SkimTree.Draw("reco_cHel_P3n>>h_reco", "eventweight*(pass_reco && reco_M_tt>800)", "goff")
+# SkimTree.Draw("gen_cHel_P3n>>h_gen",  "%s*(gen_semilep && gen_M_tt>800)" % genWeight, "goff")
+# print("entries  reco(boosted)=%d  gen(boosted)=%d" % (h_reco.GetEntries(), h_gen.GetEntries()))
+
+# # --- 2) a coefficient (D-tilde = 5 * <sign(cHel_P3n)>) via a TProfile ---------
+# # truth-binned boosted yardstick, identical (matched) events -> reproduces 1.26
+# pr = ROOT.TProfile("pr", "reco", 1, 0, 1)
+# pg = ROOT.TProfile("pg", "gen",  1, 0, 1)
+# sel = "pass_reco && gen_semilep && gen_M_tt>800"
+# SkimTree.Draw("5*(reco_cHel_P3n>=0 ? 1 : -1):0.5>>pr", "eventweight*(%s)" % sel, "goff")
+# SkimTree.Draw("5*(gen_cHel_P3n>=0 ? 1 : -1):0.5>>pg",  "%s*(%s)" % (genWeight, sel),  "goff")
+# rr, gg = pr.GetBinContent(1), pg.GetBinContent(1)
+# print("boosted Dtilde: reco=%.4f  gen=%.4f  reco/gen=%.2f" % (rr, gg, rr/gg if gg else 0))
 
 # --- 3) per-component comparison is equally easy, e.g.:
-#   t.Draw("reco_cosTheta1k", "eventweight*(pass_reco && gen_semilep)")
-#   t.Draw("gen_cosTheta1k",  "eventweight*(gen_semilep)")
+#   SkimTree.Draw("reco_cosTheta1k", "eventweight*(pass_reco && gen_semilep)")
+#   SkimTree.Draw("gen_cosTheta1k",  "eventweight*(gen_semilep)")
 
-# --- 4) systematic variation: reweight by a shifted-over-nominal SF ratio ----
-# The skim carries the nominal SF and its up/down siblings, so a varied event weight is eventweight * (weight_X_up / weight_X_nominal)
-hnom = ROOT.TH1F("hnom", "PU up vs nominal;cHel_P3n;events", 24, -1, 1)
-hpu  = ROOT.TH1F("hpu",  "pu up", 24, -1, 1)
-sel  = "pass_reco && reco_M_tt>800"
-t.Draw("reco_cHel_P3n>>hnom", "eventweight*(%s)" % sel, "goff")
-t.Draw("reco_cHel_P3n>>hpu",  "eventweight*(weight_pu_up/weight_pu)*(%s)" % sel, "goff")
-print("PU-up integral / nominal integral = %.4f" % (hpu.Integral()/hnom.Integral() if hnom.Integral() else 0))
-f.Close()
+# # --- 4) systematic variation: reweight by a shifted-over-nominal SF ratio ----
+# # The skim carries the nominal SF and its up/down siblings, so a varied event weight is eventweight * (weight_X_up / weight_X_nominal)
+# hnom = ROOT.TH1F("hnom", "PU up vs nominal;cHel_P3n;events", 24, -1, 1)
+# hpu  = ROOT.TH1F("hpu",  "pu up", 24, -1, 1)
+# sel  = "pass_reco && reco_M_tt>800"
+# SkimTree.Draw("reco_cHel_P3n>>hnom", "eventweight*(%s)" % sel, "goff")
+# SkimTree.Draw("reco_cHel_P3n>>hpu",  "eventweight*(weight_pu_up/weight_pu)*(%s)" % sel, "goff")
+# print("PU-up integral / nominal integral = %.4f" % (hpu.Integral()/hnom.Integral() if hnom.Integral() else 0))
+# inFile.Close()
 
 
 # =============================================================================
@@ -48,7 +54,7 @@ f.Close()
 # Physics variables are eventweighted and sentinel-cleaned (drop -10 and 99);
 # weights/flags are shown as their raw distributions.
 # =============================================================================
-import math as _math
+
  
  
 def _binning(name):
@@ -58,12 +64,12 @@ def _binning(name):
     if base == "M_tt":            return (100, 300.,  2500.)
     if base == "pt_hadTop":       return (100,   0.,  1200.)
     if base == "beta":            return ( 50,   0.,     1.)
-    if base == "dyreco":          return ( 80,  -4.,     4.)
-    if base.startswith("Sigma_phi") or base.startswith("Delta_phi"):
-        return (64, -_math.pi, _math.pi)
-    if base.endswith("_plus") or base.endswith("_minus"):  # C cross-combos live in [-2,2]
-        return (80, -2., 2.)
-    return (50, -1., 1.)          # cosTheta*, cHel(_P3n)(+slices), C{ij}, cosThetaStar
+    if base == "absDeltaY":       return ( 80,  -4.,     4.)
+    if base.startswith("Sigma_phi") or base.startswith("Delta_phi"): return (64, -_math.pi, _math.pi)
+    if base.endswith("_plus")       or base.endswith("_minus"):      return (80, -2., 2.)             # C cross-combos live in [-2,2]
+
+    # cosTheta*, cHel(_P3n)(+slices), C{ij}, cosThetaStar
+    return (50, -1., 1.)          
  
  
 def _valid(name):
@@ -72,7 +78,7 @@ def _valid(name):
     return "(%s && %s > -9.9 && %s < 98.)" % (flag, name, name)
  
  
-def _ratio_canvas(c, base, hr, hg):
+def _ratio_canvas(c, base, h_reco, h_gen):
     """Draw reco (blue) vs gen (orange) unit-area shapes on top and the reco/gen ratio below, onto the REUSED canvas c. 
     Ownership of every drawn object is handed to ROOT (SetOwnership False) / detached from the file (SetDirectory 0) so Python's GC never double-frees them. 
     Returns the sub-objects so the caller can keep refs alive."""
@@ -83,18 +89,18 @@ def _ratio_canvas(c, base, hr, hg):
     ROOT.SetOwnership(p1, False); ROOT.SetOwnership(p2, False)
  
     p1.cd()
-    hr.SetLineColor(ROOT.kAzure + 1);  hr.SetLineWidth(2)
-    hg.SetLineColor(ROOT.kOrange + 7); hg.SetLineWidth(2)
-    ymax = max(hr.GetMaximum(), hg.GetMaximum())
-    hr.SetMaximum(1.25 * ymax if ymax > 0 else 1.0); hr.SetMinimum(0.)
-    hr.SetTitle(base); hr.GetYaxis().SetTitle("a.u. (unit area)"); hr.GetXaxis().SetLabelSize(0)
-    hr.Draw("hist"); hg.Draw("hist same")
+    h_reco.SetLineColor(ROOT.kAzure + 1);  h_reco.SetLineWidth(2)
+    h_gen.SetLineColor(ROOT.kOrange + 7); h_gen.SetLineWidth(2)
+    ymax = max(h_reco.GetMaximum(), h_gen.GetMaximum())
+    h_reco.SetMaximum(1.25 * ymax if ymax > 0 else 1.0); h_reco.SetMinimum(0.)
+    h_reco.SetTitle(base); h_reco.GetYaxis().SetTitle("a.u. (unit area)"); h_reco.GetXaxis().SetLabelSize(0)
+    h_reco.Draw("hist"); h_gen.Draw("hist same")
     leg = ROOT.TLegend(0.70, 0.78, 0.89, 0.90); leg.SetBorderSize(0)
-    leg.AddEntry(hr, "reco", "l"); leg.AddEntry(hg, "gen", "l"); leg.Draw()
+    leg.AddEntry(h_reco, "reco", "l"); leg.AddEntry(h_gen, "gen", "l"); leg.Draw()
     ROOT.SetOwnership(leg, False)
  
     c.cd(); p2.cd()
-    hra = hr.Clone("ratio_" + base); hra.SetDirectory(0); hra.Divide(hg)
+    hra = h_reco.Clone("ratio_" + base); hra.SetDirectory(0); hra.Divide(h_gen)
     hra.SetLineColor(ROOT.kBlack); hra.SetMarkerStyle(20); hra.SetMarkerSize(0.5); hra.SetTitle("")
     hra.SetMinimum(0.0); hra.SetMaximum(2.0)
     yax = hra.GetYaxis(); yax.SetTitle("reco/gen"); yax.SetNdivisions(505)
@@ -122,13 +128,13 @@ def dump_all_histograms(infile="spincorr_skim_TTToSemiLeptonic_UL18.root",
     reco  = sorted(b for b in allbr if b.startswith("reco_"))
     gen   = sorted(b for b in allbr if b.startswith("gen_") and b not in FLAGS)
     other = [b for b in allbr if b not in reco and b not in gen]   # eventweight, genweight, flags, weights
-    GENW = "genweight" if tt.GetBranch("genweight") else "1"        # gen weight (fallback: unweighted)
+    genWeight = "genweight" if tt.GetBranch("genweight") else "1"        # gen weight (fallback: unweighted)
  
     # 1) one TH1F per branch -> outroot
     for b in reco + gen:                                       # physics: eventweighted, sentinel-cleaned
         bn = _binning(b)
         spec = "(%d,%g,%g)" % bn if bn else ""
-        wexpr = GENW if b.startswith("gen_") else "eventweight"   # reco SFs must NOT touch gen
+        wexpr = genWeight if b.startswith("gen_") else "eventweight"   # reco SFs must NOT touch gen
         tt.Draw("%s>>h_%s%s" % (b, b, spec), "%s*%s" % (wexpr, _valid(b)), "goff")
         h = ROOT.gDirectory.Get("h_%s" % b)
         if h: h.SetTitle(b); h.SetXTitle(b); fout.cd(); h.Write()
@@ -151,7 +157,7 @@ def dump_all_histograms(infile="spincorr_skim_TTToSemiLeptonic_UL18.root",
                 "eventweight*%s" % _valid("reco_" + base), "goff")
         hr_ = ROOT.gDirectory.Get("ovr_%s" % base)
         tt.Draw("gen_%s>>ovg_%s(%d,%g,%g)" % (base, base, nb, lo, hi),
-                "%s*%s" % (GENW, _valid("gen_" + base)), "goff")
+                "%s*%s" % (genWeight, _valid("gen_" + base)), "goff")
         hg_ = ROOT.gDirectory.Get("ovg_%s" % base)
         if (not hr_) or (not hg_):
             continue

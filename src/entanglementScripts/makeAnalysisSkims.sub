@@ -4,11 +4,11 @@ universe            = vanilla
 +MySingularityImage = "/cvmfs/unpacked.cern.ch/registry.hub.docker.com/cmssw/el7:x86_64"
 +MySingularityArgs  = "--bind /tmp:/tmp"
 
-executable          = SkimSpincorr.sh
+executable          = makeAnalysisSkims.sh
 arguments           = $(Process)
-output              = condorOut/AnalysisSkim.$(Process).out
-error               = condorOut/AnalysisSkim.$(Process).err
-log                 = condorOut/AnalysisSkim.$(Process).log
+output              = condorOut/AnalysisSkims_wDoLastCopyOption.$(Process).out
+error               = condorOut/AnalysisSkims_wDoLastCopyOption.$(Process).err
+log                 = condorOut/AnalysisSkims_wDoLastCopyOption.$(Process).log
 
 RequestCpus         = 1
 RequestMemory       = 3 GB

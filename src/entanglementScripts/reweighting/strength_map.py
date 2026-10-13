@@ -1,6 +1,7 @@
 """
 Brief description:
 A modular script that will book, fill, and write TProfile2D strength maps ("alpha" maps) to a ROOT file.
+This script was written to be called/used by build_map_uhh2.py
 
 Maps are created for the following Observables:
  - Correlation Matrix elements C_ij     (9)

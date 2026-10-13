@@ -15,11 +15,54 @@
 #include "Riostream.h"
 #include "TFile.h"
 #include "TH1F.h"
+#include "TH2.h"
+#include "TAxis.h"
+#include <algorithm>
+#include <cmath>
+#include <limits>
 
 using namespace std;
 using namespace uhh2;
 
 
+
+
+namespace {
+  bool warned_nnlo_qcd_down_nonfinite = false;
+  bool warned_nnlo_qcd_down_nonpositive = false;
+  bool warned_ewk_down_nonfinite = false;
+  bool warned_ewk_down_nonpositive = false;
+
+  // Ported from the colleague's implementation (see class-doc comments on TTbarNNLOQCDReweighting /
+  // TTbarEWKCorrection in the header) -- helpers shared by the ttbar NNLO QCD / EWK correction classes.
+  bool parse_bool_string(const std::string& value) {
+    std::string lower = value;
+    boost::algorithm::to_lower(lower);
+    return lower == "true" || lower == "1" || lower == "yes";
+  }
+
+  bool is_ttbar_dataset(const std::string& version) {
+    return boost::algorithm::contains(version, "ttbar") ||
+           boost::algorithm::contains(version, "ttjets") ||
+           boost::algorithm::contains(version, "ttto");
+  }
+
+  double clamp_to_axis(const TAxis* axis, double value) {
+    if (!axis || !std::isfinite(value)) return std::numeric_limits<double>::quiet_NaN();
+    const double xmin = axis->GetXmin();
+    const double xmax = axis->GetXmax();
+    const double eps = std::max(1e-9, 1e-9 * std::abs(xmax - xmin));
+    if (value <= xmin) return xmin + eps;
+    if (value >= xmax) return xmax - eps;
+    return value;
+  }
+
+  TLorentzVector to_tlorentzvector(const LorentzVector& v4) {
+    TLorentzVector out;
+    out.SetPtEtaPhiE(v4.pt(), v4.eta(), v4.phi(), v4.E());
+    return out;
+  }
+}
 
 
 float inv_mass(const LorentzVector& p4){ return p4.isTimelike() ? p4.mass() : -sqrt(-p4.mass2()); }
@@ -3825,7 +3868,270 @@ TopPtReweighting::TopPtReweighting(uhh2::Context& ctx,
     return true;
   }
 
+  // ---------------- ttbar NNLO QCD reweighting (AN-26-039 Sec. 3.3.5, Eq. 2-4) ----------------
+  // Ported from the colleague's working implementation (see header for citation + AN eq. references).
+  // Uses extracted parameters from nnlo_qcd_NNPDF31_nnlo_as_0118_SF_3.npy (default SF_3); no placeholder
+  // numbers remain.
+  TTbarNNLOQCDReweighting::TTbarNNLOQCDReweighting(Context& ctx, const std::string& ttgen_name):
+    ttgen_name_(ttgen_name)
+  {
+    h_weight_ttbar_nnlo_qcd      = ctx.declare_event_output<float>("weight_ttbar_nnlo_qcd");
+    // QCD uncertainty: up = no NNLO QCD correction, down = mirror around nominal.
+    h_weight_ttbar_nnlo_qcd_up   = ctx.declare_event_output<float>("weight_ttbar_nnlo_qcd_up");
+    h_weight_ttbar_nnlo_qcd_down = ctx.declare_event_output<float>("weight_ttbar_nnlo_qcd_down");
 
+    version_ = ctx.get("dataset_version", "");
+    boost::algorithm::to_lower(version_);
+
+    apply_weight_ = parse_bool_string(ctx.get("ApplyTTbarNNLOQCDReweighting", "true"));
+    // default is SF_3, the recommended parameterization
+    sf_function_name_ = ctx.get("TTbarNNLOQCDScaleFactor", "SF_3");
+
+    if(!ttgen_name_.empty()) h_ttbargen_ = ctx.get_handle<TTbarGen>(ttgen_name_);
+
+    if(sf_function_name_ == "SF_1"){
+      params_ = {-0.00038448224963998079, 0.048021271162165424};
+    }
+    else if(sf_function_name_ == "SF_2"){
+      params_ = {0.12857160500276832, -0.0060029194707619249, -8.0990145862366858e-05, 0.94184772955172491};
+    }
+    else if(sf_function_name_ == "SF_3"){
+      params_ = {0.17478303752138802, -0.0045665365705007399, 0.89410719420857065};
+    }
+    else {
+      throw std::runtime_error("TTbarNNLOQCDReweighting: unsupported TTbarNNLOQCDScaleFactor '" + sf_function_name_ + "'");
+    }
+  }
+
+  bool TTbarNNLOQCDReweighting::applies_to_event(const uhh2::Event& event) const {
+    return !event.isRealData && is_ttbar_dataset(version_);
+  }
+
+  double TTbarNNLOQCDReweighting::scale_factor(double pt) const {
+    if(!std::isfinite(pt)) return 1.0;
+    if(sf_function_name_ == "SF_1"){
+      return std::exp(params_.at(0) * pt + params_.at(1));
+    }
+    if(sf_function_name_ == "SF_2"){
+      return params_.at(0) * std::exp(params_.at(1) * pt) + params_.at(2) * pt + params_.at(3);
+    }
+    return params_.at(0) * std::exp(params_.at(1) * pt) + params_.at(2); // SF_3
+  }
+
+  bool TTbarNNLOQCDReweighting::process(Event& event){
+    float weight = 1.0;
+    float weight_up = 1.0;
+    float weight_down = 1.0;
+    // MC ttbar events with generator particles available
+    if(applies_to_event(event) && event.genparticles){
+      const TTbarGen& ttbargen = !ttgen_name_.empty() ? event.get(h_ttbargen_) : TTbarGen(*event.genparticles, false);
+      if(ttbargen.DecayChannel() != TTbarGen::e_notfound) {
+        double top_sf = scale_factor(ttbargen.Top().v4().Pt());
+        double antitop_sf = scale_factor(ttbargen.Antitop().v4().Pt());
+        // pT is capped by clamping the *output* SF to its value at pT = 500 GeV, not by pre-capping pT
+        const double min_sf = scale_factor(500.0);
+        if(top_sf < min_sf) top_sf = min_sf;
+        if(antitop_sf < min_sf) antitop_sf = min_sf;
+        const double product = top_sf * antitop_sf;
+        if(std::isfinite(product) && product > 0.0){
+          weight = static_cast<float>(std::sqrt(product));
+          // QCD uncertainty (Eq. 12): up = no NNLO QCD correction, down = mirror around nominal.
+          weight_up = 1.0f;
+          weight_down = static_cast<float>(2.0 * weight - 1.0);
+          if(!std::isfinite(weight_down)){
+            if(!warned_nnlo_qcd_down_nonfinite){
+              std::cerr << "TTbarNNLOQCDReweighting WARNING: non-finite mirrored QCD down weight encountered; using 1.0 fallback." << std::endl;
+              warned_nnlo_qcd_down_nonfinite = true;
+            }
+            weight_down = 1.0f;
+          }
+          else if(weight_down <= 0.0f){
+            if(!warned_nnlo_qcd_down_nonpositive){
+              std::cerr << "TTbarNNLOQCDReweighting WARNING: non-positive mirrored QCD down weight encountered; using 1e-6 floor." << std::endl;
+              warned_nnlo_qcd_down_nonpositive = true;
+            }
+            weight_down = 1e-6f;
+          }
+        }
+      }
+    }
+    event.set(h_weight_ttbar_nnlo_qcd, weight); // Eq. 4 (nominal, pre-multiplication)
+    event.set(h_weight_ttbar_nnlo_qcd_up, weight_up);
+    event.set(h_weight_ttbar_nnlo_qcd_down, weight_down);
+    if(apply_weight_) event.weight *= weight;
+    return true;
+  }
+
+
+  // ---------------- ttbar electroweak correction (AN-26-039 Sec. 3.3.5, Eq. 5, 13-16) ----------------
+  // Ported from the colleague's working implementation (see header for citation + AN eq. references).
+  // Reads EWno_0 (LO QCD) / EWYt_10 (NLO EWK+LO QCD) TH2D histograms from HATHORMGPY_costheta.root via
+  // locate_file(), which resolves a relative path against $CMSSW_BASE/src/UHH2/<path> (see
+  // UHH2/common/include/Utils.h) -- so a copy placed at $CMSSW_BASE/src/UHH2/ZprimeSemiLeptonic/data/
+  // HATHORMGPY_costheta.root is picked up by the default config value below with no per-user path.
+  TTbarEWKCorrection::TTbarEWKCorrection(Context& ctx, const std::string& ttgen_name):
+    ttgen_name_(ttgen_name)
+  {
+    h_weight_ttbar_ewk_nominal = ctx.declare_event_output<float>("weight_ttbar_ewk_nominal");
+    h_weight_ttbar_ewk_unc     = ctx.declare_event_output<float>("weight_ttbar_ewk_unc");
+    h_weight_ttbar_ewk_up      = ctx.declare_event_output<float>("weight_ttbar_ewk_up");
+    h_weight_ttbar_ewk_down    = ctx.declare_event_output<float>("weight_ttbar_ewk_down");
+
+    version_ = ctx.get("dataset_version", "");
+    boost::algorithm::to_lower(version_);
+
+    apply_weight_ = parse_bool_string(ctx.get("ApplyTTbarEWKCorrection", "true"));
+    uncertainty_mode_ = ctx.get("TTbarEWKUncertaintyMode", "full_correction");
+    boost::algorithm::to_lower(uncertainty_mode_);
+
+    if(!ttgen_name_.empty()) h_ttbargen_ = ctx.get_handle<TTbarGen>(ttgen_name_);
+
+    // file path for the HATHORMGPY_costheta.root file
+    const std::string file_path = ctx.get(
+      "TTbarEWKCorrectionFile",
+      "/data/dust/user/ricardo/uhh2-106X_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/src/ttbarEWKcorrection/HATHORMGPY_costheta.root"
+    );
+    TFile file_(locate_file(file_path).c_str(), "READ");
+    if(file_.IsZombie()){
+      throw std::runtime_error("TTbarEWKCorrection: failed to open file '" + file_path + "'");
+    }
+
+    TH2D* lo_qcd = dynamic_cast<TH2D*>(file_.Get("EWno_0"));
+    TH2D* nlo_ewk = dynamic_cast<TH2D*>(file_.Get("EWYt_10"));
+    if(!lo_qcd || !nlo_ewk){
+      throw std::runtime_error("TTbarEWKCorrection: could not find EWno_0/EWYt_10 in '" + file_path + "'");
+    }
+    h_lo_qcd_.reset(dynamic_cast<TH2D*>(lo_qcd->Clone("ttbar_ewk_lo_qcd")));
+    h_nlo_ewk_.reset(dynamic_cast<TH2D*>(nlo_ewk->Clone("ttbar_ewk_nlo_ewk")));
+    h_lo_qcd_->SetDirectory(0);
+    h_nlo_ewk_->SetDirectory(0);
+    file_.Close();
+
+    // EWK shape uncertainty (Eq. 13-15): if a POWHEG prediction histogram is supplied, delta_QCD follows
+    // the AN expression (Eq. 14). Otherwise ("full_correction", the default), delta_QCD=1, giving an
+    // envelope between "no EWK correction" and "doubled correction".
+    const std::string powheg_file_path = ctx.get("TTbarEWKPowhegPredictionFile", "");
+    if(!powheg_file_path.empty()){
+      const std::string powheg_hist_name = ctx.get("TTbarEWKPowhegPredictionHist", "powheg_prediction");
+      TFile powheg_file_(locate_file(powheg_file_path).c_str(), "READ");
+      if(powheg_file_.IsZombie()){
+        throw std::runtime_error("TTbarEWKCorrection: failed to open POWHEG prediction file '" + powheg_file_path + "'");
+      }
+      TH2D* powheg_prediction = dynamic_cast<TH2D*>(powheg_file_.Get(powheg_hist_name.c_str()));
+      if(!powheg_prediction){
+        throw std::runtime_error("TTbarEWKCorrection: could not find POWHEG histogram '" + powheg_hist_name + "' in '" + powheg_file_path + "'");
+      }
+      h_powheg_prediction_.reset(dynamic_cast<TH2D*>(powheg_prediction->Clone("ttbar_ewk_powheg_prediction")));
+      h_powheg_prediction_->SetDirectory(0);
+      powheg_file_.Close();
+    }
+    else if(uncertainty_mode_ == "powheg"){
+      throw std::runtime_error("TTbarEWKCorrection: TTbarEWKUncertaintyMode='powheg' requires TTbarEWKPowhegPredictionFile");
+    }
+  }
+
+  bool TTbarEWKCorrection::applies_to_event(const uhh2::Event& event) const {
+    return !event.isRealData && is_ttbar_dataset(version_);
+  }
+
+  double TTbarEWKCorrection::evaluate_histo(const TH2D* hist, double x, double y) const {
+    if(!hist) return 0.0;
+    const double x_eval = clamp_to_axis(hist->GetXaxis(), x);
+    const double y_eval = clamp_to_axis(hist->GetYaxis(), y);
+    if(!std::isfinite(x_eval) || !std::isfinite(y_eval)) return 0.0;
+    const int xbin = hist->GetXaxis()->FindFixBin(x_eval);
+    const int ybin = hist->GetYaxis()->FindFixBin(y_eval);
+    return hist->GetBinContent(xbin, ybin);
+  }
+
+  double TTbarEWKCorrection::evaluate_ratio(double mttbar, double costheta) const {
+    const double lo_qcd = evaluate_histo(h_lo_qcd_.get(), mttbar, costheta);
+    const double nlo_ewk = evaluate_histo(h_nlo_ewk_.get(), mttbar, costheta);
+    if(lo_qcd == 0.0 || !std::isfinite(lo_qcd) || !std::isfinite(nlo_ewk)) return 1.0;
+    const double ratio = nlo_ewk / lo_qcd; // Eq. 5: kappa_EWK = EWYt_10 / EWno_0
+    return std::isfinite(ratio) && ratio > 0.0 ? ratio : 1.0;
+  }
+
+  double TTbarEWKCorrection::evaluate_uncertainty(double mttbar, double costheta, double kappa) const {
+    if(!std::isfinite(kappa) || kappa <= 0.0) return 1.0;
+    if(uncertainty_mode_ == "none") return 1.0;
+
+    const double delta_ew = kappa - 1.0; // Eq. 13
+    double delta_qcd = 1.0;
+    if(h_powheg_prediction_){
+      const double lo_qcd = evaluate_histo(h_lo_qcd_.get(), mttbar, costheta);
+      const double powheg_prediction = evaluate_histo(h_powheg_prediction_.get(), mttbar, costheta);
+      if(std::isfinite(lo_qcd) && std::isfinite(powheg_prediction) && powheg_prediction > 0.0){
+        delta_qcd = 1.0 - (lo_qcd / powheg_prediction); // Eq. 14
+      }
+      else {
+        delta_qcd = 1.0; // empty/invalid bin: fall back to full-correction envelope
+      }
+    }
+
+    const double ewk_unc = 1.0 + delta_qcd * delta_ew; // Eq. 15
+    return std::isfinite(ewk_unc) && ewk_unc > 0.0 ? ewk_unc : 1.0;
+  }
+
+  // goal: kappa_EWK = EWYt_10(mttbar, costheta*) / EWno_0(mttbar, costheta*)
+  //   mttbar    = generator-level invariant mass of the ttbar system
+  //   costheta* = cosine of the angle between the boosted top-quark momentum (in the ttbar rest frame)
+  //               and the FIXED lab-frame z-axis (0,0,1) -- NOT the ttbar boost direction.
+  bool TTbarEWKCorrection::process(Event& event){
+    float weight = 1.0;
+    float weight_unc = 1.0;
+    float weight_up = 1.0;
+    float weight_down = 1.0;
+    if(applies_to_event(event) && event.genparticles){
+      const TTbarGen& ttbargen = !ttgen_name_.empty() ? event.get(h_ttbargen_) : TTbarGen(*event.genparticles, false);
+      if(ttbargen.DecayChannel() != TTbarGen::e_notfound) {
+        const auto top_v4 = ttbargen.Top().v4();
+        const auto antitop_v4 = ttbargen.Antitop().v4();
+        const double mttbar = (top_v4 + antitop_v4).M();
+        TLorentzVector top = to_tlorentzvector(top_v4);
+        TLorentzVector antitop = to_tlorentzvector(antitop_v4);
+        TLorentzVector ttbar = top + antitop;
+        if(std::isfinite(mttbar) && mttbar > 0.0 && ttbar.E() > 0.0) {
+          TLorentzVector top_ttbar_frame = top;
+          top_ttbar_frame.Boost(-ttbar.BoostVector());
+          if(top_ttbar_frame.P() > 0.0) {
+            const TVector3 beam_axis(0.0, 0.0, 1.0);
+            double costheta = top_ttbar_frame.Vect().Unit().Dot(beam_axis);
+            costheta = std::max(-1.0, std::min(1.0, costheta));
+            // weight = static_cast<float>(evaluate_ratio(mttbar, costheta));
+            // weight_unc = static_cast<float>(evaluate_uncertainty(mttbar, costheta, weight));
+            // weight_up = weight * weight_unc;   // Eq. 16
+            // weight_down = weight_unc > 0.0f ? weight / weight_unc : weight; // Eq. 16
+            weight = static_cast<float>(evaluate_ratio(mttbar, costheta));
+            weight_unc = static_cast<float>(evaluate_uncertainty(mttbar, costheta, weight));
+            weight_up = weight * weight_unc;              // Eq. 16: w_up = weight_unc, applied onto the nominal corrected weight
+            weight_down = weight * (2.0f - weight_unc);    // Eq. 16: w_down = 2 - weight_unc
+            if(!std::isfinite(weight_down)){
+              if(!warned_ewk_down_nonfinite){
+                std::cerr << "TTbarEWKCorrection WARNING: non-finite mirrored EWK down weight encountered; using nominal weight fallback." << std::endl;
+                warned_ewk_down_nonfinite = true;
+              }
+              weight_down = weight;
+            }
+            else if(weight_down <= 0.0f){
+              if(!warned_ewk_down_nonpositive){
+                std::cerr << "TTbarEWKCorrection WARNING: non-positive mirrored EWK down weight encountered; using 1e-6 floor." << std::endl;
+                warned_ewk_down_nonpositive = true;
+              }
+              weight_down = 1e-6f;
+            }
+          }
+        }
+      }
+    }
+    event.set(h_weight_ttbar_ewk_nominal, weight);
+    event.set(h_weight_ttbar_ewk_unc, weight_unc);
+    event.set(h_weight_ttbar_ewk_up, weight_up);
+    event.set(h_weight_ttbar_ewk_down, weight_down);
+    if(apply_weight_) event.weight *= weight; // Eq. 5, nominal correction
+    return true;
+  }
+  
   ////
 
   PuppiCHS_matching::PuppiCHS_matching(uhh2::Context& ctx){

@@ -47,23 +47,23 @@ except NameError:
 #                                                          Configuration                                                         #
 # ============================================================================================================================== #
 # Absolute path to TTToSemiLeptonic analysis output base directory
-BASE = "/data/dust/user/ricardo/output_uhh2_Entanglement_Reco/UL18/preDNNselection/both/mergedFiles/reprocessedSignalWtopologycut/"
+BASE = "/data/dust/user/ricardo/output_uhh2_Entanglement_Reco/noDNN/UL18/bothLeptons_mergedFiles/"
 
 # All four files make up the full TTToSemiLeptonic sample and all map to the "TTbar" process
-TAGS = ["electron", "electron2", "muon", "muon2"]
+TAGS = ["electron1", "electron2", "muon1", "muon2"]
 ALL_FILES = [BASE + "uhh2.AnalysisModuleRunner.MC.TTToSemiLeptonic_%s.root" % tag for tag in TAGS]
 
 # Uses the condor $(Process) = {0,1,2,3} index to skim each file in it's own condor job
-# if no argument is given, all four files are skimmed together into one output
 if len(sys.argv) > 1:
     idx = int(sys.argv[1])
     allFILES = [ALL_FILES[idx]]
     outF  = "TTToSemiLeptonicUL18_SCskim_%s.root" % TAGS[idx]
+# no argument -> all four files are skimmed together into one output
 else:
     allFILES = ALL_FILES
     outF  = "TTToSemiLeptonicUL18_SCskim.root"
 
-NMAX = -1                  # cap on events processed per file; -1 = full pass (use e.g. 200000 for a quick test)
+NMAX = -1                  # cap on events processed per file; -1 = full pass (use e.g. ~100000 for a quick test)
 SENT = -10.0               # sentinel: indicates event Obs outside kinematic window (e.g. Mtt>800) or gen-event not semileptonic
 NOTp = 99.0                # sentinel: (anti-)lepton specific observable where (anti-)lepton is not present
 pT_HADTOP_Thresh = 150.0   # low/high pT split for the Baumgart variables, see ZprimeSemiLeptonicModules.cxx:1517
@@ -76,6 +76,11 @@ pT_HADTOP_Thresh = 150.0   # low/high pT split for the Baumgart variables, see Z
 RECO = [
     # Reconstruction quality and event topology flag
     "chi2", "is_toptag_reconstruction", # is_toptag_reconstruction converted from bool->float for consistency
+
+    # top, antitop, and spin analyzer 4-vectors (pt/eta/phi/E) in the lab frame from Chi2-BestCandidate
+    "Antitop_E", "Antitop_eta", "Antitop_phi", "Antitop_pt", "Top_E", "Top_eta", "Top_phi", "Top_pt",
+    "Lepton_E",  "Lepton_eta",  "Lepton_phi",  "Lepton_pt", "Lepton_charge", # lepton charge to identify decay mode
+    "bHad_E",    "bHad_eta",    "bHad_phi",    "bHad_pt",
 
     # ttbar-system kinematics and charge asymmetry
     "M_tt", "beta", "absDeltaY", "cos_PosTop_beam", "pt_hadTop",
@@ -179,6 +184,8 @@ weight_sfmu_trigger_syst weight_sfmu_trigger_syst_down weight_sfmu_trigger_syst_
 weight_topmistagsf weight_topmistagsf_down weight_topmistagsf_up
 weight_toppt_a_down weight_toppt_a_up weight_toppt_b_down weight_toppt_b_up weight_toppt_nominal
 weight_toptagsf weight_toptagsf_corr_down weight_toptagsf_corr_up weight_toptagsf_uncorr_down weight_toptagsf_uncorr_up
+weight_ttbar_ewk_down weight_ttbar_ewk_nominal weight_ttbar_ewk_unc weight_ttbar_ewk_up
+weight_ttbar_nnlo_qcd weight_ttbar_nnlo_qcd_down weight_ttbar_nnlo_qcd_up
 """
 WEIGHTS = [w for w in WEIGHTS_RAW.split() if w]
 
@@ -426,7 +433,7 @@ for inFile in allFILES:
     # Print number of entries in AnalysisTree
     N = AnalysisTree.GetEntries()
     N = N if NMAX < 0 else min(N, NMAX)
-    print("Starting loop over %d entries in %s" % (N, name))
+    print("Starting event loop over %d entries in %s" % (N, inFile))
 
     # =================================================================================== #
     #                                   main event loop                                   #

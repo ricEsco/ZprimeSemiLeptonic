@@ -18,11 +18,11 @@ Implementation:
     w(f) = d_f / d
 
 Bare pyROOT (plain skim + plain TProfile2D map); py2.7/ROOT 6.14 (EL7 container) and py3 both fine.
-==================================================================================================================================
-* this script currently targets cHel_P3n, the boosted/central entanglement proxy, but can be generalized to other SC Observables *
-* boosted + central -> (|cosTheta*| < 0.4 & m_tt > 800) -> pre-windowed branch                                                   *
-* Binning: 6 bins on [-1, 1]                                                                                                     *
-==================================================================================================================================
+=======================================================================================================================================
+* this script currently targets cHel_P3n, the boosted/central entanglement observable, but can be generalized to other SC Observables *
+* boosted + central -> (|cosTheta*| < 0.4 & m_tt > 800) -> pre-windowed branch                                                        *
+* Binning: 6 bins on [-1, 1]                                                                                                          *
+=======================================================================================================================================
 """
 from __future__ import print_function
 import sys
@@ -33,14 +33,16 @@ ROOT.TH1.AddDirectory(False)
 ROOT.gErrorIgnoreLevel = ROOT.kWarning
 
 # Inputs
-skimFile = "TTToSemiLeptonicUL18_SCskim.root"
+# skimFile = "TTToSemiLeptonicUL18_SCskim.root"
+skimFile = "../genTopStudy/TTToSemiLeptonicUL18_SCskim_wDoLC.root" # using isLastCopy tops
 skimTree = "SC_SkimTree"
-mapFile  = "strengthmaps_uhh2/NoSC_alphaStrengthMap_lb.root"
+# mapFile  = "strengthmaps_uhh2/NoSC_alphaStrengthMap_lb.root"
+mapFile  = "strengthmaps_wLastCopy/NoSC_alphaStrengthMap_lb_wLastCopy.root" # using isLastCopy tops
 mapObj   = "TTToSemiLeptonic/alpha_lb_cHel_P3n" # map lookup syntax: TFile.Open(out_path).Get(<process> + '/alpha_' + <Observable_name>)
 
 # Outputs
-OUT_ROOT = "cHel_P3n_templates.root" # ROOT file with stored up/nominal/down templates
-OUT_PDF  = "cHel_P3n_templates.pdf"  # PDF with the templates and their ratios to nominal
+OUT_ROOT = "cHel_P3n_templates_wLastCopy.root" # ROOT file with stored up/nominal/down templates
+OUT_PDF  = "cHel_P3n_templates_wLastCopy.pdf"  # PDF with the templates and their ratios to nominal
 
 
 # reco-level boosted/central (m_tt>800 & |cosTheta*|<0.4) Observable is defined within the RECO-level phase space
@@ -107,10 +109,11 @@ def main(skim=skimFile, mapf=mapFile, out_root=OUT_ROOT, out_pdf=OUT_PDF):
         raise RuntimeError("cannot open skim: %s" % skim)
     skimTTree = skimFile.Get(skimTree)
     skimTTree.SetBranchStatus("*", 0)
-    for branch in ("eventweight", "reco_is_toptag_reconstruction", "gen_semilep", RECO_Obs, GEN_Obs, GEN_Mtt, GEN_cosTS):
+    for branch in ("eventweight", "reco_is_toptag_reconstruction", "reco_chi2", "gen_semilep", RECO_Obs, GEN_Obs, GEN_Mtt, GEN_cosTS):
         skimTTree.SetBranchStatus(branch, 1)
-    setFilter = "reco_is_toptag_reconstruction > 0 && %s > %g" % (RECO_Obs, SENTINEL) # filter makes sure reco Obs is in Merged Topology and was well defined
-    skimTTree.Draw(">>eventList", setFilter, "goff")                                  # list of events that pass filter
+    # Event filter defines SR: Top-tagged && Chi2<30 && not SENT value
+    setFilter = "reco_is_toptag_reconstruction > 0 && reco_chi2 < 30. && %s > %g" % (RECO_Obs, SENTINEL)
+    skimTTree.Draw(">>eventList", setFilter, "goff") # list of events that pass filter
     eventList = ROOT.gDirectory.Get("eventList")
     npass = eventList.GetN()
     print("Applied '%s' filter -> looping over %d events passed" % (setFilter, npass))
@@ -124,6 +127,10 @@ def main(skim=skimFile, mapf=mapFile, out_root=OUT_ROOT, out_pdf=OUT_PDF):
     h_nom = book("cHel_P3n",          "nominal;cHel_{P3n}^{RECO};Events")
     h_up  = book("cHel_P3n_NoSCUp",   "NoSC up   (f=+1);cHel_{P3n}^{RECO};Events")
     h_dn  = book("cHel_P3n_NoSCDown", "NoSC down (f=-1);cHel_{P3n}^{RECO};Events")
+    # Manually book up/down weight distributions for finer binning
+    h_up_wt = ROOT.TH1F("cHel_P3n_NoSCUp_wt",   "NoSCUp (f=+1) weights;NoSCUp_weight;Events",     100, -5.0, 5.0)
+    h_dn_wt = ROOT.TH1F("cHel_P3n_NoSCDown_wt", "NoSCDown (f=-1) weights;NoSCDown_weight;Events", 100, -5.0, 5.0)
+    h_up_wt.SetDirectory(0); h_dn_wt.SetDirectory(0)
 
     # Counters for reweighting diagnostics
     n_gen_used = n_guard = n_neg_up = n_neg_dn = n_lowstat = 0
@@ -150,7 +157,6 @@ def main(skim=skimFile, mapf=mapFile, out_root=OUT_ROOT, out_pdf=OUT_PDF):
                 n_lowstat += 1
             # density of Observable
             density = 1.0 + alpha * genObs
-            # density = 1.0 + alpha*kappaProduct * genObs
             # save smallest density value for diagnostics
             if density_min > density:
                 density_min = density
@@ -172,11 +178,12 @@ def main(skim=skimFile, mapf=mapFile, out_root=OUT_ROOT, out_pdf=OUT_PDF):
         accumulate("nom",  recoWeight,              recoObs)
         accumulate("up",   recoWeight * upWeight,   recoObs)
         accumulate("down", recoWeight * downWeight, recoObs)
+        h_up_wt.Fill(upWeight); h_dn_wt.Fill(downWeight)
     skimFile.Close()
 
     # Write the templates to output ROOT file
     outFile = ROOT.TFile(out_root, "RECREATE")
-    for hist in (h_nom, h_up, h_dn):
+    for hist in (h_nom, h_up, h_dn, h_up_wt, h_dn_wt):
         hist.Write()
     outFile.Close()
 
@@ -210,6 +217,57 @@ def main(skim=skimFile, mapf=mapFile, out_root=OUT_ROOT, out_pdf=OUT_PDF):
     # Plot the templates and their ratios to nominal, with D-tilde in the legend
     make_plot(h_nom, h_up, h_dn, out_pdf, coeff_nom, coeff_up, coeff_down)
     print("wrote %s" % out_pdf)
+
+"""
+Applied 'reco_is_toptag_reconstruction > 0 && reco_cHel_P3n_Mtt800_Inf_cosThetaLT0p4 > -3' filter -> looping over 156912 events passed
+
+=================== event yields  ===================
+  nominal: 4402.1   NoSC_up: 4395.0   NoSC_down: 4409.2
+
+=== reco D-tilde estimate  (prefactor/kappaProduct) * Asymmetry ===
+  nominal      : +0.4427
+  NoSC_up      : +0.1049  ->spin correlation removed
+  NoSC_down    : +0.7794  ->spin correlation enhanced
+  --> ordering should be: |up| < |nominal| < |down| : OK
+
+=== reweighting weights diagnostic (gen-semileptonic subset) ===
+  events reweighted          : 156868
+  min density (1+alpha*Obs)  : +0.3578
+  |density| < 1e-06 counter     : 0
+  negative up / down weights : 0 / 16
+  low-stat map cells (<10)   : 0
+
+wrote cHel_P3n_templates.root  (cHel_P3n, cHel_P3n_NoSCup, cHel_P3n_NoSCdown)
+wrote cHel_P3n_templates.pdf
+"""
+
+"""
+new output using isLastCopy tops, leave above output for comparison:
+Applied 'reco_is_toptag_reconstruction > 0 && reco_chi2 < 30. && reco_cHel_P3n_Mtt800_Inf_cosThetaLT0p4 > -3' filter -> looping over 156912 events passed
+
+=================== event yields  ===================
+  nominal: 4402.1   NoSC_up: 4403.9   NoSC_down: 4400.3
+
+=== reco D-tilde estimate  (prefactor/kappaProduct) * Asymmetry ===
+  nominal      : +0.4427
+  NoSC_up      : +0.0719  ->spin correlation removed
+  NoSC_down    : +0.8138  ->spin correlation enhanced
+  --> ordering should be: |up| < |nominal| < |down| : OK
+
+=== reweighting weights diagnostic (gen-semileptonic subset) ===
+  events reweighted          : 156868
+  min density (1+alpha*Obs)  : +0.0452
+  |density| < 1e-06 counter     : 0
+  negative up / down weights : 0 / 69
+  low-stat map cells (<10)   : 0
+
+wrote cHel_P3n_templates_wLastCopy.root  (cHel_P3n, cHel_P3n_NoSCup, cHel_P3n_NoSCdown)
+wrote cHel_P3n_templates_wLastCopy.pdf
+
+real	0m27.100s
+user	0m20.634s
+sys	0m1.248s
+"""
 
 # plotting function
 def make_plot(h_nom, h_up, h_dn, out_pdf, coeff_nom, coeff_up, coeff_down):

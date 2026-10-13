@@ -17,6 +17,7 @@
 
 #include <Eigen/Dense>
 #include "TH1.h"
+#include "TH2.h"
 #include <TLorentzVector.h>
 
 float inv_mass(const LorentzVector&);
@@ -359,6 +360,68 @@ class TopPtReweighting : public uhh2::AnalysisModule {
     uhh2::Event::Handle< float > h_weight_toppt_b_down;
 };
 
+
+// ttbar NNLO QCD reweighting (AN-26-039 Sec. 3.3.5, Eq. 2-4): event-by-event reweighting of simulated
+// tt events using the ratio of the NNLO QCD prediction to the nominal POWHEG prediction, parameterized
+// as a function of generator-level top/antitop pT. Ported from the colleague's working implementation
+// (https://github.com/beozek/ZprimeSemiLeptonic/blob/combine_backup/src/ZprimeSemiLeptonicModules.cxx),
+// whose AN this analysis also uses. Three selectable SF parameterizations (SF_1/SF_2/SF_3, config key
+// "TTbarNNLOQCDScaleFactor", default SF_3) with fitted parameters extracted from
+// nnlo_qcd_NNPDF31_nnlo_as_0118_SF_3.npy -- these are the real fit values, not placeholders.
+class TTbarNNLOQCDReweighting : public uhh2::AnalysisModule {
+public:
+  explicit TTbarNNLOQCDReweighting(uhh2::Context& ctx, const std::string& ttgen_name = "ttbargen");
+  virtual bool process(uhh2::Event& event) override;
+
+private:
+  double scale_factor(double pt) const; // SF_1/SF_2/SF_3(pT), capped at the value evaluated at pT = 500 GeV
+  bool applies_to_event(const uhh2::Event& event) const;
+
+  uhh2::Event::Handle<TTbarGen> h_ttbargen_;
+  uhh2::Event::Handle<float> h_weight_ttbar_nnlo_qcd;
+  uhh2::Event::Handle<float> h_weight_ttbar_nnlo_qcd_up;
+  uhh2::Event::Handle<float> h_weight_ttbar_nnlo_qcd_down;
+  std::string version_;
+  std::string ttgen_name_;
+  std::string sf_function_name_;
+  std::vector<double> params_;
+  bool apply_weight_;
+};
+
+// ttbar electroweak correction (AN-26-039 Sec. 3.3.5, Eq. 5; systematic per Eq. 13-16): event-by-event
+// reweighting of simulated tt events using a 2D (m_ttbar, cos(theta*)) lookup table kappa_EWK =
+// EWYt_10/EWno_0, both generator-level, read from a HATHOR/MadGraph-derived ROOT file
+// (HATHORMGPY_costheta.root -- see config key "TTbarEWKCorrectionFile" in the .cxx). cos(theta*) is the
+// cosine of the angle, in the ttbar rest frame, between the boosted top-quark momentum and the FIXED
+// lab-frame z-axis (0,0,1) -- NOT the ttbar system's own boost direction (that was a bug in the earlier
+// scaffold). Ported from the colleague's working implementation (see TTbarNNLOQCDReweighting above);
+// without a separately-supplied POWHEG prediction histogram (config keys
+// "TTbarEWKPowhegPredictionFile"/"TTbarEWKPowhegPredictionHist"), the systematic envelope defaults to
+// "full_correction" mode (delta_QCD=1), giving weight_up=nominal^2, weight_down=1.
+class TTbarEWKCorrection : public uhh2::AnalysisModule {
+public:
+  explicit TTbarEWKCorrection(uhh2::Context& ctx, const std::string& ttgen_name = "ttbargen");
+  virtual bool process(uhh2::Event& event) override;
+
+private:
+  double evaluate_ratio(double mttbar, double costheta) const;
+  double evaluate_uncertainty(double mttbar, double costheta, double kappa) const;
+  double evaluate_histo(const TH2D* hist, double x, double y) const;
+  bool applies_to_event(const uhh2::Event& event) const;
+
+  uhh2::Event::Handle<TTbarGen> h_ttbargen_;
+  uhh2::Event::Handle<float> h_weight_ttbar_ewk_nominal;
+  uhh2::Event::Handle<float> h_weight_ttbar_ewk_unc;
+  uhh2::Event::Handle<float> h_weight_ttbar_ewk_up;
+  uhh2::Event::Handle<float> h_weight_ttbar_ewk_down;
+  std::unique_ptr<TH2D> h_lo_qcd_;
+  std::unique_ptr<TH2D> h_nlo_ewk_;
+  std::unique_ptr<TH2D> h_powheg_prediction_;
+  std::string version_;
+  std::string ttgen_name_;
+  std::string uncertainty_mode_;
+  bool apply_weight_;
+};
 
 class PuppiCHS_matching : public uhh2::AnalysisModule {
 public:
