@@ -41,17 +41,17 @@ mapFile  = "strengthmaps_wLastCopy/NoSC_alphaStrengthMap_lb_wLastCopy.root" # us
 mapObj   = "TTToSemiLeptonic/alpha_lb_cHel_P3n" # map lookup syntax: TFile.Open(out_path).Get(<process> + '/alpha_' + <Observable_name>)
 
 # Outputs
-OUT_ROOT = "cHel_P3n_templates_wLastCopy.root" # ROOT file with stored up/nominal/down templates
-OUT_PDF  = "cHel_P3n_templates_wLastCopy.pdf"  # PDF with the templates and their ratios to nominal
+OUT_ROOT = "cHel_P3n_templates_wLC.root" # ROOT file with stored up/nominal/down templates
+OUT_PDF  = "cHel_P3n_templates_wLC.pdf"  # PDF with the templates and their ratios to nominal
 
 
 # reco-level boosted/central (m_tt>800 & |cosTheta*|<0.4) Observable is defined within the RECO-level phase space
 RECO_Obs = "reco_cHel_P3n_Mtt800_Inf_cosThetaLT0p4"
 
 # Inclusive gen-level inputs for reweighting
-GEN_Obs   = "gen_cHel_P3n"
-GEN_Mtt   = "gen_M_tt"
-GEN_cosTS = "gen_cosThetaStar"
+GEN_Obs   = "genLC_cHel_P3n"
+GEN_Mtt   = "genLC_M_tt"
+GEN_cosTS = "genLC_cosThetaStar"
 
 # Binning for the reco-level templates (6 bins on [-1, 1])
 NBINS, XLO, XHI = 6, -1.0, 1.0
@@ -267,6 +267,29 @@ wrote cHel_P3n_templates_wLastCopy.pdf
 real	0m27.100s
 user	0m20.634s
 sys	0m1.248s
+"""
+
+
+"""
+new output using isLastCopy tops in BOTH maps and reweighting obs:
+=================== event yields  ===================
+  nominal: 4402.1   NoSC_up: 4398.7   NoSC_down: 4405.6
+
+=== reco D-tilde estimate  (prefactor/kappaProduct) * Asymmetry ===
+  nominal      : +0.4427
+  NoSC_up      : +0.0666  ->spin correlation removed
+  NoSC_down    : +0.8182  ->spin correlation enhanced
+  --> ordering should be: |up| < |nominal| < |down| : OK
+
+=== reweighting weights diagnostic (gen-semileptonic subset) ===
+  events reweighted          : 156868
+  min density (1+alpha*Obs)  : +0.0495
+  |density| < 1e-06 counter     : 0
+  negative up / down weights : 0 / 55
+  low-stat map cells (<10)   : 0
+
+wrote cHel_P3n_templates_wLC.root  (cHel_P3n, cHel_P3n_NoSCup, cHel_P3n_NoSCdown)
+wrote cHel_P3n_templates_wLC.pdf
 """
 
 # plotting function
