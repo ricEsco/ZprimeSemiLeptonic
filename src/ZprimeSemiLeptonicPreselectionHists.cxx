@@ -109,60 +109,60 @@ void ZprimeSemiLeptonicPreselectionHists::init(){
   dRmin_ptrel_ele   = book<TH2F>("dRmin_ptrel_ele", "#DeltaR_{min}(e, jet);p_{T}^{rel}(e, jet);p_{T}^{rel}(e, jet) vs. #DeltaR_{min}(e, jet)", 60, 0, 3, 50, 0, 500);
   dRmin_ptrel_ele1  = book<TH2F>("dRmin_ptrel_ele1", "#DeltaR_{min}(e1, jet);p_{T}^{rel}(e1, jet);p_{T}^{rel}(e1, jet) vs. #DeltaR_{min}(e1, jet)", 60, 0, 3, 50, 0, 500);
 
-  // HOTVR jets
-  N_HOTVRjets              = book<TH1F>("N_HOTVRjets", "N_{HOTVR jets}", 6, -0.5, 5.5);
-  pt_HOTVRjet              = book<TH1F>("pt_HOTVRjet", "p_{T}^{HOTVR jets} [GeV]", 50, 0, 1500);
-  pt_HOTVRjet1             = book<TH1F>("pt_HOTVRjet1", "p_{T}^{HOTVR jet 1} [GeV]", 50, 0, 1500);
-  pt_HOTVRjet2             = book<TH1F>("pt_HOTVRjet2", "p_{T}^{HOTVR jet 2} [GeV]", 50, 0, 1500);
-  pt_HOTVRjet3             = book<TH1F>("pt_HOTVRjet3", "p_{T}^{HOTVR jet 3} [GeV]", 50, 0, 1500);
-  eta_HOTVRjet             = book<TH1F>("eta_HOTVRjet", "#eta^{HOTVR jets}", 50, -2.5, 2.5);
-  eta_HOTVRjet1            = book<TH1F>("eta_HOTVRjet1", "#eta^{HOTVR jet 1}", 50, -2.5, 2.5);
-  eta_HOTVRjet2            = book<TH1F>("eta_HOTVRjet2", "#eta^{HOTVR jet 2}", 50, -2.5, 2.5);
-  eta_HOTVRjet3            = book<TH1F>("eta_HOTVRjet3", "#eta^{HOTVR jet 3}", 50, -2.5, 2.5);
-  phi_HOTVRjet             = book<TH1F>("phi_HOTVRjet", "#phi^{HOTVR jets}", 35, -3.5, 3.5);
-  phi_HOTVRjet1            = book<TH1F>("phi_HOTVRjet1", "#phi^{HOTVR jet 1}", 35, -3.5, 3.5);
-  phi_HOTVRjet2            = book<TH1F>("phi_HOTVRjet2", "#phi^{HOTVR jet 2}", 35, -3.5, 3.5);
-  phi_HOTVRjet3            = book<TH1F>("phi_HOTVRjet3", "#phi^{HOTVR jet 3}", 35, -3.5, 3.5);
-  m_HOTVRjet               = book<TH1F>("m_HOTVRjet", "m^{HOTVR jets}", 50, 0, 500);
-  m_HOTVRjet1              = book<TH1F>("m_HOTVRjet1", "m^{HOTVR jet 1}", 50, 0, 500);
-  m_HOTVRjet2              = book<TH1F>("m_HOTVRjet2", "m^{HOTVR jet 2}", 50, 0, 500);
-  m_HOTVRjet3              = book<TH1F>("m_HOTVRjet3", "m^{HOTVR jet 3}", 50, 0, 500);
-  N_subjets_HOTVRjet       = book<TH1F>("N_subjets_HOTVRjet", "N_{subjets}^{HOTVR jets}", 6, -0.5, 5.5);
-  N_subjets_HOTVRjet1      = book<TH1F>("N_subjets_HOTVRjet1", "N_{subjets}^{HOTVR jet 1}", 6, -0.5, 5.5);
-  N_subjets_HOTVRjet2      = book<TH1F>("N_subjets_HOTVRjet2", "N_{subjets}^{HOTVR jet 2}", 6, -0.5, 5.5);
-  N_subjets_HOTVRjet3      = book<TH1F>("N_subjets_HOTVRjet3", "N_{subjets}^{HOTVR jet 3}", 6, -0.5, 5.5);
-  N_daughters_HOTVRjet     = book<TH1F>("N_daughters_HOTVRjet", "N_{daughters}^{HOTVR jets}", 51, -0.5, 50.5);
-  N_daughters_HOTVRjet1    = book<TH1F>("N_daughters_HOTVRjet1", "N_{daughters}^{HOTVR jet 1}", 51, -0.5, 50.5);
-  N_daughters_HOTVRjet2    = book<TH1F>("N_daughters_HOTVRjet2", "N_{daughters}^{HOTVR jet 2}", 51, -0.5, 50.5);
-  N_daughters_HOTVRjet3    = book<TH1F>("N_daughters_HOTVRjet3", "N_{daughters}^{HOTVR jet 3}", 51, -0.5, 50.5);
-  dRmin_AK8Puppi_HOTVRjet  = book<TH1F>("dRmin_AK8Puppi_HOTVRjet", "#DeltaR_{min}(HOTVR jet, AK8Puppi jet)", 60, 0, 3);
-  dRmin_AK8Puppi_HOTVRjet1 = book<TH1F>("dRmin_AK8Puppi_HOTVRjet1", "#DeltaR_{min}(HOTVR jet 1, AK8Puppi jet)", 60, 0, 3);
-  dRmin_AK8Puppi_HOTVRjet2 = book<TH1F>("dRmin_AK8Puppi_HOTVRjet2", "#DeltaR_{min}(HOTVR jet 2, AK8Puppi jet)", 60, 0, 3);
-  dRmin_AK8Puppi_HOTVRjet3 = book<TH1F>("dRmin_AK8Puppi_HOTVRjet3", "#DeltaR_{min}(HOTVR jet 3, AK8Puppi jet)", 60, 0, 3);
-  dRmin_mu_HOTVRjet        = book<TH1F>("dRmin_mu_HOTVRjet", "#DeltaR_{min}(HOTVR jet, #mu)", 60, 0, 3);
-  dRmin_mu_HOTVRjet1       = book<TH1F>("dRmin_mu_HOTVRjet1", "#DeltaR_{min}(HOTVR jet 1, #mu)", 60, 0, 3);
-  dRmin_mu_HOTVRjet2       = book<TH1F>("dRmin_mu_HOTVRjet2", "#DeltaR_{min}(HOTVR jet 2, #mu)", 60, 0, 3);
-  dRmin_mu_HOTVRjet3       = book<TH1F>("dRmin_mu_HOTVRjet3", "#DeltaR_{min}(HOTVR jet 3, #mu)", 60, 0, 3);
-  tau1_HOTVRjet            = book<TH1F>("tau1_HOTVRjet", "#tau_{1}^{HOTVR jets}", 24, 0, 1.2);
-  tau1_HOTVRjet1           = book<TH1F>("tau1_HOTVRjet1", "#tau_{1}^{HOTVR jet 1}", 24, 0, 1.2);
-  tau1_HOTVRjet2           = book<TH1F>("tau1_HOTVRjet2", "#tau_{1}^{HOTVR jet 2}", 24, 0, 1.2);
-  tau1_HOTVRjet3           = book<TH1F>("tau1_HOTVRjet3", "#tau_{1}^{HOTVR jet 3}", 24, 0, 1.2);
-  tau2_HOTVRjet            = book<TH1F>("tau2_HOTVRjet", "#tau_{2}^{HOTVR jets}", 24, 0, 1.2);
-  tau2_HOTVRjet1           = book<TH1F>("tau2_HOTVRjet1", "#tau_{2}^{HOTVR jet 1}", 24, 0, 1.2);
-  tau2_HOTVRjet2           = book<TH1F>("tau2_HOTVRjet2", "#tau_{2}^{HOTVR jet 2}", 24, 0, 1.2);
-  tau2_HOTVRjet3           = book<TH1F>("tau2_HOTVRjet3", "#tau_{2}^{HOTVR jet 3}", 24, 0, 1.2);
-  tau3_HOTVRjet            = book<TH1F>("tau3_HOTVRjet", "#tau_{3}^{HOTVR jets}", 24, 0, 1.2);
-  tau3_HOTVRjet1           = book<TH1F>("tau3_HOTVRjet1", "#tau_{3}^{HOTVR jet 1}", 24, 0, 1.2);
-  tau3_HOTVRjet2           = book<TH1F>("tau3_HOTVRjet2", "#tau_{3}^{HOTVR jet 2}", 24, 0, 1.2);
-  tau3_HOTVRjet3           = book<TH1F>("tau3_HOTVRjet3", "#tau_{3}^{HOTVR jet 3}", 24, 0, 1.2);
-  tau21_HOTVRjet           = book<TH1F>("tau21_HOTVRjet", "#tau_{2/1}^{HOTVR jets}", 24, 0, 1.2);
-  tau21_HOTVRjet1          = book<TH1F>("tau21_HOTVRjet1", "#tau_{2/1}^{HOTVR jet 1}", 24, 0, 1.2);
-  tau21_HOTVRjet2          = book<TH1F>("tau21_HOTVRjet2", "#tau_{2/1}^{HOTVR jet 2}", 24, 0, 1.2);
-  tau21_HOTVRjet3          = book<TH1F>("tau21_HOTVRjet3", "#tau_{2/1}^{HOTVR jet 3}", 24, 0, 1.2);
-  tau32_HOTVRjet           = book<TH1F>("tau32_HOTVRjet", "#tau_{3/2}^{HOTVR jets}", 24, 0, 1.2);
-  tau32_HOTVRjet1          = book<TH1F>("tau32_HOTVRjet1", "#tau_{3/2}^{HOTVR jet 1}", 24, 0, 1.2);
-  tau32_HOTVRjet2          = book<TH1F>("tau32_HOTVRjet2", "#tau_{3/2}^{HOTVR jet 2}", 24, 0, 1.2);
-  tau32_HOTVRjet3          = book<TH1F>("tau32_HOTVRjet3", "#tau_{3/2}^{HOTVR jet 3}", 24, 0, 1.2);
+  // // HOTVR jets
+  // N_HOTVRjets              = book<TH1F>("N_HOTVRjets", "N_{HOTVR jets}", 6, -0.5, 5.5);
+  // pt_HOTVRjet              = book<TH1F>("pt_HOTVRjet", "p_{T}^{HOTVR jets} [GeV]", 50, 0, 1500);
+  // pt_HOTVRjet1             = book<TH1F>("pt_HOTVRjet1", "p_{T}^{HOTVR jet 1} [GeV]", 50, 0, 1500);
+  // pt_HOTVRjet2             = book<TH1F>("pt_HOTVRjet2", "p_{T}^{HOTVR jet 2} [GeV]", 50, 0, 1500);
+  // pt_HOTVRjet3             = book<TH1F>("pt_HOTVRjet3", "p_{T}^{HOTVR jet 3} [GeV]", 50, 0, 1500);
+  // eta_HOTVRjet             = book<TH1F>("eta_HOTVRjet", "#eta^{HOTVR jets}", 50, -2.5, 2.5);
+  // eta_HOTVRjet1            = book<TH1F>("eta_HOTVRjet1", "#eta^{HOTVR jet 1}", 50, -2.5, 2.5);
+  // eta_HOTVRjet2            = book<TH1F>("eta_HOTVRjet2", "#eta^{HOTVR jet 2}", 50, -2.5, 2.5);
+  // eta_HOTVRjet3            = book<TH1F>("eta_HOTVRjet3", "#eta^{HOTVR jet 3}", 50, -2.5, 2.5);
+  // phi_HOTVRjet             = book<TH1F>("phi_HOTVRjet", "#phi^{HOTVR jets}", 35, -3.5, 3.5);
+  // phi_HOTVRjet1            = book<TH1F>("phi_HOTVRjet1", "#phi^{HOTVR jet 1}", 35, -3.5, 3.5);
+  // phi_HOTVRjet2            = book<TH1F>("phi_HOTVRjet2", "#phi^{HOTVR jet 2}", 35, -3.5, 3.5);
+  // phi_HOTVRjet3            = book<TH1F>("phi_HOTVRjet3", "#phi^{HOTVR jet 3}", 35, -3.5, 3.5);
+  // m_HOTVRjet               = book<TH1F>("m_HOTVRjet", "m^{HOTVR jets}", 50, 0, 500);
+  // m_HOTVRjet1              = book<TH1F>("m_HOTVRjet1", "m^{HOTVR jet 1}", 50, 0, 500);
+  // m_HOTVRjet2              = book<TH1F>("m_HOTVRjet2", "m^{HOTVR jet 2}", 50, 0, 500);
+  // m_HOTVRjet3              = book<TH1F>("m_HOTVRjet3", "m^{HOTVR jet 3}", 50, 0, 500);
+  // N_subjets_HOTVRjet       = book<TH1F>("N_subjets_HOTVRjet", "N_{subjets}^{HOTVR jets}", 6, -0.5, 5.5);
+  // N_subjets_HOTVRjet1      = book<TH1F>("N_subjets_HOTVRjet1", "N_{subjets}^{HOTVR jet 1}", 6, -0.5, 5.5);
+  // N_subjets_HOTVRjet2      = book<TH1F>("N_subjets_HOTVRjet2", "N_{subjets}^{HOTVR jet 2}", 6, -0.5, 5.5);
+  // N_subjets_HOTVRjet3      = book<TH1F>("N_subjets_HOTVRjet3", "N_{subjets}^{HOTVR jet 3}", 6, -0.5, 5.5);
+  // N_daughters_HOTVRjet     = book<TH1F>("N_daughters_HOTVRjet", "N_{daughters}^{HOTVR jets}", 51, -0.5, 50.5);
+  // N_daughters_HOTVRjet1    = book<TH1F>("N_daughters_HOTVRjet1", "N_{daughters}^{HOTVR jet 1}", 51, -0.5, 50.5);
+  // N_daughters_HOTVRjet2    = book<TH1F>("N_daughters_HOTVRjet2", "N_{daughters}^{HOTVR jet 2}", 51, -0.5, 50.5);
+  // N_daughters_HOTVRjet3    = book<TH1F>("N_daughters_HOTVRjet3", "N_{daughters}^{HOTVR jet 3}", 51, -0.5, 50.5);
+  // dRmin_AK8Puppi_HOTVRjet  = book<TH1F>("dRmin_AK8Puppi_HOTVRjet", "#DeltaR_{min}(HOTVR jet, AK8Puppi jet)", 60, 0, 3);
+  // dRmin_AK8Puppi_HOTVRjet1 = book<TH1F>("dRmin_AK8Puppi_HOTVRjet1", "#DeltaR_{min}(HOTVR jet 1, AK8Puppi jet)", 60, 0, 3);
+  // dRmin_AK8Puppi_HOTVRjet2 = book<TH1F>("dRmin_AK8Puppi_HOTVRjet2", "#DeltaR_{min}(HOTVR jet 2, AK8Puppi jet)", 60, 0, 3);
+  // dRmin_AK8Puppi_HOTVRjet3 = book<TH1F>("dRmin_AK8Puppi_HOTVRjet3", "#DeltaR_{min}(HOTVR jet 3, AK8Puppi jet)", 60, 0, 3);
+  // dRmin_mu_HOTVRjet        = book<TH1F>("dRmin_mu_HOTVRjet", "#DeltaR_{min}(HOTVR jet, #mu)", 60, 0, 3);
+  // dRmin_mu_HOTVRjet1       = book<TH1F>("dRmin_mu_HOTVRjet1", "#DeltaR_{min}(HOTVR jet 1, #mu)", 60, 0, 3);
+  // dRmin_mu_HOTVRjet2       = book<TH1F>("dRmin_mu_HOTVRjet2", "#DeltaR_{min}(HOTVR jet 2, #mu)", 60, 0, 3);
+  // dRmin_mu_HOTVRjet3       = book<TH1F>("dRmin_mu_HOTVRjet3", "#DeltaR_{min}(HOTVR jet 3, #mu)", 60, 0, 3);
+  // tau1_HOTVRjet            = book<TH1F>("tau1_HOTVRjet", "#tau_{1}^{HOTVR jets}", 24, 0, 1.2);
+  // tau1_HOTVRjet1           = book<TH1F>("tau1_HOTVRjet1", "#tau_{1}^{HOTVR jet 1}", 24, 0, 1.2);
+  // tau1_HOTVRjet2           = book<TH1F>("tau1_HOTVRjet2", "#tau_{1}^{HOTVR jet 2}", 24, 0, 1.2);
+  // tau1_HOTVRjet3           = book<TH1F>("tau1_HOTVRjet3", "#tau_{1}^{HOTVR jet 3}", 24, 0, 1.2);
+  // tau2_HOTVRjet            = book<TH1F>("tau2_HOTVRjet", "#tau_{2}^{HOTVR jets}", 24, 0, 1.2);
+  // tau2_HOTVRjet1           = book<TH1F>("tau2_HOTVRjet1", "#tau_{2}^{HOTVR jet 1}", 24, 0, 1.2);
+  // tau2_HOTVRjet2           = book<TH1F>("tau2_HOTVRjet2", "#tau_{2}^{HOTVR jet 2}", 24, 0, 1.2);
+  // tau2_HOTVRjet3           = book<TH1F>("tau2_HOTVRjet3", "#tau_{2}^{HOTVR jet 3}", 24, 0, 1.2);
+  // tau3_HOTVRjet            = book<TH1F>("tau3_HOTVRjet", "#tau_{3}^{HOTVR jets}", 24, 0, 1.2);
+  // tau3_HOTVRjet1           = book<TH1F>("tau3_HOTVRjet1", "#tau_{3}^{HOTVR jet 1}", 24, 0, 1.2);
+  // tau3_HOTVRjet2           = book<TH1F>("tau3_HOTVRjet2", "#tau_{3}^{HOTVR jet 2}", 24, 0, 1.2);
+  // tau3_HOTVRjet3           = book<TH1F>("tau3_HOTVRjet3", "#tau_{3}^{HOTVR jet 3}", 24, 0, 1.2);
+  // tau21_HOTVRjet           = book<TH1F>("tau21_HOTVRjet", "#tau_{2/1}^{HOTVR jets}", 24, 0, 1.2);
+  // tau21_HOTVRjet1          = book<TH1F>("tau21_HOTVRjet1", "#tau_{2/1}^{HOTVR jet 1}", 24, 0, 1.2);
+  // tau21_HOTVRjet2          = book<TH1F>("tau21_HOTVRjet2", "#tau_{2/1}^{HOTVR jet 2}", 24, 0, 1.2);
+  // tau21_HOTVRjet3          = book<TH1F>("tau21_HOTVRjet3", "#tau_{2/1}^{HOTVR jet 3}", 24, 0, 1.2);
+  // tau32_HOTVRjet           = book<TH1F>("tau32_HOTVRjet", "#tau_{3/2}^{HOTVR jets}", 24, 0, 1.2);
+  // tau32_HOTVRjet1          = book<TH1F>("tau32_HOTVRjet1", "#tau_{3/2}^{HOTVR jet 1}", 24, 0, 1.2);
+  // tau32_HOTVRjet2          = book<TH1F>("tau32_HOTVRjet2", "#tau_{3/2}^{HOTVR jet 2}", 24, 0, 1.2);
+  // tau32_HOTVRjet3          = book<TH1F>("tau32_HOTVRjet3", "#tau_{3/2}^{HOTVR jet 3}", 24, 0, 1.2);
 
   // AK8Puppi jets
   N_AK8Puppijets            = book<TH1F>("N_AK8Puppijets", "N_{AK8Puppi jets}", 6, -0.5, 5.5);
@@ -263,22 +263,22 @@ void ZprimeSemiLeptonicPreselectionHists::init(){
 
 
 
-  //Gen plots
-  mttbar          = book<TH1F>("mttbar", "M_{tt} in gen",1000, 0, 5000);
-  topgen_pt       = book<TH1F>("topgen_pt", "p_{T}^{top} [GeV] in gen",100, 0, 3000);
-  topgen_eta      = book<TH1F>("topgen_eta", "#eta^{top} in gen",50, -2.5, 2.5);
-  antitopgen_pt   = book<TH1F>("antitopgen_pt", "p_{antiT}^{top} [GeV] in gen",100, 0, 3000);
-  antitopgen_eta  = book<TH1F>("antitopgen_eta", "#eta^{antiT}",50, -2.5, 2.5);
-  leptongen_pt    = book<TH1F>("leptongen_pt", "p_{T}^{lepton} [GeV] in gen",100, 0, 3000);
-  leptongen_eta   = book<TH1F>("leptongen_eta", "#eta^{lepton} in gen",50, -2.5, 2.5);
-  muongen_pt      = book<TH1F>("muongen_pt", "p_{T}^{muon} [GeV] in gen",1000, 0, 3000);
-  muongen_eta     = book<TH1F>("muongen_eta", "#eta^{muon} in gen"      ,50, -2.5, 2.5);
-  electrongen_pt  = book<TH1F>("electrongen_pt", "p_{T}^{electron} [GeV] in gen",100, 0, 3000);
-  electrongen_eta = book<TH1F>("electrongen_eta", "#eta^{electron} in gen",50, -2.5, 2.5);
-  bquarkgen_pt    = book<TH1F>("bquarkgen_pt", "p_{bquark} [GeV] in gen",100, 0, 3000);
-  bquarkgen_eta   = book<TH1F>("bquarkgen_eta", "#eta^{bquark} in gen",100, -2.5, 2.5);
-  leadingJetPtHist= book<TH1F>("leadingJetPtHist", "p_{leading jet} [GeV] in gen",1000, 0, 3000);
-  genHT_dist      = book<TH1F>("genHT_dist", "HT_{sum of gen jet pt} [GeV]",1000, 0, 3000);
+  // //Gen plots
+  // mttbar          = book<TH1F>("mttbar", "M_{tt} in gen",1000, 0, 5000);
+  // topgen_pt       = book<TH1F>("topgen_pt", "p_{T}^{top} [GeV] in gen",100, 0, 3000);
+  // topgen_eta      = book<TH1F>("topgen_eta", "#eta^{top} in gen",50, -2.5, 2.5);
+  // antitopgen_pt   = book<TH1F>("antitopgen_pt", "p_{antiT}^{top} [GeV] in gen",100, 0, 3000);
+  // antitopgen_eta  = book<TH1F>("antitopgen_eta", "#eta^{antiT}",50, -2.5, 2.5);
+  // leptongen_pt    = book<TH1F>("leptongen_pt", "p_{T}^{lepton} [GeV] in gen",100, 0, 3000);
+  // leptongen_eta   = book<TH1F>("leptongen_eta", "#eta^{lepton} in gen",50, -2.5, 2.5);
+  // muongen_pt      = book<TH1F>("muongen_pt", "p_{T}^{muon} [GeV] in gen",1000, 0, 3000);
+  // muongen_eta     = book<TH1F>("muongen_eta", "#eta^{muon} in gen"      ,50, -2.5, 2.5);
+  // electrongen_pt  = book<TH1F>("electrongen_pt", "p_{T}^{electron} [GeV] in gen",100, 0, 3000);
+  // electrongen_eta = book<TH1F>("electrongen_eta", "#eta^{electron} in gen",50, -2.5, 2.5);
+  // bquarkgen_pt    = book<TH1F>("bquarkgen_pt", "p_{bquark} [GeV] in gen",100, 0, 3000);
+  // bquarkgen_eta   = book<TH1F>("bquarkgen_eta", "#eta^{bquark} in gen",100, -2.5, 2.5);
+  // leadingJetPtHist= book<TH1F>("leadingJetPtHist", "p_{leading jet} [GeV] in gen",1000, 0, 3000);
+  // genHT_dist      = book<TH1F>("genHT_dist", "HT_{sum of gen jet pt} [GeV]",1000, 0, 3000);
 
 
   // calculate sum of event weights with PDF replicas
@@ -352,87 +352,87 @@ void ZprimeSemiLeptonicPreselectionHists::fill(const Event & event){
   █ ██   ██    █████    ██      ██      ██   ██
   */
 
-  vector<TopJet>* HOTVRjets = event.topjets;
-  unsigned int NHOTVRjets = HOTVRjets->size();
-  N_HOTVRjets->Fill(NHOTVRjets, weight);
-  for(unsigned int i=0; i<NHOTVRjets; i++){
-    double tau21 = HOTVRjets->at(i).tau2_groomed() / HOTVRjets->at(i).tau1_groomed();
-    double tau32 = HOTVRjets->at(i).tau3_groomed() / HOTVRjets->at(i).tau2_groomed();
+  // vector<TopJet>* HOTVRjets = event.topjets;
+  // unsigned int NHOTVRjets = HOTVRjets->size();
+  // N_HOTVRjets->Fill(NHOTVRjets, weight);
+  // for(unsigned int i=0; i<NHOTVRjets; i++){
+  //   double tau21 = HOTVRjets->at(i).tau2_groomed() / HOTVRjets->at(i).tau1_groomed();
+  //   double tau32 = HOTVRjets->at(i).tau3_groomed() / HOTVRjets->at(i).tau2_groomed();
 
-    // Distance to AK8 Puppi
-    double dRmin_Puppi = 99999;
-    for(unsigned int j=0; j<event.toppuppijets->size(); j++){
-      double dR = deltaR(HOTVRjets->at(i), event.toppuppijets->at(j));
-      if(dR < dRmin_Puppi) dRmin_Puppi = dR;
-    }
+  //   // Distance to AK8 Puppi
+  //   double dRmin_Puppi = 99999;
+  //   for(unsigned int j=0; j<event.toppuppijets->size(); j++){
+  //     double dR = deltaR(HOTVRjets->at(i), event.toppuppijets->at(j));
+  //     if(dR < dRmin_Puppi) dRmin_Puppi = dR;
+  //   }
 
-    // Distance to muons
-    double dRmin_muon = 99999;
-    for(unsigned int j=0; j<event.muons->size(); j++){
-      double dR = deltaR(HOTVRjets->at(i), event.muons->at(j));
-      if(dR < dRmin_muon) dRmin_muon = dR;
-    }
+  //   // Distance to muons
+  //   double dRmin_muon = 99999;
+  //   for(unsigned int j=0; j<event.muons->size(); j++){
+  //     double dR = deltaR(HOTVRjets->at(i), event.muons->at(j));
+  //     if(dR < dRmin_muon) dRmin_muon = dR;
+  //   }
 
-    pt_HOTVRjet->Fill(HOTVRjets->at(i).pt(), weight);
-    eta_HOTVRjet->Fill(HOTVRjets->at(i).eta(), weight);
-    phi_HOTVRjet->Fill(HOTVRjets->at(i).phi(), weight);
-    m_HOTVRjet->Fill(HOTVRjets->at(i).v4().M(), weight);
-    dRmin_AK8Puppi_HOTVRjet->Fill(dRmin_Puppi, weight);
-    dRmin_mu_HOTVRjet->Fill(dRmin_muon, weight);
-    N_subjets_HOTVRjet->Fill(HOTVRjets->at(i).subjets().size(), weight);
-    N_daughters_HOTVRjet->Fill(HOTVRjets->at(i).numberOfDaughters(), weight);
-    tau1_HOTVRjet->Fill(HOTVRjets->at(i).tau1_groomed(), weight);
-    tau2_HOTVRjet->Fill(HOTVRjets->at(i).tau2_groomed(), weight);
-    tau3_HOTVRjet->Fill(HOTVRjets->at(i).tau3_groomed(), weight);
-    tau21_HOTVRjet->Fill(tau21, weight);
-    tau32_HOTVRjet->Fill(tau32, weight);
+  //   pt_HOTVRjet->Fill(HOTVRjets->at(i).pt(), weight);
+  //   eta_HOTVRjet->Fill(HOTVRjets->at(i).eta(), weight);
+  //   phi_HOTVRjet->Fill(HOTVRjets->at(i).phi(), weight);
+  //   m_HOTVRjet->Fill(HOTVRjets->at(i).v4().M(), weight);
+  //   dRmin_AK8Puppi_HOTVRjet->Fill(dRmin_Puppi, weight);
+  //   dRmin_mu_HOTVRjet->Fill(dRmin_muon, weight);
+  //   N_subjets_HOTVRjet->Fill(HOTVRjets->at(i).subjets().size(), weight);
+  //   N_daughters_HOTVRjet->Fill(HOTVRjets->at(i).numberOfDaughters(), weight);
+  //   tau1_HOTVRjet->Fill(HOTVRjets->at(i).tau1_groomed(), weight);
+  //   tau2_HOTVRjet->Fill(HOTVRjets->at(i).tau2_groomed(), weight);
+  //   tau3_HOTVRjet->Fill(HOTVRjets->at(i).tau3_groomed(), weight);
+  //   tau21_HOTVRjet->Fill(tau21, weight);
+  //   tau32_HOTVRjet->Fill(tau32, weight);
 
-    if(i==0){
-      pt_HOTVRjet1->Fill(HOTVRjets->at(i).pt(), weight);
-      eta_HOTVRjet1->Fill(HOTVRjets->at(i).eta(), weight);
-      phi_HOTVRjet1->Fill(HOTVRjets->at(i).phi(), weight);
-      m_HOTVRjet1->Fill(HOTVRjets->at(i).v4().M(), weight);
-      dRmin_AK8Puppi_HOTVRjet1->Fill(dRmin_Puppi, weight);
-      dRmin_mu_HOTVRjet1->Fill(dRmin_muon, weight);
-      N_subjets_HOTVRjet1->Fill(HOTVRjets->at(i).subjets().size(), weight);
-      N_daughters_HOTVRjet1->Fill(HOTVRjets->at(i).numberOfDaughters(), weight);
-      tau1_HOTVRjet1->Fill(HOTVRjets->at(i).tau1_groomed(), weight);
-      tau2_HOTVRjet1->Fill(HOTVRjets->at(i).tau2_groomed(), weight);
-      tau3_HOTVRjet1->Fill(HOTVRjets->at(i).tau3_groomed(), weight);
-      tau21_HOTVRjet1->Fill(tau21, weight);
-      tau32_HOTVRjet1->Fill(tau32, weight);
-    }
-    else if(i==1){
-      pt_HOTVRjet2->Fill(HOTVRjets->at(i).pt(), weight);
-      eta_HOTVRjet2->Fill(HOTVRjets->at(i).eta(), weight);
-      phi_HOTVRjet2->Fill(HOTVRjets->at(i).phi(), weight);
-      m_HOTVRjet2->Fill(HOTVRjets->at(i).v4().M(), weight);
-      dRmin_AK8Puppi_HOTVRjet2->Fill(dRmin_Puppi, weight);
-      dRmin_mu_HOTVRjet2->Fill(dRmin_muon, weight);
-      N_subjets_HOTVRjet2->Fill(HOTVRjets->at(i).subjets().size(), weight);
-      N_daughters_HOTVRjet2->Fill(HOTVRjets->at(i).numberOfDaughters(), weight);
-      tau1_HOTVRjet2->Fill(HOTVRjets->at(i).tau1_groomed(), weight);
-      tau2_HOTVRjet2->Fill(HOTVRjets->at(i).tau2_groomed(), weight);
-      tau3_HOTVRjet2->Fill(HOTVRjets->at(i).tau3_groomed(), weight);
-      tau21_HOTVRjet2->Fill(tau21, weight);
-      tau32_HOTVRjet2->Fill(tau32, weight);
-    }
-    else if(i==2){
-      pt_HOTVRjet3->Fill(HOTVRjets->at(i).pt(), weight);
-      eta_HOTVRjet3->Fill(HOTVRjets->at(i).eta(), weight);
-      phi_HOTVRjet3->Fill(HOTVRjets->at(i).phi(), weight);
-      m_HOTVRjet3->Fill(HOTVRjets->at(i).v4().M(), weight);
-      dRmin_AK8Puppi_HOTVRjet3->Fill(dRmin_Puppi, weight);
-      dRmin_mu_HOTVRjet3->Fill(dRmin_muon, weight);
-      N_subjets_HOTVRjet3->Fill(HOTVRjets->at(i).subjets().size(), weight);
-      N_daughters_HOTVRjet3->Fill(HOTVRjets->at(i).numberOfDaughters(), weight);
-      tau1_HOTVRjet3->Fill(HOTVRjets->at(i).tau1_groomed(), weight);
-      tau2_HOTVRjet3->Fill(HOTVRjets->at(i).tau2_groomed(), weight);
-      tau3_HOTVRjet3->Fill(HOTVRjets->at(i).tau3_groomed(), weight);
-      tau21_HOTVRjet3->Fill(tau21, weight);
-      tau32_HOTVRjet3->Fill(tau32, weight);
-    }
-  }
+  //   if(i==0){
+  //     pt_HOTVRjet1->Fill(HOTVRjets->at(i).pt(), weight);
+  //     eta_HOTVRjet1->Fill(HOTVRjets->at(i).eta(), weight);
+  //     phi_HOTVRjet1->Fill(HOTVRjets->at(i).phi(), weight);
+  //     m_HOTVRjet1->Fill(HOTVRjets->at(i).v4().M(), weight);
+  //     dRmin_AK8Puppi_HOTVRjet1->Fill(dRmin_Puppi, weight);
+  //     dRmin_mu_HOTVRjet1->Fill(dRmin_muon, weight);
+  //     N_subjets_HOTVRjet1->Fill(HOTVRjets->at(i).subjets().size(), weight);
+  //     N_daughters_HOTVRjet1->Fill(HOTVRjets->at(i).numberOfDaughters(), weight);
+  //     tau1_HOTVRjet1->Fill(HOTVRjets->at(i).tau1_groomed(), weight);
+  //     tau2_HOTVRjet1->Fill(HOTVRjets->at(i).tau2_groomed(), weight);
+  //     tau3_HOTVRjet1->Fill(HOTVRjets->at(i).tau3_groomed(), weight);
+  //     tau21_HOTVRjet1->Fill(tau21, weight);
+  //     tau32_HOTVRjet1->Fill(tau32, weight);
+  //   }
+  //   else if(i==1){
+  //     pt_HOTVRjet2->Fill(HOTVRjets->at(i).pt(), weight);
+  //     eta_HOTVRjet2->Fill(HOTVRjets->at(i).eta(), weight);
+  //     phi_HOTVRjet2->Fill(HOTVRjets->at(i).phi(), weight);
+  //     m_HOTVRjet2->Fill(HOTVRjets->at(i).v4().M(), weight);
+  //     dRmin_AK8Puppi_HOTVRjet2->Fill(dRmin_Puppi, weight);
+  //     dRmin_mu_HOTVRjet2->Fill(dRmin_muon, weight);
+  //     N_subjets_HOTVRjet2->Fill(HOTVRjets->at(i).subjets().size(), weight);
+  //     N_daughters_HOTVRjet2->Fill(HOTVRjets->at(i).numberOfDaughters(), weight);
+  //     tau1_HOTVRjet2->Fill(HOTVRjets->at(i).tau1_groomed(), weight);
+  //     tau2_HOTVRjet2->Fill(HOTVRjets->at(i).tau2_groomed(), weight);
+  //     tau3_HOTVRjet2->Fill(HOTVRjets->at(i).tau3_groomed(), weight);
+  //     tau21_HOTVRjet2->Fill(tau21, weight);
+  //     tau32_HOTVRjet2->Fill(tau32, weight);
+  //   }
+  //   else if(i==2){
+  //     pt_HOTVRjet3->Fill(HOTVRjets->at(i).pt(), weight);
+  //     eta_HOTVRjet3->Fill(HOTVRjets->at(i).eta(), weight);
+  //     phi_HOTVRjet3->Fill(HOTVRjets->at(i).phi(), weight);
+  //     m_HOTVRjet3->Fill(HOTVRjets->at(i).v4().M(), weight);
+  //     dRmin_AK8Puppi_HOTVRjet3->Fill(dRmin_Puppi, weight);
+  //     dRmin_mu_HOTVRjet3->Fill(dRmin_muon, weight);
+  //     N_subjets_HOTVRjet3->Fill(HOTVRjets->at(i).subjets().size(), weight);
+  //     N_daughters_HOTVRjet3->Fill(HOTVRjets->at(i).numberOfDaughters(), weight);
+  //     tau1_HOTVRjet3->Fill(HOTVRjets->at(i).tau1_groomed(), weight);
+  //     tau2_HOTVRjet3->Fill(HOTVRjets->at(i).tau2_groomed(), weight);
+  //     tau3_HOTVRjet3->Fill(HOTVRjets->at(i).tau3_groomed(), weight);
+  //     tau21_HOTVRjet3->Fill(tau21, weight);
+  //     tau32_HOTVRjet3->Fill(tau32, weight);
+  //   }
+  // }
 
   // cout<< "HOTVR: ok" << endl; 
 
