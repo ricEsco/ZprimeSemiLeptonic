@@ -20,7 +20,6 @@
 #include <UHH2/common/include/TTbarGen.h>
 #include <UHH2/common/include/Utils.h>
 #include <UHH2/common/include/AdditionalSelections.h>
-#include <UHH2/common/include/LuminosityHists.h>
 #include <UHH2/common/include/MuonHists.h>
 #include <UHH2/common/include/ElectronHists.h>
 #include <UHH2/common/include/JetHists.h>
@@ -89,13 +88,9 @@ protected:
   std::unique_ptr<TopJetCleaner>   topjet_puppi_IDcleaner, topjet_puppi_cleaner; // AK8 PUPPI jet ID and pT/eta cleaners
 
   // Selections
-  std::unique_ptr<uhh2::Selection> genflavor_sel; // W+jets gen-flavor splitting (b, c, light)
   std::unique_ptr<uhh2::Selection> jet1_sel;      // >=1 AK4 jet
   std::unique_ptr<uhh2::Selection> jet2_sel;      // >=2 AK4 jets
   std::unique_ptr<uhh2::Selection> met_sel;       // MET cut
-  std::unique_ptr<uhh2::Selection> SignSplit;     // splits interference signal samples by weight sign
-
-  std::unique_ptr<Hists> lumihists;
 
 
   ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -182,23 +177,6 @@ ZprimePreselectionModule::ZprimePreselectionModule(uhh2::Context& ctx){
   // Inclusive alpha strength maps -> output folder "StrengthMaps"
   if(fill_strength_maps) strength_maps.reset(new EntanglementStrengthMapHists(ctx, "StrengthMaps"));
 
-  // W+jets gen-flavor splitting
-  if(dataset_version.find("WJets") != std::string::npos){
-    if     (dataset_version.find("_B") != std::string::npos) genflavor_sel.reset(new GenFlavorSelection("b"));
-    else if(dataset_version.find("_C") != std::string::npos) genflavor_sel.reset(new GenFlavorSelection("c"));
-    else if(dataset_version.find("_L") != std::string::npos) genflavor_sel.reset(new GenFlavorSelection("l"));
-    else genflavor_sel.reset(new uhh2::AndSelection(ctx));
-  }
-  else genflavor_sel.reset(new uhh2::AndSelection(ctx));
-
-  // Split interference signal samples by sign
-  if(dataset_version.find("_int") != std::string::npos){
-    if     (dataset_version.find("_pos") != std::string::npos) SignSplit.reset(new SignSelection("pos"));
-    else if(dataset_version.find("_neg") != std::string::npos) SignSplit.reset(new SignSelection("neg"));
-    else SignSplit.reset(new uhh2::AndSelection(ctx));
-  }
-  else SignSplit.reset(new uhh2::AndSelection(ctx));
-
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
   ////////////////////////////////////// OBJECT IDs AND CLEANING //////////////////////////////////////
@@ -258,8 +236,6 @@ ZprimePreselectionModule::ZprimePreselectionModule(uhh2::Context& ctx){
   // dropped "HOTVRCorrections" since we don't use them
   vector<string> histogram_tags = {"Input", "CommonModules", "PUPPICorrections", "Lepton1", "JetID", "JetCleaner1", "JetCleaner2", "TopjetCleaner", "Jet1", "Jet2", "MET"};
   book_histograms(ctx, histogram_tags);
-
-  lumihists.reset(new LuminosityHists(ctx, "lumi"));
 }
 
 
@@ -287,15 +263,12 @@ bool ZprimePreselectionModule::process(uhh2::Event& event){
   if(fill_strength_maps) strength_maps->fill(event);
   if(debug) cout << "[ZprimePreselectionModule] strength maps: ok" << endl;
 
-  // Split interference signal samples by sign
-  if(!event.isRealData){
-    if(!SignSplit->passes(event)) return false;
-  }
-  fill_histograms(event, "Input");
-
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
   ///////////////////////////////////////// Corrections /////////////////////////////////////////////
+
+  // Fill histograms with input
+  fill_histograms(event, "Input");
 
   // CommonModules (can reject events, e.g. lumi selection and MET filters)
   if(!common->process(event)) return false;
@@ -322,12 +295,6 @@ bool ZprimePreselectionModule::process(uhh2::Event& event){
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
   ///////////////////////////////////// Selection and cleaning //////////////////////////////////////
-
-  // W+jets gen-flavor selection
-  if(!event.isRealData){
-    if(!genflavor_sel->passes(event)) return false;
-  }
-  if(debug) cout << "[ZprimePreselectionModule] GenFlavorSelection: ok" << endl;
 
   // >=1 lepton (muon or electron)
   const bool pass_lep1 = ((event.muons->size() >= 1) || (event.electrons->size() >= 1));
