@@ -300,7 +300,7 @@ bool ZprimePreselectionModule::process(uhh2::Event& event){
   // CommonModules (can reject events, e.g. lumi selection and MET filters)
   if(!common->process(event)) return false;
   if(debug) cout << "[ZprimePreselectionModule] CommonModules: ok" << endl;
-  // fill_histograms(event, "CommonModules");
+  fill_histograms(event, "CommonModules");
 
   sort_by_pt<Muon>(*event.muons);
   sort_by_pt<Electron>(*event.electrons);
@@ -314,10 +314,10 @@ bool ZprimePreselectionModule::process(uhh2::Event& event){
     // fill_histograms(event, "HOTVRCorrections");
   }
 
-  // AK8 PUPPI jets
+  // AK8 PUPPI jet corrections
   toppuppijetCorr->process(event);
   if(debug) cout << "[ZprimePreselectionModule] TopPuppiJetCorrections: ok" << endl;
-  // fill_histograms(event, "PUPPICorrections");
+  fill_histograms(event, "PUPPICorrections");
 
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -333,18 +333,18 @@ bool ZprimePreselectionModule::process(uhh2::Event& event){
   const bool pass_lep1 = ((event.muons->size() >= 1) || (event.electrons->size() >= 1));
   if(!pass_lep1) return false;
   if(debug) cout << "[ZprimePreselectionModule] >=1 lepton: ok" << endl;
-  // fill_histograms(event, "Lepton1");
+  fill_histograms(event, "Lepton1");
 
   // AK4 PUPPI jet ID
   jet_IDcleaner->process(event);
   if(debug) cout << "[ZprimePreselectionModule] JetCleaner ID: ok" << endl;
-  // fill_histograms(event, "JetID");
+  fill_histograms(event, "JetID");
 
   // AK4 PUPPI jets: pT > 15 GeV, |eta| < 3.0
   jet_cleaner1->process(event);
   sort_by_pt<Jet>(*event.jets);
   if(debug) cout << "[ZprimePreselectionModule] JetCleaner1: ok" << endl;
-  // fill_histograms(event, "JetCleaner1");
+  fill_histograms(event, "JetCleaner1");
 
   // Lepton 2D-cut variables (dRmin, pTrel to the closest jet), used by the 2D-cut in the Analysis
   for(auto& muo : *event.muons){
@@ -364,7 +364,7 @@ bool ZprimePreselectionModule::process(uhh2::Event& event){
   jet_cleaner2->process(event);
   sort_by_pt<Jet>(*event.jets);
   if(debug) cout << "[ZprimePreselectionModule] JetCleaner2: ok" << endl;
-  // fill_histograms(event, "JetCleaner2");
+  fill_histograms(event, "JetCleaner2");
 
   // HOTVR jets: pT > 200 GeV, |eta| < 2.5
   hotvrjet_cleaner->process(event);
@@ -375,17 +375,17 @@ bool ZprimePreselectionModule::process(uhh2::Event& event){
   topjet_puppi_cleaner->process(event);
   sort_by_pt<TopJet>(*event.toppuppijets);
   if(debug) cout << "[ZprimePreselectionModule] TopJetCleaner: ok" << endl;
-  // fill_histograms(event, "TopjetCleaner");
+  fill_histograms(event, "TopjetCleaner");
 
   // >=1 AK4 jet with pT > 30 GeV
   if(!jet1_sel->passes(event)) return false;
   if(debug) cout << "[ZprimePreselectionModule] NJetSelection1: ok" << endl;
-  // fill_histograms(event, "Jet1");
+  fill_histograms(event, "Jet1");
 
   // >=2 AK4 jets with pT > 30 GeV
   if(!jet2_sel->passes(event)) return false;
   if(debug) cout << "[ZprimePreselectionModule] NJetSelection2: ok" << endl;
-  // fill_histograms(event, "Jet2");
+  fill_histograms(event, "Jet2");
 
   // MET > 20 GeV
   if(!met_sel->passes(event)) return false;
