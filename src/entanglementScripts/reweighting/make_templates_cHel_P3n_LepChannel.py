@@ -33,42 +33,35 @@ ROOT.TH1.AddDirectory(False)
 ROOT.gErrorIgnoreLevel = ROOT.kWarning
 
 # Choose a lepton flavor: electron or muon
-LepFlavor = "muon"
+LepFlavor = "electron"
 
-# Inputs
+# Lepton-specific inputs
 if LepFlavor == "electron":
-    # skimFile = "TTToSemiLeptonicUL18_SCskim_electron.root"
     skimFile = "../genTopStudy/TTToSemiLeptonicUL18_SCskim_wDoLC_electron.root"
 elif LepFlavor == "muon":
-    # skimFile = "TTToSemiLeptonicUL18_SCskim_muon.root"
     skimFile = "../genTopStudy/TTToSemiLeptonicUL18_SCskim_wDoLC_muon.root"
 skimTree = "SC_SkimTree"
 
 # Alpha maps are inclusive by construction -> no lepton-flavor splitting
-# mapFile  = "strengthmaps_uhh2/NoSC_alphaStrengthMap_lb.root"
 mapFile  = "strengthmaps_wLastCopy/NoSC_alphaStrengthMap_lb_wLastCopy.root"
 mapObj   = "TTToSemiLeptonic/alpha_lb_cHel_P3n"
 
 # Outputs
 if LepFlavor == "electron":
-    # OUT_ROOT = "cHel_P3n_templates_electron.root"
-    # OUT_PDF  = "cHel_P3n_templates_electron.pdf"
-    OUT_ROOT = "cHel_P3n_templates_wLastCopy_electron.root"
-    OUT_PDF  = "cHel_P3n_templates_wLastCopy_electron.pdf"
+    OUT_ROOT = "cHel_P3n_templates_wLC_electron.root"
+    OUT_PDF  = "cHel_P3n_templates_wLC_electron.pdf"
 elif LepFlavor == "muon":
-    # OUT_ROOT = "cHel_P3n_templates_muon.root"
-    # OUT_PDF  = "cHel_P3n_templates_muon.pdf"
-    OUT_ROOT = "cHel_P3n_templates_wLastCopy_muon.root"
-    OUT_PDF  = "cHel_P3n_templates_wLastCopy_muon.pdf"
+    OUT_ROOT = "cHel_P3n_templates_wLC_muon.root"
+    OUT_PDF  = "cHel_P3n_templates_wLC_muon.pdf"
 
 
 # reco-level boosted/central (m_tt>800 & |cosTheta*|<0.4) Observable is defined within the RECO-level phase space
 RECO_Obs = "reco_cHel_P3n_Mtt800_Inf_cosThetaLT0p4"
 
 # Inclusive gen-level inputs for reweighting
-GEN_Obs   = "gen_cHel_P3n"
-GEN_Mtt   = "gen_M_tt"
-GEN_cosTS = "gen_cosThetaStar"
+GEN_Obs   = "genLC_cHel_P3n"
+GEN_Mtt   = "genLC_M_tt"
+GEN_cosTS = "genLC_cosThetaStar"
 
 # Binning for the reco-level templates (6 bins on [-1, 1])
 NBINS, XLO, XHI = 6, -1.0, 1.0
@@ -247,6 +240,9 @@ def main(skim=skimFile, mapf=mapFile, out_root=OUT_ROOT, out_pdf=OUT_PDF):
 
 
 """
+---------------------------------------------------------------------------------------------------------------------------------------------------------------
+ ELECTRON OUTPUT BELOW
+---------------------------------------------------------------------------------------------------------------------------------------------------------------
 electron channel output:
 Reading alpha map from
 strengthmaps_uhh2/NoSC_alphaStrengthMap_lb.root:TTToSemiLeptonic/alpha_lb_cHel_P3n
@@ -272,9 +268,9 @@ Applied 'reco_is_toptag_reconstruction > 0 && reco_cHel_P3n_Mtt800_Inf_cosThetaL
 
 wrote cHel_P3n_templates_electron.root  (cHel_P3n, cHel_P3n_NoSCup, cHel_P3n_NoSCdown)
 wrote cHel_P3n_templates_electron.pdf
-"""
 
-"""
+
+
 compare electron output to using isLastCopy top quarks:
 Reading alpha map from
 strengthmaps_wLastCopy/NoSC_alphaStrengthMap_lb_wLastCopy.root:TTToSemiLeptonic/alpha_lb_cHel_P3n
@@ -329,13 +325,57 @@ wrote cHel_P3n_templates_wLastCopy_electron.pdf
 real	0m9.793s
 user	0m8.981s
 sys	0m0.562s
+
+
+
+electron output using LCmaps and LCgenObs in density:
+Reading alpha map from
+strengthmaps_wLastCopy/NoSC_alphaStrengthMap_lb_wLastCopy.root:TTToSemiLeptonic/alpha_lb_cHel_P3n
+Reading skim from
+../genTopStudy/TTToSemiLeptonicUL18_SCskim_wDoLC_electron.root:SC_SkimTree
+Applied 'reco_is_toptag_reconstruction > 0 && reco_chi2 < 30. && reco_cHel_P3n_Mtt800_Inf_cosThetaLT0p4 > -3' filter -> looping over 67053 events passed
+Negative down weight is -1.1352: density 0.3190 = 1 + alpha 0.7797 * genObs -0.8735 and eventweight is -0.0324
+Negative down weight is -0.2419: density 0.4460 = 1 + alpha 0.6392 * genObs -0.8667 and eventweight is 0.0162
+Negative down weight is -0.1456: density 0.4661 = 1 + alpha 0.6763 * genObs -0.7895 and eventweight is -0.0066
+Negative down weight is -1.4600: density 0.2890 = 1 + alpha 1.0189 * genObs -0.6978 and eventweight is 0.0126
+Negative down weight is -0.1105: density 0.4738 = 1 + alpha 0.7634 * genObs -0.6893 and eventweight is -0.0265
+Negative down weight is -0.2143: density 0.4516 = 1 + alpha 0.6122 * genObs -0.8957 and eventweight is 0.0360
+Negative down weight is -0.7588: density 0.3625 = 1 + alpha 0.7097 * genObs -0.8983 and eventweight is 0.0129
+Negative down weight is -2.2225: density 0.2368 = 1 + alpha 0.9020 * genObs -0.8461 and eventweight is 0.0177
+Negative down weight is -0.2112: density 0.4522 = 1 + alpha 0.5833 * genObs -0.9390 and eventweight is 0.0224
+Negative down weight is -0.1299: density 0.4695 = 1 + alpha 1.0189 * genObs -0.5207 and eventweight is 0.0145
+Negative down weight is -0.0773: density 0.4814 = 1 + alpha 0.6133 * genObs -0.8456 and eventweight is 0.0172
+Negative down weight is -0.3312: density 0.4290 = 1 + alpha 0.8070 * genObs -0.7076 and eventweight is 0.0263
+Negative down weight is -0.0108: density 0.4973 = 1 + alpha 0.5517 * genObs -0.9111 and eventweight is 0.0287
+Negative down weight is -1.6290: density 0.2756 = 1 + alpha 0.9020 * genObs -0.8032 and eventweight is 0.0290
+Negative down weight is -2.4647: density 0.2240 = 1 + alpha 1.0189 * genObs -0.7616 and eventweight is 0.0211
+Negative down weight is -12.0515: density 0.0712 = 1 + alpha 0.9867 * genObs -0.9414 and eventweight is 0.0416
+
+=================== event yields  ===================
+  nominal: 1895.7   NoSC_up: 1894.2   NoSC_down: 1897.3
+
+=== reco D-tilde estimate  (prefactor/kappaProduct) * Asymmetry ===
+  nominal      : +0.4785
+  NoSC_up      : +0.1028  ->spin correlation removed
+  NoSC_down    : +0.8536  ->spin correlation enhanced
+  --> ordering should be: |up| < |nominal| < |down| : OK
+
+=== reweighting weights diagnostic (gen-semileptonic subset) ===
+  events reweighted          : 67029
+  min density (1+alpha*Obs)  : +0.0712
+  |density| < 1e-06 counter     : 0
+  negative up / down weights : 0 / 16
+  low-stat map cells (<10)   : 0
+
+wrote cHel_P3n_templates_wLC_electron.root  (cHel_P3n, cHel_P3n_NoSCup, cHel_P3n_NoSCdown, cHel_P3n_NoSCUp_wt, cHel_P3n_NoSCDown_wt)
+wrote cHel_P3n_templates_wLC_electron.pdf
 """
 
 """
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------
-"""
+ MUON OUTPUT BELOW
+---------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-"""
 muon channel output:
 Reading alpha map from
 strengthmaps_uhh2/NoSC_alphaStrengthMap_lb.root:TTToSemiLeptonic/alpha_lb_cHel_P3n
@@ -361,9 +401,9 @@ Applied 'reco_is_toptag_reconstruction > 0 && reco_cHel_P3n_Mtt800_Inf_cosThetaL
 
 wrote cHel_P3n_templates_muon.root  (cHel_P3n, cHel_P3n_NoSCup, cHel_P3n_NoSCdown)
 wrote cHel_P3n_templates_muon.pdf
-"""
 
-"""
+
+
 compare electron output to using isLastCopy top quarks:
 Reading alpha map from
 strengthmaps_wLastCopy/NoSC_alphaStrengthMap_lb_wLastCopy.root:TTToSemiLeptonic/alpha_lb_cHel_P3n
@@ -437,6 +477,73 @@ wrote cHel_P3n_templates_wLastCopy_muon.pdf
 real	0m12.283s
 user	0m11.337s
 sys	0m0.611s
+
+
+
+muon output using LCmaps and LCgenObs in density:
+Reading alpha map from
+strengthmaps_wLastCopy/NoSC_alphaStrengthMap_lb_wLastCopy.root:TTToSemiLeptonic/alpha_lb_cHel_P3n
+Reading skim from
+../genTopStudy/TTToSemiLeptonicUL18_SCskim_wDoLC_muon.root:SC_SkimTree
+Applied 'reco_is_toptag_reconstruction > 0 && reco_chi2 < 30. && reco_cHel_P3n_Mtt800_Inf_cosThetaLT0p4 > -3' filter -> looping over 89859 events passed
+Negative down weight is -0.5797: density 0.3876 = 1 + alpha 0.6133 * genObs -0.9984 and eventweight is 0.0251
+Negative down weight is -0.0247: density 0.4939 = 1 + alpha 0.5870 * genObs -0.8623 and eventweight is 0.0168
+Negative down weight is -12.5087: density 0.0689 = 1 + alpha 1.0189 * genObs -0.9138 and eventweight is -0.0194
+Negative down weight is -0.0675: density 0.4837 = 1 + alpha 0.5455 * genObs -0.9466 and eventweight is 0.0171
+Negative down weight is -0.5343: density 0.3946 = 1 + alpha 0.6122 * genObs -0.9888 and eventweight is 0.0128
+Negative down weight is -0.8426: density 0.3518 = 1 + alpha 0.6667 * genObs -0.9723 and eventweight is 0.0220
+Negative down weight is -0.6773: density 0.3735 = 1 + alpha 0.6457 * genObs -0.9703 and eventweight is 0.0187
+Negative down weight is -0.4621: density 0.4062 = 1 + alpha 1.0189 * genObs -0.5828 and eventweight is 0.0225
+Negative down weight is -0.3688: density 0.4222 = 1 + alpha 0.6286 * genObs -0.9193 and eventweight is 0.0134
+Negative down weight is -2.7820: density 0.2091 = 1 + alpha 0.9020 * genObs -0.8768 and eventweight is 0.0196
+Negative down weight is -0.7173: density 0.3680 = 1 + alpha 0.7634 * genObs -0.8279 and eventweight is -0.0249
+Negative down weight is -0.2370: density 0.4470 = 1 + alpha 0.6457 * genObs -0.8564 and eventweight is -0.0266
+Negative down weight is -0.0555: density 0.4865 = 1 + alpha 0.6122 * genObs -0.8387 and eventweight is -0.0237
+Negative down weight is -0.0932: density 0.4777 = 1 + alpha 0.5833 * genObs -0.8953 and eventweight is 0.0178
+Negative down weight is -2.4813: density 0.2232 = 1 + alpha 1.0189 * genObs -0.7625 and eventweight is 0.0136
+Negative down weight is -0.1482: density 0.4655 = 1 + alpha 0.5763 * genObs -0.9275 and eventweight is 0.0192
+Negative down weight is -0.3349: density 0.4283 = 1 + alpha 1.0189 * genObs -0.5611 and eventweight is 0.0188
+Negative down weight is -3.7045: density 0.1753 = 1 + alpha 1.0189 * genObs -0.8094 and eventweight is 0.0126
+Negative down weight is -0.4417: density 0.4095 = 1 + alpha 0.6119 * genObs -0.9650 and eventweight is 0.0217
+Negative down weight is -1.2281: density 0.3098 = 1 + alpha 0.7634 * genObs -0.9042 and eventweight is 0.0206
+Negative down weight is -18.1918: density 0.0495 = 1 + alpha 1.0189 * genObs -0.9329 and eventweight is 0.0166
+Negative down weight is -1.9659: density 0.2522 = 1 + alpha 0.7634 * genObs -0.9797 and eventweight is -0.0231
+Negative down weight is -0.0307: density 0.4924 = 1 + alpha 0.6122 * genObs -0.8290 and eventweight is 0.0244
+Negative down weight is -0.3260: density 0.4299 = 1 + alpha 0.7742 * genObs -0.7364 and eventweight is 0.0202
+Negative down weight is -0.1180: density 0.4721 = 1 + alpha 1.0189 * genObs -0.5181 and eventweight is -0.0211
+Negative down weight is -0.0940: density 0.4776 = 1 + alpha 1.0189 * genObs -0.5128 and eventweight is -0.0132
+Negative down weight is -0.1126: density 0.4734 = 1 + alpha 0.6122 * genObs -0.8602 and eventweight is 0.0225
+Negative down weight is -0.1885: density 0.4569 = 1 + alpha 1.0189 * genObs -0.5330 and eventweight is 0.0313
+Negative down weight is -3.3155: density 0.1881 = 1 + alpha 1.0189 * genObs -0.7968 and eventweight is 0.0281
+Negative down weight is -1.3111: density 0.3020 = 1 + alpha 0.7634 * genObs -0.9144 and eventweight is -0.0175
+Negative down weight is -0.2627: density 0.4419 = 1 + alpha 1.0189 * genObs -0.5477 and eventweight is -0.0180
+Negative down weight is -1.3460: density 0.2989 = 1 + alpha 0.7797 * genObs -0.8993 and eventweight is -0.0326
+Negative down weight is -0.0572: density 0.4861 = 1 + alpha 0.5246 * genObs -0.9796 and eventweight is 0.0160
+Negative down weight is -1.1809: density 0.3144 = 1 + alpha 0.8070 * genObs -0.8496 and eventweight is 0.0182
+Negative down weight is -0.0914: density 0.4781 = 1 + alpha 0.7742 * genObs -0.6741 and eventweight is 0.0244
+Negative down weight is -0.9228: density 0.3421 = 1 + alpha 0.7097 * genObs -0.9270 and eventweight is 0.0195
+Negative down weight is -0.4540: density 0.4075 = 1 + alpha 0.5965 * genObs -0.9933 and eventweight is 0.0122
+Negative down weight is -0.1182: density 0.4721 = 1 + alpha 0.6763 * genObs -0.7806 and eventweight is 0.0271
+Negative down weight is -0.1268: density 0.4702 = 1 + alpha 0.5344 * genObs -0.9915 and eventweight is 0.0221
+
+=================== event yields  ===================
+  nominal: 2506.4   NoSC_up: 2504.5   NoSC_down: 2508.3
+
+=== reco D-tilde estimate  (prefactor/kappaProduct) * Asymmetry ===
+  nominal      : +0.4156
+  NoSC_up      : +0.0392  ->spin correlation removed
+  NoSC_down    : +0.7915  ->spin correlation enhanced
+  --> ordering should be: |up| < |nominal| < |down| : OK
+
+=== reweighting weights diagnostic (gen-semileptonic subset) ===
+  events reweighted          : 89839
+  min density (1+alpha*Obs)  : +0.0495
+  |density| < 1e-06 counter     : 0
+  negative up / down weights : 0 / 39
+  low-stat map cells (<10)   : 0
+
+wrote cHel_P3n_templates_wLC_muon.root  (cHel_P3n, cHel_P3n_NoSCup, cHel_P3n_NoSCdown, cHel_P3n_NoSCUp_wt, cHel_P3n_NoSCDown_wt)
+wrote cHel_P3n_templates_wLC_muon.pdf
 """
 
 

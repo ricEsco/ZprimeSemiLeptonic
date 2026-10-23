@@ -453,8 +453,7 @@ ZprimeAnalysisModule::ZprimeAnalysisModule(uhh2::Context& ctx){
   PUWeight_module.reset(new MCPileupReweight(ctx, Sys_PU));
   TopPtReweight_module.reset(new TopPtReweighting(ctx, a_toppt, b_toppt, Sys_TopPt_a, Sys_TopPt_b, ""));
   // ttbar NNLO QCD + electroweak corrections (AN-26-039 Sec. 3.3.5) -- see TTbarNNLOQCDCorrection and
-  // TTbarEWKCorrection in ZprimeSemiLeptonicModules.h/.cxx for the scaffolding-stage TODOs (missing
-  // SF_QCD(pT) fit parameters and kappa_EWK/delta_QCD lookup histograms).
+  // TTbarEWKCorrection in ZprimeSemiLeptonicModules.h/.cxx 
   TTbarNNLOQCD_module.reset(new TTbarNNLOQCDReweighting(ctx, "ttbargen"));
   TTbarEWK_module.reset(new TTbarEWKCorrection(ctx, "ttbargen"));
   h_weight_ttbar_nnloqcd_nominal = ctx.get_handle<float>("weight_ttbar_nnlo_qcd");
@@ -817,8 +816,7 @@ bool ZprimeAnalysisModule::process(uhh2::Event& event){
   fill_histograms(event, "Weights_PU");
   // lumihists_Weights_PU->fill(event);
   
-  // ttbar NNLO QCD + electroweak corrections (no-ops for non-ttbar samples / until real parameters
-  // and lookup histograms are wired in -- see TODOs in ZprimeSemiLeptonicModules.h/.cxx)
+  // ttbar NNLO QCD + electroweak corrections
   TTbarNNLOQCD_module->process(event);
   if(debug) cout << "[ZprimeAnalysisModule] TTbarNNLOQCD: ok" << endl;
   fill_histograms(event, "Weights_TTbarNNLOQCD");
@@ -1315,7 +1313,7 @@ bool ZprimeAnalysisModule::process(uhh2::Event& event){
 
 
 
-  // Higher Order Corrections: EWK & QCD NLO //
+  // Higher Order Corrections: EWK & QCD NLO corrections for WJets and DY //
   NLOCorrections_module->process(event);
   if(debug) cout << "[ZprimeAnalysisModule] NLO Correction: ok" << endl;
   fill_histograms(event, "NLOCorrections");

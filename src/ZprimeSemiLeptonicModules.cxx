@@ -4098,10 +4098,6 @@ TopPtReweighting::TopPtReweighting(uhh2::Context& ctx,
             const TVector3 beam_axis(0.0, 0.0, 1.0);
             double costheta = top_ttbar_frame.Vect().Unit().Dot(beam_axis);
             costheta = std::max(-1.0, std::min(1.0, costheta));
-            // weight = static_cast<float>(evaluate_ratio(mttbar, costheta));
-            // weight_unc = static_cast<float>(evaluate_uncertainty(mttbar, costheta, weight));
-            // weight_up = weight * weight_unc;   // Eq. 16
-            // weight_down = weight_unc > 0.0f ? weight / weight_unc : weight; // Eq. 16
             weight = static_cast<float>(evaluate_ratio(mttbar, costheta));
             weight_unc = static_cast<float>(evaluate_uncertainty(mttbar, costheta, weight));
             weight_up = weight * weight_unc;              // Eq. 16: w_up = weight_unc, applied onto the nominal corrected weight

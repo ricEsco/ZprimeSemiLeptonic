@@ -3,11 +3,11 @@
 
 <!-- Integrated lumi for era ref: https://twiki.cern.ch/twiki/bin/view/CMS/LumiRecommendationsRun2?rev=10 -->
 <!ENTITY TargetLumi  "59830.0">
-<!ENTITY PRESELdir   "/data/dust/group/cms/zprime-uhh/Presel_SC/UL18">
+<!ENTITY YEARsuffix  "_UL18">
 <!ENTITY b_Cacheable "False">
 <!ENTITY NEVT        "-1">
-<!ENTITY YEARsuffix  "_UL18">
 <!ENTITY IS_HOTVR    "false">
+<!ENTITY PRESELdir   "/data/dust/group/cms/zprime-uhh/Presel_SC/UL18">
 
 <!-- EGamma -->
 <!ENTITY DATA_EGamma_RunA SYSTEM "../../common/UHH2-datasets/RunII_106X_v2/data/UL18/EGamma_Run2018A-UL2018_MiniAODv2_GT36-v1.xml">
@@ -24,6 +24,12 @@
 <!ENTITY TTToSemiLeptonic SYSTEM "../../common/UHH2-datasets/RunII_106X_v2/SM/UL18/TTToSemiLeptonic_CP5_powheg-pythia8_Summer20UL18_v2.xml">
 <!ENTITY TTToHadronic     SYSTEM "../../common/UHH2-datasets/RunII_106X_v2/SM/UL18/TTToHadronic_CP5_powheg-pythia8_Summer20UL18_v1.xml">
 <!ENTITY TTTo2L2Nu        SYSTEM "../../common/UHH2-datasets/RunII_106X_v2/SM/UL18/TTTo2L2Nu_CP5_powheg-pythia8_Summer20UL18_v1.xml">
+<!-- ST -->
+<!ENTITY ST_tW_antitop_5f_NoFullyHadronicDecays_PDFWeights SYSTEM "../../common/UHH2-datasets/RunII_106X_v2/SM/UL18/ST_tW_antitop_5f_NoFullyHadronicDecays_CP5_PDFWeights-powheg-pythia8_Summer20UL18_v2.xml">
+<!ENTITY ST_tW_top_5f_NoFullyHadronicDecays_PDFWeights     SYSTEM "../../common/UHH2-datasets/RunII_106X_v2/SM/UL18/ST_tW_top_5f_NoFullyHadronicDecays_CP5_PDFWeights-powheg-pythia8_Summer20UL18_v2.xml">
+<!ENTITY ST_t-channel_antitop_4f_InclusiveDecays           SYSTEM "../../common/UHH2-datasets/RunII_106X_v2/SM/UL18/ST_t-channel_antitop_4f_InclusiveDecays_CP5_powheg-madspin-pythia8_Summer20UL18_v1.xml">
+<!ENTITY ST_t-channel_top_4f_InclusiveDecays               SYSTEM "../../common/UHH2-datasets/RunII_106X_v2/SM/UL18/ST_t-channel_top_4f_InclusiveDecays_CP5_powheg-madspin-pythia8_Summer20UL18_v1.xml">
+<!ENTITY ST_s-channel_4f_leptonDecays                      SYSTEM "../../common/UHH2-datasets/RunII_106X_v2/SM/UL18/ST_s-channel_4f_leptonDecays_CP5_amcatnlo-pythia8_Summer20UL18_v1.xml">
 <!-- WJets -->
 <!ENTITY WJetsToLNu_HT-70To100    SYSTEM "../../common/UHH2-datasets/RunII_106X_v2/SM/UL18/WJetsToLNu_HT-70To100_CP5_madgraphMLM-pythia8_Summer20UL18_v1.xml">
 <!ENTITY WJetsToLNu_HT-100To200   SYSTEM "../../common/UHH2-datasets/RunII_106X_v2/SM/UL18/WJetsToLNu_HT-100To200_CP5_madgraphMLM-pythia8_Summer20UL18_v2.xml">
@@ -46,12 +52,6 @@
 <!ENTITY WW SYSTEM "../../common/UHH2-datasets/RunII_106X_v2/SM/UL18/WW_CP5_pythia8_Summer20UL18_v1.xml">
 <!ENTITY WZ SYSTEM "../../common/UHH2-datasets/RunII_106X_v2/SM/UL18/WZ_CP5_pythia8_Summer20UL18_v1.xml">
 <!ENTITY ZZ SYSTEM "../../common/UHH2-datasets/RunII_106X_v2/SM/UL18/ZZ_CP5_pythia8_Summer20UL18_v2.xml">
-<!-- ST -->
-<!ENTITY ST_tW_antitop_5f_NoFullyHadronicDecays_PDFWeights SYSTEM "../../common/UHH2-datasets/RunII_106X_v2/SM/UL18/ST_tW_antitop_5f_NoFullyHadronicDecays_CP5_PDFWeights-powheg-pythia8_Summer20UL18_v2.xml">
-<!ENTITY ST_tW_top_5f_NoFullyHadronicDecays_PDFWeights     SYSTEM "../../common/UHH2-datasets/RunII_106X_v2/SM/UL18/ST_tW_top_5f_NoFullyHadronicDecays_CP5_PDFWeights-powheg-pythia8_Summer20UL18_v2.xml">
-<!ENTITY ST_t-channel_antitop_4f_InclusiveDecays           SYSTEM "../../common/UHH2-datasets/RunII_106X_v2/SM/UL18/ST_t-channel_antitop_4f_InclusiveDecays_CP5_powheg-madspin-pythia8_Summer20UL18_v1.xml">
-<!ENTITY ST_t-channel_top_4f_InclusiveDecays               SYSTEM "../../common/UHH2-datasets/RunII_106X_v2/SM/UL18/ST_t-channel_top_4f_InclusiveDecays_CP5_powheg-madspin-pythia8_Summer20UL18_v1.xml">
-<!ENTITY ST_s-channel_4f_leptonDecays                      SYSTEM "../../common/UHH2-datasets/RunII_106X_v2/SM/UL18/ST_s-channel_4f_leptonDecays_CP5_amcatnlo-pythia8_Summer20UL18_v1.xml">
 <!-- QCD -->
 <!ENTITY QCD_HT50to100    SYSTEM "../../common/UHH2-datasets/RunII_106X_v2/SM/UL18/QCD_HT50to100_CP5_PSWeights_madgraph-pythia8_Summer20UL18_v1.xml">
 <!ENTITY QCD_HT100to200   SYSTEM "../../common/UHH2-datasets/RunII_106X_v2/SM/UL18/QCD_HT100to200_CP5_PSWeights_madgraph-pythia8_Summer20UL18_v1.xml">
