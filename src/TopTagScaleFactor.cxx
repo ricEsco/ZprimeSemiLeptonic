@@ -13,7 +13,7 @@ TopTagScaleFactor::TopTagScaleFactor(uhh2::Context & ctx){
   h_toptagsf_uncorr_up = ctx.declare_event_output<float>("weight_toptagsf_uncorr_up");
   h_toptagsf_uncorr_down = ctx.declare_event_output<float>("weight_toptagsf_uncorr_down");
 
-  TString path = "/data/dust/user/matthies/KseniaAndHenrik/SF_ak8_t__MDdeepak8__2023-03-06/";
+  TString path = "/data/dust/user/ricardo/uhh2-106X_v2/CMSSW_10_6_28/src/UHH2/ZprimeSemiLeptonic/macros/src/files_TTagSF/"; // copied from /data/dust/user/matthies/KseniaAndHenrik/SF_ak8_t__MDdeepak8__2023-03-06/
 
   const Year & year = extract_year(ctx);
   TString year_tag;

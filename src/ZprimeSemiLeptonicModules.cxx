@@ -3799,9 +3799,11 @@ TopPtReweighting::TopPtReweighting(uhh2::Context& ctx,
   float a, float b,
   const std::string& syst_a,
   const std::string& syst_b,
-  const std::string& ttgen_name):
+  const std::string& ttgen_name,
+  bool apply_weight):
   a_(a), b_(b),
-  ttgen_name_(ttgen_name){
+  ttgen_name_(ttgen_name),
+  apply_weight_(apply_weight){
 
     h_weight_toppt_nominal = ctx.declare_event_output<float> ("weight_toppt_nominal");
     h_weight_toppt_a_up      = ctx.declare_event_output<float> ("weight_toppt_a_up");

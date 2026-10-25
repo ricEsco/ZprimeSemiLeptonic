@@ -339,13 +339,16 @@ private:
 
 
 // Top pT Reweighting extended - from Alex F.
+// apply_weight = false: only store the weight_toppt_* branches, do not multiply event.weight
+// (ZprimeAnalysisModule uses TTbarNNLOQCDReweighting as the top-pT correction instead)
 class TopPtReweighting : public uhh2::AnalysisModule {
  public:
   explicit TopPtReweighting(uhh2::Context& ctx,
     float a, float b,
     const std::string& syst_a,
     const std::string& syst_b,
-    const std::string& ttgen_name ="");
+    const std::string& ttgen_name ="",
+    bool apply_weight = true);
   virtual bool process(uhh2::Event& event) override;
 
  private:
@@ -353,6 +356,7 @@ class TopPtReweighting : public uhh2::AnalysisModule {
     float a_, b_;
     std::string version_;
     std::string ttgen_name_;
+    bool apply_weight_;
     uhh2::Event::Handle< float > h_weight_toppt_nominal;
     uhh2::Event::Handle< float > h_weight_toppt_a_up;
     uhh2::Event::Handle< float > h_weight_toppt_b_up;

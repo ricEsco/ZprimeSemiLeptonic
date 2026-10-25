@@ -1,5 +1,7 @@
 #include "UHH2/ZprimeSemiLeptonic/include/ZprimeSemiLeptonicSpinCorrSystHists.h"
 
+#include <stdexcept>
+
 using namespace std;
 using namespace uhh2;
 
@@ -68,22 +70,37 @@ namespace {
 
 ZprimeSemiLeptonicSpinCorrSystHists::ZprimeSemiLeptonicSpinCorrSystHists(uhh2::Context& ctx, const std::string& dirname):
 Hists(ctx, dirname) {
-  for(int i = 0; i < kNVars; ++i){
-    var_names_.push_back(kVars[i].handle_name);
-    var_handles_.push_back(ctx.get_handle<float>(kVars[i].handle_name));
-  }
-  init();
+  for(int i = 0; i < kNVars; ++i) add(ctx, kVars[i].handle_name);
 }
 
-void ZprimeSemiLeptonicSpinCorrSystHists::init(){
+ZprimeSemiLeptonicSpinCorrSystHists::ZprimeSemiLeptonicSpinCorrSystHists(uhh2::Context& ctx, const std::string& dirname, const std::vector<std::string>& observables):
+Hists(ctx, dirname) {
+  for(const auto& obs : observables) add(ctx, obs);
+}
+
+// book one observable from the table above (its handle name is the SpinCorrelations branch name)
+void ZprimeSemiLeptonicSpinCorrSystHists::add(uhh2::Context& ctx, const std::string& observable){
   for(int i = 0; i < kNVars; ++i){
+    if(observable != kVars[i].handle_name) continue;
+    var_names_.push_back(observable);
+    var_handles_.push_back(ctx.get_handle<float>(observable));
     var_hists_.push_back(book<TH1F>(kVars[i].hist_name, kVars[i].title, kVars[i].nbins, kVars[i].xmin, kVars[i].xmax));
+    return;
   }
+  throw std::runtime_error("ZprimeSemiLeptonicSpinCorrSystHists: unknown observable '" + observable + "'");
 }
 
 void ZprimeSemiLeptonicSpinCorrSystHists::fill(const uhh2::Event& event){
-  double weight = event.weight;
+  const double weight = event.weight;
   for(size_t i = 0; i < var_handles_.size(); ++i){
     var_hists_[i]->Fill(event.get(var_handles_[i]), weight);
+  }
+}
+
+void ZprimeSemiLeptonicSpinCorrSystHists::fill_with_factors(const uhh2::Event& event, const std::vector<double>& weight_factors){
+  if(weight_factors.size() != var_handles_.size()) throw std::runtime_error("ZprimeSemiLeptonicSpinCorrSystHists::fill_with_factors: size mismatch");
+  const double weight = event.weight;
+  for(size_t i = 0; i < var_handles_.size(); ++i){
+    var_hists_[i]->Fill(event.get(var_handles_[i]), weight * weight_factors[i]);
   }
 }

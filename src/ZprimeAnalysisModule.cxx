@@ -1,3 +1,5 @@
+#include <algorithm>
+#include <map>
 #include <iostream>
 #include <memory>
 #include <sstream>
@@ -38,7 +40,7 @@
 #include <UHH2/ZprimeSemiLeptonic/include/ZprimeSemiLeptonicGeneratorHists.h>
 #include <UHH2/ZprimeSemiLeptonic/include/ZprimeSemiLeptonicCHSMatchHists.h>
 #include <UHH2/ZprimeSemiLeptonic/include/ZprimeSemiLeptonicSystematicsModule.h>
-#include <UHH2/ZprimeSemiLeptonic/include/ZprimeSemiLeptonicSystematicsHists.h>
+#include <UHH2/ZprimeSemiLeptonic/include/EntanglementModules.h>
 #include <UHH2/ZprimeSemiLeptonic/include/ZprimeSemiLeptonicPDFHists.h>
 #include <UHH2/ZprimeSemiLeptonic/include/ZprimeSemiLeptonicSpinCorrSystHists.h>
 #include <UHH2/ZprimeSemiLeptonic/include/ZprimeCandidate.h>
@@ -74,10 +76,6 @@ public:
   virtual bool process(uhh2::Event&) override;
   void book_histograms(uhh2::Context&, vector<string>);
   void fill_histograms(uhh2::Event&, string);
-  void fill_pdf_variations(uhh2::Event&, string); // fills the 100 NNPDF3.1 Hessian replica variations of 'tag' as '<tag>_pdf<i>'
-  void book_spincorr_histograms(uhh2::Context&, vector<string>); // like book_histograms(), but books ZprimeSemiLeptonicSpinCorrSystHists (slim, entanglement-variables-only) instead of the full ZprimeSemiLeptonicHists suite
-  void fill_ttbarNNLOQCD_variations(uhh2::Event&, string); // fills 'tag'_nnloQCD_up/_down (ttbar NNLO QCD correction systematic, AN Eq. 12)
-  void fill_ttbarEWK_variations(uhh2::Event&, string); // fills 'tag'_ewk_up/_down (ttbar electroweak correction systematic, AN Eq. 16)
 
 protected:
 
@@ -98,10 +96,6 @@ protected:
   unique_ptr<AnalysisModule>   PUWeight_module, LumiWeight_module, MCScale_module;
   unique_ptr<TopPtReweighting> TopPtReweight_module;
   unique_ptr<AnalysisModule>   TTbarNNLOQCD_module, TTbarEWK_module;
-  // Handles to read back the nominal/up/down correction factors TTbarNNLOQCD_module/TTbarEWK_module
-  // declare, so fill_ttbarNNLOQCD_variations()/fill_ttbarEWK_variations() can reweight relative to them.
-  Event::Handle<float> h_weight_ttbar_nnloqcd_nominal, h_weight_ttbar_nnloqcd_up, h_weight_ttbar_nnloqcd_down;
-  Event::Handle<float> h_weight_ttbar_ewk_nominal, h_weight_ttbar_ewk_up, h_weight_ttbar_ewk_down;
   // Prefiring weights applied manually
   unique_ptr<PSWeights> ps_weights;
   unique_ptr<AnalysisModule> NLOCorrections_module;
@@ -157,6 +151,12 @@ protected:
   // declare SprinCorrelations pointer
   unique_ptr<SpinCorrelations> SpinCorrelations_module;
 
+  // Entanglement measurement: gen-level outputs, NoSC signal-shape weights, and systematic-variation histograms
+  unique_ptr<EntanglementGenOutput> GenSpinCorrelations_module;     // gen_<Obs> branches (last-copy tops)
+  unique_ptr<EntanglementNoSCReweighting> NoSCReweighting_module;   // alpha_<Obs>, weight_NoSC_<Obs>_up/down
+  unique_ptr<ZprimeSemiLeptonicSystematicsModule> Systematics_Chi2; // variations after the chi2 cut   -> "Chi2cut_PASS_SC_<variation>"
+  unique_ptr<ZprimeSemiLeptonicSystematicsModule> Systematics_Merged; // variations in Merged topology -> "Merged_SC_<variation>"
+
 
   // Do not use the following modules-- might delete these
   unique_ptr<HOTVRTopTagger> TopTaggerHOTVR; // don't use HOTVR-- might delete
@@ -207,7 +207,6 @@ protected:
   /////////////////////////////////////////////////////////////
   bool isMC, ishotvr, isdeepAK8;
   bool isUL16preVFP, isUL16postVFP, isUL17, isUL18;
-  bool isDifferentPDFSet; // true for samples generated with a non-standard PDF set (different systweights() start index)
   bool isMuon, isElectron;
   bool isPhoton;
   bool isEleTriggerMeasurement;
@@ -234,69 +233,6 @@ void ZprimeAnalysisModule::fill_histograms(uhh2::Event& event, string tag){
   string mytag = tag + "_Skimming";
   mytag = tag + "_General";
   HFolder(mytag)->fill(event);
-}
-
-// Fills the 100 NNPDF3.1 Hessian replica variations of the histogram folder 'tag' as '<tag>_pdf<i>'.
-// Temporarily reweights event.weight by (replica weight / nominal PDF weight), fills each variation folder,
-// then restores event.weight to its value on entry so callers can keep using it unmodified afterwards.
-void ZprimeAnalysisModule::fill_pdf_variations(uhh2::Event& event, string tag){
-  if(!isMC || !event.genInfo) return;
-  int startindex = isDifferentPDFSet ? 47 : 9;
-  if(event.genInfo->systweights().size() <= (unsigned int)(startindex + 100)) return; // some events lack proper systweights; skip rather than crash
-  float weight_before_pdf = event.weight;
-  float pdf_nominal = event.genInfo->originalXWGTUP();
-  for(int i=0; i<100; ++i){
-    float pdf_var = event.genInfo->systweights().at(startindex + i);
-    event.weight = weight_before_pdf * pdf_var / pdf_nominal;
-    stringstream ss_i; ss_i << i;
-    fill_histograms(event, tag + "_pdf" + ss_i.str());
-  }
-  event.weight = weight_before_pdf;
-}
-
-// Books folders '<tag>_General' using the slim ZprimeSemiLeptonicSpinCorrSystHists class (43 entanglement
-// observables only) instead of the full ZprimeSemiLeptonicHists suite -- used for systematic-variation
-// folders (PDF replicas, and future weight-only systematics) to keep output size manageable.
-void ZprimeAnalysisModule::book_spincorr_histograms(uhh2::Context& ctx, vector<string> tags){
-  for(const auto & tag : tags){
-    string mytag = tag + "_General";
-    book_HFolder(mytag, new ZprimeSemiLeptonicSpinCorrSystHists(ctx, mytag));
-  }
-}
-
-// Fills '<tag>_nnloQCD_up'/'_down' (ttbar NNLO QCD correction systematic, AN Eq. 12: w_up=1,
-// w_down=2*w_nominal-1). event.weight already has the nominal correction baked in (applied once by
-// TTbarNNLOQCD_module->process() earlier in process()), so here we only need to reweight by the ratio
-// of the variation to that nominal correction factor before filling, then restore. No-op (skips both
-// fills) if the nominal correction factor is 0, which should not happen in practice.
-void ZprimeAnalysisModule::fill_ttbarNNLOQCD_variations(uhh2::Event& event, string tag){
-  if(!isMC) return;
-  float w_nominal = event.get(h_weight_ttbar_nnloqcd_nominal);
-  if(w_nominal == 0) return;
-  float w_up   = event.get(h_weight_ttbar_nnloqcd_up);
-  float w_down = event.get(h_weight_ttbar_nnloqcd_down);
-  float weight_before = event.weight;
-  event.weight = weight_before * (w_up / w_nominal);
-  fill_histograms(event, tag + "_nnloQCD_up");
-  event.weight = weight_before * (w_down / w_nominal);
-  fill_histograms(event, tag + "_nnloQCD_down");
-  event.weight = weight_before;
-}
-
-// Fills '<tag>_ewk_up'/'_down' (ttbar electroweak correction systematic, AN Eq. 16). Same reweight-
-// relative-to-nominal pattern as fill_ttbarNNLOQCD_variations() above.
-void ZprimeAnalysisModule::fill_ttbarEWK_variations(uhh2::Event& event, string tag){
-  if(!isMC) return;
-  float w_nominal = event.get(h_weight_ttbar_ewk_nominal);
-  if(w_nominal == 0) return;
-  float w_up   = event.get(h_weight_ttbar_ewk_up);
-  float w_down = event.get(h_weight_ttbar_ewk_down);
-  float weight_before = event.weight;
-  event.weight = weight_before * (w_up / w_nominal);
-  fill_histograms(event, tag + "_ewk_up");
-  event.weight = weight_before * (w_down / w_nominal);
-  fill_histograms(event, tag + "_ewk_down");
-  event.weight = weight_before;
 }
 
 /*
@@ -334,12 +270,6 @@ ZprimeAnalysisModule::ZprimeAnalysisModule(uhh2::Context& ctx){
   // Year
   string tmp = ctx.get("dataset_version");
   sample = tmp;
-
-  // PDF systematic: samples generated with a non-standard PDF set start at a different index in genInfo->systweights()
-  isDifferentPDFSet = false;
-  if(sample.Contains("WJetsToLNu_HT-") || sample.Contains("DYJetsToLL_M-50_HT-") || sample.Contains("QCD_HT")){
-    isDifferentPDFSet = true;
-  }
 
   isUL16preVFP  = (ctx.get("dataset_version").find("UL16preVFP")  != std::string::npos);
   isUL16postVFP = (ctx.get("dataset_version").find("UL16postVFP") != std::string::npos);
@@ -451,17 +381,12 @@ ZprimeAnalysisModule::ZprimeAnalysisModule(uhh2::Context& ctx){
   /////////////////////////////////////// MC Reweighting modules ///////////////////////////////////////
   LumiWeight_module.reset(new MCLumiWeight(ctx));
   PUWeight_module.reset(new MCPileupReweight(ctx, Sys_PU));
-  TopPtReweight_module.reset(new TopPtReweighting(ctx, a_toppt, b_toppt, Sys_TopPt_a, Sys_TopPt_b, ""));
+  // top-pT reweighting: weights stored (weight_toppt_*) but NOT applied -- TTbarNNLOQCD_module is the top-pT correction
+  TopPtReweight_module.reset(new TopPtReweighting(ctx, a_toppt, b_toppt, Sys_TopPt_a, Sys_TopPt_b, "", false));
   // ttbar NNLO QCD + electroweak corrections (AN-26-039 Sec. 3.3.5) -- see TTbarNNLOQCDCorrection and
   // TTbarEWKCorrection in ZprimeSemiLeptonicModules.h/.cxx 
   TTbarNNLOQCD_module.reset(new TTbarNNLOQCDReweighting(ctx, "ttbargen"));
   TTbarEWK_module.reset(new TTbarEWKCorrection(ctx, "ttbargen"));
-  h_weight_ttbar_nnloqcd_nominal = ctx.get_handle<float>("weight_ttbar_nnlo_qcd");
-  h_weight_ttbar_nnloqcd_up      = ctx.get_handle<float>("weight_ttbar_nnlo_qcd_up");
-  h_weight_ttbar_nnloqcd_down    = ctx.get_handle<float>("weight_ttbar_nnlo_qcd_down");
-  h_weight_ttbar_ewk_nominal     = ctx.get_handle<float>("weight_ttbar_ewk_nominal");
-  h_weight_ttbar_ewk_up          = ctx.get_handle<float>("weight_ttbar_ewk_up");
-  h_weight_ttbar_ewk_down        = ctx.get_handle<float>("weight_ttbar_ewk_down");
   MCScale_module.reset(new MCScaleVariation(ctx));
   ps_weights.reset(new PSWeights(ctx));
   NLOCorrections_module.reset(new NLOCorrections(ctx));
@@ -581,7 +506,10 @@ ZprimeAnalysisModule::ZprimeAnalysisModule(uhh2::Context& ctx){
   // Variables for DNN
   Variables_module.reset(new Variables_NN(ctx, mode)); // NEED TO RUN Variables_module->process() else job will crash
   SpinCorrelations_module.reset(new SpinCorrelations(ctx, mode)); // module to calculate spin correlation variables
-  // if(!isEleTriggerMeasurement) SystematicsModule.reset(new ZprimeSemiLeptonicSystematicsModule(ctx));
+
+  // Gen-level entanglement inputs written to the AnalysisTree (replace the skim files)
+  GenSpinCorrelations_module.reset(new EntanglementGenOutput(ctx, "ttbargen")); // gen_<Obs>, gen 4-vectors, gen_semilep, gen_channel, genweight
+  NoSCReweighting_module.reset(new EntanglementNoSCReweighting(ctx));            // NoSC weights from the StrengthMapFile (TTToSemiLeptonic only)
 
   
 
@@ -671,32 +599,31 @@ ZprimeAnalysisModule::ZprimeAnalysisModule(uhh2::Context& ctx){
   };
   book_histograms(ctx, histogram_tags);
 
-  // PDF systematic: 100 NNPDF3.1 Hessian replica variations, booked (with the slim SpinCorr Hists class)
-  // for the three analysis stages: EndOfBaselineSelection, Chi2cut_PASS, and Merged. NOTE:
-  // EndOfBaselineSelection_pdf<i> is filled right after SpinCorrelations_module->process(event) in
-  // process() (not at the same call site as the nominal EndOfBaselineSelection fill, which happens
-  // earlier, before ttbar candidate reconstruction) -- CandidateBuilder, CorrectMatchDiscriminatorZprime
-  // and Chi2DiscriminatorZprime only compute reconstruction variables and are not selections, so this
-  // is still logically the end-of-baseline-selection stage.
-  vector<string> pdf_tags;
-  for(int i=0; i<100; ++i){
-    stringstream ss_i; ss_i << i;
-    pdf_tags.push_back("EndOfBaselineSelection_pdf" + ss_i.str());
-    pdf_tags.push_back("Chi2cut_PASS_pdf" + ss_i.str());
-    pdf_tags.push_back("Merged_pdf" + ss_i.str());
-  }
-  book_spincorr_histograms(ctx, pdf_tags);
+  // Systematic variations for the statistical analysis (weight-only variations, see ZprimeSemiLeptonicSystematicsModule.h)
+  // Merged topology: the boosted-central entanglement witness, NoSC from the inclusive cHel_P3n map
+  const vector<string> merged_observables = {"cHel_P3n_Mtt800_Inf_cosThetaLT0p4"};
+  const map<string, string> merged_nosc   = {{"cHel_P3n_Mtt800_Inf_cosThetaLT0p4", "cHel_P3n"}};
+  Systematics_Merged.reset(new ZprimeSemiLeptonicSystematicsModule(ctx, "Merged", merged_observables, merged_nosc, NoSCReweighting_module->is_active()));
 
-  // ttbar NNLO QCD + electroweak correction systematics: up/down folders (same three stages, same slim
-  // SpinCorr Hists class, same EndOfBaselineSelection call-site caveat as the PDF systematic above).
-  vector<string> ttbar_corr_tags;
-  for(const string & stage : {"EndOfBaselineSelection", "Chi2cut_PASS", "Merged"}){
-    ttbar_corr_tags.push_back(stage + "_nnloQCD_up");
-    ttbar_corr_tags.push_back(stage + "_nnloQCD_down");
-    ttbar_corr_tags.push_back(stage + "_ewk_up");
-    ttbar_corr_tags.push_back(stage + "_ewk_down");
+  // After the chi2 cut: polarizations, correlation elements and their linear combinations
+  const vector<string> chi2_observables = {
+    // spin-analyzer (leptons-only) projections
+    "cosTheta1k_antiLep", "cosTheta1r_antiLep", "cosTheta1n_antiLep", "cosTheta1kStar_antiLep", "cosTheta1rStar_antiLep",
+    "cosTheta2k_Lep",     "cosTheta2r_Lep",     "cosTheta2n_Lep",     "cosTheta2kStar_Lep",     "cosTheta2rStar_Lep",
+    // spin-analyzer projections
+    "cosTheta1k", "cosTheta1r", "cosTheta1n", "cosTheta1kStar", "cosTheta1rStar",
+    "cosTheta2k", "cosTheta2r", "cosTheta2n", "cosTheta2kStar", "cosTheta2rStar",
+    // correlation elements
+    "Cnn", "Cnr", "Cnk", "Crn", "Crr", "Crk", "Ckn", "Ckr", "Ckk",
+    // linear combinations
+    "Crk_plus", "Crk_minus", "Cnr_plus", "Cnr_minus", "Cnk_plus", "Cnk_minus",
+  };
+  // NoSC only for observables with a strength map (B_i and C_ij), each reweighted with its own map
+  map<string, string> chi2_nosc;
+  for(const auto& obs : EntanglementNoSCReweighting::mapped_observables()){
+    if(std::find(chi2_observables.begin(), chi2_observables.end(), obs) != chi2_observables.end()) chi2_nosc[obs] = obs;
   }
-  book_spincorr_histograms(ctx, ttbar_corr_tags);
+  Systematics_Chi2.reset(new ZprimeSemiLeptonicSystematicsModule(ctx, "Chi2cut_PASS", chi2_observables, chi2_nosc, NoSCReweighting_module->is_active()));
 
 
 
@@ -782,6 +709,11 @@ bool ZprimeAnalysisModule::process(uhh2::Event& event){
   // Process TTbarGen to set gen-level ttbar system variables
   if(isMC && ttgenprod) ttgenprod->process(event);
   if(debug) cout << "[ZprimeAnalysisModule] TTbarGen processed: ok" << endl;
+
+  // Gen-level entanglement observables and NoSC weights (set for every event, data included)
+  GenSpinCorrelations_module->process(event);
+  NoSCReweighting_module->process(event);
+  if(debug) cout << "[ZprimeAnalysisModule] gen observables and NoSC weights: ok" << endl;
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////
   //////////////////////////// Application of various weights to event.weight ////////////////////////////
@@ -1377,11 +1309,6 @@ bool ZprimeAnalysisModule::process(uhh2::Event& event){
   // Save Spin Correlation variables to TTree
   SpinCorrelations_module->process(event);
   if(debug) cout << "[ZprimeAnalysisModule] SpinCorrelations_module: ok" << endl;
-  // CandidateBuilder/CorrectMatchDiscriminatorZprime/Chi2DiscriminatorZprime above only compute
-  // reconstruction variables (no event selection), so this is still the EndOfBaselineSelection stage.
-  fill_pdf_variations(event, "EndOfBaselineSelection");
-  fill_ttbarNNLOQCD_variations(event, "EndOfBaselineSelection");
-  fill_ttbarEWK_variations(event, "EndOfBaselineSelection");
 
 
   //////////////////////// check matchable and correct match selections BEFORE Chi2 cut //////////////////////////
@@ -1404,9 +1331,7 @@ bool ZprimeAnalysisModule::process(uhh2::Event& event){
 
   if(debug) cout << "[ZprimeAnalysisModule] Chi2 Selection: passed" << endl;
   fill_histograms(event, "Chi2cut_PASS");
-  fill_pdf_variations(event, "Chi2cut_PASS");
-  fill_ttbarNNLOQCD_variations(event, "Chi2cut_PASS");
-  fill_ttbarEWK_variations(event, "Chi2cut_PASS");
+  Systematics_Chi2->fill(event); // nominal + systematic variations after the chi2 cut
   // lumihists_Chi2->fill(event);
 
   //////////////////////// check matchable and correct match selections AFTER Passing Chi2 cut /////////////////
@@ -1426,9 +1351,7 @@ bool ZprimeAnalysisModule::process(uhh2::Event& event){
   if(ZprimeTopTag_selection->passes(event)){ // <-------------------------------------------------------------------- Merged
     if(debug) cout << "[ZprimeAnalysisModule] TopTag Selection: passed" << endl; 
     fill_histograms(event, "Merged");
-    fill_pdf_variations(event, "Merged");
-    fill_ttbarNNLOQCD_variations(event, "Merged");
-    fill_ttbarEWK_variations(event, "Merged");
+    Systematics_Merged->fill(event); // nominal + systematic variations in the Merged topology
 
     ////////////// check matchable and correct match selections AFTER Chi2 cut in Merged ////
     if(isMC && TTbarMatchable_selection->passes(event)){                                   //

@@ -1,172 +1,177 @@
-#include <iostream>
-#include <memory>
-
 #include <UHH2/ZprimeSemiLeptonic/include/ZprimeSemiLeptonicSystematicsModule.h>
+
+#include <stdexcept>
 
 using namespace std;
 using namespace uhh2;
 
-void ZprimeSemiLeptonicSystematicsModule::book_histograms(Context& ctx, vector<string> v_tags){
-  for(const auto & tag : v_tags){
-    // cout << "booking histograms with tag: " << tag << endl;
-    book_HFolder(tag, new ZprimeSemiLeptonicHists(ctx, tag));
-  }
+ZprimeSemiLeptonicSystematicsModule::Folder
+ZprimeSemiLeptonicSystematicsModule::book(Context& ctx, const string& variation, const vector<string>& observables){
+  return Folder(new ZprimeSemiLeptonicSpinCorrSystHists(ctx, region_ + "_SC_" + variation, observables));
 }
 
-void ZprimeSemiLeptonicSystematicsModule::fill_histograms(Event& event, string tag){
-  HFolder(tag)->fill(event);
-}
+ZprimeSemiLeptonicSystematicsModule::ZprimeSemiLeptonicSystematicsModule(Context& ctx, const string& region,
+                                                                         const vector<string>& observables,
+                                                                         const map<string, string>& nosc_maps,
+                                                                         bool fill_nosc):
+  region_(region), fill_nosc_(fill_nosc){
 
-ZprimeSemiLeptonicSystematicsModule::ZprimeSemiLeptonicSystematicsModule(Context& ctx){
-  for(auto & kv : ctx.get_all()) cout << " " << kv.first << " = " << kv.second << endl;
+  is_mc = (ctx.get("dataset_type") == "MC");
+  const string channel = ctx.get("channel");
+  const string version = ctx.get("dataset_version");
 
-  is_MC = (ctx.get("dataset_type") == "MC");
-  dataset_version = ctx.get("dataset_version");
+  // nominal: MC and data
+  nominal = book(ctx, "nominal", observables);
+  if(!is_mc) return; // data: no variations
 
-  h_ttIsReconstructed = ctx.get_handle<bool>("is_zprime_reconstructed_chi2");
-  eventweight_nominal = ctx.get_handle<float>("eventweight");
-  isDifferentPDFSet = false;
-  if(dataset_version.Contains("WJetsToLNu_HT-") || dataset_version.Contains("DYJetsToLL_M-50_HT-") || dataset_version.Contains("QCD_HT") || dataset_version.Contains("ALP_ttbar_") || dataset_version.Contains("HscalarToTTTo1L1Nu2J_") || dataset_version.Contains("HpseudoToTTTo1L1Nu2J_") || dataset_version.Contains("ZPrimeToTT_")){
-    isDifferentPDFSet = true;
-    cout << " is nonstandard pdf set = true" << endl;
+  /////////////////////////////////////////////////////////////////////////////////////////
+  //////////////////// variations given as varied / nominal weight ////////////////////////
+  // {name, nominal branch, up branch, down branch}
+  vector<vector<string>> ratio_table = {
+    {"pu",            "weight_pu",                "weight_pu_up",                    "weight_pu_down"},
+    {"btag_cferr1",   "weight_btagdisc_central",  "weight_btagdisc_cferr1_up",       "weight_btagdisc_cferr1_down"},
+    {"btag_cferr2",   "weight_btagdisc_central",  "weight_btagdisc_cferr2_up",       "weight_btagdisc_cferr2_down"},
+    {"btag_hf",       "weight_btagdisc_central",  "weight_btagdisc_hf_up",           "weight_btagdisc_hf_down"},
+    {"btag_hfstats1", "weight_btagdisc_central",  "weight_btagdisc_hfstats1_up",     "weight_btagdisc_hfstats1_down"},
+    {"btag_hfstats2", "weight_btagdisc_central",  "weight_btagdisc_hfstats2_up",     "weight_btagdisc_hfstats2_down"},
+    {"btag_lf",       "weight_btagdisc_central",  "weight_btagdisc_lf_up",           "weight_btagdisc_lf_down"},
+    {"btag_lfstats1", "weight_btagdisc_central",  "weight_btagdisc_lfstats1_up",     "weight_btagdisc_lfstats1_down"},
+    {"btag_lfstats2", "weight_btagdisc_central",  "weight_btagdisc_lfstats2_up",     "weight_btagdisc_lfstats2_down"},
+    {"ttag_corr",     "weight_toptagsf",          "weight_toptagsf_corr_up",         "weight_toptagsf_corr_down"},
+    {"ttag_uncorr",   "weight_toptagsf",          "weight_toptagsf_uncorr_up",       "weight_toptagsf_uncorr_down"},
+    {"tmistag",       "weight_topmistagsf",       "weight_topmistagsf_up",           "weight_topmistagsf_down"},
+    {"nnloQCD",       "weight_ttbar_nnlo_qcd",    "weight_ttbar_nnlo_qcd_up",        "weight_ttbar_nnlo_qcd_down"},
+    {"ewk",           "weight_ttbar_ewk_nominal", "weight_ttbar_ewk_up",             "weight_ttbar_ewk_down"},
+  };
+  if(channel == "muon"){
+    ratio_table.insert(ratio_table.end(), {
+      {"mu_id_stat",      "weight_sfmu_id_stat",      "weight_sfmu_id_stat_up",      "weight_sfmu_id_stat_down"},
+      {"mu_id_syst",      "weight_sfmu_id_syst",      "weight_sfmu_id_syst_up",      "weight_sfmu_id_syst_down"},
+      {"mu_iso_stat",     "weight_sfmu_iso_stat",     "weight_sfmu_iso_stat_up",     "weight_sfmu_iso_stat_down"},
+      {"mu_iso_syst",     "weight_sfmu_iso_syst",     "weight_sfmu_iso_syst_up",     "weight_sfmu_iso_syst_down"},
+      {"mu_reco",         "weight_sfmu_reco",         "weight_sfmu_reco_up",         "weight_sfmu_reco_down"},
+      {"mu_trigger_stat", "weight_sfmu_trigger_stat", "weight_sfmu_trigger_stat_up", "weight_sfmu_trigger_stat_down"},
+      {"mu_trigger_syst", "weight_sfmu_trigger_syst", "weight_sfmu_trigger_syst_up", "weight_sfmu_trigger_syst_down"},
+    });
+  }
+  if(channel == "electron"){
+    ratio_table.insert(ratio_table.end(), {
+      {"ele_id",      "weight_sfelec_id",      "weight_sfelec_id_up",      "weight_sfelec_id_down"},
+      {"ele_reco",    "weight_sfelec_reco",    "weight_sfelec_reco_up",    "weight_sfelec_reco_down"},
+      {"ele_trigger", "weight_sfelec_trigger", "weight_sfelec_trigger_up", "weight_sfelec_trigger_down"},
+    });
+  }
+  for(const auto& row : ratio_table){
+    RatioSyst syst;
+    syst.name      = row[0];
+    syst.h_nominal = ctx.get_handle<float>(row[1]);
+    syst.h_up      = ctx.get_handle<float>(row[2]);
+    syst.h_down    = ctx.get_handle<float>(row[3]);
+    syst.up        = book(ctx, row[0] + "_up",   observables);
+    syst.down      = book(ctx, row[0] + "_down", observables);
+    ratio_systs.push_back(std::move(syst));
   }
 
-  v_systs = {"pu", "prefiring", "mu_id_stat", "mu_id_syst", "mu_iso_stat", "mu_iso_syst", "mu_reco", "mu_trigger_stat","mu_trigger_syst", "ele_id", "ele_reco", "ele_trigger", "btag_cferr1", "btag_cferr2", "btag_hf", "btag_hfstats1", "btag_hfstats2", "btag_lf", "btag_lfstats1", "btag_lfstats2", "ttag_corr", "ttag_uncorr", "tmistag"};
-  v_syst_handlenames = {"weight_pu", "prefiringWeight", "weight_sfmu_id_stat","weight_sfmu_id_syst", "weight_sfmu_iso_stat","weight_sfmu_iso_syst", "weight_sfmu_reco", "weight_sfmu_trigger_stat","weight_sfmu_trigger_syst", "weight_sfelec_id", "weight_sfelec_reco", "weight_sfelec_trigger", "weight_btagdisc_cferr1", "weight_btagdisc_cferr2", "weight_btagdisc_hf", "weight_btagdisc_hfstats1", "weight_btagdisc_hfstats2", "weight_btagdisc_lf", "weight_btagdisc_lfstats1", "weight_btagdisc_lfstats2", "weight_toptagsf_corr", "weight_toptagsf_uncorr", "weight_topmistagsf"};
-  v_psscales = {"isr", "fsr"};
-  v_psscale_handlenames = {"weight_isr_2", "weight_fsr_2"};
-  v_variations = {"up", "down"};
-  v_mcscale_vars = {"upup", "upnone", "noneup", "nonedown", "downnone", "downdown"};
+  // L1 prefiring: weights are members of the Event (prefiringWeight, prefiringWeightUp/Down)
+  prefiring_up   = book(ctx, "prefiring_up",   observables);
+  prefiring_down = book(ctx, "prefiring_down", observables);
 
-  // nominal
-  v_nominal_dirtags = {"nominal"};
-  book_histograms(ctx, v_nominal_dirtags);
+  /////////////////////////////////////////////////////////////////////////////////////////
+  ////////////////// variations stored relative to the nominal weight /////////////////////
+  // {folder name, branch}
+  const vector<pair<string, string>> relative_table = {
+    {"isr_up",          "weight_isr_2_up"},          // PS weights: ISR/FSR scale x2 / x0.5
+    {"isr_down",        "weight_isr_2_down"},
+    {"fsr_up",          "weight_fsr_2_up"},
+    {"fsr_down",        "weight_fsr_2_down"},
+    {"murmuf_upup",     "weight_murmuf_upup"},       // ME scales: (muR, muF) x2 ("up") / x0.5 ("down") / x1 ("none")
+    {"murmuf_upnone",   "weight_murmuf_upnone"},
+    {"murmuf_noneup",   "weight_murmuf_noneup"},
+    {"murmuf_nonedown", "weight_murmuf_nonedown"},
+    {"murmuf_downnone", "weight_murmuf_downnone"},
+    {"murmuf_downdown", "weight_murmuf_downdown"},
+  };
+  for(const auto& row : relative_table){
+    RelativeSyst syst;
+    syst.name     = row.first;
+    syst.h_weight = ctx.get_handle<float>(row.second);
+    syst.folder   = book(ctx, row.first, observables);
+    relative_systs.push_back(std::move(syst));
+  }
 
-  // simple up/down variations
-  v_syst_dirtags = {};
-  if(v_systs.size() != v_syst_handlenames.size()) throw runtime_error("In ZprimeSemiLeptonicSystematicsModule.cxx: Length of v_systs and v_syst_handlenames is not equal.");
-  for(unsigned int i=0; i<v_systs.size(); ++i){
-    for(unsigned int j=0; j<v_variations.size(); ++j){
-      TString handlename_nominal = v_syst_handlenames[i];
-      TString handlename_shift = v_syst_handlenames[i] + "_" + v_variations[j];
+  // PDF: 100 NNPDF3.1 replicas; samples generated with another PDF set store them at a different index
+  const bool other_pdf_set = (version.find("WJetsToLNu_HT-") != string::npos) || (version.find("DYJetsToLL_M-50_HT-") != string::npos) || (version.find("QCD_HT") != string::npos);
+  pdf_start_index = other_pdf_set ? 47 : 9;
+  for(int i = 0; i < 100; ++i) pdf.push_back(book(ctx, "pdf" + to_string(i), observables));
 
-      if(v_systs[i] == "prefiring"){ // prefiringWeight has different syntax
-        handlename_shift = v_syst_handlenames[i];
-        if(v_variations[j] == "up") handlename_shift = handlename_shift + "Up";
-        else if(v_variations[j] == "down") handlename_shift = handlename_shift + "Down";
-        else throw runtime_error("In ZprimeSemiLeptonicSystematicsModule.cxx: Variation is neither up nor down.");
-      }
-      else if(v_systs[i].Contains("btag")){ // all btag variations have the same nominal
-        handlename_nominal = "weight_btagdisc_central";
-      }
-      else if(v_systs[i].Contains("ttag")){ // ttag variations have the same nominal
-        handlename_nominal = "weight_toptagsf";
-      }
-      else if(v_systs[i].Contains("tmistag")){ // tmistag variations have the same nominal
-        handlename_nominal = "weight_topmistagsf";
-      }
-
-      uhh2::Event::Handle<float> handle_nominal = ctx.declare_event_output<float>((string) handlename_nominal);
-      uhh2::Event::Handle<float> handle_shift = ctx.declare_event_output<float>((string) handlename_shift);
-
-      v_systhandles_nominal.emplace_back(handle_nominal);
-      v_systhandles_var.emplace_back(handle_shift);
-
-      TString dirname = v_systs[i] + "_" + v_variations[j];
-      v_syst_dirtags.emplace_back(dirname);
+  /////////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////// NoSC signal-shape variation ///////////////////////////////////
+  if(fill_nosc_){
+    vector<string> nosc_observables;
+    for(const auto& obs : observables){
+      const auto it = nosc_maps.find(obs);
+      if(it == nosc_maps.end()) continue;
+      nosc_observables.push_back(obs);
+      h_nosc_up.push_back(ctx.get_handle<float>("weight_NoSC_" + it->second + "_up"));
+      h_nosc_down.push_back(ctx.get_handle<float>("weight_NoSC_" + it->second + "_down"));
+    }
+    if(nosc_observables.empty()) fill_nosc_ = false;
+    else{
+      nosc_up   = book(ctx, "NoSC_up",   nosc_observables);
+      nosc_down = book(ctx, "NoSC_down", nosc_observables);
     }
   }
-  book_histograms(ctx, v_syst_dirtags);
-
-  // ps scale: isr + fsr
-  if(v_psscales.size() != v_psscale_handlenames.size()) throw runtime_error("In ZprimeSemiLeptonicSystematicsModule.cxx: Length of v_psscales and v_psscale_handlenames is not equal.");
-  for(unsigned int i=0; i<v_psscales.size(); ++i){
-    for(unsigned int j=0; j<v_variations.size(); ++j){
-      TString handlename_shift = v_psscale_handlenames[i] + "_" + v_variations[j];
-      uhh2::Event::Handle<float> handle_shift = ctx.declare_event_output<float>((string) handlename_shift);
-      v_psscalehandles.emplace_back(handle_shift);
-      TString dirname = v_psscales[i] + "_" + v_variations[j];
-      v_psscale_dirtags.emplace_back(dirname);
-    }
-  }
-  book_histograms(ctx, v_psscale_dirtags);
-
-  // mc scale
-  for(unsigned int i=0; i<v_mcscale_vars.size(); ++i){
-    TString handlename_shift = "weight_murmuf_" + v_mcscale_vars[i];
-    uhh2::Event::Handle<float> handle_shift = ctx.declare_event_output<float>((string) handlename_shift);
-    v_mcscalehandles.emplace_back(handle_shift);
-    TString dirname = "murmuf_" + v_mcscale_vars[i];
-    v_mcscale_dirtags.emplace_back(dirname);
-  }
-  book_histograms(ctx, v_mcscale_dirtags);
-
-  // pdf
-  for(unsigned int i=0; i<100; ++i){
-    stringstream ss_i;
-    ss_i << i;
-    TString dirname = "pdf" + ss_i.str();
-    v_pdf_dirtags.emplace_back(dirname);
-  }
-  book_histograms(ctx, v_pdf_dirtags);
 }
 
-bool ZprimeSemiLeptonicSystematicsModule::process(Event& event){
 
-  bool ttIsReconstructed = event.get(h_ttIsReconstructed);
-  if(!ttIsReconstructed) throw runtime_error("In ZprimeSemiLeptonicSystematicsModule.cxx: TTbar not reconstructed!");
+void ZprimeSemiLeptonicSystematicsModule::fill(Event& event){
 
-  float weight_nominal = event.get(eventweight_nominal);
+  const double weight_nominal = event.weight;
+  nominal->fill(event);
+  if(!is_mc) return;
+
+  // varied / nominal weight (a nominal weight of 0 means the event already has weight 0)
+  for(auto& syst : ratio_systs){
+    const double w_nom = event.get(syst.h_nominal);
+    event.weight = (w_nom != 0.) ? weight_nominal * event.get(syst.h_up)   / w_nom : 0.;
+    syst.up->fill(event);
+    event.weight = (w_nom != 0.) ? weight_nominal * event.get(syst.h_down) / w_nom : 0.;
+    syst.down->fill(event);
+  }
+
+  // L1 prefiring
+  const double w_pref = event.prefiringWeight;
+  event.weight = (w_pref != 0.) ? weight_nominal * event.prefiringWeightUp   / w_pref : 0.;
+  prefiring_up->fill(event);
+  event.weight = (w_pref != 0.) ? weight_nominal * event.prefiringWeightDown / w_pref : 0.;
+  prefiring_down->fill(event);
+
+  // weights stored relative to nominal
+  for(auto& syst : relative_systs){
+    event.weight = weight_nominal * event.get(syst.h_weight);
+    syst.folder->fill(event);
+  }
+
+  // PDF replicas; events without the replica weights keep the nominal weight (no PDF effect)
+  const bool has_pdf = event.genInfo && event.genInfo->systweights().size() > (size_t)(pdf_start_index + 100)
+                       && event.genInfo->originalXWGTUP() != 0.;
+  for(int i = 0; i < 100; ++i){
+    event.weight = has_pdf ? weight_nominal * event.genInfo->systweights().at(pdf_start_index + i) / event.genInfo->originalXWGTUP()
+                           : weight_nominal;
+    pdf[i]->fill(event);
+  }
+
+  // NoSC: each observable with its own per-event weight
   event.weight = weight_nominal;
-
-  // nominal
-  fill_histograms(event, "nominal");
-
-  if(is_MC){ // fill systematic hists for MC only
-    // simple up/down variations
-    for(unsigned int i=0; i<v_systs.size(); ++i){
-      for(unsigned int j=0; j<v_variations.size(); ++j){
-        int index = 2 * i + j;
-        float weight_systnominal = event.get(v_systhandles_nominal[index]);
-        float weight_systvar = event.get(v_systhandles_var[index]);
-        event.weight = weight_nominal * weight_systvar / weight_systnominal;
-        TString tag = v_systs[i] + "_" + v_variations[j];
-        fill_histograms(event, (string) tag);
-      }
+  if(fill_nosc_){
+    vector<double> factors_up, factors_down;
+    for(size_t i = 0; i < h_nosc_up.size(); ++i){
+      factors_up.push_back(event.get(h_nosc_up[i]));
+      factors_down.push_back(event.get(h_nosc_down[i]));
     }
-    // psscale: isr + fsr
-    for(unsigned int i=0; i<v_psscales.size(); ++i){
-      for(unsigned int j=0; j<v_variations.size(); ++j){
-        float weight_psscalevar = event.get(v_psscalehandles[i]);
-        event.weight = weight_nominal * weight_psscalevar;
-        TString tag = v_psscales[i] + "_" + v_variations[j];
-        fill_histograms(event, (string) tag);
-      }
-    }
-    // mc scale
-    for(unsigned int i=0; i<v_mcscale_vars.size(); ++i){
-      float weight_mcscalevar = event.get(v_mcscalehandles[i]);
-      event.weight = weight_nominal * weight_mcscalevar;
-      TString tag = "murmuf_" + v_mcscale_vars[i];
-      fill_histograms(event, (string) tag);
-    }
-    // pdf
-    int startindex = 9;
-    if(isDifferentPDFSet) startindex = 47;
-    if(event.genInfo->systweights().size() > (unsigned int) startindex + 100){ // there are some events without proper systweights which are ignored here (otherwise code will crash)
-      for(unsigned int i=0; i<100; ++i){
-        float weight_pdfnominal = event.genInfo->originalXWGTUP();
-        float weight_pdfvar = event.genInfo->systweights().at(startindex + i);
-        event.weight = weight_nominal * weight_pdfvar / weight_pdfnominal;
-        stringstream ss_i;
-        ss_i << i;
-        TString tag = "pdf" + ss_i.str();
-        fill_histograms(event, (string) tag);
-      }
-    }
+    nosc_up->fill_with_factors(event, factors_up);
+    nosc_down->fill_with_factors(event, factors_down);
   }
 
-  return true;
+  event.weight = weight_nominal;
 }
-
-UHH2_REGISTER_ANALYSIS_MODULE(ZprimeSemiLeptonicSystematicsModule)
