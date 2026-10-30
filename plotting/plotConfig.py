@@ -38,18 +38,7 @@ EXTRA_TEXT_SIM  = "Simulation Private Work"
 #                                       Stacked processes for the control plots                                       #
 # =================================================================================================================== #
 # (label, colour, sample-name patterns), drawn bottom -> top of the stack; legend in reverse order.
-# Colours: CMS recommended 10-colour palette.
-# STACK_GROUPS = [
-#     ("QCD",                  "#832db6", ["QCD_*"]),
-#     ("Diboson",              "#94a4a2", ["WW", "WZ", "ZZ"]),
-#     ("Drell-Yan",            "#92dadd", ["DYJetsToLL_*"]),
-#     ("W+jets",               "#ffa90e", ["WJetsToLNu_*"]),
-#     ("Single t",             "#3f90da", ["ST_*"]),
-#     ("t#bar{t} (had.)",      "#a96b59", ["TTToHadronic"]),
-#     ("t#bar{t} (2#font[12]{l})", "#b9ac70", ["TTTo2L2Nu"]),
-#     ("t#bar{t} (#font[12]{l}+jets)", "#bd1f01", ["TTToSemiLeptonic"]),
-# ]
-# UIC colors
+# Colours: Using custom colour palette.
 STACK_GROUPS = [
     ("QCD",                          "#5CC9CA", ["QCD_*"]),            # kCyan+1 HEX equivalent
     ("Diboson",                      "#EA33F7", ["WW", "WZ", "ZZ"]),   # kMagenta HEX equivalent

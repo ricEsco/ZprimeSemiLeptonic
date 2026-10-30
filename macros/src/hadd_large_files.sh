@@ -5,8 +5,8 @@
 
 year="UL18" # UL16preVFP / UL16postVFP / UL17 / UL18
 channel="muon" # electron / muon
-input_dir="/data/dust/user/ricardo/output_uhh2_Entanglement_Reco/${year}/preDNNselection/${channel}/workdir_Analysis_${year}_${channel}_MCandDATA/"
-output_dir="/data/dust/user/ricardo/output_uhh2_Entanglement_Reco/${year}/preDNNselection/${channel}/mergedFiles/"
+input_dir="/data/dust/group/cms/zprime-uhh/Analysis_SC/${year}/${channel}/workdir_Analysis_${year}_${channel}/"
+output_dir="/data/dust/group/cms/zprime-uhh/Analysis_SC/${year}/${channel}/workdir_Analysis_${year}_${channel}/mergedFiles/"
 
 pwd="$(pwd)/"
 root.exe -b -l -q startup.C+

@@ -25,7 +25,7 @@ using namespace std;
 
 void mistag(){
 
-TString file_dir = "/data/dust/group/zprime-uhh/AnalysisDNN_UL17/Mistag_rate/muon";
+TString file_dir = "/data/dust/group/cms/zprime-uhh/Analysis_SC/UL18/muon/workdir_Analysis_UL18_muon/";
 
 TString  filename_DATA  = file_dir + "/uhh2.AnalysisModuleRunner.DATA.DATA.root";
 TString  filename_TTbar = file_dir + "/uhh2.AnalysisModuleRunner.MC.TTbar.root";
@@ -63,25 +63,25 @@ float n_jets_DY_tagged = ((TH1F*)(f_in_DY->Get("Mistag/pt_AK8jet1_tagged")))->In
 float n_jets_QCD        = ((TH1F*)(f_in_QCD->Get("Mistag/pt_AK8jet1")))->Integral();
 float n_jets_QCD_tagged = ((TH1F*)(f_in_QCD->Get("Mistag/pt_AK8jet1_tagged")))->Integral();
   
-//cout << "Number of leading AK8jets DATA = " << n_jets_DATA << endl;
-//cout << "Number of leading AK8jets DATA tagged = " << n_jets_DATA_tagged << endl;
-//
-//cout << "Number of leading AK8jets TTbar tagged t = " << n_jets_TTbar_t_tagged << endl;
-//cout << "Number of leading AK8jets ST tagged t = " << n_jets_ST_t_tagged << endl;
-//cout << "Number of leading AK8jets TTbar t = " << n_jets_TTbar_t << endl;
-//cout << "Number of leading AK8jets ST t = " << n_jets_ST_t << endl;
-//
-//cout << "Number of leading AK8jets QCD = " << n_jets_QCD << endl;
-//cout << "Number of leading AK8jets QCD tagged = " << n_jets_QCD_tagged << endl;
-//
-//cout << "Number of leading AK8jets TTbar tagged l = " << n_jets_TTbar_l_tagged << endl;
-//cout << "Number of leading AK8jets ST tagged l = " << n_jets_ST_l_tagged << endl;
-//cout << "Number of leading AK8jets WJets tagged = " << n_jets_WJets_tagged << endl;
-//cout << "Number of leading AK8jets DY tagged = " << n_jets_DY_tagged << endl;
-//cout << "Number of leading AK8jets TTbar l = " << n_jets_TTbar_l << endl;
-//cout << "Number of leading AK8jets ST l = " << n_jets_ST_l << endl;
-//cout << "Number of leading AK8jets WJets = " << n_jets_WJets << endl;
-//cout << "Number of leading AK8jets DY = " << n_jets_DY << endl;
+cout << "Number of leading AK8jets DATA = " << n_jets_DATA << endl;
+cout << "Number of leading AK8jets DATA tagged = " << n_jets_DATA_tagged << endl;
+
+cout << "Number of leading AK8jets TTbar tagged t = " << n_jets_TTbar_t_tagged << endl;
+cout << "Number of leading AK8jets ST tagged t = " << n_jets_ST_t_tagged << endl;
+cout << "Number of leading AK8jets TTbar t = " << n_jets_TTbar_t << endl;
+cout << "Number of leading AK8jets ST t = " << n_jets_ST_t << endl;
+
+cout << "Number of leading AK8jets QCD = " << n_jets_QCD << endl;
+cout << "Number of leading AK8jets QCD tagged = " << n_jets_QCD_tagged << endl;
+
+cout << "Number of leading AK8jets TTbar tagged l = " << n_jets_TTbar_l_tagged << endl;
+cout << "Number of leading AK8jets ST tagged l = " << n_jets_ST_l_tagged << endl;
+cout << "Number of leading AK8jets WJets tagged = " << n_jets_WJets_tagged << endl;
+cout << "Number of leading AK8jets DY tagged = " << n_jets_DY_tagged << endl;
+cout << "Number of leading AK8jets TTbar l = " << n_jets_TTbar_l << endl;
+cout << "Number of leading AK8jets ST l = " << n_jets_ST_l << endl;
+cout << "Number of leading AK8jets WJets = " << n_jets_WJets << endl;
+cout << "Number of leading AK8jets DY = " << n_jets_DY << endl;
 
 cout << "Efficieny DATA      = " << (n_jets_DATA_tagged - n_jets_TTbar_t_tagged - n_jets_ST_t_tagged)/(n_jets_DATA - n_jets_TTbar_t - n_jets_ST_t) << endl;
 cout << "Efficieny MC        = " << (n_jets_WJets_tagged + n_jets_TTbar_l_tagged + n_jets_ST_l_tagged + n_jets_DY_tagged)/(n_jets_WJets + n_jets_TTbar_l + n_jets_ST_l + n_jets_DY) << endl;

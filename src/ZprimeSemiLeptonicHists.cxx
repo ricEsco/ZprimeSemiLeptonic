@@ -128,8 +128,8 @@ void ZprimeSemiLeptonicHists::init(){
   eta_mu1          = book<TH1F>("eta_mu1", "#eta^{#mu 1}", 50, -2.5, 2.5);
   eta_mu2          = book<TH1F>("eta_mu2", "#eta^{#mu 2}", 50, -2.5, 2.5);
   phi_mu           = book<TH1F>("phi_mu", "#phi^{#mu}", 35, -3.5, 3.5);
-  phi_mu1          = book<TH1F>("phi_mu1", "#phi^{#mu 1}", 35, 3.5, 3.5);
-  phi_mu2          = book<TH1F>("phi_mu2", "#phi^{#mu 2}", 35, 3.5, 3.5);
+  phi_mu1          = book<TH1F>("phi_mu1", "#phi^{#mu 1}", 35, -3.5, 3.5);
+  phi_mu2          = book<TH1F>("phi_mu2", "#phi^{#mu 2}", 35, -3.5, 3.5);
   reliso_mu        = book<TH1F>("reliso_mu", "#mu rel. Iso", 40, 0, 0.5);
   reliso_mu1       = book<TH1F>("reliso_mu1", "#mu 1 rel. Iso", 40, 0, 0.5);
   reliso_mu1_matched  = book<TH1F>("reliso_mu1_match", "#mu1 rel. Iso", 40, 0, 0.5);
